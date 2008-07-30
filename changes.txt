@@ -1,0 +1,113 @@
+
+Version 1.3.3
+
+- The camera position and scale can be set using the mouse in the preview
+  widget.
+- The symmetry setting can be applied to the current genome.
+- Holding the Alt key disables updating the mainviewer image, and
+  releasing it will immediately update the mainviewer.
+- Added an undo stack.
+- Try to load a fixed width font for the Lua editor if possible.
+- Window title and content fonts use the default qtconfig settings.
+- Added a selection box to the triangle editor.  Now multiple triangles can
+  be moved, rotated, and scaled together.
+
+
+Version 1.3.2
+
+- Removed the libflam3 sources from the distribution tree.
+- Updated the build dependency to flam3-2.7.11
+- Added support for alpha channel image formats.
+- Lua scripts can be interrupted.
+- Basic highlighting for Lua scripts.
+- Simple formatting keys were added to the script editor.
+- Support for multiple libflam3 pthreads.
+- Some minor user interface enhancements added.
+- Added 'help' and 'version' command line options.
+- Added a list of key bindings to the README
+
+
+Version 1.3.1
+
+- Fixed an assertion related bug that occurs when a cpt gradient file is
+  loaded.
+- Fixed a bug which caused a crash when calling the lua frame:load method.
+- Changes to the textedit fields in the coordinates widget now update the
+  selected transform.
+- The ~/.qosmic.flam3 file is only written when quitting if the file already
+  exists.
+
+
+Version 1.3
+
+- Finer adjustments for the hue, vibrancy, contrast, and brightness settings.
+- Added a presets widget that keeps a selectable list of preset image resolution
+  and quality settings.
+- Non-critical log messages can be disabled at compile time.
+- Added a script editing widget that runs scripts in an Lua script environment.
+- Loading of CPT gradient files is supported in the palette selector.
+- Added transformation controls to translate a triangle horizontally and
+  vertically.
+- The origin for rotate, scale, and flip transformations can be set to the
+  coordinate origin, the triangle center, or to an arbitrary point.
+- Added final xform support.
+- Added support for rendering genome symmetry groups.
+- Adjusted the widget layouts so they work with more styles.
+- Added compile time support for adjusting the number of pthreads libflam3
+  will create.
+- Many user interface enhancements and bug fixes.
+
+
+Version 1.2
+
+- Broke the settings tabbed box into smaller individual widgets, and added
+  them to the mainwindow as dockwidgets.
+- Automatically save the current flame to the user's $HOME/.qosmic.flam3.
+- The triangle editor can show grid lines.
+- The background and grid line colors in the triangle editor can be set.
+- Fixed some drawing and event handling problems in the triangle editor.
+- Values in spinboxes and the variations table are adjustable using the mouse
+  wheel.
+- Minor improvements to the rendering scheduler.
+- Added scroll lists to the palette selector for selecting gradients.
+- Nice coloring added to the variations table indicating acceptable
+  sheepserver variations.  Also, the non-zero variation values are also
+  colored.
+- Added a directory browser for browsing, viewing, and selecting flam3 files.
+- Added a widget that shows the status of the rendering scheduler.
+- The hue slider now works.
+- The log level can be set using the 'log' environment variable.
+- Added icons from the Silk icon set by Mark James
+  http://www.famfamfam.com/lab/icons/silk/
+
+
+Version 1.1.2
+
+- Fixed a bug introduced in 1.1.1 while trying to remove a compile warning.
+- Added basis triangle scaling using the mouse wheel.
+
+
+Version 1.1.1
+
+  This version is just a 1.1 release with some fixes to the build setup for
+  some systems.  If 1.1 builds on your system you don't need to upgrade.
+
+- Changed an address cast to long for 64bit systems.
+- Added libxml2 to the LIBS variable in qosmic.pro.
+- Moved the local flam3 directory to the beginning of the linker search path.
+
+
+Version 1.1
+
+- Updated the flam3 library to libflam3-2.7.6
+- Added a logging facility
+- Added a mutations widget.
+- Added a background color selector.
+- Added support for GIMP Gradient files
+- Changed the variations tab to use a table class, and added a similar
+  variables tab for editing variation variables.
+- Added horizontal and vertical flipping for triangles.
+- The shift key reduces the amount of rotation and scaling.
+- Fixed icon paths.
+- Fixed a graphics scene scaling problem that caused the window to jump around.
+
