@@ -7,12 +7,14 @@ your system:
 
 Qt >=4.3.1      (http://www.trolltech.com/)
 liblua          (http://www.lua.org/)
+flam3 >= 2.7.14 (http://flam3.com/)
+
+flam3 dependencies:
 libxml2         (http://www.xmlsoft.org/)
 libjpeg         (http://www.ijg.org/)
-flam3 >= 2.7.11 (http://flam3.com/)
 
 The current version of the application is developed using
-qt-x11-opensource-4.4.0, flam3-2.7.13, liblua-5.1.3, libxml2-2.6.31, and
+qt-x11-opensource-4.4.0, flam3-2.7.14, liblua-5.1.3, libxml2-2.6.31, and
 libjpeg-6b.
 
 The application is also reported to build using the qt-copy patches from the
@@ -45,9 +47,8 @@ The preview widget is updated with a new image every time a setting is changed.
 It's generally smaller than the main viewer.
 
 The main viewer has the same image as the preview widget, but it's updated less
-frequently for some types of changes (ie moving a triangle), and it's usually
-larger so more detail can be seen.  Updating the main viewer can be disabled by
-holding the Alt key while making changes (see below), or by closing it.
+frequently, and it's usually larger so more detail can be seen.  Updating of the
+main viewer can be disabled by closing it.
 
 The third viewer is the one displayed when using the directory browser to view
 flam3 image files by right clicking on the file.  The key bindings here are the
@@ -91,7 +92,7 @@ Here are some more hints:
   holding control scales by 10.  The '[' and ']' keys will multiply and divide
   the default increment value by 10.
 
-- When focused on a spin box, pressing return will render the preview using the
+- When focused on a spin box, pressing return will update the preview using the
   current values.
 
 - The '\' key will globally disable automatic preview and viewer image updating
@@ -110,8 +111,9 @@ Here are some more hints:
 - Using the right mouse button in the directory browser displays the image for
   a flam3 file if one exists.  The middle mouse button refreshes the listing.
 
-- Add and remove triangles using the menu shown by holding the right mouse
-  button in the editor.
+- Add, duplicate, and remove triangles using the menu shown by holding the right
+  mouse button in the editor.  You can select a triangle by positioning the
+  pointer over it when activating the menu.
 
 - The mouse wheel will rotate a triangle in the editor. Holding shift will
   rotate it less.
@@ -128,9 +130,6 @@ Here are some more hints:
 
 - Closing the preview, viewer, and mutations windows will prevent them from
   updating.
-
-- When setting a triangle's color using the color-bar in the color
-  selector the main viewer is updated when the mouse button is released.
 
 - The left mouse button in the mutations window selects a genome and moves it
   to the first box.
@@ -201,14 +200,6 @@ F8  - Increase the image size
 F9  - Save the currently displayed image
 Esc - Close/Hide the viewer
 
-(not including the directory list image viewer)
-Alt - Holding this key while adjusting any control will disable updating.  The
-      viewer window is updated when Alt is released.  This makes it possible to
-      update only the preview image for an adjustable.  This effectively hides
-      and shows the main viewer without actually hiding it.
-      Holding the Alt key also disables the undo saving function.  Undo states
-      are saved when the Alt key is released.
-
 
 
 Bindings for the script editor
@@ -232,6 +223,12 @@ All of the building controls are contained in qosmic.pro.  To resolve a compile
 error you should only need to edit qosmic.pro and run 'qmake && make' (assuming
 that all of the required libraries are installed).
 
+The qosmic.pro file is setup to use pkg-config by default.  If you don't have
+pkg-config, or if it doesn't work on your system, then you'll need to edit the
+qosmic.pro file to set the required library and include paths.  There are some
+lines in the file that should need only some minor path changes for this to set
+these for your system.
+
 Many linux packaging systems will store the header files for libraries in
 another package which are 'dev' packages (ie qt-4.3.1-dev.rpm).  These header
 files are needed to build qosmic, so make sure the dev packages for the
@@ -244,11 +241,6 @@ command to relink qmake on Debian Sid before running build.sh.
 
 $ sudo update-alternatives --config qmake
 
-
-The qosmic.pro file tries to use pkg-config to figure out the location of the
-build/runtime dependencies.  If your system doesn't use pkg-config or it doesn't
-find everything, then you may need to add include and library paths by hand in
-qosmic.pro.
 
 For the Lua dependency it may be necessary to adjust the include list in
 qosmic.pro so the liblua header files can be found.  You may need to add
@@ -266,7 +258,7 @@ system.
 
 If you see an error about qosmic being unable to find the flam3-palettes.xml
 file, then you need to adjust the FLAM3_PALETTES variable in qosmic.pro so that
-in points at the directory where flam3 installed this file.  Alternatively, you
+it points at the directory where flam3 installed this file.  Alternatively, you
 can use the environment variable 'flam3_palettes' to do this.  Type './qosmic
 --help' to see a list of supported environment variables.
 
