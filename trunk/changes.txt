@@ -1,3 +1,12 @@
+Version 1.4
+
+- Fixed a bug in calculating the scaling factor when resizing triangles.
+- Added more options for origin placement when editing triangles.
+- Added a function to duplicate a triangle.
+- Post transforms for a triangle can be modified.
+- Updated to libflam3-2.7.14.
+- Improved rendering request scheduling.
+
 
 Version 1.3.3
 
