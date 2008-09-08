@@ -7,14 +7,14 @@ your system:
 
 Qt >=4.3.1      (http://www.trolltech.com/)
 liblua          (http://www.lua.org/)
-flam3 >= 2.7.14 (http://flam3.com/)
+flam3 >= 2.7.16 (http://flam3.com/)
 
 flam3 dependencies:
 libxml2         (http://www.xmlsoft.org/)
 libjpeg         (http://www.ijg.org/)
 
 The current version of the application is developed using
-qt-x11-opensource-4.4.0, flam3-2.7.14, liblua-5.1.3, libxml2-2.6.31, and
+qt-x11-opensource-4.4.1, flam3-2.7.16, liblua-5.1.3, libxml2-2.6.31, and
 libjpeg-6b.
 
 The application is also reported to build using the qt-copy patches from the
@@ -148,8 +148,7 @@ Here are some more hints:
 - You can set the genome displayed at start-up by saving to a file called
   '.qosmic.flam3' in your home directory.
 
-- Use the viewer presets to quickly switch between final image sizes and image
-  quality settings.
+- Use viewer presets to quickly switch between different image quality settings.
 
 - The maximum size of the preview image when docked can be set by sizing the
   preview when it is not docked.

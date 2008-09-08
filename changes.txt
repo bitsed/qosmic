@@ -1,3 +1,17 @@
+Version 1.4.1
+
+- Viewer presets can be renamed and changed, and they no longer modify the
+  final image size.
+- Added support for UGR gradient files to the palette editor.
+- Updated all debug messages to work with 64bit systems.
+- Several rendering scheduling bugfixes.
+- Fixed a crash bug in the genome selection widget, and also adjusted the
+  layout.
+- Automatically rescale the genome when the image size is changed.
+- Fixed a some scaling and redrawing problems in the figure editor.
+- Updated to flam3-2.7.16.
+
+
 Version 1.4
 
 - Fixed a bug in calculating the scaling factor when resizing triangles.
