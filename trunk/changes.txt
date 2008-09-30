@@ -1,3 +1,11 @@
+Version 1.4.2
+
+- Triangle coordinates can be displayed and edited using polar coordinates.
+- Added a new widget to edit and merge triangle densities.
+- Added import and export menu items to add or save a genome in the current set.
+- Choose a random color when adding a new xform.
+- Fixed more scaling problems in the figure editor.
+
 Version 1.4.1
 
 - Viewer presets can be renamed and changed, and they no longer modify the
