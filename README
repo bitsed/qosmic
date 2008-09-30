@@ -26,17 +26,20 @@ kdesvn server.
 
 If you have problems, then read the section below about common problems
 building.
-
 ================================================================================
-
 
 Using the Editor
 
 The best way to begin is by playing with it.  The interface is heavily mouse
 driven, and it relies on the mouse wheel for many controls.  If you've used
 Apophysis, then some things about the editor should seem familiar.  The main
-features consist of the triangle editor and the viewers which allow you to
-manipulate and view flam3 files and images.
+components consist of the triangle editor, the dock widgets, and the viewers.
+
+The triangle editor allows you to select and maniplate an xform element within
+a genome.  The dock widgets contain control elements which can adjust some
+property of the current genome.  Some control elements are bound to properties
+of the currently selected triangle.  The viewers display the current flam3
+image.
 
 
 Viewers:
@@ -44,7 +47,10 @@ Viewers:
 There are three different windows that display flam3 images.
 
 The preview widget is updated with a new image every time a setting is changed.
-It's generally smaller than the main viewer.
+It's generally smaller than the main viewer.  This widget also has control
+elements bound to the mouse wheel and buttons.  You may drag the preview image
+using the left mouse button to set the camera view, and the scale can be set
+using the mouse wheel.
 
 The main viewer has the same image as the preview widget, but it's updated less
 frequently, and it's usually larger so more detail can be seen.  Updating of the
@@ -68,9 +74,9 @@ Undo/Redo:
 
 There is a five level undo feature.  The current state can be added to the list
 of undo states by either clicking undo, or by pressing the spacebar.  When a
-flam3 file is loaded a new state is automatically added to the undo list.
-Pressing the spacebar and immediately clicking undo will add the current state
-once.
+flam3 file is loaded the list is cleared, and a new state is automatically added
+to the head of the list.  Pressing the spacebar and immediately clicking undo
+will add the current state once.
 
 An undo state is added at the current undo position, and higher positions are
 forgotten.  This means that if you click undo and hit the spacebar, then you
@@ -84,13 +90,10 @@ Here are some more hints:
 - Use lower quality settings until you get the image you want, then render your
   final image using higher quality settings if necessary.
 
-- You can double the scale and decrease the zoom by 1 to reduce the rendering
-  time.
-
-- The mouse wheel can be used to modify the real editable values in the
-  spin boxes and in the variations table.  Holding shift scales by 1/10, and
-  holding control scales by 10.  The '[' and ']' keys will multiply and divide
-  the default increment value by 10.
+- The mouse wheel can be used to modify the real editable values in the spin
+  box control elements and also in the variations table.  Holding shift scales
+  by 1/10, and holding control scales by 10.  The '[' and ']' keys will multiply
+  and divide the default increment value by 10.
 
 - When focused on a spin box, pressing return will update the preview using the
   current values.
@@ -110,6 +113,8 @@ Here are some more hints:
 
 - Using the right mouse button in the directory browser displays the image for
   a flam3 file if one exists.  The middle mouse button refreshes the listing.
+  The left mouse button loads the selected flam3 file, and holding the control
+  key will append the genomes in selected flam3 file to the current set.
 
 - Add, duplicate, and remove triangles using the menu shown by holding the right
   mouse button in the editor.  You can select a triangle by positioning the
@@ -153,8 +158,16 @@ Here are some more hints:
 - The maximum size of the preview image when docked can be set by sizing the
   preview when it is not docked.
 
-- Use the selection box to simultaneously move and edit multiple triangles.
+- Use the selection to simultaneously move and edit multiple triangles.
 
+- Use the genomes widget to view the current set and to select the current genome.
+  There is always at least one genome in the set, and you can add a genome by
+  importing it.
+
+- The density widget can be used to merge two different genomes in the current
+  genome set.  Use the star button in the density widget to apply the density
+  settings of the second genome.  Triangles is the second genome having a density
+  of zero are not included when density settings are applied.
 ================================================================================
 
 Keys
@@ -211,8 +224,6 @@ Ctrl+$, Ctrl+Shift+L - Un-comment a single line or selection
 Tab                  - Indent the selection, otherwise tab
 Ctrl+Tab             - Un-indent the selection, otherwise tab
 Ctrl+Return          - Run the current script
-
-
 ================================================================================
 
 Common problems while building/running
@@ -260,7 +271,6 @@ file, then you need to adjust the FLAM3_PALETTES variable in qosmic.pro so that
 it points at the directory where flam3 installed this file.  Alternatively, you
 can use the environment variable 'flam3_palettes' to do this.  Type './qosmic
 --help' to see a list of supported environment variables.
-
 ================================================================================
 
 Thanks to:
@@ -275,5 +285,4 @@ Thanks to:
 This program is licensed under the GNU GPL Version 2.  See the COPYING file
 for details.  Questions, concerns, suggestions, bug reports, and patches
 can be sent to bitsed(at)u.washington.edu.
-
 ================================================================================
