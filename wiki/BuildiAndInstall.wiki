@@ -17,7 +17,7 @@ these for your system.
 Many linux packaging systems will store the header files for libraries in
 another package which are 'dev' packages (ie qt-4.3.1-dev.rpm).  These header
 files are needed to build qosmic, so make sure the dev packages for the
-libraries listed above are installed if they exist.
+required libraries are installed if they exist.
 
 When using Debian Sid one must manually link qmake correctly against qmake-qt4
 before compiling.  This may be a problem on other systems as well, so make sure
