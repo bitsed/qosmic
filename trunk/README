@@ -7,14 +7,14 @@ your system:
 
 Qt >=4.3.1      (http://www.trolltech.com/)
 liblua          (http://www.lua.org/)
-flam3 >= 2.7.16 (http://flam3.com/)
+flam3 >= 2.7.17 (http://flam3.com/)
 
 flam3 dependencies:
 libxml2         (http://www.xmlsoft.org/)
 libjpeg         (http://www.ijg.org/)
 
 The current version of the application is developed using
-qt-x11-opensource-4.4.1, flam3-2.7.16, liblua-5.1.3, libxml2-2.6.31, and
+qt-x11-opensource-4.5, flam3-2.7.18, liblua-5.1.3, libxml2-2.7.3, and
 libjpeg-6b.
 
 The application is also reported to build using the qt-copy patches from the
@@ -34,7 +34,6 @@ The best way to begin is by playing with it.  The interface is heavily mouse
 driven, and it relies on the mouse wheel for many controls.  If you've used
 Apophysis, then some things about the editor should seem familiar.  The main
 components consist of the triangle editor, the dock widgets, and the viewers.
-
 The triangle editor allows you to select and maniplate an xform element within
 a genome.  The dock widgets contain control elements which can adjust some
 property of the current genome.  Some control elements are bound to properties
@@ -48,13 +47,18 @@ There are three different windows that display flam3 images.
 
 The preview widget is updated with a new image every time a setting is changed.
 It's generally smaller than the main viewer.  This widget also has control
-elements bound to the mouse wheel and buttons.  You may drag the preview image
-using the left mouse button to set the camera view, and the scale can be set
-using the mouse wheel.
+elements bound to the mouse wheel and buttons.  You may drag the preview
+image using the left mouse button to set the camera view.  The scale can
+be set using the mouse wheel or by holding control while moving the mouse.
+The right mouse button displays a popup menu where the preview image quality
+can be selected.  The quality settings displayed in the popup menu can be
+changed using the viewer presets widget.
 
 The main viewer has the same image as the preview widget, but it's updated less
 frequently, and it's usually larger so more detail can be seen.  Updating of the
-main viewer can be disabled by closing it.
+main viewer can be disabled by closing it.  The image quality for the main
+viewer can be set by using the mouse button bound to the popup menu here as
+well.
 
 The third viewer is the one displayed when using the directory browser to view
 flam3 image files by right clicking on the file.  The key bindings here are the
@@ -72,14 +76,18 @@ moving the mouse to disable the selection.
 
 Undo/Redo:
 
-There is a five level undo feature.  The current state can be added to the list
-of undo states by either clicking undo, or by pressing the spacebar.  When a
-flam3 file is loaded the list is cleared, and a new state is automatically added
-to the head of the list.  Pressing the spacebar and immediately clicking undo
-will add the current state once.
+There is a fifty level undo feature.  The current state can be added to the list
+of undo states by either clicking undo, or by pressing the control+spacebar.
+When a flam3 file is loaded the list is cleared, and a new state is
+automatically added to the head of the list.  Pressing the spacebar and
+immediately clicking undo will add the current state once.
+
+The figure editor and some of the widgets will also add states to the undo stack
+when you use them with the mouse.  For instance, the figure editor adds a state
+whenever a triangle is dropped after being moved.
 
 An undo state is added at the current undo position, and higher positions are
-forgotten.  This means that if you click undo and hit the spacebar, then you
+forgotten.  This means that if you click undo and hit control+spacebar, then you
 will no longer be able to redo to where you were.  There will be two versions of
 the current state available, and you are seeing the most recent state.
 
@@ -177,12 +185,12 @@ a clickable tool icon.
 
 The main window its dock widgets have the following bindings
 
-F1       - Select the previous triangle
-F2       - Select the next triangle
-F3       - Show/Hide the main viewer
-F4       - Undo
-Shift-F4 - Redo
-Space    - Push the current state onto the undo stack
+F1          - Select the previous triangle
+F2          - Select the next triangle
+F3          - Show/Hide the main viewer
+F4          - Undo
+Shift-F4    - Redo
+Ctrl+Space  - Push the current state onto the undo stack
 
 Ctrl+A  - Autoscale the figure editor
 Ctrl+K  - Stop rendering
@@ -205,10 +213,10 @@ Ctrl+LeftMouseButton - Create/disable the selection
 
 Main viewer bindings (including the directory list image viewer)
 
-F5  - Scale the image to the previous size
-F6  - Scale the image to its original size
-F7  - Decrease the image size
-F8  - Increase the image size
+F5  - Decrease the image size
+F6  - Increase the image size
+F7  - Scale the image to the previous size
+F8  - Scale the image to its original size
 F9  - Save the currently displayed image
 Esc - Close/Hide the viewer
 
@@ -284,5 +292,5 @@ Thanks to:
 
 This program is licensed under the GNU GPL Version 2.  See the COPYING file
 for details.  Questions, concerns, suggestions, bug reports, and patches
-can be sent to bitsed(at)u.washington.edu.
+can be sent to bitsed(at)gmail.com.
 ================================================================================
