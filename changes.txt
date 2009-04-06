@@ -1,3 +1,13 @@
+Version 1.4.4
+
+- Fixed crash when opening mutations widget.
+- Fixed crash when selecting and removing a post triangle.
+- Made the selection more persistent while scaling the scene.
+- Most values can be changed using click and drag.
+- Most values can be undone and redone.
+- Display the mark position in the status message as rect,deg,or rad.
+
+
 Version 1.4.3
 
 - Enabled independent quality settings for the image viewers.
@@ -26,7 +36,7 @@ Version 1.4.1
   final image size.
 - Added support for UGR gradient files to the palette editor.
 - Updated all debug messages to work with 64bit systems.
-- Several rendering scheduling bugfixes.
+- Several rendering scheduling bug fixes.
 - Fixed a crash bug in the genome selection widget, and also adjusted the
   layout.
 - Automatically rescale the genome when the image size is changed.
