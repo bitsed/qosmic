@@ -79,12 +79,13 @@ Undo/Redo:
 There is a fifty level undo feature.  The current state can be added to the list
 of undo states by either clicking undo, or by pressing the control+spacebar.
 When a flam3 file is loaded the list is cleared, and a new state is
-automatically added to the head of the list.  Pressing the spacebar and
+automatically added to the top of the stack.  Pressing the control+spacebar and
 immediately clicking undo will add the current state once.
 
-The figure editor and some of the widgets will also add states to the undo stack
-when you use them with the mouse.  For instance, the figure editor adds a state
-whenever a triangle is dropped after being moved.
+The figure editor and most of the widgets will also add states to the undo stack
+when you use them with the mouse.  In general, if you can change something by
+clicking and dragging it, then it can be undone.  Changes using the mouse wheel
+are't saved on the undo stack.
 
 An undo state is added at the current undo position, and higher positions are
 forgotten.  This means that if you click undo and hit control+spacebar, then you
@@ -101,7 +102,9 @@ Here are some more hints:
 - The mouse wheel can be used to modify the real editable values in the spin
   box control elements and also in the variations table.  Holding shift scales
   by 1/10, and holding control scales by 10.  The '[' and ']' keys will multiply
-  and divide the default increment value by 10.
+  and divide the default increment value by 10.  These values can also be
+  changed using the mouse to clicking on the spinbox arrows and moving the mouse
+  up and down.
 
 - When focused on a spin box, pressing return will update the preview using the
   current values.
@@ -185,12 +188,11 @@ a clickable tool icon.
 
 The main window its dock widgets have the following bindings
 
-F1          - Select the previous triangle
-F2          - Select the next triangle
-F3          - Show/Hide the main viewer
-F4          - Undo
-Shift-F4    - Redo
-Ctrl+Space  - Push the current state onto the undo stack
+F1                               - Select the previous triangle
+F2                               - Select the next triangle
+F3, Ctrl+Z,       Ctrl+;         - Undo
+F4, Shift+Ctrl+Z, Shift+Ctrl+;   - Redo
+Ctrl+Space                       - Push the current state onto the undo stack
 
 Ctrl+A  - Autoscale the figure editor
 Ctrl+K  - Stop rendering
@@ -204,10 +206,10 @@ Ctrl+Q  - Quit
 
 When the triangle editor is focused the following keys are bound
 
-PageUp,   ; - Scale the scene in
-PageDown, : - Scale the scene out
+PageUp,   ;       - Scale the scene in
+PageDown, Shift+; - Scale the scene out
 
-Ctrl+LeftMouseButton - Create/disable the selection
+Ctrl+LeftMouseButton - Enable/disable the selection
 
 
 
