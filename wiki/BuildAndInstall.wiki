@@ -47,6 +47,72 @@ it points at the directory where flam3 installed this file.  Alternatively, you
 can use the environment variable 'flam3_palettes' to do this.  Type './qosmic
 --help' to see a list of supported environment variables.
 
+-----------------------------------------
+
+= Compiling from source on Ubuntu 9.04 =
+
+Use these steps to compile and install from the source on Ubuntu 9.04.  A similar set of
+steps can be taken for other versions of Ubuntu as well.
+
+1. Add the flam3 PPA to your list of repositories.
+
+{{{
+sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 'f191582f22b943d1029b2d5a91dae98f32ffb679'
+sudo echo "deb http://ppa.launchpad.net/flam3/ppa/ubuntu intrepid main" >> /etc/apt/sources.list 
+sudo apt-get update
+}}}
+
+
+2. Install development tools and libraries.
+
+{{{
+sudo apt-get install build-essential qt4-dev-tools liblua5.1-0-dev libpng12-dev libjpeg62-dev libxml2-dev flam3
+}}}
+
+
+3. Download and unpack the Qosmic source.  To configure, edit qosmic.pro, and adjust the {{{PKGCONFIG}}} variable to use lua5.1 by making the following change.
+
+{{{
+PKGCONFIG = flam3 lua5.1
+}}}
+
+
+4. To install a menu item in the applications menu, first add the following below {{{CONFIG += install_icons}}} in qosmic.pro.
+
+{{{
+CONFIG += install_desktop
+
+install_desktop {
+   desktop.files = qosmic.desktop
+   desktop.path  = $$SHARED/applications
+   INSTALLS += desktop
+}
+}}}
+
+
+Next save the following to a new file named {{{qosmic.desktop}}} in your top level qosmic source directory.
+
+{{{
+[Desktop Entry]
+Type=Application
+Name=Qosmic
+GenericName=Flam3 Fractal Editor
+Exec=qosmic
+Icon=qosmicicon
+Terminal=false
+Categories=Qt;KDE;Graphics;
+}}}
+
+5. Compile and install.
+
+{{{
+qmake && make && make install ;
+}}}
+
+6. Type {{{/usr/bin/qosmic}}} to run, or use the Applications->Graphics->Qosmic menu item.
+
+
+---------
 
 = FAQ =
 
