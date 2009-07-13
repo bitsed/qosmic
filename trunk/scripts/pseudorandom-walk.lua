@@ -1,45 +1,42 @@
+--
+-- Perform a random walk on the nodes of each non-symmetry transform.
+--
 PI=3.14159265434
 LENGTH_MULT=0.01
 
 g = frame:get_genome()
 
-n=10
-
 while true do
-	local name = "/tmp/flam3-img0" .. n .. ".png"
-	
 	for i = 0, g:num_xforms() - 1 do
 		local xf = g:get_xform(i)
 		if xf:symmetry() == 0.0 then
-			--xf:rotate(-4.0, 0, 0);
+			xf:rotate(-4.0, 0, 0);
 			local x, y
-			local a = math.random()
+			local a = math.random() * PI
 			local l = math.random() * LENGTH_MULT
-			dy = l*math.sin(a*PI)
-			dx = l*math.cos(a*PI)
+			dy = l*math.sin(a)
+			dx = l*math.cos(a)
 			x, y = xf:a()
 			x, y = x+dx, y+dy
 			xf:a(x, y)
 
-			a = math.random()
+			a = math.random() * PI
 			l = math.random() * LENGTH_MULT
-			dy = l*math.sin(a*PI)
-			dx = l*math.cos(a*PI)
+			dy = l*math.sin(a)
+			dx = l*math.cos(a)
 			x, y = xf:b()
 			x, y = x+dx, y+dy
 			xf:b(x, y)
 
-			a = math.random()
+			a = math.random() * PI
 			l = math.random() * LENGTH_MULT
-			dy = l*math.sin(a*PI)
-			dx = l*math.cos(a*PI)
+			dy = l*math.sin(a)
+			dx = l*math.cos(a)
 			x, y = xf:c()
 			x, y = x+dx, y+dy
 			xf:c(x, y)
 		end
 	end
- 	print("rendering " .. name)
-	frame:render() --0, name)
-	n = n+1
+	frame:render()
 end
 

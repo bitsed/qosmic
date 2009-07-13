@@ -1,3 +1,22 @@
+Version 1.4.5
+
+- Select and operate on either triangles or nodes with the selection.
+- Track the selection and the coordinate mark state in the undo stack.
+- Improved the coordinate mark icon.
+- Display lua script error messages in the ScriptEditWidget's status widget.
+- Cleanup any compiler wanings.
+- Added a .desktop file to the source archive, and improved package
+  configuration when building from source.
+- Patched for a locale related problem causing segfaults in libflam3.
+- Added localization support to remaining real value editor widgets.
+- Arbitrary precision support in real value editor widgets.
+- All value editor widgets save their precision and multiplier settings.
+- Improved the default layout and initial settings.
+- Added a modal progress dialog displayed when rendering an image to a file.
+- Fix an off-by-one bug in the PaletteEditor when parsing a .ugr palette.
+- Added an option to bind the MainViewer image settings to the Preview settings.
+
+
 Version 1.4.4
 
 - Fixed crash when opening mutations widget.
