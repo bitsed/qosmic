@@ -28,12 +28,12 @@ function init_xf(ga)
 		ga.color, ga.density = 0, 0
 		ga.default = true
 end
-	
-function interp_genomes_to(genomea, genomeb, genomec, t) 
+
+function interp_genomes_to(genomea, genomeb, genomec, t)
 	local ga, gb = {}, {}
 	ga.nxforms = genomea:num_xforms()
 	gb.nxforms = genomeb:num_xforms()
-	
+
 	for n = 0, (nxf - 1) do
 		init_xf(ga)
 		init_xf(gb)
@@ -42,9 +42,9 @@ function interp_genomes_to(genomea, genomeb, genomec, t)
 			ga.ax, ga.ay = xf:a()
 			ga.bx, ga.by = xf:b()
 			ga.cx, ga.cy = xf:c()
--- 			ga.apx, ga.apy = xf:ap()
--- 			ga.bpx, ga.bpy = xf:bp()
--- 			ga.cpx, ga.cpy = xf:cp()
+			ga.apx, ga.apy = xf:ap()
+			ga.bpx, ga.bpy = xf:bp()
+			ga.cpx, ga.cpy = xf:cp()
 			ga.density = xf:density()
 			ga.color = xf:color()
 			ga.default = false;
@@ -55,9 +55,9 @@ function interp_genomes_to(genomea, genomeb, genomec, t)
 			gb.ax, gb.ay = xf:a()
 			gb.bx, gb.by = xf:b()
 			gb.cx, gb.cy = xf:c()
--- 			gb.apx, gb.apy = xf:ap()
--- 			gb.bpx, gb.bpy = xf:bp()
--- 			gb.cpx, gb.cpy = xf:cp()
+			gb.apx, gb.apy = xf:ap()
+			gb.bpx, gb.bpy = xf:bp()
+			gb.cpx, gb.cpy = xf:cp()
 			gb.density = xf:density()
 			gb.color = xf:color()
 			gb.default = false;
@@ -74,16 +74,16 @@ function interp_genomes_to(genomea, genomeb, genomec, t)
 		x = ga.cx + t * (gb.cx - ga.cx)
 		y = ga.cy + t * (gb.cy - ga.cy)
 		xf:c(x, y)
--- 		x = ga.apx + t * (gb.apx - ga.apx)
--- 		y = ga.apy + t * (gb.apy - ga.apy)
--- 		xf:ap(x, y)
--- 		x = ga.bpx + t * (gb.bpx - ga.bpx)
--- 		y = ga.bpy + t * (gb.bpy - ga.bpy)
--- 		xf:bp(x, y)
--- 		x = ga.cpx + t * (gb.cpx - ga.cpx)
--- 		y = ga.cpy + t * (gb.cpy - ga.cpy)
--- 		xf:cp(x, y)
-		
+		x = ga.apx + t * (gb.apx - ga.apx)
+		y = ga.apy + t * (gb.apy - ga.apy)
+		xf:ap(x, y)
+		x = ga.bpx + t * (gb.bpx - ga.bpx)
+		y = ga.bpy + t * (gb.bpy - ga.bpy)
+		xf:bp(x, y)
+		x = ga.cpx + t * (gb.cpx - ga.cpx)
+		y = ga.cpy + t * (gb.cpy - ga.cpy)
+		xf:cp(x, y)
+
 		for j = 0, NUM_VARS do
 			local va, vb = 0, 0
 			if ga.default then
@@ -101,9 +101,9 @@ function interp_genomes_to(genomea, genomeb, genomec, t)
 
 		xf:color(ga.color + t *(gb.color - ga.color))
 		xf:density(ga.density + t *(gb.density - ga.density))
-		
+
 	end
-	
+
 	for k = 0, 255 do
 		local ar,ag,ab	 = genomea:palette(k)
 		local br,bg,bb	 = genomeb:palette(k)
@@ -112,14 +112,14 @@ function interp_genomes_to(genomea, genomeb, genomec, t)
 		local b = ab + t * (bb - ab)
 		genomec:palette(k, r, g, b)
 	end
-	
+
 	ga.x, ga.y = genomea:center()
 	gb.x, gb.y = genomeb:center()
 
 	local x = ga.x + t*(gb.x - ga.x)
 	local y = ga.y + t*(gb.y - ga.y)
 	genomec:center(x, y)
-	
+
 	ga.scale = genomea:scale()
 	gb.scale = genomeb:scale()
 	genomec:scale(ga.scale + t*(gb.scale -  ga.scale))
@@ -137,7 +137,7 @@ for n = A, B - 1 do
 	genomeB = frame:get_genome(n+1)
 	frame:copy_genome(n, C)
 	genomeC = frame:get_genome(C)
-	
+
 	local deg = -360. / ROT_STEPS
 	for k = 0, ROT_STEPS * ROT_LOOPS do
 		for i = 0, genomeC:num_xforms() - 1 do
@@ -148,7 +148,7 @@ for n = A, B - 1 do
 		end
 		frame:render(C)
 	end
-	
+
 	a_nxf = genomeA:num_xforms()
 	b_nxf = genomeB:num_xforms()
 	nxf = a_nxf
@@ -158,7 +158,7 @@ for n = A, B - 1 do
 	if nxf > a_nxf then
 		genomeC:add_xform(nxf - a_nxf)
 	end
-	
+
 	for i = 0, LIN_STEPS do
 		local t  = i / LIN_STEPS
 		interp_genomes_to(genomeA, genomeB, genomeC, t)

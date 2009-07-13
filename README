@@ -1,31 +1,33 @@
 ================================================================================
+Qosmic - A cosmic recursive flame fractal editor.               Version 1.4.5
+
+This software is licensed under the GPL.  You should have access to the source
+code; see http://www.fsf.org/licenses/gpl.html.
+
+This is free software to edit and render flam3 fractals as described on
+http://flam3.com.  The software links with and uses the flam3 libraries
+described there.  This software can be used to create content for the
+electricsheep screensaver as described on http://electricsheep.org.
+
+================================================================================
 
 Building
 
-Before building, you will need to have the following libraries installed on
-your system:
+Before building you will need to satisfy the library dependencies.
+Version 1.4.5 of the application is developed and tested using:
 
-Qt >=4.3.1      (http://www.trolltech.com/)
-liblua          (http://www.lua.org/)
-flam3 >= 2.7.17 (http://flam3.com/)
+Qt-4.5.1     (http://www.trolltech.com/)
+liblua-5.1.3 (http://www.lua.org/)
+flam3-2.7.18 (http://flam3.com/)
 
 flam3 dependencies:
-libxml2         (http://www.xmlsoft.org/)
-libjpeg         (http://www.ijg.org/)
-
-The current version of the application is developed using
-qt-x11-opensource-4.5, flam3-2.7.18, liblua-5.1.3, libxml2-2.7.3, and
-libjpeg-6b.
-
-The application is also reported to build using the qt-copy patches from the
-kdesvn server.
+libxml2-2.7.3 (http://www.xmlsoft.org/)
+libjpeg-6b    (http://www.ijg.org/)
 
 1. Download the source tar file using the link below, and unpack it.
 2. Change into the qosmic directory and type ./build.sh
 3. Type ./qosmic when the build process finishes.
 
-If you have problems, then read the section below about common problems
-building.
 ================================================================================
 
 Using the Editor
@@ -34,7 +36,7 @@ The best way to begin is by playing with it.  The interface is heavily mouse
 driven, and it relies on the mouse wheel for many controls.  If you've used
 Apophysis, then some things about the editor should seem familiar.  The main
 components consist of the triangle editor, the dock widgets, and the viewers.
-The triangle editor allows you to select and maniplate an xform element within
+The triangle editor allows you to select and manipulate an xform element within
 a genome.  The dock widgets contain control elements which can adjust some
 property of the current genome.  Some control elements are bound to properties
 of the currently selected triangle.  The viewers display the current flam3
@@ -85,7 +87,7 @@ immediately clicking undo will add the current state once.
 The figure editor and most of the widgets will also add states to the undo stack
 when you use them with the mouse.  In general, if you can change something by
 clicking and dragging it, then it can be undone.  Changes using the mouse wheel
-are't saved on the undo stack.
+aren't saved on the undo stack.
 
 An undo state is added at the current undo position, and higher positions are
 forgotten.  This means that if you click undo and hit control+spacebar, then you
@@ -106,11 +108,15 @@ Here are some more hints:
   changed using the mouse to clicking on the spinbox arrows and moving the mouse
   up and down.
 
-- When focused on a spin box, pressing return will update the preview using the
+- When focused on a spinbox, pressing Control+ will increase the number
+  of decimal places shown, and Control- will decrease the number to at least
+  one.
+
+- When focused on a spinbox, pressing return will update the preview using the
   current values.
 
 - The '\' key will globally disable automatic preview and viewer image updating
-  when changing a spin box value using the mouse wheel.
+  when changing a spinbox value using the mouse wheel.
 
 - If a png file having the same base name as a flam3 file exists in the same
   directory as the flam3 file, the directory browser will generate an icon
@@ -183,9 +189,6 @@ Here are some more hints:
 
 Keys
 
-There are a few key bindings used in different places.  Some of them don't have
-a clickable tool icon.
-
 The main window its dock widgets have the following bindings
 
 F1                               - Select the previous triangle
@@ -204,12 +207,24 @@ Ctrl+Q  - Quit
 
 
 
+The following keys are bound when focused on a spinbox
+
+[            - Increase the wheel or drag multiplier by ten
+]            - Decrease the wheel or drag multiplier by ten
+Ctrl+Shift+= - Increase the number of decimal places by one
+Ctrl+Shift+= - Decrease the number of decimal places by one
+Up           - Increase the value by the current multiplier
+Down         - Decrease the value by the current multiplier
+Return       - Update the preview
+
+
+
 When the triangle editor is focused the following keys are bound
 
-PageUp,   ;       - Scale the scene in
-PageDown, Shift+; - Scale the scene out
-
-Ctrl+LeftMouseButton - Enable/disable the selection
+PageUp,   ;                 - Scale the scene in
+PageDown, Shift+;           - Scale the scene out
+Ctrl+LeftMouseButton+Drag   - Enable the selection
+Ctrl+LeftMouseButton+NoDrag - Disable the selection
 
 
 
@@ -230,57 +245,11 @@ Ctrl+1               - Open a script file
 Ctrl+2               - Save the current script
 Ctrl+3               - Save the script with a new name
 Ctrl+4, Ctrl+L       - Comment a single line or selection
-Ctrl+$, Ctrl+Shift+L - Un-comment a single line or selection
+Ctrl+$, Ctrl+Shift+L - Uncomment a single line or selection
 Tab                  - Indent the selection, otherwise tab
-Ctrl+Tab             - Un-indent the selection, otherwise tab
+Ctrl+Tab             - Unindent the selection, otherwise tab
 Ctrl+Return          - Run the current script
-================================================================================
 
-Common problems while building/running
-
-
-All of the building controls are contained in qosmic.pro.  To resolve a compile
-error you should only need to edit qosmic.pro and run 'qmake && make' (assuming
-that all of the required libraries are installed).
-
-The qosmic.pro file is setup to use pkg-config by default.  If you don't have
-pkg-config, or if it doesn't work on your system, then you'll need to edit the
-qosmic.pro file to set the required library and include paths.  There are some
-lines in the file that should need only some minor path changes for this to set
-these for your system.
-
-Many linux packaging systems will store the header files for libraries in
-another package which are 'dev' packages (ie qt-4.3.1-dev.rpm).  These header
-files are needed to build qosmic, so make sure the dev packages for the
-libraries listed above are installed if they exist.
-
-When using Debian Sid one must manually link qmake correctly against qmake-qt4
-before compiling.  This may be a problem on other systems as well, so make sure
-the qmake in your path is the one installed by Qt4.  You can run the following
-command to relink qmake on Debian Sid before running build.sh.
-
-$ sudo update-alternatives --config qmake
-
-
-For the Lua dependency it may be necessary to adjust the include list in
-qosmic.pro so the liblua header files can be found.  You may need to add
-/usr/include/lua5.1 to the INCLUDEPATH variable.  You may also need to change
--llua in the LIBS variable to -llua5.1 and/or add the path of the library file
-to the LIBS variable using the '-L/path/to liblua.so/' option depending on how
-your distribution installed Lua.
-
-Setting the system specific locations of libraries and their header files can be
-a problem with any of the required dependencies.  The instructions for finding
-the Lua libraries can also be used to find any other library's install points
-(ie flam3).  Looking in qosmic.pro you'll notice that the INCLUDEPATH lists
-/usr/include/libxml2 which is where the libxml2 header files are located on my
-system.
-
-If you see an error about qosmic being unable to find the flam3-palettes.xml
-file, then you need to adjust the FLAM3_PALETTES variable in qosmic.pro so that
-it points at the directory where flam3 installed this file.  Alternatively, you
-can use the environment variable 'flam3_palettes' to do this.  Type './qosmic
---help' to see a list of supported environment variables.
 ================================================================================
 
 Thanks to:
