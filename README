@@ -1,5 +1,5 @@
 ================================================================================
-Qosmic - A cosmic recursive flame fractal editor.               Version 1.4.5
+Qosmic - A cosmic recursive flame fractal editor.
 
 This software is licensed under the GPL.  You should have access to the source
 code; see http://www.fsf.org/licenses/gpl.html.
@@ -14,15 +14,15 @@ electricsheep screensaver as described on http://electricsheep.org.
 Building
 
 Before building you will need to satisfy the library dependencies.
-Version 1.4.5 of the application is developed and tested using:
+Version 1.4.7 of the application was developed and tested using:
 
-Qt-4.5.1     (http://www.trolltech.com/)
-liblua-5.1.3 (http://www.lua.org/)
+Qt-4.5.3     (http://www.trolltech.com/)
+liblua-5.1.4 (http://www.lua.org/)
 flam3-2.7.18 (http://flam3.com/)
 
 flam3 dependencies:
 libxml2-2.7.3 (http://www.xmlsoft.org/)
-libjpeg-6b    (http://www.ijg.org/)
+libjpeg-7    (http://www.ijg.org/)
 
 1. Download the source tar file using the link below, and unpack it.
 2. Change into the qosmic directory and type ./build.sh
@@ -73,7 +73,8 @@ There is a selection box in the editor.  By clicking in the editor with the
 control key held and dragging the mouse you can select a subset of triangles.
 When the selection is active all transformations are performed on the selection
 and its triangles.  Hold the control key and single click in the editor without
-moving the mouse to disable the selection.
+moving the mouse to disable the selection.  Holding the shift key while
+selecting triangles or nodes will add them to the selection.
 
 
 Undo/Redo:
@@ -81,12 +82,12 @@ Undo/Redo:
 There is a fifty level undo feature.  The current state can be added to the list
 of undo states by either clicking undo, or by pressing the control+spacebar.
 When a flam3 file is loaded the list is cleared, and a new state is
-automatically added to the top of the stack.  Pressing the control+spacebar and
-immediately clicking undo will add the current state once.
+automatically added to the head of the ring.
 
-The figure editor and most of the widgets will also add states to the undo stack
+The figure editor and most of the widgets will also add states to the undo ring
 when you use them with the mouse.  In general, if you can change something by
-clicking and dragging it, then it can be undone.  Changes using the mouse wheel
+clicking and dragging it, then it can be undone.  The undo state is typically
+added when the mouse button is released.  Changes using the mouse wheel
 aren't saved on the undo stack.
 
 An undo state is added at the current undo position, and higher positions are
@@ -146,9 +147,9 @@ Here are some more hints:
 - Using the mouse wheel while over the basis triangle will scale the editor
   view. Holding shift will scale less.
 
-- Use the middle mouse button to place the rotate/scale origin marker.  The
-  marker can be enabled in the by selecting 'mark' in the 'Center On' group of
-  the 'Edit Triangle' window.
+- Hold the shift key and use the middle mouse button to place the rotate/scale
+  origin marker.  The  marker can be enabled in the by selecting 'mark' in the
+  'Center On' group of the 'Edit Triangle' window.
 
 - Closing the preview, viewer, and mutations windows will prevent them from
   updating.
@@ -177,14 +178,14 @@ Here are some more hints:
 
 - Use the selection to simultaneously move and edit multiple triangles.
 
-- Use the genomes widget to view the current set and to select the current genome.
-  There is always at least one genome in the set, and you can add a genome by
-  importing it.
+- Use the genomes widget to view the current set and to select the current
+  genome.  There is always at least one genome in the set, and you can add a
+  genome by importing it.
 
 - The density widget can be used to merge two different genomes in the current
   genome set.  Use the star button in the density widget to apply the density
-  settings of the second genome.  Triangles is the second genome having a density
-  of zero are not included when density settings are applied.
+  settings of the second genome.  Triangles is the second genome having a
+  density of zero are not included when density settings are applied.
 ================================================================================
 
 Keys
@@ -195,6 +196,8 @@ F1                               - Select the previous triangle
 F2                               - Select the next triangle
 F3, Ctrl+Z,       Ctrl+;         - Undo
 F4, Shift+Ctrl+Z, Shift+Ctrl+;   - Redo
+;, Z                             - Scale the triangle editor scene in
+Shift+;, Shift+Z                 - Scale the triangle editor scene out
 Ctrl+Space                       - Push the current state onto the undo stack
 
 Ctrl+A  - Autoscale the figure editor
@@ -202,7 +205,9 @@ Ctrl+K  - Stop rendering
 Ctrl+R  - Create a random genome
 Ctrl+N  - Create a new default flame
 Ctrl+O  - Open a flam3 file
-Ctrl+S  - Save the current flam3 file
+Ctrl+S  - Save the current flame to a flam3 file
+Ctrl+I  - Save an image of the current flame
+Ctrl+P  - Quicksave the current flame and an image
 Ctrl+Q  - Quit
 
 
@@ -212,7 +217,7 @@ The following keys are bound when focused on a spinbox
 [            - Increase the wheel or drag multiplier by ten
 ]            - Decrease the wheel or drag multiplier by ten
 Ctrl+Shift+= - Increase the number of decimal places by one
-Ctrl+Shift+= - Decrease the number of decimal places by one
+Ctrl+-       - Decrease the number of decimal places by one
 Up           - Increase the value by the current multiplier
 Down         - Decrease the value by the current multiplier
 Return       - Update the preview
@@ -221,10 +226,12 @@ Return       - Update the preview
 
 When the triangle editor is focused the following keys are bound
 
-PageUp,   ;                 - Scale the scene in
-PageDown, Shift+;           - Scale the scene out
 Ctrl+LeftMouseButton+Drag   - Enable the selection
 Ctrl+LeftMouseButton+NoDrag - Disable the selection
+
+MiddleMouseButton+Drag      - Scroll the editor scene
+Ctrl+MiddleMouseButton+Drag - Zoom the editor scene in/out
+Shift+MiddleMouseButton     - Place the coordinate mark if visible
 
 
 
