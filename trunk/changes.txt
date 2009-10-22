@@ -1,3 +1,24 @@
+Version 1.4.7
+
+- Add global key bindings for scene scaling, image saving, and quicksave.
+- Adjust triangle painter brushes when rescaling.
+- Add an undo state when a script finishes.
+- Bind shift+button to add triangles or nodes to the selection.
+- Add an undo state when setting a triangle's coords to defaults.
+- Bind the middle mouse button to scroll the figure editor scene.
+- Bind control+middlebutton to scale the figure editor scene.
+- Rebind the coordinate mark placement to shift+middlebutton.
+- Correctly scale the selection and coordinate mark when restoring undo states.
+- Use a treeview in variations widget to display variations and their variables.
+- Added a simple gradient editor to the palette widget.
+- Improved ggr and cpt gradient file parsing.
+- Added some edge "buttons" to the triangles that initiate scaling and rotation.
+- Fix the broken control+space key binding in mainwindow.
+- Added a clipboard to cut, copy, and paste triangles.
+- Track undo/redo states for individual genomes.
+- Draw the HSV selector in colordialog using the current value.
+
+
 Version 1.4.6
 
 - Fixed an initialization bug to ensure the basis triangle is redrawn when
