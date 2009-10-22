@@ -77,7 +77,7 @@ PKGCONFIG = flam3 lua5.1
 }}}
 
 
-4. To install a menu item in the applications menu, first add the following below {{{CONFIG += install_icons}}} in qosmic.pro.
+4. Versions earlier than 1.4.6 don't include a qosmic.desktop file.  To install a menu item in the applications menu for earlier versions, first add the following below {{{CONFIG += install_icons}}} in qosmic.pro.
 
 {{{
 CONFIG += install_desktop
