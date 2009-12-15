@@ -13,10 +13,12 @@ electricsheep screensaver as described on http://electricsheep.org.
 
 Building
 
-Before building you will need to satisfy the library dependencies.
-Version 1.4.7 of the application was developed and tested using:
+Before building you will need to satisfy the library dependencies.  Currently,
+version 1.4.8 of the application is compatible with versions of Qt4 >= 4.5 and
+of Lua >= 5.1.  Versions of flam3 >= 2.8 are not compatible with this version
+of the application.  Version 1.4.8 of Qosmic was developed and tested using:
 
-Qt-4.5.3     (http://www.trolltech.com/)
+Qt-4.6.0     (http://www.trolltech.com/)
 liblua-5.1.4 (http://www.lua.org/)
 flam3-2.7.18 (http://flam3.com/)
 
@@ -24,9 +26,10 @@ flam3 dependencies:
 libxml2-2.7.3 (http://www.xmlsoft.org/)
 libjpeg-7    (http://www.ijg.org/)
 
-1. Download the source tar file using the link below, and unpack it.
-2. Change into the qosmic directory and type ./build.sh
-3. Type ./qosmic when the build process finishes.
+1. Download and unpack the source archive, and cd into the source directory.
+2. Edit qosmic.pro to configure the qmake build system to suit your environment.
+3. Run the ./build.sh script
+4. Run ./qosmic when the build finishes.
 
 ================================================================================
 
@@ -63,8 +66,10 @@ viewer can be set by using the mouse button bound to the popup menu here as
 well.
 
 The third viewer is the one displayed when using the directory browser to view
-flam3 image files by right clicking on the file.  The key bindings here are the
-same as for the main viewer.
+flam3 image (png) files by right clicking on the file.  If you right click on a
+flam3 file the directory browser will try to load a png image having the same
+name as the flam3 file.  The key bindings for this viewer are the same as
+for the main viewer.
 
 
 Selection:
@@ -102,6 +107,11 @@ Here are some more hints:
 - Use lower quality settings until you get the image you want, then render your
   final image using higher quality settings if necessary.
 
+- Use scale and quality instead of zoom to gain more control over image quality
+  and rendering times.  Zoom changes both of these values at the same time.
+  The flam3 developers suggest leaving zoom at zero since the electricsheep
+  server will convert any sheep submitted to have a zoom of zero.
+
 - The mouse wheel can be used to modify the real editable values in the spin
   box control elements and also in the variations table.  Holding shift scales
   by 1/10, and holding control scales by 10.  The '[' and ']' keys will multiply
@@ -130,9 +140,15 @@ Here are some more hints:
   flam3 files.
 
 - Using the right mouse button in the directory browser displays the image for
-  a flam3 file if one exists.  The middle mouse button refreshes the listing.
+  a flam3 file if one exists.  The middle mouse button toggles hidden files.
   The left mouse button loads the selected flam3 file, and holding the control
   key will append the genomes in selected flam3 file to the current set.
+  Holding the control key while using the mouse wheel will change the size of
+  any flam3 file icons displayed.
+
+- Holding the control key while using the mouse wheel will also change the size
+  of the previews displayed in the genomes widgets.  Holding control+shift will
+  change only the width of the previews.
 
 - Add, duplicate, and remove triangles using the menu shown by holding the right
   mouse button in the editor.  You can select a triangle by positioning the
@@ -190,7 +206,7 @@ Here are some more hints:
 
 Keys
 
-The main window its dock widgets have the following bindings
+The main window and its dock widgets have the following bindings
 
 F1                               - Select the previous triangle
 F2                               - Select the next triangle

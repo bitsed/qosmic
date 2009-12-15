@@ -1,3 +1,21 @@
+
+Version 1.4.8
+
+- Compatibility updates for Qt 4.6.
+- Improved mouse control when zooming the triangle scene.
+- Fix the colordialog HSV selector to display the full hue range.
+- Check that libflam3 has version <2.8 in the build setup.
+- Added controls and lua scripting support to modify the a genome's time,
+  interpolation, and interpolation_type attributes.
+- Fix an invalid directory problem with the directory browser.
+- Bind the control key to increase the step value on valueeditor wheel events.
+- Fix the post-xform scale, rotate, and shear methods in the script environment
+  to use post-xform coordinates.
+- Fix an edge detection bug when selecting and immediately moving a triangle.
+- Move the post triangle to the front when enabled.
+- Bind control+wheel to change the icon size in the Browse and Genomes widgets.
+
+
 Version 1.4.7
 
 - Add global key bindings for scene scaling, image saving, and quicksave.
