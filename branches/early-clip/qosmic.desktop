@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Qosmic
+GenericName=Flam3 Fractal Editor
+Comment=A cosmic recursive flame fractal editor written in Qt
+Exec=qosmic
+Icon=qosmicicon
+Terminal=false
+Categories=Qt;KDE;Graphics;

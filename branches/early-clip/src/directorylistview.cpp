@@ -1,0 +1,112 @@
+/***************************************************************************
+ *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   dbitsef@zipcon.net                                                    *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include <QFileSystemModel>
+
+#include "directorylistview.h"
+#include "logger.h"
+
+DirectoryListView::DirectoryListView(QWidget* parent)
+	: QListView(parent), viewer(0), viewerSize(320,200), toggle(true)
+{
+}
+
+DirectoryListView::~DirectoryListView()
+{
+	if (viewer) delete viewer;
+}
+
+void DirectoryListView::mousePressEvent(QMouseEvent* event)
+{
+	if (event->button() == Qt::RightButton)
+	{
+		QModelIndex idx = indexAt(event->pos());
+		if (idx.isValid())
+		{
+			QFileSystemModel* m = qobject_cast<QFileSystemModel*>(model());
+			QFileInfo file( m->fileInfo(idx) );
+			if (file.isFile())
+			{
+				QString s( file.absoluteFilePath() );
+				s.replace(QRegExp("flam(3|e)?$"), "png");
+				logFine(QString("DirectoryListView::mousePressEvent : showing %1").arg(s));
+				viewerImage = QImage(s);
+				if (viewerImage.isNull())
+					logWarn(QString("DirectoryListView::mousePressEvent : null image %1").arg(s));
+				else
+					if (!viewer)
+					{
+						viewer = new MainViewer(0, "FileViewer");
+						connect(viewer, SIGNAL(viewerResized(const QSize&)),
+								this, SLOT(viewerResizedAction(const QSize&)));
+						viewer->setPixmap(QPixmap::fromImage(viewerImage),false);
+						viewer->show();
+						viewer->raise();
+						viewer->scaleResetAction();
+					}
+					else
+					{
+						viewer->setPixmap(QPixmap::fromImage(viewerImage),false);
+						viewer->show();
+						viewer->raise();
+					}
+			}
+		}
+	}
+	else if (event->button() == Qt::MidButton)
+	{
+		// toggle showing hidden files in the model
+		QFileSystemModel* fsm = qobject_cast<QFileSystemModel*>(model());
+		if (fsm->filter() & QDir::Hidden)
+			fsm->setFilter( QDir::AllEntries | QDir::AllDirs );
+		else
+			fsm->setFilter( QDir::AllEntries | QDir::AllDirs | QDir::Hidden );
+	}
+	else
+		QListView::mousePressEvent(event);
+}
+
+void DirectoryListView::wheelEvent(QWheelEvent* e)
+{
+	if (e->modifiers() & Qt::ControlModifier)
+	{
+		QSize s(iconSize());
+		int dx( 8 * ( e->delta() > 0 ? 1 : -1 ) );
+		if (s.width() < 9 && dx < 0)
+			return;
+		s += QSize( dx, dx );
+		logInfo(QString("DirectoryListView::setting icon size : dx %1").arg(s.width()));
+		setIconSize(s);
+	}
+	else
+		QListView::wheelEvent(e);
+}
+
+void DirectoryListView::hideEvent(QHideEvent* e)
+{
+	if (viewer)
+		viewer->hide();
+	QListView::hideEvent(e);
+}
+
+void DirectoryListView::viewerResizedAction(const QSize& /*s*/)
+{
+	if (viewer->isVisible())
+		viewer->rescalePixmap();
+}
