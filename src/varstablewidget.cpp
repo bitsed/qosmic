@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -25,6 +25,7 @@
 #include "flam3util.h"
 #include "logger.h"
 
+
 VarsTableWidget::VarsTableWidget(QWidget* parent)
 	: QTreeView(parent)
 {
@@ -37,6 +38,43 @@ VarsTableWidget::VarsTableWidget(QWidget* parent)
 	setAutoScroll(false);
 	header()->setStretchLastSection(true);
 	header()->setMovable(false);
+}
+
+void VarsTableWidget::dataChanged(const QModelIndex& top, const QModelIndex& bottom)
+{
+	QTreeView::dataChanged(top, bottom);
+	showHideNullRows();
+}
+
+void VarsTableWidget::showHideNullRows()
+{
+	int rows = model()->rowCount();
+	QModelIndex idx(currentIndex());
+
+	// only show/hide children of rootItem
+	if (idx.parent().internalId() != model()->index(0,0).parent().internalId())
+		idx = idx.parent();
+
+	for (int n = 0 ; n < rows ; n++)
+	{
+		QModelIndex vidx = model()->index(n, 1);
+		if (vidx.data(0).toDouble() == 0.0)
+		{
+			if (n == idx.row())
+			{
+				if (hasFocus())
+					setRowHidden(n, vidx.parent(), false);
+				else
+					setRowHidden(n, vidx.parent(), true);
+			}
+			else
+				setRowHidden(n, vidx.parent(), true);
+		}
+		else
+			setRowHidden(n, vidx.parent(), false);
+
+		setExpanded(model()->index(n, 0), true);
+	}
 }
 
 void VarsTableWidget::restoreSettings()
@@ -186,20 +224,23 @@ void VarsTableWidget::setPrecision(int n)
 void VarsTableWidget::commitData(QWidget* editor)
 {
 	QModelIndex idx(currentIndex());
-	bool ok;
-	double current_value(idx.data().toDouble());
-	double editor_value(qobject_cast<QLineEdit*>(editor)->text().toDouble(&ok));
-	if (ok && current_value != editor_value)
+	if (idx.column() == 1)
 	{
-		if (editor_value == 0.0)
-			model()->setData(idx, editor_value);
-		else
-			model()->setData(idx, QLocale().toString(editor_value, 'f', vars_precision));
+		bool ok;
+		double current_value(idx.data().toDouble());
+		double editor_value(qobject_cast<QLineEdit*>(editor)->text().toDouble(&ok));
+		if (ok && current_value != editor_value)
+		{
+			if (editor_value == 0.0)
+				model()->setData(idx, editor_value);
+			else
+				model()->setData(idx, QLocale().toString(editor_value, 'f', vars_precision));
 
-		if (idx.parent().isValid())
-			emit valueUpdated(idx.parent().row());
-		else
-			emit valueUpdated(idx.row());
+			if (idx.parent().isValid())
+				emit valueUpdated(idx.parent().row());
+			else
+				emit valueUpdated(idx.row());
+		}
 	}
 }
 
@@ -265,22 +306,23 @@ VarsTableItem* VarsTableItem::parent()
 	return parentItem;
 }
 
+
+// -----------------------------------------------------------------------------
+
 VarsTableModel::VarsTableModel(QObject* parent) : QAbstractItemModel(parent),
-	activeColor(QColor(200,230,240)),
-	inactiveColor(Qt::white)
+	decimals(2), activeColor(QColor(200,230,240)), inactiveColor(Qt::white)
 {
 	QList<QVariant> itemData;
 	itemData << "Variation" << "Value";
 	rootItem = new VarsTableItem(itemData);
-	const QStringList vars(Util::flam3_variations().keys());
 
-	// variables table setup
-	QHash<QString, QStringList*> variablesMap;
+	// variables map setup
+	QMap<QString, QStringList*> variablesMap;
 	foreach (QString variable, Util::get_variable_names())
 	{
 		int pos( variable.lastIndexOf(QChar('_')) );
 		QString variation( variable.left(pos) );
-		logFine(QString("VarsTableModel::VarsTableModel : adding %1 variable %2")
+		logFine(QString("VarsTableModel::VarsTableModel : adding %1 variables map %2")
 			.arg(variation).arg(variable));
 		if (!variablesMap.contains(variation))
 		{
@@ -290,7 +332,7 @@ VarsTableModel::VarsTableModel(QObject* parent) : QAbstractItemModel(parent),
 		variablesMap.value(variation)->append( variable );
 	}
 
-	foreach (QString variation, vars)
+	foreach (QString variation, Util::variation_names())
 	{
 		itemData.clear();
 		itemData << variation << "0.0";
@@ -304,6 +346,7 @@ VarsTableModel::VarsTableModel(QObject* parent) : QAbstractItemModel(parent),
 				VarsTableItem* variableItem = new VarsTableItem(itemData, item);
 				item->appendChild(variableItem);
 			}
+		variationItems.insert(variation, item);
 	}
 
 	qDeleteAll(variablesMap);
@@ -382,12 +425,22 @@ bool VarsTableModel::setData(const QModelIndex& index, const QVariant& value, in
 	if (role != Qt::EditRole)
 		return false;
 
-	VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
-	if (item->setData(index.column(), value))
+	logFine(QString("VarsTableModel::setData : (%1,%2) %3").arg(index.row()).arg(index.column()).arg(value.toString()));
+	if (index.column() == 1)
 	{
-		emit dataChanged(index.parent(), index);
-		return true;
+		VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
+		if (item->setData(index.column(), value))
+		{
+			if (item->parent() == rootItem)
+				xform->var[index.row()] = value.toDouble();
+			else
+				Util::set_xform_variable(xform, item->data(0).toString(), value.toDouble());
+
+			emit dataChanged(index, index);
+			return true;
+		}
 	}
+
 	return false;
 }
 
@@ -461,4 +514,52 @@ VarsTableItem* VarsTableModel::getItem(const QModelIndex& index) const
 		return rootItem;
 
 	return static_cast<VarsTableItem*>(index.internalPointer());
+}
+
+void VarsTableModel::updateVarsTableItem(VarsTableItem* item, double value)
+{
+	QLocale l;
+	if (value == 0.0)
+		item->setData(1, 0);
+	else
+		item->setData(1, l.toString(value, 'f', decimals));
+	int children = item->childCount();
+	if (children > 0)
+		for (int n = 0 ; n < children ; n++)
+		{
+			VarsTableItem* child = item->child(n);
+			double value = Util::get_xform_variable(xform, child->data(0).toString());
+			if (value == 0.0)
+				child->setData(1, 0);
+			else
+				child->setData(1, l.toString(value, 'f', decimals));
+		}
+}
+
+void VarsTableModel::setModelData(flam3_xform* xf)
+{
+	xform = xf;
+	double* var = xform->var;
+
+	for (int n = 0 ; n < flam3_nvariations ; n++)
+	{
+		double value = var[n];
+		QString name(flam3_variation_names[n]);
+		VarsTableItem* item = variationItems.value( name );
+		updateVarsTableItem(item, value);
+	}
+	emit dataChanged(index(0,0), index(flam3_nvariations - 1, 1));
+}
+
+int VarsTableModel::precision() const
+{
+	return decimals;
+}
+
+void VarsTableModel::setPrecision(int n)
+{
+	if (decimals != n)
+	{
+		decimals = qMax(1, n);
+	}
 }

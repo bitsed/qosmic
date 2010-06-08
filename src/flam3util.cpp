@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -28,7 +28,7 @@ namespace Util
 {
 
 	static QMap<QString, int> variations;
-
+	static QStringList variationNames;
 
 	const QMap<QString, int>& flam3_variations()
 	{
@@ -36,6 +36,14 @@ namespace Util
 			for (int n = 0 ; n < flam3_nvariations ; n++)
 				variations.insert(flam3_variation_names[n], n);
 		return variations;
+	}
+
+	const QStringList& variation_names()
+	{
+		if (variationNames.isEmpty())
+			for (int n = 0 ; n < flam3_nvariations ; n++)
+				variationNames.append(flam3_variation_names[n]);
+			return variationNames;
 	}
 
 	int variation_number(const char* var)

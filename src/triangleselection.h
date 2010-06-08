@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -58,6 +58,7 @@ class TriangleSelection : public QGraphicsPolygonItem
 		void addItem(QGraphicsItem*);
 		QList<QGraphicsItem*> allItems() const;
 		bool contains(QGraphicsItem* item) const;
+		void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget =0);
 
 		static const int RTTI = 2020202;
 };

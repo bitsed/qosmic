@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -258,4 +258,9 @@ QList<QGraphicsItem*> TriangleSelection::allItems() const
 BasisTriangle* TriangleSelection::basis() const
 {
 	return m_basis;
+}
+
+void TriangleSelection::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+{
+	QGraphicsPolygonItem::paint(painter, option, widget);
 }

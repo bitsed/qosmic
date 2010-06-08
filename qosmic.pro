@@ -31,11 +31,6 @@ DESKDIR = $$SHARED/applications
 
 
 ################################################################################
-## Default number of pthreads to use in libflam3.
-THREADS = 2
-
-
-################################################################################
 ## Uncomment to install the qosmic.desktop file and the application icons.
 CONFIG += install_icons install_desktop
 
@@ -110,7 +105,6 @@ link_pkgconfig {
 }
 
 ################################################################################
-DEFINES += NTHREADS=$$THREADS
 DEFINES += VERSION='\'"$$VERSION"\''
 DEFINES += FLAM3DIR='\'"$$PALETTESDIR"\''
 DEFINES += TRANSDIR='\'"$$TRANSDIR"\''
@@ -179,11 +173,14 @@ FORMS += \
  ui/scripteditwidget.ui \
  ui/colordialog.ui \
  ui/selectgenomewidget.ui \
+ ui/genomevectorlistmodelitemeditor.ui \
+ ui/selectgenomeconfigdialog.ui \
  ui/viewerpresetswidget.ui \
  ui/selecttrianglewidget.ui \
  ui/renderdialog.ui \
  ui/renderprogressdialog.ui \
  ui/adjustscenewidget.ui \
+ ui/editmodeselectorwidget.ui \
  ui/chaoswidget.ui
 
 HEADERS += \
@@ -230,6 +227,7 @@ HEADERS += \
  src/lua/luathread.h \
  src/colordialog.h \
  src/selectgenomewidget.h \
+ src/viewerpresetsmodel.h \
  src/viewerpresetswidget.h \
  src/coordinatemark.h \
  src/lua/luathreadadapter.h \
@@ -246,6 +244,8 @@ HEADERS += \
  src/renderprogressdialog.h \
  src/adjustscenewidget.h \
  src/gradientstopseditor.h \
+ src/editmodeselectorwidget.h \
+ src/genomevectorlistview.h \
  src/chaoswidget.h
 
 SOURCES += \
@@ -291,6 +291,7 @@ SOURCES += \
  src/colordialog.cpp \
  src/selectgenomewidget.cpp \
  src/genomevector.cpp \
+ src/viewerpresetsmodel.cpp \
  src/viewerpresetswidget.cpp \
  src/coordinatemark.cpp \
  src/lua/luathreadadapter.cpp \
@@ -307,6 +308,8 @@ SOURCES += \
  src/renderprogressdialog.cpp \
  src/adjustscenewidget.cpp \
  src/gradientstopseditor.cpp \
+ src/editmodeselectorwidget.cpp \
+ src/genomevectorlistview.cpp \
  src/chaoswidget.cpp
 
 TRANSLATIONS = ts/qosmic_fr.ts

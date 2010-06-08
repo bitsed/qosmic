@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007 by David Bitseff                                   *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
 			.arg(Logger::getInstance()->level())
 			.arg(QString(getenv("flam3_verbose")).toInt())
 			.arg(QString(getenv("flam3_nthreads")).toInt() > 0 ?
-				QString(getenv("flam3_nthreads")).toInt() : NTHREADS)
+				QString(getenv("flam3_nthreads")).toInt() : flam3_count_nthreads())
 			.arg(getenv("flam3_palettes"))
 			<< endl;
 		return 0;

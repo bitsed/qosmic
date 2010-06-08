@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2009 by David Bitseff                                   *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,13 +21,10 @@
 #ifndef ADJUSTSCENEWIDGET_H
 #define ADJUSTSCENEWIDGET_H
 
-
 #include "ui_adjustscenewidget.h"
-#include "qosmicwidget.h"
 #include "xfedit.h"
 
-class AdjustSceneWidget : public QWidget, public QosmicWidget,
-	private Ui::AdjustSceneWidget
+class AdjustSceneWidget : public QDialog, private Ui::AdjustSceneWidget
 {
 	Q_OBJECT
 
@@ -35,11 +32,13 @@ class AdjustSceneWidget : public QWidget, public QosmicWidget,
 		AdjustSceneWidget(FigureEditor*, QWidget* parent=0);
 
 	protected slots:
-		void sceneScaledAction();
 		void toggleGridAction(bool);
 		void gridColorSelectAction();
+		void toggleGuideAction(bool);
+		void guideColorSelectAction();
 		void bgColorSelectAction();
-		void sceneCenterOnAction(bool);
+		void togglePreviewAction(bool);
+		void previewUpdatedAction();
 
 	private:
 		FigureEditor* editor;

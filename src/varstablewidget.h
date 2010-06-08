@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,6 +23,8 @@
 #include <QAbstractItemModel>
 #include <QTreeView>
 #include <QMouseEvent>
+
+#include "flam3util.h"
 
 class VarsTableItem
 {
@@ -48,9 +50,11 @@ class VarsTableModel : public QAbstractItemModel
 	Q_OBJECT
 
 	VarsTableItem* rootItem;
-
+	flam3_xform* xform;
+	int decimals;
 	const QBrush activeColor;
 	const QBrush inactiveColor;
+	QMap<QString, VarsTableItem*> variationItems;
 
 	public:
 		VarsTableModel(QObject* parent=0);
@@ -66,7 +70,14 @@ class VarsTableModel : public QAbstractItemModel
 		QVariant headerData(int, Qt::Orientation, int =Qt::DisplayRole) const;
 		VarsTableItem* getVariation(int row) const;
 		VarsTableItem* getItem(const QModelIndex&) const;
+		int precision() const;
+		void setPrecision(int);
+		void setModelData(flam3_xform*);
+
+	private:
+		void updateVarsTableItem(VarsTableItem*, double);
 };
+
 
 class VarsTableWidget : public QTreeView
 {
@@ -88,9 +99,11 @@ class VarsTableWidget : public QTreeView
 		void mouseMoveEvent(QMouseEvent*);
 		void mouseReleaseEvent(QMouseEvent*);
 		void keyPressEvent(QKeyEvent*);
+		void showHideNullRows();
 
 	protected slots:
 		void commitData(QWidget*);
+		void dataChanged(const QModelIndex&, const QModelIndex&);
 
 	private:
 		double step;

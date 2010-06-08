@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,30 +18,29 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #ifndef VIEWERPRESETSWIDGET_H
-#define VIEWERRESETSWIDGET_H
-
-#include <QMap>
-#include <QListWidgetItem>
+#define VIEWERPRESETSWIDGET_H
 
 #include "ui_viewerpresetswidget.h"
+
 #include "genomevector.h"
 #include "qosmicwidget.h"
+#include "viewerpresetsmodel.h"
 
-class ViewerPresetsWidget
-	: public QWidget, public QosmicWidget, private Ui::ViewerPresetsWidget
+class ViewerPresetsWidget : public QWidget, public QosmicWidget,
+	private Ui::ViewerPresetsWidget
 {
 	Q_OBJECT
 
 	GenomeVector* genomes;
-	QMap<QString, flam3_genome> presets;
+	ViewerPresetsModel* model;
 
 	public:
 		ViewerPresetsWidget(GenomeVector*, QWidget* =0);
 		QStringList presetNames();
 		QString current();
-		void selectedPreset(QString);
-		void applyPreset(QString, flam3_genome*);
-		flam3_genome preset(QString);
+		void selectPreset(const QString&);
+		void selectPreset(int);
+		int selectedIndex() const;
 		void reset();
 
 	public slots:
@@ -50,16 +49,12 @@ class ViewerPresetsWidget
 		void updatePresetSlot();
 		void moveUpSlot();
 		void moveDownSlot();
-		void presetSelectedSlot(QListWidgetItem*);
-		void presetDoubleClickedSlot(QListWidgetItem*);
+		void presetSelectedSlot(const QModelIndex&);
 
 	signals:
+		void presetSelected();
 		void dataChanged();
 
-	protected:
-		void loadPresets();
-		void savePresets();
-		void loadDefaultPresets();
 };
 
 #endif

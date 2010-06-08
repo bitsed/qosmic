@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -143,7 +143,7 @@ UndoState& UndoState::operator=(const UndoState& in)
 
 void UndoState::clear()
 {
-	clear_cp(&Genome, 0);
+	clear_cp(&Genome, flam3_defaults_on);
 	SelectionRect = QPolygonF();
 	MarkPos = QPointF();
 	NodesO.clear();

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -46,12 +46,13 @@
 #include "statuswidget.h"
 #include "scripteditwidget.h"
 #include "selectgenomewidget.h"
-#include "viewerpresetswidget.h"
+#include "viewerpresetsmodel.h"
 #include "selecttrianglewidget.h"
 #include "coordinatemark.h"
 #include "renderdialog.h"
 #include "renderprogressdialog.h"
 #include "adjustscenewidget.h"
+#include "editmodeselectorwidget.h"
 
 MainWindow::MainWindow() : QMainWindow()
 {
@@ -154,19 +155,6 @@ MainWindow::MainWindow() : QMainWindow()
 		this, SLOT(addUndoState()));
 	lastDock = dock;
 
-	// adjust scene widget
-	logInfo("MainWindow::MainWindow : creating AdjustSceneWidget");
-	dock = new QDockWidget(tr("Adjust Scene"), this);
-	dock->setObjectName(dock->windowTitle());
-	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-	m_adjustSceneWidget = new AdjustSceneWidget(m_xfeditor, dock);
-	dock->setWidget(m_adjustSceneWidget);
-	tabifyDockWidget(lastDock, dock);
-	dockActions << dock->toggleViewAction();
-	dock->hide();
-	m_dockWidgets << dock;
-	lastDock = dock;
-
 	// main viewer
 	logInfo("MainWindow::MainWindow : creating ViewerWidget");
 	dock = new QDockWidget(tr("Viewer"), this);
@@ -196,6 +184,7 @@ MainWindow::MainWindow() : QMainWindow()
 	m_dockWidgets << dock;
 	connect(m_imageSettingsWidget, SIGNAL(dataChanged()), this, SLOT(render()));
 	connect(m_imageSettingsWidget, SIGNAL(symmetryAdded()), this, SLOT(scriptFinishedSlot()));
+	connect(m_imageSettingsWidget, SIGNAL(presetSelected()), this, SLOT(presetSelectedSlot()));
 	lastDock = dock;
 
 	// camera settings widget
@@ -270,21 +259,6 @@ MainWindow::MainWindow() : QMainWindow()
 			this, SLOT(addUndoState()));
 	lastDock = dock;
 
-	// viewer presets widget
-	logInfo("MainWindow::MainWindow : creating ViewerPresetsWidget");
-	dock = new QDockWidget(tr("Viewer Presets"), this);
-	dock->setObjectName(dock->windowTitle());
-	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-	m_viewerPresetsWidget = new ViewerPresetsWidget(&genomes, dock);
-	dock->setWidget(m_viewerPresetsWidget);
-	tabifyDockWidget(lastDock, dock);
-	dockActions << dock->toggleViewAction();
-	dock->hide();
-	m_dockWidgets << dock;
-	connect(m_viewerPresetsWidget, SIGNAL(dataChanged()),
-			this, SLOT(presetSelectedSlot()));
-	lastDock = dock;
-
 	// color balance widget
 	logInfo("MainWindow::MainWindow : creating ColorBalanceWidget");
 	dock = new QDockWidget(tr("Color Balance"), this);
@@ -324,6 +298,7 @@ MainWindow::MainWindow() : QMainWindow()
 	m_dockWidgets << dock;
 	connect(m_xfeditor, SIGNAL(triangleSelectedSignal(Triangle*)),
 			m_variationsWidget, SLOT(triangleSelectedSlot(Triangle*)));
+	connect(m_variationsWidget, SIGNAL(dataChanged()), m_xfeditor, SLOT(update()));
 	connect(m_variationsWidget, SIGNAL(dataChanged()), this, SLOT(render()));
 	connect(m_variationsWidget, SIGNAL(undoStateSignal()), this, SLOT(addUndoState()));
 	lastDock = dock;
@@ -418,14 +393,21 @@ MainWindow::MainWindow() : QMainWindow()
 	m_dockWidgets << dock;
 
 	createActions();
-	createMenus();
 	createToolBars();
+	createMenus();
 	createStatusBar();
 	foreach(QAction* a, dockActions)
 		settingsMenu->addAction(a);
 	// install this eventfilter to capture globally the spacebar key
 	qApp->installEventFilter(this);
 	setCurrentFile("");
+
+	connect(sceneScaleSlider, SIGNAL(valueChanged(int)), this, SLOT(sceneScaledSlot()));
+	connect(sceneCenterSelector, SIGNAL(activated(int)), this, SLOT(sceneCenteredSlot(int)));
+	connect(sceneConfigButton, SIGNAL(pressed()), this, SLOT(sceneConfigSlot()));
+	connect(modeSelectWidget, SIGNAL(buttonPressed(FigureEditor::EditMode)), m_xfeditor, SLOT(setMode(FigureEditor::EditMode)));
+	connect(m_xfeditor, SIGNAL(editModeChangedSignal(FigureEditor::EditMode)), modeSelectWidget, SLOT(setSelectedButton(FigureEditor::EditMode)));
+	connect(autoScaleButton, SIGNAL(clicked(bool)), m_xfeditor, SLOT(autoScale()));
 }
 
 
@@ -434,7 +416,7 @@ void MainWindow::triangleSelectedSlot(Triangle* t)
 	logFine(QString("MainWindow::triangleSelectedSlot : t=0x%1")
 			.arg((long)t, 0, 16));
 	selectedTriangle = t;
-    lastSelected = 0;
+	lastSelected = 0;
 	// sneakily update the statusBar without changing position.
 	// this is just a way to avoid adding more public functions to
 	// figureeditor.
@@ -493,7 +475,7 @@ void MainWindow::flameRenderedSlot(RenderEvent* e)
 
 void MainWindow::updateStatus(double posX, double posY)
 {
-    double tx, ty;
+	double tx, ty;
 	QMatrix trans(m_xfeditor->transform().inverted());
 	trans.map(posX, posY, &tx, &ty);
 	switch (m_coordsWidget->coordType())
@@ -727,7 +709,7 @@ bool MainWindow::saveImage(const QString& filename, int idx)
 	if (m_dialogsEnabled)
 	{
 		RenderDialog dialog(this, fileName, lastDir, currentSize,
-			m_viewerPresetsWidget->presetNames());
+			ViewerPresetsModel::getInstance()->presetNames());
 		if (dialog.exec() == QDialog::Accepted)
 		{
 			fileName = dialog.absoluteFilePath();
@@ -762,7 +744,7 @@ bool MainWindow::saveImage(const QString& filename, int idx)
 	if (filePreset.isEmpty())
 		m_file_request.setImagePresets(*current_genome);
 	else
-		m_file_request.setImagePresets(m_viewerPresetsWidget->preset(filePreset));
+		m_file_request.setImagePresets(ViewerPresetsModel::getInstance()->preset(filePreset));
 	m_file_request.setName(fileName);
 	m_file_request.setType(RenderRequest::File);
 	m_file_request.setSize(fileSize);
@@ -892,7 +874,7 @@ void MainWindow::createActions()
 	killAct->setStatusTip(tr("Stop rendering"));
 	connect(killAct, SIGNAL(triggered()), m_rthread, SLOT(killAll()));
 
-	randomAct = new QAction(QIcon(":icons/silk/star.xpm"),tr("&Random Flame"), this);
+	randomAct = new QAction(QIcon(":icons/silk/wand.xpm"),tr("&Random Flame"), this);
 	randomAct->setShortcut(QString("Ctrl+R"));
 	randomAct->setStatusTip(tr("Generate a random xform set"));
 	connect(randomAct, SIGNAL(triggered()), this, SLOT(randomizeGenomeAction()));
@@ -960,6 +942,10 @@ void MainWindow::createActions()
 	addAction(pasteAct);
 	connect(pasteAct, SIGNAL(triggered()), m_xfeditor, SLOT(pasteTriangleAction()));
 
+	addTriangleAct = new QAction(QIcon(":icons/silk/shape_square_add.xpm"), tr("Add Triangle"), this);
+	addTriangleAct->setStatusTip(tr("Add a triangle"));
+	connect(addTriangleAct, SIGNAL(triggered()), m_xfeditor, SLOT(addTriangleAction()));
+
 	importAct = new QAction(QIcon(":icons/silk/page_white_get.xpm"), tr("Import genomes"), this);
 	importAct->setStatusTip(tr("Import genomes"));
 	addAction(importAct);
@@ -969,25 +955,6 @@ void MainWindow::createActions()
 	exportAct->setStatusTip(tr("Export the current genome"));
 	addAction(exportAct);
 	connect(exportAct, SIGNAL(triggered()), this, SLOT(exportAction()));
-
-	editToolBar = addToolBar(tr("Widgets"));
-	editToolBar->setObjectName("WidgetsToolBar");
-	showEditBarAct = new QAction(tr("Show &Widgets Toolbar"), this);
-	showEditBarAct->setStatusTip(tr("Show the widgets toolbar"));
-	connect(showEditBarAct, SIGNAL(triggered()), editToolBar, SLOT(show()));
-
-	addToolBarBreak();
-	fileToolBar = addToolBar(tr("File"));
-	fileToolBar->setObjectName("FileToolBar");
-	showFileBarAct = new QAction(tr("Show &File Toolbar"), this);
-	showFileBarAct->setStatusTip(tr("Show the file toolbar"));
-	connect(showFileBarAct, SIGNAL(triggered()), fileToolBar, SLOT(show()));
-
-	extraToolBar = addToolBar(tr("Edit"));
-	extraToolBar->setObjectName("EditToolBar");
-	showExtraBarAct = new QAction(tr("Show &Edit Toolbar"), this);
-	showExtraBarAct->setStatusTip(tr("Show the edit toolbar"));
-	connect(showExtraBarAct, SIGNAL(triggered()), extraToolBar, SLOT(show()));
 
 	aboutAct = new QAction(QIcon(":icons/silk/information.xpm"),tr("&About"), this);
 	aboutAct->setStatusTip(tr("Show the application's About box"));
@@ -1022,6 +989,7 @@ void MainWindow::createMenus()
 	editMenu->addAction(cutAct);
 	editMenu->addAction(copyAct);
 	editMenu->addAction(pasteAct);
+	editMenu->addAction(addTriangleAct);
 	editMenu->addSeparator();
 	editMenu->addAction(rescaleAct);
 	editMenu->addAction(randomAct);
@@ -1031,6 +999,7 @@ void MainWindow::createMenus()
 	editMenu->addAction(exportAct);
 
 	settingsMenu = menuBar()->addMenu(tr("&Widgets"));
+	settingsMenu->addAction(showWidgetsBarAct);
 	settingsMenu->addAction(showFileBarAct);
 	settingsMenu->addAction(showEditBarAct);
 	settingsMenu->addAction(showExtraBarAct);
@@ -1063,114 +1032,145 @@ void MainWindow::updateRecentFileActions()
 void MainWindow::createToolBars()
 {
 	logInfo("MainWindow::createToolBars : creating toolbars");
-	fileToolBar->addAction(newAct);
+
+	widgetsToolBar = addToolBar(tr("Widgets"));
+	widgetsToolBar->setObjectName("WidgetsToolBar");
+	showWidgetsBarAct = new QAction(tr("Show &Widgets Toolbar"), this);
+	showWidgetsBarAct->setStatusTip(tr("Show the widgets toolbar"));
+	connect(showWidgetsBarAct, SIGNAL(triggered()), widgetsToolBar, SLOT(show()));
+
+	addToolBarBreak();
+	fileToolBar = addToolBar(tr("File"));
+	fileToolBar->setObjectName("FileToolBar");
+	showFileBarAct = new QAction(tr("Show &File Toolbar"), this);
+	showFileBarAct->setStatusTip(tr("Show the file toolbar"));
+	connect(showFileBarAct, SIGNAL(triggered()), fileToolBar, SLOT(show()));
+
+	editToolBar = addToolBar(tr("Edit"));
+	editToolBar->setObjectName("EditToolBar");
+	showEditBarAct = new QAction(tr("Show &Edit Toolbar"), this);
+	showEditBarAct->setStatusTip(tr("Show scene editing toolbar"));
+	connect(showEditBarAct, SIGNAL(triggered()), editToolBar, SLOT(show()));
+
+	extraToolBar = addToolBar(tr("Extra"));
+	extraToolBar->setObjectName("ExtraToolBar");
+	showExtraBarAct = new QAction(tr("Show E&xtra Toolbar"), this);
+	showExtraBarAct->setStatusTip(tr("Show the extra toolbar"));
+	connect(showExtraBarAct, SIGNAL(triggered()), extraToolBar, SLOT(show()));
+
 	fileToolBar->addAction(openAct);
 	fileToolBar->addAction(saveAct);
 	fileToolBar->addAction(saveAsAct);
 	fileToolBar->addAction(saveImageAct);
 	fileToolBar->addAction(quickSaveAct);
 
-	QAction* action = qobject_cast<QDockWidget*>(m_viewer->parentWidget())->toggleViewAction();
+	QAction* action;
+	action = qobject_cast<QDockWidget*>(m_viewer->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/monitor.xpm"));
 	action->setStatusTip(tr("Viewer"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_previewWidget->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/photo.xpm"));
 	action->setStatusTip(tr("Previewer"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_selectTriangleWidget->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/shape_move_forwards.xpm"));
 	action->setStatusTip(tr("Triangles"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_editTriangleWidget->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/shape_rotate_clockwise.xpm"));
 	action->setStatusTip(tr("Triangle Editing"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_variationsWidget->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/table.xpm"));
 	action->setStatusTip(tr("Triangle Variations"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_colorSettingsWidget->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/color_swatch.xpm"));
 	action->setStatusTip(tr("Triangle Color"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_imageSettingsWidget->parentWidget())->toggleViewAction();
-	action->setIcon(QIcon(":icons/silk/image_edit.xpm"));
+	action->setIcon(QIcon(":icons/silk/images.xpm"));
 	action->setStatusTip(tr("Image Quality"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_cameraSettingsWidget->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/camera.xpm"));
 	action->setStatusTip(tr("Camera"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_colorBalanceWidget->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/contrast.xpm"));
 	action->setStatusTip(tr("Color Settings"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_paletteEditor->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/palette.xpm"));
 	action->setStatusTip(tr("Palettes"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_mutations->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/application_view_tile.xpm"));
 	action->setStatusTip(tr("Mutations"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_genomeSelectWidget->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/layers.xpm"));
 	action->setStatusTip(tr("Genome List"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_triangleDensityWidget->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/chart_bar.xpm"));
 	action->setStatusTip(tr("Triangle Densities"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_chaosWidget->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/link.xpm"));
 	action->setStatusTip(tr("Chaos"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_directoryViewWidget->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/folder_explore.xpm"));
 	action->setStatusTip(tr("Directory Browser"));
-	editToolBar->addAction(action);
-
-	action = qobject_cast<QDockWidget*>(m_adjustSceneWidget->parentWidget())->toggleViewAction();
-	action->setIcon(QIcon(":icons/silk/shading.xpm"));
-	action->setStatusTip(tr("Adjust Scene"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_coordsWidget->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/text_columns.xpm"));
 	action->setStatusTip(tr("Triangle Coordinates"));
-	editToolBar->addAction(action);
-
-	action = qobject_cast<QDockWidget*>(m_viewerPresetsWidget->parentWidget())->toggleViewAction();
-	action->setIcon(QIcon(":icons/silk/images.xpm"));
-	action->setStatusTip(tr("Viewer Presets"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_scriptEditWidget->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/script.xpm"));
 	action->setStatusTip(tr("Script Editor"));
-	editToolBar->addAction(action);
+	widgetsToolBar->addAction(action);
 
 
-	extraToolBar->addAction(undoAct);
-	extraToolBar->addAction(redoAct);
+	editToolBar->addAction(undoAct);
+	editToolBar->addAction(redoAct);
+	editToolBar->addSeparator();
+	editToolBar->addAction(cutAct);
+	editToolBar->addAction(copyAct);
+	editToolBar->addAction(pasteAct);
+	editToolBar->addAction(addTriangleAct);
+	editToolBar->addSeparator();
+	editToolBar->addAction(randomAct);
+	editToolBar->addAction(killAct);
+
+
+	EditModeSelectorWidget* modeWidget = new EditModeSelectorWidget(extraToolBar);
+	extraToolBar->addWidget(modeWidget);
+	extraToolBar->addSeparator();
 	extraToolBar->addAction(rescaleAct);
-	extraToolBar->addAction(randomAct);
-	extraToolBar->addAction(killAct);
+	extraToolBar->hide();
+
+	connect(modeWidget, SIGNAL(buttonPressed(FigureEditor::EditMode)), m_xfeditor, SLOT(setMode(FigureEditor::EditMode)));
+	connect(m_xfeditor, SIGNAL(editModeChangedSignal(FigureEditor::EditMode)), modeWidget, SLOT(setSelectedButton(FigureEditor::EditMode)));
 }
 
 
@@ -1512,7 +1512,10 @@ void MainWindow::renderViewer()
 		m_viewer_request.setGenome(render_genome);
 		m_viewer_request.setSize(m_viewer->getViewerSize());
 		if (m_viewer->isPresetSelected())
-			m_viewer_request.setImagePresets(m_viewerPresetsWidget->preset(m_viewer->preset()));
+		{
+			ViewerPresetsModel* model = ViewerPresetsModel::getInstance();
+			m_viewer_request.setImagePresets(model->preset(m_viewer->preset()));
+		}
 		else
 			m_viewer_request.setImagePresets(*render_genome);
 		m_rthread->render(&m_viewer_request);
@@ -1701,11 +1704,20 @@ bool MainWindow::eventFilter(QObject* /*obj*/, QEvent* event)
 	if (event->type() == QEvent::KeyPress)
 	{
 		QKeyEvent* ev = static_cast<QKeyEvent*>(event);
-		if (ev->key() == Qt::Key_Space
+		int key = ev->key();
+		if (key == Qt::Key_Space
 			&& (ev->modifiers() & Qt::ControlModifier) )
 		{
 			genome_modified_flag = true;
 			addUndoState();
+			return true;
+		}
+		if (key >= Qt::Key_0 && key <= Qt::Key_9
+			&& (ev->modifiers() & Qt::AltModifier))
+		{
+			int idx = key - Qt::Key_0 - 1 ;
+			if (idx < 0) idx = 9;
+			m_xfeditor->selectTriangle(idx);
 			return true;
 		}
 	}
@@ -1744,6 +1756,7 @@ void MainWindow::setUndoState(UndoState* state)
 	m_xfeditor->restoreUndoState(state);
 	m_editTriangleWidget->reset();
 	render();
+	m_genomeSelectWidget->updateSelectedPreview();
 }
 
 void MainWindow::addUndoState()
@@ -1755,6 +1768,48 @@ void MainWindow::addUndoState()
 		flam3_copy(&(state->Genome), genomes.selectedGenome());
 		m_xfeditor->saveUndoState(state);
 		genome_modified_flag = false;
+		m_genomeSelectWidget->updateSelectedPreview();
 	}
+}
+
+void MainWindow::sceneScaledSlot()
+{
+	int value = sceneScaleSlider->dx();
+	Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
+	double scale;
+	if (value > 0)
+	{
+		if (mods & Qt::ShiftModifier)
+			scale = 1.01;
+		else if (mods & Qt::ControlModifier)
+			scale = 1.10;
+		else
+			scale = 1.05;
+	}
+	else if (value < 0)
+	{
+		if (mods & Qt::ShiftModifier)
+			scale = 0.99;
+		else if (mods & Qt::ControlModifier)
+			scale = 0.9090;
+		else
+			scale = 0.9523;
+	}
+	else
+		return;
+
+	m_xfeditor->scaleBasis(scale, scale);
+}
+
+void MainWindow::sceneCenteredSlot(int idx)
+{
+	m_xfeditor->setCenteredScaling(static_cast<FigureEditor::SceneLocation>(idx));
+}
+
+void MainWindow::sceneConfigSlot()
+{
+	AdjustSceneWidget dialog(m_xfeditor, this);
+	dialog.move(QCursor::pos() + QPoint(0, -dialog.height()));
+	dialog.exec();
 }
 
