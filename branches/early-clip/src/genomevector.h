@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,6 +21,7 @@
 #define GENOMEVECTOR_H
 
 #include <QVector>
+#include <QAbstractListModel>
 #include "flam3util.h"
 #include "undoring.h"
 
@@ -37,8 +38,36 @@ class GenomeVector : public QVector<flam3_genome>
 		UndoRing* undoRing(int idx=-1);
 
 		void append(const flam3_genome&);
+		void insert(int i, const flam3_genome& g);
 		void remove(int);
 		void clear();
 };
+
+
+class GenomeVectorListModel : public QAbstractListModel
+{
+	Q_OBJECT
+
+	GenomeVector* genomes;
+	QList<QVariant> previews;
+
+	public:
+		GenomeVectorListModel(GenomeVector* vector, QObject* parent=0);
+		bool appendRow();
+		bool removeRow(int row);
+		GenomeVector* genomeVector() const;
+
+		// the QAbstractListModel interface
+		int rowCount(const QModelIndex& parent=QModelIndex()) const;
+		QVariant data(const QModelIndex& idx, int role=Qt::DisplayRole) const;
+		bool setData(const QModelIndex& idx, const QVariant& value, int role=Qt::EditRole);
+		Qt::ItemFlags flags(const QModelIndex&) const;
+		bool hasIndex(int row, int column, const QModelIndex& parent=QModelIndex()) const;
+		QVariant headerData(int section, Qt::Orientation orientation,
+							int role=Qt::DisplayRole) const;
+		Qt::DropActions supportedDropActions() const;
+
+};
+
 
 #endif

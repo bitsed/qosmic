@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2009 by David Bitseff                                   *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,53 +22,44 @@
 #include "adjustscenewidget.h"
 
 AdjustSceneWidget::AdjustSceneWidget(FigureEditor* e, QWidget* parent)
-	: QWidget(parent), QosmicWidget(this, "AdjustSceneWidget"), editor(e)
+	: QDialog(parent), editor(e)
 {
 	setupUi(this);
 
 	m_gridCheckBox->setChecked(editor->gridVisible());
-	m_sceneCenterOnCheckbox->setChecked(editor->centeredScaling());
+	m_gridColorButton->setEnabled(editor->gridVisible());
+	m_guideCheckBox->setChecked(editor->guideVisible());
+	m_guideColorButton->setEnabled(editor->guideVisible());
+	m_previewCheckBox->setChecked(editor->previewVisible());
+	m_previewEditor->setEnabled(editor->previewVisible());
+	m_previewEditor->updateValue(editor->previewDensity());
 
-	connect(m_sceneScaleSlider, SIGNAL(valueChanged(int)), this, SLOT(sceneScaledAction()));
+	connect(m_previewEditor, SIGNAL(valueUpdated()), this, SLOT(previewUpdatedAction()));
+	connect(m_previewCheckBox, SIGNAL(toggled(bool)), this, SLOT(togglePreviewAction(bool)));
 	connect(m_gridCheckBox, SIGNAL(toggled(bool)), this, SLOT(toggleGridAction(bool)));
 	connect(m_gridColorButton, SIGNAL(pressed()), this, SLOT(gridColorSelectAction()));
+	connect(m_guideCheckBox, SIGNAL(toggled(bool)), this, SLOT(toggleGuideAction(bool)));
+	connect(m_guideColorButton, SIGNAL(pressed()), this, SLOT(guideColorSelectAction()));
 	connect(m_bgColorButton, SIGNAL(pressed()), this, SLOT(bgColorSelectAction()));
-	connect(m_sceneCenterOnCheckbox, SIGNAL(toggled(bool)), this, SLOT(sceneCenterOnAction(bool)));
 }
 
 
-void AdjustSceneWidget::sceneScaledAction()
+void AdjustSceneWidget::previewUpdatedAction()
 {
-	int value = m_sceneScaleSlider->dx();
-	Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
-	double scale;
-	if (value > 0)
-	{
-		if (mods & Qt::ShiftModifier)
-			scale = 1.01;
-		else if (mods & Qt::ControlModifier)
-			scale = 1.10;
-		else
-			scale = 1.05;
-	}
-	else if (value < 0)
-	{
-		if (mods & Qt::ShiftModifier)
-			scale = 0.99;
-		else if (mods & Qt::ControlModifier)
-			scale = 0.9090;
-		else
-			scale = 0.9523;
-	}
-	else
-		return;
-
-	editor->scaleBasis(scale, scale);
+	editor->setPreviewDensity(m_previewEditor->value());
 }
+
+void AdjustSceneWidget::togglePreviewAction(bool checked)
+{
+	editor->setPreviewVisible(checked);
+	m_previewEditor->setEnabled(checked);
+}
+
 
 void AdjustSceneWidget::toggleGridAction(bool checked)
 {
 	editor->setGridVisible(checked);
+	m_gridColorButton->setEnabled(checked);
 }
 
 void AdjustSceneWidget::gridColorSelectAction()
@@ -78,6 +69,19 @@ void AdjustSceneWidget::gridColorSelectAction()
 		editor->setGridColor(c);
 }
 
+void AdjustSceneWidget::toggleGuideAction(bool checked)
+{
+	editor->setGuideVisible(checked);
+	m_guideColorButton->setEnabled(checked);
+}
+
+void AdjustSceneWidget::guideColorSelectAction()
+{
+	QColor c = QColorDialog::getColor(editor->guideColor(), this);
+	if (c.isValid())
+		editor->setGuideColor(c);
+}
+
 void AdjustSceneWidget::bgColorSelectAction()
 {
 	QColor c = QColorDialog::getColor(editor->bgColor(), this);
@@ -85,7 +89,3 @@ void AdjustSceneWidget::bgColorSelectAction()
 		editor->setbgColor(c);
 }
 
-void AdjustSceneWidget::sceneCenterOnAction(bool checked)
-{
-	editor->setCenteredScaling(checked);
-}

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,7 +17,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
 #ifndef VARIATIONSWIDGET_H
 #define VARIATIONSWIDGET_H
 
@@ -48,15 +47,19 @@ class VariationsWidget : public QWidget, private Ui::VariationsWidget
 
 	protected:
 		void wheelEvent(QWheelEvent*);
+		void resetVariationSelector();
 
 	protected slots:
 		void variationEditedSlot(int);
-		void updateLabel();
+		void valueEditorUpdatedSlot();
+		void variationSelectedSlot(int);
+		void addVariationValueSlot();
 
 	private:
 		GenomeVector* genome;
 		Triangle* selectedTriangle;
 		VarsTableModel* model;
+		QString lastVariation;
 };
 
 #include "triangle.h"

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007 by David Bitseff                                   *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -24,7 +24,7 @@
 #include <QSettings>
 
 #include "mainviewer.h"
-#include "viewerpresetswidget.h"
+#include "viewerpresetsmodel.h"
 
 //
 // This has gotten wierd and complicated.  The point of the timer
@@ -313,10 +313,8 @@ void MainViewer::mousePressEvent(QMouseEvent* e)
 		if (isDockWidget())
 		{
 			popupMenu->clear();
-			ViewerPresetsWidget* w
-				= dynamic_cast<ViewerPresetsWidget*>(getWidget("ViewerPresetsWidget"));
 
-			QStringList presets = w->presetNames();
+			QStringList presets = ViewerPresetsModel::getInstance()->presetNames();
 			foreach (QString s, presets)
 			{
 				QAction* a = popupMenu->addAction(s);

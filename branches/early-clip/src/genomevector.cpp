@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "genomevector.h"
+#include "logger.h"
 
 
 int GenomeVector::selectedIndex() const
@@ -47,7 +48,16 @@ void GenomeVector::append(const flam3_genome& g)
 	QVector<flam3_genome>::append(g);
 	undoRings.append(UndoRing());
 	UndoState* state = undoRings.last().advance();
-	flam3_copy(&(state->Genome), data() + (size() - 1));
+	int idx = size() - 1;
+	flam3_copy(&(state->Genome), data() + idx);
+}
+
+void GenomeVector::insert(int i, const flam3_genome& g)
+{
+	QVector<flam3_genome>::insert(i, g);
+	undoRings.insert(i, UndoRing());
+	UndoState* state = undoRings[i].advance();
+	flam3_copy(&(state->Genome), data() + i);
 }
 
 void GenomeVector::remove(int i)
@@ -55,10 +65,8 @@ void GenomeVector::remove(int i)
 	if (size() > 0)
 	{
 		flam3_genome* g = data() + i;
-		if (g && g->xform && g->num_xforms > 0)
-			// free the heap mem used by xforms in existing genomes
-			while (g->num_xforms > 0)
-				flam3_delete_xform(g, g->num_xforms - 1);
+		// free the heap mem used by xforms in existing genomes
+		clear_cp(g, flam3_defaults_on);
 		QVector<flam3_genome>::remove(i);
 		undoRings.removeAt(i);
 		// change the selected_index if necessary
@@ -72,4 +80,138 @@ void GenomeVector::clear()
 	while (size() > 0)
 		remove(size() - 1);
 	undoRings.clear();
+}
+
+
+// ----------------------------------------------------------------------------------------
+
+GenomeVectorListModel::GenomeVectorListModel(GenomeVector* vector, QObject* parent)
+: QAbstractListModel(parent), genomes(vector)
+{
+
+}
+
+GenomeVector* GenomeVectorListModel::genomeVector() const
+{
+	return genomes;
+}
+
+int GenomeVectorListModel::rowCount(const QModelIndex& /*parent*/) const
+{
+	return genomes->size();
+}
+
+QVariant GenomeVectorListModel::data(const QModelIndex& idx, int role) const
+{
+	if (!idx.isValid())
+		return QVariant();
+
+	int row = idx.row();
+	if (row > genomes->size() || row < 0)
+	{
+		logWarn(QString("GenomeVectorListModel::data : genome doesn't exist %1").arg(row));
+		return QVariant();
+	}
+
+	logFiner(QString("GenomeVectorListModel::data : getting genome %1 role %2").arg(row).arg(role));
+	if (role == Qt::DisplayRole || role == Qt::EditRole)
+	{
+		flam3_genome g = genomes->at(row);
+		return QString("%1 xforms\ntime: %2").arg(g.num_xforms).arg(g.time);
+	}
+	if (role == Qt::DecorationRole)
+		return previews.at(row);
+
+	return QVariant();
+}
+
+bool GenomeVectorListModel::setData(const QModelIndex& idx, const QVariant& value, int role)
+{
+	if (!idx.isValid())
+		return false;
+
+	int row = idx.row();
+	if (row > genomes->size() || row < 0)
+	{
+		logWarn(QString("GenomeVectorListModel::setData : genome doesn't exist %1").arg(row));
+		return false;
+	}
+	if (role == Qt::DecorationRole)
+	{
+		if (previews.size() > row)
+			previews.replace(row, value);
+		else
+			previews.insert(row, value);
+	}
+	return false;
+}
+
+Qt::ItemFlags GenomeVectorListModel::flags(const QModelIndex& idx) const
+{
+	if (!idx.isValid())
+		return 0;
+
+	if (idx.row() > genomes->size() || idx.row() < 0)
+		return 0;
+
+	return Qt::ItemIsSelectable | Qt::ItemIsEnabled |
+		Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEditable ;
+}
+
+Qt::DropActions GenomeVectorListModel::supportedDropActions() const
+{
+	return Qt::CopyAction | Qt::MoveAction;
+}
+
+bool GenomeVectorListModel::hasIndex(int row, int column, const QModelIndex& /*parent*/) const
+{
+	if (column == 0 && row < genomes->size())
+		return true;
+	return false;
+
+}
+
+QVariant GenomeVectorListModel::headerData(int section, Qt::Orientation /*orientation*/, int role) const
+{
+	if (role != Qt::DisplayRole)
+		return QVariant();
+
+	int row = section;
+	return QString("Genome %1").arg(row);
+}
+
+bool GenomeVectorListModel::appendRow()
+{
+	int row = rowCount();
+	beginInsertRows(index(0,0).parent(), row, row);
+	flam3_genome* current = genomes->selectedGenome();
+	flam3_genome gen;
+	Util::init_genome(&gen);
+	flam3_copy(&gen, current);
+	// preserve values not copied in flam3_apply_template()
+	gen.pixels_per_unit = current->pixels_per_unit;
+	gen.contrast   = current->contrast;
+	gen.gamma      = current->gamma;
+	gen.brightness = current->brightness;
+	gen.vibrancy   = current->vibrancy;
+	genomes->append(gen);
+	if (previews.size() > row)
+		previews.replace(row, QVariant());
+	else
+		previews.insert(row, QVariant());
+	endInsertRows();
+	return true;
+}
+
+bool GenomeVectorListModel::removeRow(int row)
+{
+	if (0 <= row && row < genomes->size())
+	{
+		beginRemoveRows(index(0,0).parent(), row, row);
+		genomes->remove(row);
+		previews.removeAt(row);
+		endRemoveRows();
+		return true;
+	}
+	return false;
 }

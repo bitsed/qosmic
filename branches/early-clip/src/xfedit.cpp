@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -36,8 +36,9 @@
 FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
 	: QGraphicsScene(parent), QosmicWidget(this, "FigureEditor"),
 	moving(0), genomes(g), selectedTriangle(0), postTriangle(0),
-	has_selection(false), is_selecting(false), editing_post(false),
-	menu_visible(false)
+	centered_scaling(None), transform_location(Origin), editMode(Move),
+	move_edge_mode(false), has_selection(false), is_selecting(false),
+	editing_post(false), menu_visible(false)
 {
 	QMatrix b(100.0, 0.0, 0.0, -100.0, 0.0, 0.0);
 	basisTriangle = new BasisTriangle(b);
@@ -79,10 +80,14 @@ FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
 	popupMenu->addSeparator();
 	popupMenu->addAction(rescaleAction);
 
-	grid_visible = settings.value("gridvisible", false).toBool();
+	preview_density = settings.value("previewdensity", 10).toInt();
+	preview_visible = settings.value("previewvisible", false).toBool();
+	grid_visible = settings.value("gridvisible", true).toBool();
 	grid_color = QColor(settings.value("gridcolor", "#999999").toString());
+	guide_visible = settings.value("guidevisible", true).toBool();
+	guide_color = QColor(settings.value("guidecolor", "#ee0000").toString());
 	bg_color   = QColor(settings.value("bgcolor", "#000000").toString());
-	centered_scaling = settings.value("centeredscaling", false).toBool();
+	centered_scaling = (SceneLocation)settings.value("centeredscaling", false).toInt();
 
 	setBackgroundBrush(Qt::black);
 	basisTriangle->setGraphicsScene(this);
@@ -129,8 +134,8 @@ FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
 	connect(copyAction, SIGNAL(triggered()), this, SLOT(copyTriangleAction()));
 	connect(pasteAction, SIGNAL(triggered()), this, SLOT(pasteTriangleAction()));
 	connect(resAction, SIGNAL(triggered()), this, SLOT(resetTriangleCoordsAction()));
-	connect(flipHAction, SIGNAL(triggered()), this, SLOT(flipTriangleHAction()));
-	connect(flipVAction, SIGNAL(triggered()), this, SLOT(flipTriangleVAction()));
+	connect(flipHAction, SIGNAL(triggered()), this, SLOT(flipTriangleHPopupAction()));
+	connect(flipVAction, SIGNAL(triggered()), this, SLOT(flipTriangleVPopupAction()));
 	connect(rescaleAction, SIGNAL(triggered()), this, SLOT(autoScale()));
 }
 
@@ -158,8 +163,12 @@ void FigureEditor::writeSettings()
 	QSettings settings;
 	settings.beginGroup("figureeditor");
 	settings.setValue("basis", QVariant::fromValue(transform()));
+	settings.setValue("previewdensity", preview_density);
+	settings.setValue("previewvisible", preview_visible);
 	settings.setValue("gridvisible", grid_visible);
 	settings.setValue("gridcolor", grid_color.name());
+	settings.setValue("guidevisible", guide_visible);
+	settings.setValue("guidecolor", guide_color.name());
 	settings.setValue("bgcolor", bg_color.name());
 	settings.setValue("centeredscaling", centered_scaling);
 	settings.setValue("selectiontype", selectionItem->selectedType());
@@ -368,6 +377,8 @@ void FigureEditor::resetTriangleCoordsAction()
 
 void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 {
+	moving_start = e->scenePos();
+
 	if (e->button() == Qt::RightButton)
 	{
 		// menu_visible indicates that the menu is/was showing.  It's used in
@@ -375,40 +386,48 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 		// popupMenu, getCurrentOrSelected interaction works because the popup
 		// event is synchronous, and the actions/slots are connected with type
 		// Qt::DirectConnection.
+		moving = 0;
 		menu_visible = true;
-		moving_start = e->scenePos();
 		popupMenu->exec(e->screenPos());
 		menu_visible = false;
+		moving_start = QPointF(0.0, 0.0);
 	}
 	else if (e->button() == Qt::MidButton)
 	{
-		if (coordinateMark->isVisible() && e->modifiers() & Qt::ShiftModifier)
-		{
-			coordinateMark->centerOn(e->scenePos());
-			if (!trianglesList.isEmpty())
-				coordinateMark->setZValue(trianglesList.first()->nextZPos());
-		}
-		else
-			moving_start = e->scenePos();
+		moving = 0;
 	}
-	else if (e->modifiers() & Qt::ControlModifier) // LeftButton+Ctrl to select
+	else if (e->modifiers() & Qt::ControlModifier && !(e->modifiers() & Qt::ShiftModifier)) // LeftButton+Ctrl to select
 	{
 		is_selecting = true;
-		moving_start = e->scenePos();
+		has_selection = false;
 		selectionItem->setPos(QPointF(0.0,0.0));
 		selectionItem->setPolygon(QPolygonF(QRectF(moving_start,QSizeF(0.01,0.01))));
 		selectionItem->setVisible(true);
 		selectionItem->clear();
+		update();
 	}
-	else // LeftButton, no modifier
+	else if (e->modifiers() & Qt::ShiftModifier && !(e->modifiers() & Qt::ControlModifier))
 	{
-		QGraphicsItem* item = itemAt(e->scenePos());
+		// LeftButton+Shift to set mark
+		if (coordinateMark->isVisible())
+		{
+			// left mouse button + shift sets the coordinate mark
+			coordinateMark->centerOn(moving_start);
+			if (!trianglesList.isEmpty())
+				coordinateMark->setZValue(trianglesList.first()->nextZPos());
+			update();
+		}
+	}
+	else // LeftButton, no control modifier
+	{
+		QGraphicsItem* item = itemAt(moving_start);
 		if (item == infoItem) // skip the infoItem if possible
 		{
-			QList<QGraphicsItem*> list = items(e->scenePos());
+			QList<QGraphicsItem*> list = items(moving_start);
 			if (list.size() > 1)
 				item = list.at(1);
 		}
+
 		if (item)
 		{
 			moving = 0;
@@ -439,17 +458,9 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 				if (t->type() == Triangle::RTTI)
 					selectTriangle(t);
 			}
-			else if ( item->type() == TriangleSelection::RTTI )
-			{
-				moving = dynamic_cast<TriangleSelection*>(item);
-				if (!trianglesList.isEmpty())
-					moving->setZValue(trianglesList.first()->nextZPos());
-			}
-			else
-				return;
 
-			// holding shift will activate and add an item to the selection
-			if (e->modifiers() & Qt::ShiftModifier)
+			// holding control+shift will activate and add an item to the selection
+			if (e->modifiers() & Qt::ControlModifier && e->modifiers() & Qt::ShiftModifier)
 			{
 				// select the triangle for a node if selecting triangles
 				if (selectionItem->selectedType() == Triangle::RTTI
@@ -472,8 +483,27 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 				}
 			}
 
+			// if the selection is active, then only ever select it
+			if (hasSelection())
+			{
+				if (item->type() != TriangleSelection::RTTI)
+				{
+					if (selectionItem->contains(item))
+						item = selectionItem;
+					else
+						item = 0;
+				}
+				if (item)
+				{
+					moving = dynamic_cast<TriangleSelection*>(item);
+					if (!trianglesList.isEmpty())
+						moving->setZValue(trianglesList.first()->nextZPos());
+				}
+				else
+					moving = 0;
+			}
+
 			wheel_moved = false;
-			moving_start = e->scenePos();
 		}
 		else
 			logFine("FigureEditor::mousePressEvent : no item selected");
@@ -482,10 +512,27 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 
 void FigureEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e)
 {
-    if (moving)
+	if (moving)
 	{
 		moving = 0;
-		if (e->buttonDownScenePos(Qt::LeftButton) != e->scenePos() || wheel_moved)
+		QPointF dz (e->buttonDownScenePos(Qt::LeftButton) - e->scenePos());
+		if (editMode == Flip)
+		{
+			if (qAbs(dz.x()) > qAbs(dz.y()))
+				flipTriangleHAction();
+			else if (qAbs(dz.x()) < qAbs(dz.y()))
+				flipTriangleVAction();
+		}
+		else
+		{
+			if (move_edge_mode)
+				editMode = Move;
+			else if (editMode == Move)
+				setTransformLocation(transform_location);
+			move_edge_mode = false;
+			update();
+		}
+		if (dz != QPointF(0.0, 0.0) || wheel_moved)
 			emit undoStateSignal();
 	}
 	else if (is_selecting)
@@ -506,7 +553,10 @@ void FigureEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e)
 			selectionItem->selectCoveredItems();
 			has_selection = true;
 		}
+		update();
 	}
+	views().first()->setCursor(Qt::ArrowCursor);
+	moving_start = QPointF(0.0,0.0);
 }
 
 void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
@@ -528,87 +578,168 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 	{
 		infoItem->hide();
 		lastt = 0;
-		if ( moving->type() == Triangle::RTTI || moving->type() == PostTriangle::RTTI)
+
+		if ( moving->type() == TriangleSelection::RTTI )
 		{
-			Triangle* t = dynamic_cast<Triangle*>(moving);
-			logFiner(QString("FigureEditor::mouseMoveEvent : moving triangle by %1,%2").arg(dx).arg(dy));
-			switch (t->getEdgeType())
+			if ( editMode == Move )
 			{
-				case Triangle::RotateEdge:
+				selectionItem->moveBy(dx, dy);
+				logFiner(QString("FigureEditor::mouseMoveEvent : triangle set moved to %1,%2")
+						.arg(selectionItem->scenePos().x())
+						.arg(selectionItem->scenePos().y()));
+				if (selectionItem->hasItems())
+					emit triangleModifiedSignal(selectionItem->first());
+				views().first()->setCursor(Qt::SizeAllCursor);
+			}
+			else if ( editMode == Rotate )
+			{
+				if (qAbs(dx) >= qAbs(dy))
 				{
-					if (qAbs(dx) >= qAbs(dy))
+					if (e->modifiers() & Qt::ShiftModifier)
+						dx /= 10.0;
+					else if (e->modifiers() & Qt::ControlModifier)
+						dx *= 10.0;
+					selectionItem->rotate(dx, selectionTransformPos());
+					if (selectionItem->hasItems())
+						emit triangleModifiedSignal(selectionItem->first());
+				}
+			}
+			else if ( editMode == Scale )
+			{
+				if (qAbs(dx) >= qAbs(dy))
+				{
+					if (dx > 0)
 					{
 						if (e->modifiers() & Qt::ShiftModifier)
-							dx /= 10.0;
+							dx = 1.01;
 						else if (e->modifiers() & Qt::ControlModifier)
-							dx *= 10.0;
-						QPointF cpos(dynamic_cast<EditTriangleWidget*>
-							(getWidget("EditTriangleWidget"))->triangleTransformPos());
-						rotateTriangle(t, dx, cpos);
-						emit triangleModifiedSignal(selectedTriangle);
-					}
-					break;
-				}
-				case Triangle::ScaleEdge:
-				{
-
-					if (qAbs(dx) >= qAbs(dy))
-					{
-						if (dx > 0)
-						{
-							if (e->modifiers() & Qt::ShiftModifier)
-								dx = 1.01;
-							else if (e->modifiers() & Qt::ControlModifier)
-								dx = 1.10;
-							else
-								dx = 1.05;
-						}
+							dx = 1.10;
 						else
-						{
-							if (e->modifiers() & Qt::ShiftModifier)
-								dx = 0.99;
-							else if (e->modifiers() & Qt::ControlModifier)
-								dx = 0.9090;
-							else
-								dx = 0.9523;
-						}
-						QPointF cpos(dynamic_cast<EditTriangleWidget*>(getWidget("EditTriangleWidget"))->triangleTransformPos());
-						scaleTriangle(t, dx, dx, cpos);
-						emit triangleModifiedSignal(selectedTriangle);
+							dx = 1.05;
 					}
-					break;
+					else
+					{
+						if (e->modifiers() & Qt::ShiftModifier)
+							dx = 0.99;
+						else if (e->modifiers() & Qt::ControlModifier)
+							dx = 0.9090;
+						else
+							dx = 0.9523;
+					}
+					selectionItem->scale(dx, dx, selectionTransformPos());
+					if (selectionItem->hasItems())
+						emit triangleModifiedSignal(selectionItem->first());
 				}
-				default:
-					t->moveBy(dx, dy);
-					emit triangleModifiedSignal(selectedTriangle);
 			}
 		}
-		else if ( moving->type() == TriangleSelection::RTTI )
+		else //  moving->type() == Triangle::RTTI || moving->type() == PostTriangle::RTTI || moving->type() == NoteItem::RTTI
 		{
-			selectionItem->moveBy(dx, dy);
-			logFiner(QString("FigureEditor::mouseMoveEvent : triangle set moved to %1,%2")
-					.arg(selectionItem->scenePos().x())
-					.arg(selectionItem->scenePos().y()));
-			if (selectionItem->hasItems())
-				emit triangleModifiedSignal(selectionItem->first());
+			Triangle* t = 0;
+			NodeItem* node = 0;
+			if (moving->type() == NodeItem::RTTI)
+			{
+				node = dynamic_cast<NodeItem*>(moving);
+				t = node->triangle();
+			}
+			else
+				t = dynamic_cast<Triangle*>(moving);
+
+			if ( editMode == Rotate
+				|| (editMode == Move && t->getEdgeType() == Triangle::RotateEdge && !node) )
+			{
+				if (qAbs(dx) >= qAbs(dy))
+				{
+					if (e->modifiers() & Qt::ShiftModifier)
+						dx /= 10.0;
+					else if (e->modifiers() & Qt::ControlModifier)
+						dx *= 10.0;
+
+					if (editMode == Move)
+					{
+						// Activate rotate mode when selecting edges. This
+						// makes the triangles repaint with rotation mode guides.
+						editMode = Rotate;
+						move_edge_mode = true;
+					}
+					rotateTriangle(t, dx, triangleTransformPos());
+					emit triangleModifiedSignal(selectedTriangle);
+				}
+
+			}
+			else if ( editMode == Scale
+				|| (editMode == Move && t->getEdgeType() == Triangle::ScaleEdge && !node) )
+			{
+				if (qAbs(dx) >= qAbs(dy))
+				{
+					if (dx > 0)
+					{
+						if (e->modifiers() & Qt::ShiftModifier)
+							dx = 1.01;
+						else if (e->modifiers() & Qt::ControlModifier)
+							dx = 1.10;
+						else
+							dx = 1.05;
+					}
+					else
+					{
+						if (e->modifiers() & Qt::ShiftModifier)
+							dx = 0.99;
+						else if (e->modifiers() & Qt::ControlModifier)
+							dx = 0.9090;
+						else
+							dx = 0.9523;
+					}
+
+					if (editMode == Move)
+					{
+						// Activate scaling mode when selecting edges. This
+						// makes the triangles repaint with scaling mode guides.
+						editMode = Scale;
+						move_edge_mode = true;
+					}
+					scaleTriangle(t, dx, dx, triangleTransformPos());
+					emit triangleModifiedSignal(selectedTriangle);
+				}
+			}
+			else if ( editMode == Flip )
+			{
+				QPointF dz (e->buttonDownScenePos(Qt::LeftButton) - e->scenePos());
+				qreal dx = dz.x();
+				qreal dy = dz.y();
+				if (qAbs(dx) > qAbs(dy))
+					views().first()->setCursor(Qt::SplitHCursor);
+				else if (qAbs(dx) < qAbs(dy))
+					views().first()->setCursor(Qt::SplitVCursor);
+				else
+					views().first()->setCursor(Qt::ArrowCursor);
+			}
+			else // Move mode
+			{
+				if (node)
+					node->moveBy(dx, dy);
+				else
+					t->moveBy(dx, dy);
+				emit triangleModifiedSignal(selectedTriangle);
+				views().first()->setCursor(Qt::SizeAllCursor);
+			}
 		}
-		else // NodeItem::RTTI
-		{
-			NodeItem* node = dynamic_cast<NodeItem*>(moving);
-			node->moveBy(dx, dy);
-			emit triangleModifiedSignal(selectedTriangle);
-		}
+
 		moving_start = scenePos;
 		update();
-    }
+	}
 	else if (is_selecting)
+	{
 		selectionItem->setPolygon(QPolygonF(QRectF(moving_start,scenePos)));
-
+		update();
+	}
 	else if (e->buttons() & Qt::MidButton)
 	{
 		// middle mouse button + shift sets the coordinate mark
 		if (coordinateMark->isVisible() && e->modifiers() & Qt::ShiftModifier)
+		{
 			coordinateMark->centerOn(scenePos);
+			update();
+		}
 
 		// use control to scale the scene
 		else if (e->modifiers() & Qt::ControlModifier)
@@ -621,6 +752,35 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 				scaleBasis(dx, dx);
 			}
 		}
+
+		else
+		{
+			// otherwise scroll the qgraphicsview
+			QScrollBar* hbar = views().first()->horizontalScrollBar();
+			QScrollBar* vbar = views().first()->verticalScrollBar();
+			dx = (screenPos.x() - e->lastScreenPos().x());
+			dy = (screenPos.y() - e->lastScreenPos().y());
+			hbar->setValue(hbar->value() - dx);
+			vbar->setValue(vbar->value() - dy);
+			if (infoItem->isVisible())
+			{
+				infoItem->hide();
+				lastt = 0;
+			}
+			// return early and avoid emitting a coordinateChangeSignal
+			return;
+		}
+
+	}
+	else if (e->buttons() & Qt::LeftButton)
+	{
+		// left mouse button + shift sets the coordinate mark
+		if (coordinateMark->isVisible() && e->modifiers() & Qt::ShiftModifier)
+		{
+			coordinateMark->centerOn(scenePos);
+			update();
+		}
+
 		else
 		{
 			// otherwise scroll the qgraphicsview
@@ -651,7 +811,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 				{
 					// show the xform's infoItem for this triangle
 					Triangle* t = dynamic_cast<Triangle*>(item);
-					if (t == selectedTriangle)
+					if (t == selectedTriangle && editMode == Move)
 						t->findEdge(t->mapFromScene(e->scenePos()));
 					if (lastt != t)
 					{
@@ -671,7 +831,8 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 			case PostTriangle::RTTI:
 			{
 				PostTriangle* post = dynamic_cast<PostTriangle*>(item);
-				post->findEdge(post->mapFromScene(e->scenePos()));
+				if (editMode == Move)
+					post->findEdge(post->mapFromScene(e->scenePos()));
 				Triangle* t = selectedTriangle;
 				int tidx = trianglesList.indexOf(t);
 				infoItem->setText(tr("post transform: %1\n").arg(tidx + 1));
@@ -797,6 +958,31 @@ void FigureEditor::wheelEvent(QGraphicsSceneWheelEvent* e)
 		}
 		wheel_moved = true;
 	}
+	else
+	{
+		// scale the scene
+		double rad;
+		if (e->delta() > 0)
+		{
+			if (e->modifiers() & Qt::ShiftModifier)
+				rad = 1.1;
+			else if (e->modifiers() & Qt::ControlModifier)
+				rad = 1.5;
+			else
+				rad = 1.2;
+		}
+		else
+		{
+			if (e->modifiers() & Qt::ShiftModifier)
+				rad = 0.9090;
+			else if (e->modifiers() & Qt::ControlModifier)
+				rad = 0.6767;
+			else
+				rad = 0.8333;
+		}
+		scaleBasis(rad,rad);
+		e->accept();
+	}
 }
 
 void FigureEditor::scaleInScene()
@@ -822,6 +1008,26 @@ void FigureEditor::triangleModifiedAction(Triangle* t)
 
 void FigureEditor::flipTriangleHAction()
 {
+	if (hasSelection())
+		flipSelectionHAction(selectionTransformPos());
+	else if (postEnabled())
+		flipTriangleHAction(post(), triangleTransformPos());
+	else
+		flipTriangleHAction(selectedTriangle, triangleTransformPos());
+}
+
+void FigureEditor::flipTriangleVAction()
+{
+	if (hasSelection())
+		flipSelectionVAction(selectionTransformPos());
+	else if (postEnabled())
+		flipTriangleVAction(post(), triangleTransformPos());
+	else
+		flipTriangleVAction(selectedTriangle, triangleTransformPos());
+}
+
+void FigureEditor::flipTriangleHPopupAction()
+{
 	if (has_selection)
 		flipSelectionHAction(selectionItem->mapFromScene(moving_start));
 	else if (editing_post)
@@ -834,12 +1040,10 @@ void FigureEditor::flipTriangleHAction()
 void FigureEditor::flipTriangleHAction(Triangle* t, QPointF cpos)
 {
 	t->flipHorizontally(cpos);
-	if (editing_post)
-		t = selectedTriangle;
-	emit triangleModifiedSignal(t);
+	triangleModifiedAction(t);
 }
 
-void FigureEditor::flipTriangleVAction()
+void FigureEditor::flipTriangleVPopupAction()
 {
 	if (has_selection)
 		flipSelectionVAction(selectionItem->mapFromScene(moving_start));
@@ -853,23 +1057,21 @@ void FigureEditor::flipTriangleVAction()
 void FigureEditor::flipTriangleVAction(Triangle* t, QPointF cpos)
 {
 	t->flipVertically(cpos);
-	if (editing_post)
-		t = selectedTriangle;
-	emit triangleModifiedSignal(t);
+	triangleModifiedAction(t);
 }
 
 void FigureEditor::flipSelectionVAction(QPointF cpos)
 {
 	selectionItem->flipVertically(cpos);
 	if (selectionItem->hasItems())
-		triangleModifiedAction(selectionItem->first());
+		triangleModifiedAction(selectedTriangle);
 }
 
 void FigureEditor::flipSelectionHAction(QPointF cpos)
 {
 	selectionItem->flipHorizontally(cpos);
 	if (selectionItem->hasItems())
-		triangleModifiedAction(selectionItem->first());
+		triangleModifiedAction(selectedTriangle);
 }
 
 BasisTriangle* FigureEditor::basis() const
@@ -912,6 +1114,7 @@ void FigureEditor::selectTriangle(Triangle* t)
 	selectedTriangle->setBrush(brush);
 	selectedTriangle->moveToFront();
 	triangleMenu->setDefaultAction(triangleMenu->actions().value(selectedTriangleIndex()));
+	box_center = selectedTriangle->polygon().boundingRect().center();
 	editPostTriangle(post);
 	update();
 	emit triangleSelectedSignal(t);
@@ -1016,9 +1219,43 @@ void FigureEditor::adjustSceneRect()
 	setSceneRect(itemsSceneBounds().adjusted(-200.,-200.,200.,200.));
 
 	// recenter the view if necessary
-	if (centered_scaling)
-		views().first()->centerOn(basisTriangle->mapToScene(
-			dynamic_cast<EditTriangleWidget*>(getWidget("EditTriangleWidget"))->triangleTransformPos()));
+	if (centered_scaling != None)
+	{
+		Triangle* t = selectedTriangle;
+		QPointF pos(0., 0.);
+		if (postEnabled())
+			t = post();
+
+		switch (centered_scaling)
+		{
+			case Circum:
+				// get the triangle's center position from the scene
+				pos = t->circumCenter();
+				break;
+			case Box:
+				// get the triangle's center position from the scene
+				pos = t->polygon().boundingRect().center();
+				break;
+			case Mark:
+				// center on the marker
+				pos = t->mapFromScene(mark()->center());
+				break;
+			case NodeO:
+				pos = t->getCoords().at(0);
+				break;
+			case NodeX:
+				pos = t->getCoords().at(1);
+				break;
+			case NodeY:
+				pos = t->getCoords().at(2);
+				break;
+			default:
+				break;
+		}
+		views().first()->centerOn(basisTriangle->mapToScene(pos));
+	}
+	else if (!moving_start.isNull())
+		views().first()->centerOn(moving_start);
 
 	if (infoItem->isVisible())
 	{
@@ -1057,6 +1294,110 @@ void FigureEditor::drawBackground(QPainter* p, const QRectF& r)
 		for (qreal n = C.y() - dX.x() ; n >= rect.y() ; n -= dX.x())
 			p->drawLine(QPointF(rect.x(), n), QPointF(rect.width(), n));
 	}
+
+	if (preview_visible)
+	{
+		int xi = selectedTriangle->index();
+		double range = 1.0;
+		int numvals = preview_density;
+		int depth = 1;
+		int rcnt = 2* (2*numvals+1)*(2*numvals+1);
+		double* result = new double[rcnt];
+		randctx *rc = Util::get_isaac_randctx();
+		flam3_genome g;
+		Util::init_genome(&g);
+		flam3_copy(&g, genomes->selectedGenome());
+		flam3_xform_preview(&g, xi, range, numvals, depth, result, rc);
+		p->setPen(selectedTriangle->pen());
+		for (int i = 0 ; i < rcnt  ; i+=2)
+			p->drawPoint(selectedTriangle->mapToScene(result[i], -result[i+1]));
+		clear_cp(&g, flam3_defaults_on);
+		delete[] result;
+	}
+
+	if (guide_visible)
+	{
+		QPointF  cen;
+		QPolygonF poly;
+		QPen pen;
+		if (has_selection)
+		{
+			cen  = selectionItem->mapToScene(selectionTransformPos());
+			poly = selectionItem->mapToScene(selectionItem->polygon());
+			pen  = selectionItem->pen();
+		}
+		else
+		{
+			Triangle* t = selectedTriangle;
+			if (postEnabled())
+				t = postTriangle;
+			cen  = t->mapToScene(triangleTransformPos());
+			poly = t->mapToScene(t->polygon());
+			pen  = t->pen();
+		}
+		pen.setColor(guide_color);
+
+		if (editMode == FigureEditor::Rotate)
+		{
+			qreal rmax = 0.0;
+			foreach (QPointF p, poly)
+			{
+				QLineF l(p, cen);
+				qreal len(l.length());
+				if (len > rmax)
+					rmax = len;
+			}
+			pen.setStyle(Qt::SolidLine);
+			p->setPen(pen);
+			p->drawEllipse(cen, rmax, rmax);
+			p->setBrush(QBrush(pen.color(), Qt::SolidPattern));
+			QRectF r(-1., -1., 2., 2.);
+			r.moveCenter(cen);
+			p->drawEllipse(r);
+		}
+		else if (editMode == FigureEditor::Flip)
+		{
+			QPolygonF pa = poly;
+			double tx = cen.x();
+			int n = 0;
+			pen.setStyle(Qt::SolidLine);
+			p->setPen(pen);
+			p->setBrush(Qt::NoBrush);
+			foreach (QPointF p, pa)
+			{
+				p.rx()  = p.x() - 2.0 * (p.x() - tx);
+				pa[n++] = p;
+			}
+			p->drawPolygon(pa);
+			pa = poly;
+			tx = cen.y();
+			n = 0;
+			foreach (QPointF p, pa)
+			{
+				p.ry()  = p.y() - 2.0 * (p.y() - tx);
+				pa[n++] = p;
+			}
+			p->drawPolygon(pa);
+		}
+		else if (editMode == FigureEditor::Scale)
+		{
+			QRectF r( poly.boundingRect() );
+			qreal xmax = qMax(qAbs(r.left() - cen.x()), qAbs(r.right()  - cen.x()));
+			qreal ymax = qMax(qAbs(r.top()  - cen.y()), qAbs(r.bottom() - cen.y()));
+			QPointF pmax(xmax, ymax);
+			QRectF f(pmax, -pmax);
+			f.moveCenter(cen);
+			pen.setStyle(Qt::SolidLine);
+			p->setPen(pen);
+			p->drawRect(f);
+			pen.setStyle(Qt::DotLine);
+			p->setPen(pen);
+			p->drawLine(f.topLeft(),f.bottomRight());
+			p->drawLine(f.topRight(),f.bottomLeft());
+		}
+
+
+	}
 }
 
 void FigureEditor::colorChangedAction(double idx)
@@ -1074,6 +1415,7 @@ void FigureEditor::colorChangedAction(double idx)
 		foreach (NodeItem* n, triangle->getNodes())
 			n->setPen(QPen(grid_color), c);
 	}
+	update();
 }
 
 int FigureEditor::selectedTriangleIndex()
@@ -1102,6 +1444,39 @@ void FigureEditor::setGridVisible(bool value)
 	update();
 }
 
+bool FigureEditor::guideVisible() const
+{
+	return guide_visible;
+}
+
+void FigureEditor::setGuideVisible(bool value)
+{
+	guide_visible = value;
+	update();
+}
+
+int FigureEditor::previewDensity() const
+{
+	return preview_density;
+}
+
+void FigureEditor::setPreviewDensity(int value)
+{
+	preview_density = value;
+	update();
+}
+
+bool FigureEditor::previewVisible() const
+{
+	return preview_visible;
+}
+
+void FigureEditor::setPreviewVisible(bool value)
+{
+	preview_visible = value;
+	update();
+}
+
 
 QColor FigureEditor::gridColor() const
 {
@@ -1121,6 +1496,17 @@ void FigureEditor::setGridColor(const QColor& c)
 	selectionItem->setPen(QPen(b,1,Qt::DashLine));
 	foreach(Triangle* t, trianglesList)
 		t->setNodeColor(c, t->pen().color());
+	update();
+}
+
+QColor FigureEditor::guideColor() const
+{
+	return guide_color;
+}
+
+void FigureEditor::setGuideColor(QColor c)
+{
+	guide_color = c;
 	update();
 }
 
@@ -1220,7 +1606,11 @@ void FigureEditor::scaleBasis(double dx, double dy)
 	// triangle coordinate space.  It may be better to make the mark aware of
 	// the basis instead.
 	QPointF mark = coordinateMark->center();
+	QPointF mark_start;
 	transform().inverted().map(mark.x(), mark.y(), &mark_start.rx(), &mark_start.ry());
+
+	QPointF cursor_start;
+	transform().inverted().map(moving_start.x(), moving_start.y(), &cursor_start.rx(), &cursor_start.ry());
 
 	basisTriangle->scale(dx, dy);
 	bLabelA->setPos(basisTriangle->mapToScene(basisTriangle->A) + QPointF(-8.0,0.0));
@@ -1249,6 +1639,9 @@ void FigureEditor::scaleBasis(double dx, double dy)
 	// put back the mark
 	transform().map(mark_start.x(), mark_start.y(), &mark.rx(), &mark.ry());
 	coordinateMark->centerOn(mark);
+
+	// put back the moving_start position
+	transform().map(cursor_start.x(), cursor_start.y(), &moving_start.rx(), &moving_start.ry());
 
 	// adjust scene rect and repaint
 	adjustSceneRect();
@@ -1307,7 +1700,8 @@ TriangleSelection* FigureEditor::selection() const
 
 void FigureEditor::moveTriangleBy(Triangle* t, double dx, double dy)
 {
-	t->moveTransformBy(dx, dy);
+	QPointF p(t->mapToScene(dx, dy));
+	t->moveBy(p.x(), p.y());
 	if (t->type() == PostTriangle::RTTI)
 		triangleModifiedAction(selectedTriangle);
 	else
@@ -1360,11 +1754,16 @@ void FigureEditor::editPostTriangle(bool flag)
 		postTriangle->setVisible(true);
 		postTriangle->moveToFront();
 		postTriangle->adjustSceneRect();
+		box_center = postTriangle->polygon().boundingRect().center();
 	}
 	else
+	{
+		box_center = selectedTriangle->polygon().boundingRect().center();
 		postTriangle->setVisible(false);
+	}
 
 	editing_post = flag;
+	update();
 }
 
 bool FigureEditor::postEnabled()
@@ -1409,16 +1808,31 @@ void FigureEditor::enableSelection(bool flag)
 	has_selection = flag;
 	if (!flag)
 		selectionItem->clear();
+	update();
 }
 
-bool FigureEditor::centeredScaling()
+FigureEditor::SceneLocation FigureEditor::centeredScaling()
 {
 	return centered_scaling;
 }
 
-void FigureEditor::setCenteredScaling(bool flag)
+void FigureEditor::setCenteredScaling(SceneLocation location)
 {
-	centered_scaling = flag;
+	centered_scaling = location;
+}
+
+FigureEditor::SceneLocation FigureEditor::transformLocation()
+{
+	return transform_location;
+}
+
+void FigureEditor::setTransformLocation(SceneLocation location)
+{
+	transform_location = location;
+	if (postEnabled())
+		box_center = postTriangle->polygon().boundingRect().center();
+	else
+		box_center = selectedTriangle->polygon().boundingRect().center();
 }
 
 void FigureEditor::saveUndoState(UndoState* state)
@@ -1530,3 +1944,62 @@ void FigureEditor::restoreUndoState(UndoState* state)
 	}
 	coordinateMark->centerOn(basis.map(state->MarkPos));
 }
+
+FigureEditor::EditMode FigureEditor::mode() const
+{
+	return editMode;
+}
+
+void FigureEditor::setMode(FigureEditor::EditMode m)
+{
+	editMode = m;
+	setTransformLocation(transform_location);
+	update();
+	emit editModeChangedSignal(editMode);
+}
+
+QPointF FigureEditor::triangleTransformPos()
+{
+	Triangle* t = selectedTriangle;
+	if (postEnabled())
+		t = post();
+	return triangleTransformPos(t);
+}
+
+QPointF FigureEditor::triangleTransformPos(Triangle* t)
+{
+	QPointF pos(0.0, 0.0);
+
+	if (transform_location == Origin)
+		pos = t->mapFromScene(pos);
+	else if (transform_location == Circum)
+		// get the triangle's circumcenter position
+		pos = t->circumCenter();
+	else if (transform_location == Box)
+		pos = box_center;
+	else if (transform_location == Mark)
+		// center on the marker
+		pos = t->mapFromScene(mark()->center());
+	else if (transform_location == NodeO)
+		pos = t->getCoords().at(0);
+	else if (transform_location == NodeX)
+		pos = t->getCoords().at(1);
+	else if (transform_location == NodeY)
+		pos = t->getCoords().at(2);
+
+	return pos;
+}
+
+QPointF FigureEditor::selectionTransformPos()
+{
+	QPointF pos(0.0, 0.0);
+	if (transform_location == Origin)
+		pos = selection()->mapFromScene(pos);
+	else if (transform_location == Mark)
+		pos = selection()->mapFromScene(mark()->center());
+	else
+		pos = selection()->boundingRect().center();
+
+	return pos;
+}
+

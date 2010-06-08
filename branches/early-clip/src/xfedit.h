@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -42,12 +42,17 @@ class UndoState;
 
 typedef QList<Triangle*> TriangleList;
 
+
 /**
  * The QGraphicsScene that manages the Triangles.
  */
 class FigureEditor : public QGraphicsScene, public QosmicWidget
 {
 	Q_OBJECT
+
+	public:
+		enum SceneLocation { None, Origin, Mark, Circum, Box, NodeO, NodeX, NodeY, Cursor };
+		enum EditMode { Move, Rotate, Scale, Flip };
 
 	public:
 		void clear();
@@ -66,12 +71,20 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget
 		int selectedTriangleIndex();
 		Triangle* getSelectedTriangle();
 		int getNumberOfTriangles();
+		void setPreviewDensity(int);
+		int previewDensity() const;
+		void setPreviewVisible(bool);
+		bool previewVisible() const;
 		void setGridVisible(bool);
 		bool gridVisible() const;
 		QColor gridColor() const;
 		void setGridColor(const QColor&);
 		QColor bgColor() const;
 		void setbgColor(QColor);
+		void setGuideVisible(bool);
+		bool guideVisible() const;
+		QColor guideColor() const;
+		void setGuideColor(QColor);
 		void scaleBasis(double dx, double dy);
 		bool hasSelection() const;
 		TriangleSelection* selection() const;
@@ -83,11 +96,17 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget
 		QString getInfoLabel(Triangle*);
 		void enableSelection(bool);
 		void writeSettings();
-		bool centeredScaling();
-		void setCenteredScaling(bool);
+		SceneLocation centeredScaling();
+		void setCenteredScaling(SceneLocation);
+		SceneLocation transformLocation();
+		void setTransformLocation(SceneLocation);
 		void saveUndoState(UndoState*);
 		void restoreUndoState(UndoState*);
 		void enableFinalXform(bool);
+		EditMode mode() const;
+		QPointF triangleTransformPos(Triangle*);
+		QPointF triangleTransformPos();
+		QPointF selectionTransformPos();
 
 		// graphicsitem horiz and vert flipping
 		void flipTriangleHAction(Triangle*, QPointF);
@@ -105,6 +124,7 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget
 		void triangleSelectedSignal(Triangle*);
 		void triangleModifiedSignal(Triangle*);
 		void undoStateSignal();
+		void editModeChangedSignal(FigureEditor::EditMode);
 
 	public slots:
 		void reset();
@@ -120,10 +140,13 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget
 		void scaleInScene();
 		void scaleOutScene();
 		void autoScale();
+		void setMode(FigureEditor::EditMode);
 
 		// graphicsitem horiz and vert flipping
 		void flipTriangleHAction();
 		void flipTriangleVAction();
+		void flipTriangleHPopupAction();
+		void flipTriangleVPopupAction();
 
 		// display and enable editing of the selected triangle's post coords
 		void editPostTriangle(bool);
@@ -143,7 +166,7 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget
 	private:
 		QAbstractGraphicsShapeItem* moving;
 		QPointF moving_start;
-		QPointF mark_start;
+		QPointF box_center;
 		QGraphicsSimpleTextItem* infoItem;
 		TriangleList trianglesList;
 		GenomeVector* genomes;
@@ -166,16 +189,24 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget
 		bool grid_visible;
 		QColor grid_color;
 		QColor bg_color;
+		bool guide_visible;
+		QColor guide_color;
 		TriangleSelection* selectionItem;
 		PostTriangle* postTriangle;
+		SceneLocation centered_scaling;
+		SceneLocation transform_location;
 		QVector<flam3_xform> xformClip;
+		EditMode editMode;
+		bool move_edge_mode;
 		bool has_selection;
 		bool is_selecting;
 		bool editing_post;
 		bool wheel_moved;
-		bool centered_scaling;
 		bool menu_visible;
+		bool preview_visible;
+		int preview_density;
 };
+
 
 #include "genomevector.h"
 #include "basistriangle.h"

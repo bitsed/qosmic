@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007 by David Bitseff                                   *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,14 +17,14 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
 #ifndef IMGSETTINGSWIDGET_H
 #define IMGSETTINGSWIDGET_H
 
-#include <QWidget>
-#include <QMouseEvent>
-
 #include "ui_imgsettingswidget.h"
+
+#include <QTimer>
+
+#include "viewerpresetswidget.h"
 #include "genomevector.h"
 
 class ImageSettingsWidget : public QWidget, private Ui::ImageSettingsWidget
@@ -39,13 +39,25 @@ class ImageSettingsWidget : public QWidget, private Ui::ImageSettingsWidget
 	signals:
 		void dataChanged();
 		void symmetryAdded();
+		void presetSelected();
 
 	protected slots:
 		void fieldEditedAction();
 		void applySymmetryAction();
+		void moveStackLeftAction();
+		void moveStackRightAction();
+		void showPresetsDialog();
+		void selectPresetAction(int);
+		void presetsDataChangedAction();
+		void resetPresetsComboBoxAction();
+
+	protected:
+		void hideEvent(QHideEvent*);
 
 	private:
 		GenomeVector* genome;
+		ViewerPresetsWidget* presets;
+		QTimer* timer;
 };
 
 

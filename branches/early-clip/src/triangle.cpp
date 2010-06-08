@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -48,15 +48,15 @@ Triangle::Triangle( FigureEditor* c, flam3_xform* x, BasisTriangle* b, int idx)
 
 Triangle::~Triangle()
 {
-    NodeItem *node;
-    TriangleNodesIterator it( nList );
-    while ( it.hasNext() )
+	NodeItem *node;
+	TriangleNodesIterator it( nList );
+	while ( it.hasNext() )
 	{
-        node = it.next();
+		node = it.next();
 		canvas->removeItem(node);
 		delete node;
-    }
-    hide();
+	}
+	hide();
 }
 
 void Triangle::resetPosition()
@@ -74,30 +74,30 @@ void Triangle::resetPosition()
 
 void Triangle::addNode( NodeItem *node )
 {
-    node->setTriangle(this);
+	node->setTriangle(this);
 	node->setParentItem(this);
 	canvas->addItem(node);
-    nList.append( node );
+	nList.append( node );
 }
 
 TriangleNodes& Triangle::getNodes()
 {
-    return nList;
+	return nList;
 }
 
 TriangleCoords Triangle::getCoords()
 {
-    return cList;
+	return cList;
 }
 
 int Triangle::type() const
 {
-    return RTTI;
+	return RTTI;
 }
 
 flam3_xform* Triangle::xform()
 {
-    return m_xform;
+	return m_xform;
 }
 
 void Triangle::basisScaledSlot()
@@ -119,29 +119,29 @@ void Triangle::setPoints(TriangleCoords& points)
 {
 	logFinest("Triangle::setPoints : enter");
 	cList = points;
-    if (points.size() != 3)
-        return;
-    int n = 0;
-    NodeItem *node;
-    TriangleNodesIterator it( nList );
+	if (points.size() != 3)
+		return;
+	int n = 0;
+	NodeItem *node;
+	TriangleNodesIterator it( nList );
 
-    while ( it.hasNext() )
+	while ( it.hasNext() )
 	{
 		node = it.next();
 		QPointF npos = mapToItem(node, cList[n]);
-        node->movePoint(npos.x(), npos.y());
-        n++;
-    }
-    QGraphicsPolygonItem::setPolygon(cList);
+		node->movePoint(npos.x(), npos.y());
+		n++;
+	}
+	QGraphicsPolygonItem::setPolygon(cList);
 }
 
 void Triangle::moveToFront()
 {
-    zpos++;
-    setZValue(zpos);
-    zpos++;
-    TriangleNodesIterator it( nList );
-    while ( it.hasNext() )
+	zpos++;
+	setZValue(zpos);
+	zpos++;
+	TriangleNodesIterator it( nList );
+	while ( it.hasNext() )
 		it.next()->setZValue( zpos );
 }
 
@@ -152,9 +152,9 @@ int Triangle::nextZPos()
 
 void Triangle::show()
 {
-    QGraphicsPolygonItem::show();
-    TriangleNodesIterator it( nList );
-    while ( it.hasNext() )
+	QGraphicsPolygonItem::show();
+	TriangleNodesIterator it( nList );
+	while ( it.hasNext() )
 		it.next()->show();
 
 }
@@ -182,15 +182,15 @@ QRectF Triangle::boundingRect()
  */
 void Triangle::moveEdges()
 {
-    TriangleNodesIterator it( nList );
-    NodeItem *node;
-    cList.clear();
+	TriangleNodesIterator it( nList );
+	NodeItem *node;
+	cList.clear();
 	while ( it.hasNext() )
 	{
 		node = it.next();
 		cList <<  mapFromScene(node->pos());
 	}
-    QGraphicsPolygonItem::setPolygon( cList );
+	QGraphicsPolygonItem::setPolygon( cList );
 	adjustSceneRect();
 	coordsToXForm();
 }
@@ -207,16 +207,16 @@ void Triangle::scale(double dx, double dy, QPointF cpos)
 
 	QPolygonF pa = polygon();
 	TriangleNodesIterator it( nList );
-    NodeItem *node;
+	NodeItem *node;
 	int n = 0;
 	// rebuild triangle + nodes
-    while ( it.hasNext() )
+	while ( it.hasNext() )
 	{
 		node = it.next();
 		QPointF p = mapToScene(pa[n]);
 		node->setPos( p );
 		n++;
-    }
+	}
 	setTransform(trans);
 	it = TriangleNodesIterator( nList );
 	cList.clear();
@@ -242,16 +242,16 @@ void Triangle::rotate(double rad, QPointF cpos)
 
 	QPolygonF pa = polygon();
 	TriangleNodesIterator it( nList );
-    NodeItem *node;
+	NodeItem *node;
 	int n = 0;
 	// rebuild triangle + nodes
-    while ( it.hasNext() )
+	while ( it.hasNext() )
 	{
 		node = it.next();
 		QPointF p = mapToScene(pa[n]);
 		node->setPos( p );
 		n++;
-    }
+	}
 	setTransform(trans);
 	it = TriangleNodesIterator( nList );
 	cList.clear();
@@ -287,16 +287,16 @@ void Triangle::flipHorizontally(QPointF center)
 		pa[n++] = p;
 	}
 	TriangleNodesIterator it( nList );
-    NodeItem *node;
+	NodeItem *node;
 	n = 0;
 	cList.clear();
-    while ( it.hasNext() )
+	while ( it.hasNext() )
 	{
 		node = it.next();
 		QPointF p = mapToScene(pa[n++]);
 		node->setPos( p );
-        cList << mapFromScene(node->pos());
-    }
+		cList << mapFromScene(node->pos());
+	}
 	QGraphicsPolygonItem::setPolygon(cList);
 	adjustSceneRect();
 	coordsToXForm();
@@ -313,16 +313,16 @@ void Triangle::flipVertically(QPointF center)
 		pa[n++] = p;
 	}
 	TriangleNodesIterator it( nList );
-    NodeItem *node;
+	NodeItem *node;
 	n = 0;
 	cList.clear();
-    while ( it.hasNext() )
+	while ( it.hasNext() )
 	{
 		node = it.next();
 		QPointF p = mapToScene(pa[n++]);
 		node->setPos( p );
-        cList << mapFromScene(node->pos());
-    }
+		cList << mapFromScene(node->pos());
+	}
 	QGraphicsPolygonItem::setPolygon(cList);
 	adjustSceneRect();
 	coordsToXForm();
@@ -334,14 +334,14 @@ void Triangle::flipVertically(QPointF center)
 void Triangle::moveBy(double dx, double dy)
 {
 	TriangleNodesIterator it( nList );
-    NodeItem *node;
- 	cList.clear();
-    while ( it.hasNext() )
+	NodeItem *node;
+	cList.clear();
+	while ( it.hasNext() )
 	{
 		node = it.next();
 		node->movePoint( dx, dy );
-        cList << mapFromScene(node->pos());
-    }
+		cList << mapFromScene(node->pos());
+	}
 	QGraphicsPolygonItem::setPolygon(cList);
 	adjustSceneRect();
 	coordsToXForm();
@@ -354,7 +354,7 @@ BasisTriangle* Triangle::basis() const
 
 const QMatrix& Triangle::getCoordinateTransform()
 {
-    return basisTriangle->coordTransform();
+	return basisTriangle->coordTransform();
 }
 
 void Triangle::coordsToXForm()
@@ -374,33 +374,6 @@ FigureEditor* Triangle::editor() const
 {
 	return canvas;
 }
-
-/**
- * This one moves the triangle/transform, and then notifies the FigureEditer.
- * The FigureEditor should use the moveBy() function to move a triangle
- * instead of this one.
- */
-void Triangle::moveTransformBy(double dx, double dy)
-{
-	TriangleNodesIterator n_iter( nList );
-    NodeItem *node;
-	QPointF dn(dx, dy);
-	int n = 0;
-    while ( n_iter.hasNext() )
-	{
-		node = n_iter.next();
-		QPointF& p = cList[n];
-		p += dn;
-		QPointF npos = mapToItem(node, p);
-        node->movePoint(npos.x(), npos.y());
-		n++;
-    }
-	QGraphicsPolygonItem::setPolygon(cList);
-	adjustSceneRect();
-	coordsToXForm();
-}
-
-
 
 void Triangle::adjustSceneRect()
 {
@@ -446,8 +419,8 @@ void Triangle::findEdge(QPointF pos)
 		double dx( scenePoint.x() - scenePos.x() );
 		double dy( scenePoint.y() - scenePos.y() );
 		double d( sqrt( dx*dx + dy*dy ) );
-		// choose the edge that is <2 pixels from pos
-		if (d < 2.0)
+		// choose the edge that is <3 pixels from pos
+		if (d < 3.0)
 		{
 			logFiner(QString("Triangle::findEdge : found triangle %1 edge at (%2,%3)")
 				.arg(m_index).arg(x).arg(y));
@@ -465,10 +438,24 @@ void Triangle::findEdge(QPointF pos)
 	canvas->update();
 }
 
+QPointF Triangle::circumCenter()
+{
+	QPolygonF pa( polygon() );
+	double Ax, Ay, Bx, By, Cx, Cy;
+	Ax = pa[0].x(); Ay = pa[0].y();
+	Bx = pa[1].x(); By = pa[1].y();
+	Cx = pa[2].x(); Cy = pa[2].y();
+	double D = 2.0*(Ax*(By-Cy)+Bx*(Cy-Ay)+Cx*(Ay-By));
+	return QPointF( ((Ay*Ay + Ax*Ax)*(By-Cy) + (By*By + Bx*Bx)*(Cy-Ay) + (Cy*Cy + Cx*Cx)*(Ay-By)) / D,
+					((Ay*Ay + Ax*Ax)*(Cx-Bx) + (By*By + Bx*Bx)*(Ax-Cx) + (Cy*Cy + Cx*Cx)*(Bx-Ax)) / D );
+}
+
+
 void Triangle::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
 	QGraphicsPolygonItem::paint(painter, option, widget);
-	if (canvas->getSelectedTriangle() == this || type() == PostTriangle::RTTI)
+	if (!canvas->hasSelection()
+		&& (canvas->getSelectedTriangle() == this || type() == PostTriangle::RTTI))
 	{
 		if (!m_edgeLine.isNull())
 		{

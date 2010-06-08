@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -29,15 +29,19 @@ VariationsWidget::VariationsWidget(GenomeVector* gen, QWidget* parent)
 {
 	setupUi(this);
 
-	const QStringList vars(Util::flam3_variations().keys());
 	model = new VarsTableModel();
 	m_variationsTable->setModel(model);
 	m_variationsTable->restoreSettings();
 	m_variationsTable->header()->resizeSections(QHeaderView::ResizeToContents);
+	m_variationValueEditor->restoreSettings();
+	lastVariation = "";
 
 	connect(m_variationsTable, SIGNAL(valueUpdated(int)), this, SLOT(variationEditedSlot(int)));
 	connect(m_variationsTable, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
 	connect(m_variationsTable, SIGNAL(precisionChanged()), this, SLOT(updateFormData()));
+	connect(m_variationSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(variationSelectedSlot(int)));
+	connect(m_variationValueEditor, SIGNAL(valueUpdated()), this, SLOT(valueEditorUpdatedSlot()));
+	connect(m_applyButton, SIGNAL(clicked(bool)), this, SLOT(addVariationValueSlot()));
 }
 
 VariationsWidget::~VariationsWidget()
@@ -45,64 +49,72 @@ VariationsWidget::~VariationsWidget()
 	delete model;
 }
 
+// connected to the '+' toolbutton above the treeview
+void VariationsWidget::addVariationValueSlot()
+{
+	m_variationValueEditor->updateValue(0.0);
+	updateFormData();
+}
+
+// connected to the doublevalueeditor above the treeview
+void VariationsWidget::valueEditorUpdatedSlot()
+{
+	flam3_xform* xform = selectedTriangle->xform();
+	double* var = xform->var;
+	var[Util::variation_number(lastVariation)] = m_variationValueEditor->value();
+	model->setModelData(xform);
+	emit dataChanged();
+}
+
+// connected to the combobox above the treeview
+void VariationsWidget::variationSelectedSlot(int /*idx*/)
+{
+	flam3_xform* xform = selectedTriangle->xform();
+	double* var = xform->var;
+	QString rowName = m_variationSelector->currentText();
+	if (lastVariation == rowName)
+		return;
+
+	int row = Util::variation_number(rowName);
+	double thisvalue = m_variationValueEditor->value();
+	if (!lastVariation.isEmpty())
+		var[Util::variation_number(lastVariation)] = 0.0;
+	var[row] = thisvalue;
+	lastVariation = rowName;
+	model->setModelData(xform);
+	emit dataChanged();
+}
+
+void VariationsWidget::resetVariationSelector()
+{
+	double* var = selectedTriangle->xform()->var;
+	m_variationSelector->blockSignals(true);
+	QString current = m_variationSelector->currentText();
+	m_variationSelector->clear();
+	for (int n = 0 ; n < flam3_nvariations ; n++)
+	{
+		double value = var[n];
+		QString key = flam3_variation_names[n];
+		if (value == 0.0)
+			m_variationSelector->addItem(key);
+	}
+	m_variationSelector->blockSignals(false);
+	lastVariation = m_variationSelector->currentText();
+	m_variationValueEditor->updateValue(0.0);
+}
+
 void VariationsWidget::updateFormData()
 {
 	logFiner("VariationsWidget::updateFormData : setting variations");
-	QLocale l;
-	m_variationsTable->blockSignals(true);
-	int variations_pre = m_variationsTable->precision();
 	flam3_xform* xform = selectedTriangle->xform();
-	double* var = xform->var;
-
-	for (int row = 0; row < model->rowCount() ; row++)
-	{
-		QModelIndex nidx( model->index(row, 0) );
-		QModelIndex vidx( model->index(row, 1) );
-		double value(var[Util::variation_number(nidx.data().toString())]);
-		if (value == 0.0)
-			model->setData(vidx, 0);
-		else
-			model->setData(vidx, l.toString(value, 'f', variations_pre));
-
-		if (model->hasChildren(nidx))
-		{
-			for (int row = 0; row < model->rowCount(nidx) ; row++)
-			{
-				QModelIndex cnidx( model->index(row, 0, nidx) );
-				QModelIndex cvidx( model->index(row, 1, nidx) );
-				// get the UserRole data for the variable name from the index
-				// since the DisplayRole removes the variation part
-				value = Util::get_xform_variable(xform, cnidx.data(Qt::UserRole).toString());
-				if (value == 0.0)
-					model->setData(cvidx, 0);
-				else
-					model->setData(cvidx, l.toString(value, 'f', variations_pre));
-			}
-		}
-	}
-	m_variationsTable->blockSignals(false);
-	updateLabel();
+	model->setPrecision( m_variationsTable->precision() );
+	model->setModelData(xform);
+	resetVariationSelector();
 }
 
-void VariationsWidget::variationEditedSlot(int row)
+void VariationsWidget::variationEditedSlot(int /*row*/)
 {
-	flam3_xform* xform = selectedTriangle->xform();
-	double* var = xform->var;
-	VarsTableItem* item = model->getVariation(row);
-	QString name(item->data(0).toString());
-	double value(item->data(1).toDouble());
-	var[Util::variation_number(name)] = value;
-	if (item->childCount() > 0)
-	{
-		for (int n = 0 ; n < item->childCount() ; n++)
-		{
-			VarsTableItem* child = item->child(n);
-			name  = child->data(0).toString();
-			value = child->data(1).toDouble();
-			Util::set_xform_variable(xform, name, value);
-		}
-	}
-	updateLabel();
+	resetVariationSelector();
 	emit dataChanged();
 }
 
@@ -135,21 +147,4 @@ void VariationsWidget::wheelEvent(QWheelEvent* e)
 		m_variationsTable->verticalScrollBar()->triggerAction(a);
 
 	e->accept();
-}
-
-void VariationsWidget::updateLabel()
-{
-	QStringList sl;
-	QLocale l;
-	int rows( model->rowCount() );
-	for (int n = 0 ; n < rows ; n++)
-	{
-		VarsTableItem* item = model->getVariation(n);
-		QString name(item->data(0).toString());
-		double value(item->data(1).toDouble());
-		if (value != 0.0)
-			sl << QString("%1(%2)").arg(name).arg(l.toString(value, 'f', 2));
-	}
-	m_varListLabel->setWordWrap(false);
-	m_varListLabel->setText(sl.join(" "));
 }

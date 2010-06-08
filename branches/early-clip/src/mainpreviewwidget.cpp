@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007 by David Bitseff                                   *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -83,7 +83,7 @@ void MainPreviewWidget::popupMenuTriggeredSlot(QAction* a)
 {
 	ViewerPresetsWidget* w
 		= dynamic_cast<ViewerPresetsWidget*>(getWidget("ViewerPresetsWidget"));
-	w->selectedPreset(a->text());
+	w->selectPreset(a->text());
 }
 
 void MainPreviewWidget::mousePressEvent(QMouseEvent* e)

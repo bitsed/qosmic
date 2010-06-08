@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,13 +17,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
 #ifndef EDITTRIANGLEWIDGET_H
 #define EDITTRIANGLEWIDGET_H
 
 
 #include "ui_edittrianglewidget.h"
 #include "qosmicwidget.h"
+#include "xfedit.h"
 
 class Triangle;
 class FigureEditor;
@@ -34,10 +34,14 @@ class EditTriangleWidget : public QWidget, public QosmicWidget,
 {
 	Q_OBJECT
 
+	private:
+		GenomeVector* genome;
+		FigureEditor* editor;
+		Triangle* selectedTriangle;
+		double lastRotateValue;
+
 	public:
 		EditTriangleWidget(GenomeVector*, FigureEditor*, QWidget* parent=0);
-		QPointF triangleTransformPos();
-		QPointF selectionTransformPos();
 		void reset();
 
 	signals:
@@ -48,33 +52,24 @@ class EditTriangleWidget : public QWidget, public QosmicWidget,
 		void triangleSelectedSlot(Triangle*);
 
 	protected slots:
-		void triangleScaledAction();
-		void triangleRotatedAction();
-		void triangleHFlippedAction();
-		void triangleVFlippedAction();
+		void triangleRotateAction();
+		void triangleRotateCWAction();
+		void triangleRotateCCWAction();
 		void moveTriangleLeftAction();
 		void moveTriangleRightAction();
 		void moveTriangleUpAction();
 		void moveTriangleDownAction();
 		void rotateTextEditedSlot();
-		void scaleTextEditedSlot();
 		void toggleMarkAction(bool);
-		void selectedItemsChangedAction();
+		void triangleScaleUpAction();
+		void triangleScaleDownAction();
+		void selectToolAction(int);
+		void selectToolAction(FigureEditor::EditMode);
+		void sceneAxesSelected(int);
+		void selectionItemsChangedAction(int);
 
 	protected:
 		void closeEvent(QCloseEvent*);
-
-	private:
-		GenomeVector* genome;
-		FigureEditor* editor;
-		Triangle* selectedTriangle;
-		double rotate_dx;
-		double scale_dx;
-
-		QButtonGroup* m_transformPosGroup;
-		QButtonGroup* m_selectionTypeGroup;
-
-		enum TransformPosition { Origin, Center, NodeO, NodeX, NodeY, Mark };
 };
 
 

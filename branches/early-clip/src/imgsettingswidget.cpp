@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007 by David Bitseff                                   *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,9 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
 #include "imgsettingswidget.h"
-#include <QAction>
+#include "viewerpresetswidget.h"
 
 ImageSettingsWidget::ImageSettingsWidget(GenomeVector* gen, QWidget* parent)
 	: QWidget(parent), genome(gen)
@@ -38,6 +37,17 @@ ImageSettingsWidget::ImageSettingsWidget(GenomeVector* gen, QWidget* parent)
 	m_symmetryLineEdit->restoreSettings();
 	m_timeLineEdit->restoreSettings();
 
+	presets = new ViewerPresetsWidget(genome);
+	presets->hide();
+	presets->setWindowModality(Qt::WindowModal);
+	m_presetsComboBox->clear();
+	m_presetsComboBox->addItem(QString());
+	m_presetsComboBox->addItems( presets->presetNames() );
+
+	timer = new QTimer(this);
+	timer->setInterval(2000);
+	timer->setSingleShot(true);
+
 	connect(m_qualityLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
 	connect(m_filterLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
 	connect(m_oversampleLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
@@ -52,6 +62,14 @@ ImageSettingsWidget::ImageSettingsWidget(GenomeVector* gen, QWidget* parent)
 	connect(m_timeLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
 	connect(m_interpolationBox, SIGNAL(activated(int)), this, SLOT(fieldEditedAction()));
 	connect(m_interpolationTypeBox, SIGNAL(activated(int)), this, SLOT(fieldEditedAction()));
+
+	connect(m_goLeftButton, SIGNAL(pressed()), this, SLOT(moveStackLeftAction()));
+	connect(m_goRightButton, SIGNAL(pressed()), this, SLOT(moveStackRightAction()));
+	connect(m_presetsButton, SIGNAL(pressed()), this, SLOT(showPresetsDialog()));
+	connect(m_presetsComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectPresetAction(int)));
+	connect(presets, SIGNAL(presetSelected()), this, SIGNAL(presetSelected()));
+	connect(presets, SIGNAL(dataChanged()), this, SLOT(presetsDataChangedAction()));
+	connect(timer, SIGNAL(timeout()), this, SLOT(resetPresetsComboBoxAction()));
 }
 
 void ImageSettingsWidget::reset()
@@ -61,6 +79,45 @@ void ImageSettingsWidget::reset()
 
 #define genome_ptr (genome->selectedGenome())
 
+void ImageSettingsWidget::hideEvent(QHideEvent* /*e*/)
+{
+	presets->hide();
+	presets->close();
+}
+
+void ImageSettingsWidget::moveStackLeftAction()
+{
+	m_stackedWidget->setCurrentIndex(
+		qBound(0, m_stackedWidget->currentIndex() - 1,  m_stackedWidget->count() - 1));
+}
+
+void ImageSettingsWidget::moveStackRightAction()
+{
+	m_stackedWidget->setCurrentIndex(
+		qBound(0, m_stackedWidget->currentIndex() + 1,  m_stackedWidget->count() - 1));
+}
+
+void ImageSettingsWidget::showPresetsDialog()
+{
+	presets->show();
+	presets->move(QCursor::pos() + QPoint(0, -presets->height()));
+}
+
+void ImageSettingsWidget::selectPresetAction(int idx)
+{
+	if (idx > 0)
+		presets->selectPreset(idx - 1);
+}
+
+void ImageSettingsWidget::presetsDataChangedAction()
+{
+	m_presetsComboBox->blockSignals(true);
+	m_presetsComboBox->clear();
+	m_presetsComboBox->addItem(QString());
+	m_presetsComboBox->addItems( presets->presetNames() );
+	m_presetsComboBox->setCurrentIndex(0);
+	m_presetsComboBox->blockSignals(false);
+}
 
 void ImageSettingsWidget::applySymmetryAction()
 {
@@ -70,6 +127,13 @@ void ImageSettingsWidget::applySymmetryAction()
 	genome_ptr->symmetry = 1;
 	m_symmetryLineEdit->setValue(1);
 	emit symmetryAdded();
+}
+
+void ImageSettingsWidget::resetPresetsComboBoxAction()
+{
+	m_presetsComboBox->blockSignals(true);
+	m_presetsComboBox->setCurrentIndex(0);
+	m_presetsComboBox->blockSignals(false);
 }
 
 void ImageSettingsWidget::updateFormData()
@@ -132,6 +196,8 @@ void ImageSettingsWidget::updateFormData()
 	else
 		option = "older";
 	m_interpolationTypeBox->setCurrentIndex(m_interpolationTypeBox->findText(option));
+
+	timer->start();
 }
 
 void ImageSettingsWidget::fieldEditedAction()
@@ -195,6 +261,8 @@ void ImageSettingsWidget::fieldEditedAction()
 		genome_ptr->interpolation_type = flam3_inttype_compat;
 	else
 		genome_ptr->interpolation_type = flam3_inttype_older;
+
+	resetPresetsComboBoxAction();
 
 	emit dataChanged();
 }

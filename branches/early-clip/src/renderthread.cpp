@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,10 +22,6 @@
 #include "renderthread.h"
 #include "flam3util.h"
 #include "logger.h"
-
-#ifndef NTHREADS
-#define NTHREADS 1
-#endif
 
 
 // global 'static' vars used in callback. they're prefixed with an underscore.
@@ -83,11 +79,14 @@ RenderThread::RenderThread() :
 	flame.time = 0.0;
 	flame.bytes_per_channel = 1;
 	flame.pixel_aspect_ratio = 1.0;
+	flame.sub_batch_size = 10000;
 	flame.nthreads = QString(getenv("flam3_nthreads")).toInt();
 	flame.verbose  = QString(getenv("flam3_verbose")).toInt();
 
 	if (flame.nthreads < 1)
-		flame.nthreads = NTHREADS;
+		flame.nthreads = flam3_count_nthreads();
+
+	logInfo(QString("RenderThread::RenderThread : using %1 rendering thread(s)").arg(flame.nthreads));
 
 	preview_request = 0;
 	image_request = 0;
@@ -115,8 +114,8 @@ RenderThread::~RenderThread()
 void RenderThread::run()
 {
 	logInfo("RenderThread::run : starting thread");
-    while (running)
-    {
+	while (running)
+	{
 		RenderRequest* job;
 		if (preview_request != 0)
 		{

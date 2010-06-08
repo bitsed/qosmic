@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>116</width>
-    <height>293</height>
+    <width>122</width>
+    <height>272</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,12 +26,24 @@
       <item row="0" column="0">
        <widget class="QComboBox" name="m_genomeSelector">
         <property name="toolTip">
-         <string>genome</string>
+         <string>select genome</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
        <widget class="QFrame" name="frame">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>1</width>
+          <height>1</height>
+         </size>
+        </property>
         <property name="frameShape">
          <enum>QFrame::NoFrame</enum>
         </property>
@@ -44,12 +56,27 @@
          </property>
          <item>
           <widget class="QToolButton" name="m_addButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>1</width>
+             <height>1</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>duplicate genome</string>
+           </property>
            <property name="text">
             <string>...</string>
            </property>
            <property name="icon">
             <iconset resource="../qosmic.qrc">
-             <normaloff>:/icons/silk/bullet_add.xpm</normaloff>:/icons/silk/bullet_add.xpm</iconset>
+             <normaloff>:/icons/silk/page_add.xpm</normaloff>:/icons/silk/page_add.xpm</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -61,12 +88,27 @@
          </item>
          <item>
           <widget class="QToolButton" name="m_deleteButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>1</width>
+             <height>1</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>remove genome</string>
+           </property>
            <property name="text">
             <string>...</string>
            </property>
            <property name="icon">
             <iconset resource="../qosmic.qrc">
-             <normaloff>:/icons/silk/bullet_delete.xpm</normaloff>:/icons/silk/bullet_delete.xpm</iconset>
+             <normaloff>:/icons/silk/page_delete.xpm</normaloff>:/icons/silk/page_delete.xpm</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -76,34 +118,90 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QToolButton" name="m_clearTrianglesButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>1</width>
+             <height>1</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>clear triangles</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../qosmic.qrc">
+             <normaloff>:/icons/silk/page_green.xpm</normaloff>:/icons/silk/page_green.xpm</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_configButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>1</width>
+             <height>1</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>configure</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../qosmic.qrc">
+             <normaloff>:/icons/silk/bullet_wrench.xpm</normaloff>:/icons/silk/bullet_wrench.xpm</iconset>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QScrollArea" name="scrollArea">
-        <property name="horizontalScrollBarPolicy">
-         <enum>Qt::ScrollBarAlwaysOff</enum>
+       <widget class="GenomeVectorListView" name="m_genomesListView">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
-        <property name="widgetResizable">
+        <property name="minimumSize">
+         <size>
+          <width>1</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="acceptDrops">
          <bool>true</bool>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignHCenter|Qt::AlignTop</set>
+        <property name="dragEnabled">
+         <bool>true</bool>
         </property>
-        <widget class="QWidget" name="scrollAreaWidgetContents">
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <property name="margin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QFrame" name="m_buttonFrame">
-            <property name="autoFillBackground">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
+        <property name="dragDropMode">
+         <enum>QAbstractItemView::InternalMove</enum>
+        </property>
+        <property name="defaultDropAction">
+         <enum>Qt::MoveAction</enum>
+        </property>
+        <property name="movement">
+         <enum>QListView::Snap</enum>
+        </property>
        </widget>
       </item>
      </layout>
@@ -111,6 +209,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>GenomeVectorListView</class>
+   <extends>QListView</extends>
+   <header>genomevectorlistview.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../qosmic.qrc"/>
  </resources>

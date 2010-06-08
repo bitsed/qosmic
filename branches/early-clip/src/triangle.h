@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -79,7 +79,6 @@ class Triangle : public QGraphicsPolygonItem
 		BasisTriangle* basis() const;
 		void setNodeColor(const QColor&, const QColor&);
 		FigureEditor* editor() const;
-		void moveTransformBy(double dx, double dy);
 		void adjustSceneRect();
 		virtual void resetPosition();
 		void basisScaledSlot();
@@ -88,6 +87,7 @@ class Triangle : public QGraphicsPolygonItem
 		void findEdge(QPointF);
 		EdgeType getEdgeType();
 		void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget =0);
+		QPointF circumCenter();
 
 	protected:
 		void addNode( NodeItem* );

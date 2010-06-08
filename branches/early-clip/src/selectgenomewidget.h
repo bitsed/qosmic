@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,6 +23,7 @@
 #include <QWidget>
 
 #include "ui_selectgenomewidget.h"
+
 #include "genomevector.h"
 #include "renderthread.h"
 #include "previewwidget.h"
@@ -41,6 +42,7 @@ class SelectGenomeWidget : public QWidget, public QosmicWidget,
 
 	public slots:
 		void flameRenderedAction(RenderEvent*);
+		void updateSelectedPreview();
 
 	signals:
 		void genomeSelected(int);
@@ -48,23 +50,38 @@ class SelectGenomeWidget : public QWidget, public QosmicWidget,
 
 	protected slots:
 		void selectorIndexChangedSlot(int);
-		void genomeSelectedAction(PreviewWidget*, QMouseEvent*);
+		void genomeSelectedAction(const QModelIndex& idx);
 		void addButtonPressedSlot();
 		void delButtonPressedSlot();
+		void configButtonPressedSlot();
+		void clearTrianglesButtonPressedSlot();
+		void indexesMovedSlot(const QModelIndexList& idxList);
 
 	protected:
-		void showEvent(QShowEvent*);
-		void wheelEvent(QWheelEvent*);
-		void closeEvent(QCloseEvent*);
+		void showEvent(QShowEvent* event);
+		void closeEvent(QCloseEvent* event);
+		void clearPreviews();
 
 	private:
-		int last_idx;
 		QSize label_size;
 		QList<RenderRequest*> r_requests;
-		QList<PreviewWidget*> labels;
-		GenomeVector* genome;
+		GenomeVectorListModel* model;
 		RenderThread* r_thread;
 
+
+};
+
+
+#include "ui_selectgenomeconfigdialog.h"
+
+class SelectGenomeConfigDialog : public QDialog, private Ui::SelectGenomeConfigDialog
+{
+	Q_OBJECT
+
+	public:
+		SelectGenomeConfigDialog(QWidget* parent=0);
+		void setPreviewSize(const QSize& size);
+		QSize previewSize() const;
 };
 
 #endif

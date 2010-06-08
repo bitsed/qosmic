@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -48,6 +48,7 @@ namespace Util
 	void init_genome(flam3_genome*);
 	void add_default_xform(flam3_genome*);
 	const QMap<QString, int>& flam3_variations();
+	const QStringList& variation_names();
 	char* setup_C_locale();
 	void replace_C_locale(char*);
 

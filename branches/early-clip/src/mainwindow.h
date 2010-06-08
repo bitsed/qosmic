@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -99,6 +99,9 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		void scriptFinishedSlot();
 		void importAction();
 		void exportAction();
+		void sceneScaledSlot();
+		void sceneCenteredSlot(int);
+		void sceneConfigSlot();
 
 	signals:
 		void mainWindowChanged();
@@ -163,7 +166,6 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		MainViewer* m_fileViewer;
 		PaletteEditor* m_paletteEditor;
 		SelectGenomeWidget* m_genomeSelectWidget;
-		ViewerPresetsWidget* m_viewerPresetsWidget;
 		SelectTriangleWidget* m_selectTriangleWidget;
 		AdjustSceneWidget* m_adjustSceneWidget;
 		QList<QDockWidget*> m_dockWidgets;
@@ -179,6 +181,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		QToolBar* fileToolBar;
 		QToolBar* editToolBar;
 		QToolBar* extraToolBar;
+		QToolBar* widgetsToolBar;
 		QAction* newAct;
 		QAction* openAct;
 		QAction* saveAct;
@@ -197,12 +200,14 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		QAction* showFileBarAct;
 		QAction* showEditBarAct;
 		QAction* showExtraBarAct;
+		QAction* showWidgetsBarAct;
 		QAction* separatorAct;
 		QAction* undoAct;
 		QAction* redoAct;
 		QAction* cutAct;
 		QAction* copyAct;
 		QAction* pasteAct;
+		QAction* addTriangleAct;
 		QAction* importAct;
 		QAction* exportAct;
 		QAction* selPrevAct;
