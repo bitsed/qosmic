@@ -26,34 +26,34 @@
 -- Frame Object Interface
 --
 frame:get_genome([idx =1])  -- Returns a reference to the Genome type at offset
-                            -- idx in the genomes list.  If there is no genome
-                            -- at that offset, the list is filled with default
-                            -- Genome types up to idx.
+							-- idx in the genomes list.  If there is no genome
+							-- at that offset, the list is filled with default
+							-- Genome types up to idx.
 
 frame:num_genomes() -- Returns the number of genomes in the genomes list
 
 frame:render([idx =1, [filename]])  -- Renders the genome at offset idx in the
-                                    -- genomes list.  If filename is given, then
-                                    -- the rendered image is saved to that file
-                                    -- in png format.  If filename is not given,
-                                    -- then the preview image is rendered.
+									-- genomes list.  If filename is given, then
+									-- the rendered image is saved to that file
+									-- in png format.  If filename is not given,
+									-- then the preview image is rendered.
 
 frame:update([idx =1, [filename]])  -- Renders the genome at offset idx in the
-                                    -- genomes list.  If filename is given, then
-                                    -- the rendered image is saved to that file
-                                    -- in png format.  If filename is not given,
-                                    -- then the GUI is updated and the preview
-                                    -- image is rendered.  Use update to redraw
-                                    -- the triangles in the figure editor.
+									-- genomes list.  If filename is given, then
+									-- the rendered image is saved to that file
+									-- in png format.  If filename is not given,
+									-- then the GUI is updated and the preview
+									-- image is rendered.  Use update to redraw
+									-- the triangles in the figure editor.
 
 frame:load(filename)    -- Load the flam3 xml file given by string filename. The
-                        -- existing genome list is cleared beforehand.
+						-- existing genome list is cleared beforehand.
 
 frame:save(filename)    -- Saves the current genome list to string in filename
-                        -- in flam3 xml format.
+						-- in flam3 xml format.
 
 frame:copy_genome(a, b) -- Copies the genome at offset a to offset b.  Offset
-                        -- 'a' must be a valid genomes offset.
+						-- 'a' must be a valid genomes offset.
 
 frame:del_genome(idx)   -- Removes the genome at offset idx
 
@@ -77,37 +77,37 @@ center([x,y])       -- The coordinates of the center of the genome.
 rot_center([x,y])   -- Rotate around this position
 
 background([r,g,b]) -- Accessor for the background color of the genome.
-                    -- Valid values for r,g, and b variables are in [0.0, 1.0].
+					-- Valid values for r,g, and b variables are in [0.0, 1.0].
 
 num_xforms()        -- Returns the number of xforms in the xforms list.
 
 final_xform_index([idx]) -- Returns the offset of the final xform.
 
 get_xform(idx)      -- Returns a reference to the XForm at offset idx in the
-                    -- xform list for this genome.  The given offset must be a
-                    -- valid index.
+					-- xform list for this genome.  The given offset must be a
+					-- valid index.
 
 add_xform([n =1])  -- Add n xform(s) to the xform list.  Returns a reference to
-                   -- the last xform added.
+				   -- the last xform added.
 
 del_xform(idx)     -- Removes the xform at offset idx from the xform list.  The
-                   -- xforms at higher offsets are re-indexed.
+				   -- xforms at higher offsets are re-indexed.
 
 copy_xform(a, b)   -- Copy values in XForm at offset a to the XForm at offset b.
-                   -- The first argument may also be a valid XForm type.
+				   -- The first argument may also be a valid XForm type.
 
 clear_xforms()     -- Remove all xform from the list.
 
 load_palette(idx)  -- Load the built-in palette given by idx into the genome's
-                   -- palette.  Valid values for idx are on [1, NUM_PALETTES].
+				   -- palette.  Valid values for idx are on [1, NUM_PALETTES].
 
 palette(idx, [r,g,b])  -- Get/set the color in the palette at offset idx.  The
-                       -- palette is indexed on [1,256], and the color
-                       -- components are valid on [0.0,1.0].
+					   -- palette is indexed on [1,256], and the color
+					   -- components are valid on [0.0,1.0].
 
 highlight_power([real]) -- The maximum Value for an RGB color before trending
-                        -- the color towards white as the density increases.
-                        -- -1 = disabled, 0 = no highlights
+						-- the color towards white as the density increases.
+						-- -1 = disabled, 0 = no highlights
 
 chaos([table])          -- Access and return the entire genome chaos array table
 chaos(idx, [table])     -- Access and return an xform genome chaos array table
@@ -183,24 +183,24 @@ index()              -- This xform offset in the genome's xform list
 density([real])      -- density
 
 color([idx])         -- The index of the color palette used by this xform
-                     -- valid on [0.0, 1.0]
+					 -- valid on [0.0, 1.0]
 
 color_speed([real])  -- Scaling factor on the color added to current iteration
 
 opacity([real])      -- The xform opacity valid on [0.0, 1.0] where 1.0=opaque
 
 var(n, [real, [table]]) -- The value of variation 'n'.  'n' may be a string
-                        -- containing the variation name, or it may be an
-                        -- integer given by one of the global variation
-                        -- names (ie LINEAR, WAVES, ...).  'table' is a
-                        -- table of the variation's variable values if they
-                        -- exist (see below).  This method returns the
-                        -- variation value and a table of it's variables.
+						-- containing the variation name, or it may be an
+						-- integer given by one of the global variation
+						-- names (ie LINEAR, WAVES, ...).  'table' is a
+						-- table of the variation's variable values if they
+						-- exist (see below).  This method returns the
+						-- variation value and a table of it's variables.
 
 param(n, [real, [table]])  -- An alias for var()
 
 animate([real])      -- Set if this xform rotates (in sheep >0 means stationary)
-                     -- valid on [0.0, inf]
+					 -- valid on [0.0, inf]
 
 o([x,y])             -- The O coordinate for this xform's triangle
 a([x,y])             -- An alias for o()
@@ -216,13 +216,13 @@ pos([x,y])           -- The coordinates of the center of the xform's triangle.
 translate(dx, dy)    -- Move the center of the xform's triangle by dx, dy
 
 rotate(deg,[x,y])    -- Rotate the xform's triangle around [x,y].
-                     -- [x,y]=pos() if not given
+					 -- [x,y]=pos() if not given
 
 scale(dz,[dy,[x,y]]) -- Scale the xform's triangle by dz,dy with respect to
-                     -- [x,y]. [x,y]=pos() if not given. dy = dz if not given.
+					 -- [x,y]. [x,y]=pos() if not given. dy = dz if not given.
 
 shear(dx,dy,[x,y])   -- Shear the xform's triangle by dz,dy with respect to
-                     -- [x,y]. [x,y]=pos() if not given
+					 -- [x,y]. [x,y]=pos() if not given
 
 
 xa([value])  -- The xform's 'a' value.
@@ -244,13 +244,13 @@ posp([x,y])           -- The coordinates of the center of the xform's post trian
 translatep(dx, dy)    -- Move the center of the xform's post triangle by dx, dy
 
 rotatep(deg,[x,y])    -- Rotate the xform's post triangle around [x,y].
-                      -- [x,y]=pos() if not given
+					  -- [x,y]=pos() if not given
 
 scalep(dz,[dy,[x,y]]) -- Scale the xform's post triangle by dz,dy with respect
-                      -- to [x,y]. [x,y]=pos() if not given, and dy = dz
+					  -- to [x,y]. [x,y]=pos() if not given, and dy = dz
 
 shearp(dx,dy,[x,y])   -- Shear the xform's post triangle by dx,dy with respect
-                      -- to [x,y].  [x,y]=pos() if not given
+					  -- to [x,y].  [x,y]=pos() if not given
 
 xap([value])  -- The xform's post triangle 'a' value.
 xbp([value])  -- The xform's post triangle 'b' value.
@@ -304,105 +304,106 @@ end
 -- The following is a list of the globally bound variables corresponding to the
 -- transform variations.  There is also a variable called RANDOM which has a
 -- value of -1, and the number of variations available is set in a variable
--- called NUM_VARS.
+-- called NUM_VARS.  The variation names are also available as strings in a globally
+-- bound array called VARIATIONS.
 --
-0  LINEAR
-1  SINUSOIDAL
-2  SPHERICAL
-3  SWIRL
-4  HORSESHOE
-5  POLAR
-6  HANDKERCHIEF
-7  HEART
-8  DISC
-9  SPIRAL
-10 HYPERBOLIC
-11 DIAMOND
-12 EX
-13 JULIA
-14 BENT
-15 WAVES
-16 FISHEYE
-17 POPCORN
-18 EXPONENTIAL
-19 POWER
-20 COSINE
-21 RINGS
-22 FAN
-23 BLOB
-24 PDJ
-25 FAN2
-26 RINGS2
-27 EYEFISH
-28 BUBBLE
-29 CYLINDER
-30 PERSPECTIVE
-31 NOISE
-32 JULIAN
-33 JULIASCOPE
-34 BLUR
-35 GAUSSIAN_BLUR
-36 RADIAL_BLUR
-37 PIE
-38 NGON
-39 CURL
-40 RECTANGLES
-41 ARCH
-42 TANGENT
-43 SQUARE
-44 RAYS
-45 BLADE
-46 SECANT2
-47 TWINTRIAN
-48 CROSS
-49 DISC2
-50 SUPER_SHAPE
-51 FLOWER
-52 CONIC
-53 PARABOLA
-54 BENT2
-55 BIPOLAR
-56 BOARDERS
-57 BUTTERFLY
-58 CELL
-59 CPOW
-60 CURVE
-61 EDISC
-62 ELLIPTIC
-63 ESCHER
-64 FOCI
-65 LAZYSUSAN
-66 LOONIE
-67 PRE_BLUR
-68 MODULUS
-69 OSCILLOSCOPE
-70 POLAR2
-71 POPCORN2
-72 SCRY
-73 SEPARATION
-74 SPLIT
-75 SPLITS
-76 STRIPES
-77 WEDGE
-78 WEDGE_JULIA
-79 WEDGE_SPH
-80 WHORL
-81 WAVES2
-82 EXP
-83 LOG
-84 SIN
-85 COS
-86 TAN
-87 SEC
-88 CSC
-89 COT
-90 SINH
-91 COSH
-92 TANH
-93 SECH
-94 CSCH
-95 COTH
-96 AUGER
+1  LINEAR
+2  SINUSOIDAL
+3  SPHERICAL
+4  SWIRL
+5  HORSESHOE
+6  POLAR
+7  HANDKERCHIEF
+8  HEART
+9  DISC
+10 SPIRAL
+11 HYPERBOLIC
+12 DIAMOND
+13 EX
+14 JULIA
+15 BENT
+16 WAVES
+17 FISHEYE
+18 POPCORN
+19 EXPONENTIAL
+20 POWER
+21 COSINE
+22 RINGS
+23 FAN
+24 BLOB
+25 PDJ
+26 FAN2
+27 RINGS2
+28 EYEFISH
+29 BUBBLE
+30 CYLINDER
+31 PERSPECTIVE
+32 NOISE
+33 JULIAN
+34 JULIASCOPE
+35 BLUR
+36 GAUSSIAN_BLUR
+37 RADIAL_BLUR
+38 PIE
+39 NGON
+40 CURL
+41 RECTANGLES
+42 ARCH
+43 TANGENT
+44 SQUARE
+45 RAYS
+46 BLADE
+47 SECANT2
+48 TWINTRIAN
+49 CROSS
+50 DISC2
+51 SUPER_SHAPE
+52 FLOWER
+53 CONIC
+54 PARABOLA
+55 BENT2
+56 BIPOLAR
+57 BOARDERS
+58 BUTTERFLY
+59 CELL
+60 CPOW
+61 CURVE
+62 EDISC
+63 ELLIPTIC
+64 ESCHER
+65 FOCI
+66 LAZYSUSAN
+67 LOONIE
+68 PRE_BLUR
+69 MODULUS
+70 OSCILLOSCOPE
+71 POLAR2
+72 POPCORN2
+73 SCRY
+74 SEPARATION
+75 SPLIT
+76 SPLITS
+77 STRIPES
+78 WEDGE
+79 WEDGE_JULIA
+80 WEDGE_SPH
+81 WHORL
+82 WAVES2
+83 EXP
+84 LOG
+85 SIN
+86 COS
+87 TAN
+88 SEC
+89 CSC
+90 COT
+91 SINH
+92 COSH
+93 TANH
+94 SECH
+95 CSCH
+96 COTH
+97 AUGER
 
 
 -- Some xform variations have additional parameters called variables associated

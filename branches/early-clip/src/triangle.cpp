@@ -406,6 +406,10 @@ void Triangle::findEdge(QPointF pos)
 		<< QLineF(poly[1], poly[2]);
 	QPointF scenePos( mapToScene( pos ) );
 	int n(0);
+	int lastLength = m_edgeLine.length();
+	int lastType = m_edgeType;
+	m_edgeType = NoEdge;
+	m_edgeLine.setLength(0);
 	foreach (QLineF line, lines)
 	{
 		// determine the minimum distance between pos and each of the edges
@@ -433,9 +437,7 @@ void Triangle::findEdge(QPointF pos)
 		}
 		n++;
 	}
-	if (m_edgeLine.isNull())
-		m_edgeType = NoEdge;
-	canvas->update();
+	if (lastLength != m_edgeLine.length() || lastType != m_edgeType) canvas->update();
 }
 
 QPointF Triangle::circumCenter()

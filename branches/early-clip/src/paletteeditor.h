@@ -85,6 +85,7 @@ class PaletteEditor : public QWidget, private Ui::PaletteEditor
 		void saveGradientAction();
 		void resetGradientAction();
 		void browsePathChangedAction();
+		void createRandomGradientAction();
 
 	protected:
 		void showEvent(QShowEvent*);

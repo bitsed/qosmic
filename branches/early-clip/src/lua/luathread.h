@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007 by David Bitseff                                   *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -42,7 +42,7 @@ class LuaThread : public QThread
 	randctx ctx;
 
 	public:
-		LuaThread(MainWindow* m,  QObject* parent=0);
+		LuaThread(MainWindow* m, QObject* parent=0);
 		~LuaThread();
 		void msleep(unsigned long msecs);
 		virtual void run();
@@ -51,13 +51,16 @@ class LuaThread : public QThread
 		void stopScript();
 		bool stopping() const;
 		QString getMessage();
+		void emitScriptOutput(const QString&);
 		static int lua_stopluathread(lua_State*);
 		static int lua_irand(lua_State*);
 		static int lua_msleep(lua_State*);
+		static int lua_print(lua_State*);
 
 	signals:
 		void scriptFinished();
 		void scriptStopped();
+		void scriptHasOutput(const QString&);
 
 	protected:
 		void lua_load_environment(lua_State*);
