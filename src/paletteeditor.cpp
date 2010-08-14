@@ -78,6 +78,7 @@ PaletteEditor::PaletteEditor ( QWidget* parent ) : QWidget(parent)
 	connect(m_resetGradientButton, SIGNAL(clicked(bool)), this, SLOT(resetGradientAction()));
 	connect(m_saveGradientButton, SIGNAL(clicked(bool)), this, SLOT(saveGradientAction()));
 	connect(m_browseLineEdit, SIGNAL(returnPressed()), this, SLOT(browsePathChangedAction()));
+	connect(m_randomGradientButton, SIGNAL(clicked(bool)), this, SLOT(createRandomGradientAction()));
 }
 
 void PaletteEditor::closeEvent(QCloseEvent* event)
@@ -213,6 +214,24 @@ void PaletteEditor::stopsChangedAction()
 	}
 	setPaletteView();
 	emit paletteChanged();
+}
+
+void PaletteEditor::createRandomGradientAction()
+{
+	int nstops = m_randomGradientSpinBox->value();
+	while (nstops < 2)
+		nstops = flam3_random01() * 128;
+	QGradientStops stops;
+	for (int n = 0 ; n < nstops ; n++)
+	{
+		qreal idx = flam3_random01();
+		int r = flam3_random01() * 255;
+		int g = flam3_random01() * 255;
+		int b = flam3_random01() * 255;
+		QGradientStop s(idx, QColor(r, g, b));
+		stops << s;
+	}
+	m_gradientStops->setStops(stops);
 }
 
 void PaletteEditor::loadPalette(int palette_idx)

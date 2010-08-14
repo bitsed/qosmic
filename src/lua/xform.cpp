@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -171,7 +171,11 @@ int XForm::var(lua_State* L)
 {
 	int var_num;
 	if (lua_isnumber(L, 1) == 1)
-		var_num = lua_tointeger(L, 1);
+	{
+		var_num = lua_tointeger(L, 1) - 1;
+		if (var_num < 0 || var_num >= flam3_nvariations)
+			luaL_error(L, "invalid variation index %d", var_num + 1);
+	}
 	else
 	{
 		const char* name = luaL_checkstring(L, 1);

@@ -306,6 +306,30 @@
           <item row="3" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
+             <widget class="IntValueEditor" name="m_randomGradientSpinBox">
+              <property name="toolTip">
+               <string>number of randomly generated stops,
+&lt; 2 implies random number on [2,128]</string>
+              </property>
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>128</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="m_randomGradientButton">
+              <property name="toolTip">
+               <string>random gradient</string>
+              </property>
+              <property name="text">
+               <string>new</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <spacer name="horizontalSpacer">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -381,6 +405,11 @@
    <extends>QWidget</extends>
    <header>gradientstopseditor.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>IntValueEditor</class>
+   <extends>QSpinBox</extends>
+   <header>intvalueeditor.h</header>
   </customwidget>
  </customwidgets>
  <resources>

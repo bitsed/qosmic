@@ -402,8 +402,9 @@ MainWindow::MainWindow() : QMainWindow()
 	qApp->installEventFilter(this);
 	setCurrentFile("");
 
-	connect(sceneScaleSlider, SIGNAL(valueChanged(int)), this, SLOT(sceneScaledSlot()));
+	sceneCenterSelector->setCurrentIndex(m_xfeditor->centeredScaling());
 	connect(sceneCenterSelector, SIGNAL(activated(int)), this, SLOT(sceneCenteredSlot(int)));
+	connect(sceneScaleSlider, SIGNAL(valueChanged(int)), this, SLOT(sceneScaledSlot()));
 	connect(sceneConfigButton, SIGNAL(pressed()), this, SLOT(sceneConfigSlot()));
 	connect(modeSelectWidget, SIGNAL(buttonPressed(FigureEditor::EditMode)), m_xfeditor, SLOT(setMode(FigureEditor::EditMode)));
 	connect(m_xfeditor, SIGNAL(editModeChangedSignal(FigureEditor::EditMode)), modeSelectWidget, SLOT(setSelectedButton(FigureEditor::EditMode)));

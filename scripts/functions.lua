@@ -1,13 +1,23 @@
 function dump_xform(xf)
 	print(xf)
-	print('pos=',xf:pos())
 	print('index=',xf:index())
+	print('pos=',xf:pos())
 	print('color=',xf:color())
 	print('density=',xf:density())
-	print('symmetry=',xf:symmetry())
+	print('color_speed=',xf:color_speed())
+	print('opacity=',xf:opacity())
 	print('a=',xf:a())
 	print('b=',xf:b())
 	print('c=',xf:c())
+	for _, v in ipairs(VARIATIONS) do
+		val, vars = xf:var(_)
+		if val ~= 0 then
+			print(v .. '=', val)
+			for _, v in pairs(vars) do
+				print('    ' .. _ .. '=', v)
+			end
+		end
+	end
 end
 
 function dump_genome(g)
@@ -57,7 +67,6 @@ function rotate_xf_test(xf)
 	for n=1,360 do
 		xf:rotate(1)
 		frame:update() -- update the widgets' data
-		frame:render()
 	end
 end
 

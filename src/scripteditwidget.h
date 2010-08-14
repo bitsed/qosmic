@@ -29,6 +29,10 @@ class ScriptEditWidget : public QWidget, private Ui::ScriptEditWidget
 {
 	Q_OBJECT
 
+	QString script_filename;
+	Lua::LuaThread lua_thread;
+	MainWindow* mw;
+
 	public:
 		ScriptEditWidget(MainWindow* m, QWidget *parent = 0);
 		~ScriptEditWidget();
@@ -39,11 +43,11 @@ class ScriptEditWidget : public QWidget, private Ui::ScriptEditWidget
 		void scriptFinishedAction();
 		void loadScriptAction();
 		void saveScriptAction();
+		void appendScriptOutput(const QString&);
+		void updateCursorLabel();
 
 	protected:
-		QString script_filename;
-		Lua::LuaThread lua_thread;
-		MainWindow* mw;
+		void closeEvent(QCloseEvent*);
 };
 
 #include "mainwindow.h"
