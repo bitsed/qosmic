@@ -34,7 +34,6 @@
 #include "mutationwidget.h"
 #include "camerasettingswidget.h"
 #include "colorsettingswidget.h"
-#include "edittrianglewidget.h"
 #include "colorbalancewidget.h"
 #include "imgsettingswidget.h"
 #include "trianglecoordswidget.h"
@@ -51,7 +50,6 @@
 #include "coordinatemark.h"
 #include "renderdialog.h"
 #include "renderprogressdialog.h"
-#include "adjustscenewidget.h"
 #include "editmodeselectorwidget.h"
 
 MainWindow::MainWindow() : QMainWindow()
@@ -82,13 +80,14 @@ MainWindow::MainWindow() : QMainWindow()
 	m_xfeditview->setScene(m_xfeditor);
 	// force the containing qgraphicsview to track mouseMoveEvents
 	m_xfeditview->viewport()->setMouseTracking(true);
-	connect(m_xfeditor, SIGNAL(triangleModifiedSignal(Triangle*)),
-			this, SLOT(triangleModifiedSlot(Triangle*)));
-	connect(m_xfeditor, SIGNAL(triangleSelectedSignal(Triangle*)),
-			this, SLOT(triangleSelectedSlot(Triangle*)));
-	connect(m_xfeditor, SIGNAL(coordinateChangeSignal(double,double)),
-			this, SLOT(updateStatus(double,double)));
+	logInfo("MainWindow::MainWindow : creating EditModeSelectorWidget");
+	m_modeSelectorWidget = new EditModeSelectorWidget(m_xfeditor, this);
+	centralWidget()->layout()->addWidget(m_modeSelectorWidget);
+	connect(m_xfeditor, SIGNAL(triangleModifiedSignal(Triangle*)), this, SLOT(triangleModifiedSlot(Triangle*)));
+	connect(m_xfeditor, SIGNAL(triangleSelectedSignal(Triangle*)), this, SLOT(triangleSelectedSlot(Triangle*)));
+	connect(m_xfeditor, SIGNAL(coordinateChangeSignal(double,double)), this, SLOT(updateStatus(double,double)));
 	connect(m_xfeditor, SIGNAL(undoStateSignal()), this, SLOT(addUndoState()));
+	connect(m_modeSelectorWidget, SIGNAL(undoStateSignal()), this, SLOT(addUndoState()));
 
 	QDockWidget *dock;
 	QDockWidget *lastDock;
@@ -220,23 +219,6 @@ MainWindow::MainWindow() : QMainWindow()
 			m_coordsWidget, SLOT(triangleModifiedSlot(Triangle*)));
 	connect(m_coordsWidget, SIGNAL(dataChanged()), this, SLOT(render()));
 	connect(m_coordsWidget, SIGNAL(undoStateSignal()), this, SLOT(addUndoState()));
-	lastDock = dock;
-
-	// triangle editing widget
-	logInfo("MainWindow::MainWindow : creating EditTriangleWidget");
-	dock = new QDockWidget(tr("Edit Triangle"), this);
-	dock->setObjectName(dock->windowTitle());
-	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-	m_editTriangleWidget = new EditTriangleWidget(&genomes, m_xfeditor, dock);
-	dock->setWidget(m_editTriangleWidget);
-	tabifyDockWidget(lastDock, dock);
-	dockActions << dock->toggleViewAction();
-	dock->hide();
-	m_dockWidgets << dock;
-	connect(m_xfeditor, SIGNAL(triangleSelectedSignal(Triangle*)),
-			m_editTriangleWidget, SLOT(triangleSelectedSlot(Triangle*)));
-	connect(m_editTriangleWidget, SIGNAL(dataChanged()), this, SLOT(render()));
-	connect(m_editTriangleWidget, SIGNAL(undoStateSignal()), this, SLOT(addUndoState()));
 	lastDock = dock;
 
 	// color settings widget
@@ -401,14 +383,6 @@ MainWindow::MainWindow() : QMainWindow()
 	// install this eventfilter to capture globally the spacebar key
 	qApp->installEventFilter(this);
 	setCurrentFile("");
-
-	sceneCenterSelector->setCurrentIndex(m_xfeditor->centeredScaling());
-	connect(sceneCenterSelector, SIGNAL(activated(int)), this, SLOT(sceneCenteredSlot(int)));
-	connect(sceneScaleSlider, SIGNAL(valueChanged(int)), this, SLOT(sceneScaledSlot()));
-	connect(sceneConfigButton, SIGNAL(pressed()), this, SLOT(sceneConfigSlot()));
-	connect(modeSelectWidget, SIGNAL(buttonPressed(FigureEditor::EditMode)), m_xfeditor, SLOT(setMode(FigureEditor::EditMode)));
-	connect(m_xfeditor, SIGNAL(editModeChangedSignal(FigureEditor::EditMode)), modeSelectWidget, SLOT(setSelectedButton(FigureEditor::EditMode)));
-	connect(autoScaleButton, SIGNAL(clicked(bool)), m_xfeditor, SLOT(autoScale()));
 }
 
 
@@ -943,7 +917,7 @@ void MainWindow::createActions()
 	addAction(pasteAct);
 	connect(pasteAct, SIGNAL(triggered()), m_xfeditor, SLOT(pasteTriangleAction()));
 
-	addTriangleAct = new QAction(QIcon(":icons/silk/shape_square_add.xpm"), tr("Add Triangle"), this);
+	addTriangleAct = new QAction(QIcon(":icons/silk/shape_triangle_add.xpm"), tr("Add Triangle"), this);
 	addTriangleAct->setStatusTip(tr("Add a triangle"));
 	connect(addTriangleAct, SIGNAL(triggered()), m_xfeditor, SLOT(addTriangleAction()));
 
@@ -1003,7 +977,6 @@ void MainWindow::createMenus()
 	settingsMenu->addAction(showWidgetsBarAct);
 	settingsMenu->addAction(showFileBarAct);
 	settingsMenu->addAction(showEditBarAct);
-	settingsMenu->addAction(showExtraBarAct);
 	settingsMenu->addSeparator();
 
 	helpMenu = menuBar()->addMenu(tr("&Info"));
@@ -1053,12 +1026,6 @@ void MainWindow::createToolBars()
 	showEditBarAct->setStatusTip(tr("Show scene editing toolbar"));
 	connect(showEditBarAct, SIGNAL(triggered()), editToolBar, SLOT(show()));
 
-	extraToolBar = addToolBar(tr("Extra"));
-	extraToolBar->setObjectName("ExtraToolBar");
-	showExtraBarAct = new QAction(tr("Show E&xtra Toolbar"), this);
-	showExtraBarAct->setStatusTip(tr("Show the extra toolbar"));
-	connect(showExtraBarAct, SIGNAL(triggered()), extraToolBar, SLOT(show()));
-
 	fileToolBar->addAction(openAct);
 	fileToolBar->addAction(saveAct);
 	fileToolBar->addAction(saveAsAct);
@@ -1079,11 +1046,6 @@ void MainWindow::createToolBars()
 	action = qobject_cast<QDockWidget*>(m_selectTriangleWidget->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/shape_move_forwards.xpm"));
 	action->setStatusTip(tr("Triangles"));
-	widgetsToolBar->addAction(action);
-
-	action = qobject_cast<QDockWidget*>(m_editTriangleWidget->parentWidget())->toggleViewAction();
-	action->setIcon(QIcon(":icons/silk/shape_rotate_clockwise.xpm"));
-	action->setStatusTip(tr("Triangle Editing"));
 	widgetsToolBar->addAction(action);
 
 	action = qobject_cast<QDockWidget*>(m_variationsWidget->parentWidget())->toggleViewAction();
@@ -1163,15 +1125,6 @@ void MainWindow::createToolBars()
 	editToolBar->addAction(randomAct);
 	editToolBar->addAction(killAct);
 
-
-	EditModeSelectorWidget* modeWidget = new EditModeSelectorWidget(extraToolBar);
-	extraToolBar->addWidget(modeWidget);
-	extraToolBar->addSeparator();
-	extraToolBar->addAction(rescaleAct);
-	extraToolBar->hide();
-
-	connect(modeWidget, SIGNAL(buttonPressed(FigureEditor::EditMode)), m_xfeditor, SLOT(setMode(FigureEditor::EditMode)));
-	connect(m_xfeditor, SIGNAL(editModeChangedSignal(FigureEditor::EditMode)), modeWidget, SLOT(setSelectedButton(FigureEditor::EditMode)));
 }
 
 
@@ -1212,7 +1165,6 @@ void MainWindow::readSettings()
 		m_previewWidget->setPixmap(pix);
 		qobject_cast<QDockWidget*>(m_previewWidget->parentWidget())->show();
 		qobject_cast<QDockWidget*>(m_selectTriangleWidget->parentWidget())->show();
-		qobject_cast<QDockWidget*>(m_editTriangleWidget->parentWidget())->show();
 	}
 	else
 		logInfo(QString("MainWindow::readSettings : restored main window state"));
@@ -1755,7 +1707,7 @@ void MainWindow::setUndoState(UndoState* state)
 	flam3_copy(g, old);
 	reset();
 	m_xfeditor->restoreUndoState(state);
-	m_editTriangleWidget->reset();
+	m_modeSelectorWidget->reset();
 	render();
 	m_genomeSelectWidget->updateSelectedPreview();
 }
@@ -1773,44 +1725,4 @@ void MainWindow::addUndoState()
 	}
 }
 
-void MainWindow::sceneScaledSlot()
-{
-	int value = sceneScaleSlider->dx();
-	Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
-	double scale;
-	if (value > 0)
-	{
-		if (mods & Qt::ShiftModifier)
-			scale = 1.01;
-		else if (mods & Qt::ControlModifier)
-			scale = 1.10;
-		else
-			scale = 1.05;
-	}
-	else if (value < 0)
-	{
-		if (mods & Qt::ShiftModifier)
-			scale = 0.99;
-		else if (mods & Qt::ControlModifier)
-			scale = 0.9090;
-		else
-			scale = 0.9523;
-	}
-	else
-		return;
-
-	m_xfeditor->scaleBasis(scale, scale);
-}
-
-void MainWindow::sceneCenteredSlot(int idx)
-{
-	m_xfeditor->setCenteredScaling(static_cast<FigureEditor::SceneLocation>(idx));
-}
-
-void MainWindow::sceneConfigSlot()
-{
-	AdjustSceneWidget dialog(m_xfeditor, this);
-	dialog.move(QCursor::pos() + QPoint(0, -dialog.height()));
-	dialog.exec();
-}
 

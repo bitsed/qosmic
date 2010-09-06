@@ -109,7 +109,7 @@ DEFINES += VERSION='\'"$$VERSION"\''
 DEFINES += FLAM3DIR='\'"$$PALETTESDIR"\''
 DEFINES += TRANSDIR='\'"$$TRANSDIR"\''
 DEFINES += SCRIPTSDIR='\'"$$SCRIPTSDIR"\''
-CONFIG += qt thread
+CONFIG += qt thread uitools
 RESOURCES = qosmic.qrc
 INCLUDEPATH += src
 DESTDIR = .
@@ -141,7 +141,6 @@ install_desktop {
 
 message(Generating Makefile for Qosmic version $$VERSION)
 message(Qt version : $$[QT_VERSION])
-message(Default number of rendering threads : $$THREADS)
 message(Location of flam3-palettes.xml : $$PALETTESDIR)
 ! link_pkgconfig {
 	message(Include header paths : $$INCLUDEPATH)
@@ -160,7 +159,6 @@ FORMS += \
  ui/paletteeditor.ui \
  ui/camerasettingswidget.ui \
  ui/colorsettingswidget.ui \
- ui/edittrianglewidget.ui \
  ui/imgsettingswidget.ui \
  ui/mainpreviewwidget.ui \
  ui/trianglecoordswidget.ui \
@@ -216,7 +214,6 @@ HEADERS += \
  src/directorylistview.h \
  src/snapslider.h \
  src/statuswidget.h \
- src/edittrianglewidget.h \
  src/scripteditwidget.h \
  src/wheelvalueeditor.h \
  src/genomevector.h \
@@ -280,7 +277,6 @@ SOURCES += \
  src/flamfileiconprovider.cpp \
  src/directorylistview.cpp \
  src/snapslider.cpp \
- src/edittrianglewidget.cpp \
  src/statuswidget.cpp \
  src/scripteditwidget.cpp \
  src/wheelvalueeditor.cpp \

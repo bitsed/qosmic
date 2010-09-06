@@ -24,8 +24,6 @@
 #include <math.h>
 
 #include "xfedit.h"
-#include "edittrianglewidget.h"
-#include "adjustscenewidget.h"
 #include "logger.h"
 
 #define genome_ptr (genomes->selectedGenome())
@@ -56,9 +54,9 @@ FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
 		tr("Copy"),this);
 	pasteAction = new QAction(QIcon(":icons/silk/page_paste.xpm"),
 		tr("Paste"),this);
-	addAction = new QAction(QIcon(":icons/silk/shape_square_add.xpm"),
+	addAction = new QAction(QIcon(":icons/silk/shape_triangle_add.xpm"),
 		tr("Add"),this);
-	resAction = new QAction(QIcon(":icons/silk/shape_square_go.xpm"),
+	resAction = new QAction(QIcon(":icons/silk/shape_triangle_go.xpm"),
 		tr("Reset Position"),this);
 	flipHAction = new QAction(QIcon(":icons/silk/shape_flip_horizontal.xpm"),
 		tr("Flip Horizontal"),this);
@@ -182,7 +180,7 @@ void FigureEditor::enableFinalXform(bool enable)
 			selectTriangle(trianglesList.last());
 		else
 		{
-			logInfo("FigureEditor::finalStateChangedSlot : enabling final xform");
+			logFine("FigureEditor::enableFinalXform : enabling final xform");
 			flam3_add_xforms(genome_ptr, 1, 0, 1);
 			reset();
 			selectTriangle(trianglesList.last());
@@ -193,10 +191,10 @@ void FigureEditor::enableFinalXform(bool enable)
 	else
 	{
 		if (genome_ptr->final_xform_enable == 0)
-			logWarn("FigureEditor::finalStateChangedSlot : final xform already disabled");
+			logWarn("FigureEditor::enableFinalXform : final xform already disabled");
 		else
 		{
-			logInfo("FigureEditor::finalStateChangedSlot : disabling final xform");
+			logFine("FigureEditor::enableFinalXform : disabling final xform");
 			flam3_delete_xform(genome_ptr, genome_ptr->final_xform_index);
 			reset();
 			selectTriangle(trianglesList.last());
@@ -359,7 +357,8 @@ void FigureEditor::resetTriangleCoordsAction()
 {
 	Triangle* t = selectedTriangle;
 	QGraphicsItem* item = itemAt(moving_start);
-	if (hasFocus() && item)
+	if (hasFocus() && menu_visible && item)
+	{
 		switch (item->type())
 		{
 			case Triangle::RTTI:
@@ -369,9 +368,12 @@ void FigureEditor::resetTriangleCoordsAction()
 			default:
 				;
 		}
+	}
+	else if (postEnabled())
+		t = dynamic_cast<Triangle*>(post());
 
 	t->resetPosition();
-	emit triangleModifiedSignal(selectedTriangle);
+	triangleModifiedAction(t);
 	emit undoStateSignal();
 }
 
@@ -1095,7 +1097,7 @@ void FigureEditor::selectTriangle(Triangle* t)
 		return;
 
 	bool post = editing_post;
-
+	blockSignals(true);
 	if (selectedTriangle)
 	{
 		const QColor c(Util::get_xform_color(genome_ptr, selectedTriangle->xform()));
@@ -1116,6 +1118,7 @@ void FigureEditor::selectTriangle(Triangle* t)
 	triangleMenu->setDefaultAction(triangleMenu->actions().value(selectedTriangleIndex()));
 	box_center = selectedTriangle->polygon().boundingRect().center();
 	editPostTriangle(post);
+	blockSignals(false);
 	update();
 	emit triangleSelectedSignal(t);
 }
@@ -1134,7 +1137,13 @@ void FigureEditor::reset()
 		selected_idx = selectedTriangleIndex();
 
 	bool hasPost = editing_post;
-	editPostTriangle(false);
+	if (hasPost)
+	{
+		// hide/disable the post triangle and recreate it after the reset
+		box_center = selectedTriangle->polygon().boundingRect().center();
+		postTriangle->setVisible(false);
+		editing_post = false;
+	}
 
 	if (has_selection)
 		enableSelection(false);
@@ -1764,6 +1773,7 @@ void FigureEditor::editPostTriangle(bool flag)
 
 	editing_post = flag;
 	update();
+	emit triangleSelectedSignal(selectedTriangle);
 }
 
 bool FigureEditor::postEnabled()
@@ -2001,5 +2011,10 @@ QPointF FigureEditor::selectionTransformPos()
 		pos = selection()->boundingRect().center();
 
 	return pos;
+}
+
+GenomeVector* FigureEditor::genomeVector() const
+{
+	return genomes;
 }
 

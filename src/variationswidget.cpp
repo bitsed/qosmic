@@ -77,12 +77,17 @@ void VariationsWidget::variationSelectedSlot(int /*idx*/)
 
 	int row = Util::variation_number(rowName);
 	double thisvalue = m_variationValueEditor->value();
-	if (!lastVariation.isEmpty())
-		var[Util::variation_number(lastVariation)] = 0.0;
-	var[row] = thisvalue;
-	lastVariation = rowName;
-	model->setModelData(xform);
-	emit dataChanged();
+	if (thisvalue == 0.0)
+		lastVariation = rowName;
+	else
+	{
+		if (!lastVariation.isEmpty())
+			var[Util::variation_number(lastVariation)] = 0.0;
+		var[row] = thisvalue;
+		lastVariation = rowName;
+		model->setModelData(xform);
+		emit dataChanged();
+	}
 }
 
 void VariationsWidget::resetVariationSelector()

@@ -59,7 +59,6 @@ void AdjustSceneWidget::togglePreviewAction(bool checked)
 void AdjustSceneWidget::toggleGridAction(bool checked)
 {
 	editor->setGridVisible(checked);
-	m_gridColorButton->setEnabled(checked);
 }
 
 void AdjustSceneWidget::gridColorSelectAction()

@@ -34,7 +34,6 @@ class BasisTriangle;
 class MutationWidget;
 class CameraSettingsWidget;
 class ColorSettingsWidget;
-class EditTriangleWidget;
 class ColorBalanceWidget;
 class ImageSettingsWidget;
 class TriangleCoordsWidget;
@@ -51,6 +50,7 @@ class SelectGenomeWidget;
 class ViewerPresetsWidget;
 class SelectTriangleWidget;
 class AdjustSceneWidget;
+class EditModeSelectorWidget;
 class GenomeVector;
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
@@ -99,9 +99,6 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		void scriptFinishedSlot();
 		void importAction();
 		void exportAction();
-		void sceneScaledSlot();
-		void sceneCenteredSlot(int);
-		void sceneConfigSlot();
 
 	signals:
 		void mainWindowChanged();
@@ -150,7 +147,6 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		MutationWidget* m_mutations;
 		CameraSettingsWidget* m_cameraSettingsWidget;
 		ColorSettingsWidget* m_colorSettingsWidget;
-		EditTriangleWidget* m_editTriangleWidget;
 		ColorBalanceWidget* m_colorBalanceWidget;
 		ImageSettingsWidget* m_imageSettingsWidget;
 		TriangleCoordsWidget* m_coordsWidget;
@@ -168,6 +164,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		SelectGenomeWidget* m_genomeSelectWidget;
 		SelectTriangleWidget* m_selectTriangleWidget;
 		AdjustSceneWidget* m_adjustSceneWidget;
+		EditModeSelectorWidget* m_modeSelectorWidget;
 		QList<QDockWidget*> m_dockWidgets;
 
 	private:
@@ -180,7 +177,6 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		QMenu* settingsMenu;
 		QToolBar* fileToolBar;
 		QToolBar* editToolBar;
-		QToolBar* extraToolBar;
 		QToolBar* widgetsToolBar;
 		QAction* newAct;
 		QAction* openAct;
@@ -199,7 +195,6 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		QAction* openMutationsAct;
 		QAction* showFileBarAct;
 		QAction* showEditBarAct;
-		QAction* showExtraBarAct;
 		QAction* showWidgetsBarAct;
 		QAction* separatorAct;
 		QAction* undoAct;

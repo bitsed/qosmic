@@ -17,8 +17,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef EDITTMODESELECTORWIDGET_H
-#define EDITTMODESELECTORWIDGET_H
+#ifndef EDITMODESELECTORWIDGET_H
+#define EDITMODESELECTORWIDGET_H
 
 #include <QButtonGroup>
 
@@ -29,21 +29,47 @@ class EditModeSelectorWidget : public QWidget, private Ui::EditModeSelectorWidge
 {
 	Q_OBJECT
 
+	FigureEditor* m_xfeditor;
+	Triangle* selectedTriangle;
+	QButtonGroup m_buttonGroup;
+	double lastRotateValue;
+
 	public:
-		EditModeSelectorWidget(QWidget* parent=0);
+		EditModeSelectorWidget(FigureEditor*, QWidget* parent=0);
+		void setFigureEditor(FigureEditor*);
 		int selectedButton();
+		void reset();
 
 	public slots:
 		void setSelectedButton(FigureEditor::EditMode);
+		void triangleSelectedSlot(Triangle*);
 
 	signals:
 		void buttonPressed(FigureEditor::EditMode);
+		void undoStateSignal();
 
 	private slots:
 		void groupButtonPressedSlot(int);
+		void triangleRotateAction();
+		void triangleRotateCWAction();
+		void triangleRotateCCWAction();
+		void moveTriangleLeftAction();
+		void moveTriangleRightAction();
+		void moveTriangleUpAction();
+		void moveTriangleDownAction();
+		void rotateTextEditedSlot();
+		void toggleMarkAction(bool);
+		void triangleScaleUpAction();
+		void triangleScaleDownAction();
+		void sceneAxesSelected(int);
+		void selectionItemsChangedAction(int);
+		void sceneScaledSlot();
+		void sceneCenteredSlot(int);
+		void sceneConfigSlot();
+		void finalTriangleButtonClicked(bool);
 
-	private:
-		QButtonGroup m_buttonGroup;
+	protected:
+		void closeEvent(QCloseEvent*);
 
 };
 

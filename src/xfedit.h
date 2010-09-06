@@ -102,11 +102,11 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget
 		void setTransformLocation(SceneLocation);
 		void saveUndoState(UndoState*);
 		void restoreUndoState(UndoState*);
-		void enableFinalXform(bool);
 		EditMode mode() const;
 		QPointF triangleTransformPos(Triangle*);
 		QPointF triangleTransformPos();
 		QPointF selectionTransformPos();
+		GenomeVector* genomeVector() const;
 
 		// graphicsitem horiz and vert flipping
 		void flipTriangleHAction(Triangle*, QPointF);
@@ -150,6 +150,7 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget
 
 		// display and enable editing of the selected triangle's post coords
 		void editPostTriangle(bool);
+		void enableFinalXform(bool);
 
 	protected:
 		void mousePressEvent(QGraphicsSceneMouseEvent*);
