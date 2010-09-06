@@ -69,6 +69,9 @@
             <height>24</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>set grid color</string>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -93,6 +96,9 @@
             <height>24</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>set guide color</string>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -113,6 +119,9 @@
             <width>24</width>
             <height>24</height>
            </size>
+          </property>
+          <property name="toolTip">
+           <string>set background color</string>
           </property>
           <property name="text">
            <string/>

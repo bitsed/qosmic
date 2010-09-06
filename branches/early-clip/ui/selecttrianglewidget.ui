@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>217</width>
+    <width>207</width>
     <height>78</height>
    </rect>
   </property>
@@ -28,7 +28,7 @@
      <property name="frameShadow">
       <enum>QFrame::Sunken</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout" columnstretch="0,1,0,0">
+     <layout class="QGridLayout" name="gridLayout" columnstretch="0,1,0,0,0">
       <property name="spacing">
        <number>2</number>
       </property>
@@ -74,29 +74,10 @@
         </property>
         <property name="icon">
          <iconset resource="../qosmic.qrc">
-          <normaloff>:/icons/silk/bullet_add.xpm</normaloff>:/icons/silk/bullet_add.xpm</iconset>
+          <normaloff>:/icons/silk/shape_triangle_add.xpm</normaloff>:/icons/silk/shape_triangle_add.xpm</iconset>
         </property>
         <property name="arrowType">
          <enum>Qt::NoArrow</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QToolButton" name="m_postCheckBox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="toolTip">
-         <string>edit the post transform for this triangle</string>
-        </property>
-        <property name="text">
-         <string>post</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -160,12 +141,12 @@
         </property>
         <property name="icon">
          <iconset resource="../qosmic.qrc">
-          <normaloff>:/icons/silk/bullet_delete.xpm</normaloff>:/icons/silk/bullet_delete.xpm</iconset>
+          <normaloff>:/icons/silk/shape_triangle_delete.xpm</normaloff>:/icons/silk/shape_triangle_delete.xpm</iconset>
         </property>
        </widget>
       </item>
-      <item row="1" column="3">
-       <widget class="QToolButton" name="m_finalCheckBox">
+      <item row="0" column="3">
+       <widget class="QToolButton" name="m_finalButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
           <horstretch>0</horstretch>
@@ -173,10 +154,37 @@
          </sizepolicy>
         </property>
         <property name="toolTip">
-         <string>set this transform as final</string>
+         <string>enable the final transform</string>
         </property>
         <property name="text">
          <string>final</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../qosmic.qrc">
+          <normaloff>:/icons/silk/shape_final_triangle.xpm</normaloff>:/icons/silk/shape_final_triangle.xpm</iconset>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QToolButton" name="m_animateButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>animate this transform in the electricsheep loop</string>
+        </property>
+        <property name="text">
+         <string>post</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../qosmic.qrc">
+          <normaloff>:/icons/silk/film.xpm</normaloff>:/icons/silk/film.xpm</iconset>
         </property>
         <property name="checkable">
          <bool>true</bool>

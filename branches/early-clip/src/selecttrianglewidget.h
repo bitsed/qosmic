@@ -52,7 +52,7 @@ class SelectTriangleWidget
 		void triangleSelectedSlot(int);
 		void addTriangleAction();
 		void delTriangleAction();
-		void postStateChangedSlot(bool);
+		void animateStateChangedSlot(bool);
 		void finalStateChangedSlot(bool);
 };
 

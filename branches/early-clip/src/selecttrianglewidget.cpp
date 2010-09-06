@@ -37,8 +37,8 @@ SelectTriangleWidget::SelectTriangleWidget(GenomeVector* g, QWidget* parent)
 	connect(m_densLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
 	connect(m_addTriangleButton, SIGNAL(pressed()), this, SLOT(addTriangleAction()));
 	connect(m_delTriangleButton, SIGNAL(pressed()), this, SLOT(delTriangleAction()));
-	connect(m_finalCheckBox, SIGNAL(clicked(bool)), this, SLOT(finalStateChangedSlot(bool)));
-	connect(m_postCheckBox, SIGNAL(clicked(bool)), this, SLOT(postStateChangedSlot(bool)));
+	connect(m_finalButton, SIGNAL(clicked(bool)), this, SLOT(finalStateChangedSlot(bool)));
+	connect(m_animateButton, SIGNAL(clicked(bool)), this, SLOT(animateStateChangedSlot(bool)));
 }
 
 
@@ -68,11 +68,8 @@ void SelectTriangleWidget::triangleSelectedSlot(int /*idx*/)
 void SelectTriangleWidget::reset()
 {
 	m_densLineEdit->updateValue(selectedTriangle->xform()->density);
-	bool checked = genome_ptr->final_xform_enable
-		&& (genome_ptr->final_xform_index
-			== triangleScene->selectedTriangleIndex());
-		m_finalCheckBox->setChecked(checked);
-		m_postCheckBox->setChecked(triangleScene->postEnabled());
+	m_finalButton->setChecked(genome_ptr->final_xform_enable);
+	m_animateButton->setChecked(selectedTriangle->xform()->animate == 0.0);
 }
 
 
@@ -95,11 +92,35 @@ void SelectTriangleWidget::delTriangleAction()
 
 void SelectTriangleWidget::finalStateChangedSlot(bool checked)
 {
-	triangleScene->enableFinalXform(checked);
+	bool hasFinal = genome_ptr->final_xform_enable;
+	bool finalSelected = (genome_ptr->final_xform_index == triangleScene->selectedTriangleIndex());
+	if (checked)
+		triangleScene->enableFinalXform(true);
+	else
+	{
+		if (hasFinal)
+		{
+			if (!finalSelected)
+			{
+				triangleScene->selectTriangle(genome_ptr->final_xform_index);
+				m_finalButton->setChecked(true);
+			}
+			else
+			{
+				triangleScene->enableFinalXform(false);
+				m_finalButton->setChecked(false);
+			}
+		}
+		else
+		{
+			triangleScene->enableFinalXform(true);
+			m_finalButton->setChecked(true);
+		}
+	}
 }
 
-void SelectTriangleWidget::postStateChangedSlot(bool checked)
+void SelectTriangleWidget::animateStateChangedSlot(bool checked)
 {
-	triangleScene->editPostTriangle(checked);
+	selectedTriangle->xform()->animate = !checked;
 }
 

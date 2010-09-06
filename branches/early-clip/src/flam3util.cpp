@@ -272,6 +272,8 @@ namespace Util
 		else if ( name == "auger_freq" ) { return xform->auger_freq ; }
 		else if ( name == "auger_scale" ) { return xform->auger_scale ; }
 
+		else if ( name == "flux_spread" ) { return xform->flux_spread ; }
+
 		else
 			logWarn(QString("Util::get_xform_variable : unknown variable '%1'").arg(name));
 
@@ -452,6 +454,8 @@ namespace Util
 		else if ( name == "auger_freq" ) { xform->auger_freq = value ; }
 		else if ( name == "auger_scale" ) { xform->auger_scale = value ; }
 
+		else if ( name == "flux_spread" ) { xform->flux_spread = value ; }
+
 		else
 			logWarn(QString("Util::set_xform_variable : unknown variable '%1'").arg(name));
 
@@ -589,6 +593,8 @@ namespace Util
 
 		<< "auger_sym" << "auger_weight"
 		<< "auger_freq" << "auger_scale"
+
+		<< "flux_spread"
 
 		);
 

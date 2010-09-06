@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>566</width>
-    <height>489</height>
+    <width>270</width>
+    <height>255</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -50,115 +50,6 @@
       </property>
      </widget>
     </item>
-    <item>
-     <widget class="QFrame" name="sceneSliderFrame">
-      <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Plain</enum>
-      </property>
-      <property name="lineWidth">
-       <number>0</number>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0">
-       <property name="margin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="EditModeSelectorWidget" name="modeSelectWidget" native="true"/>
-       </item>
-       <item>
-        <widget class="SnapSlider" name="sceneScaleSlider">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimum">
-          <number>-1000</number>
-         </property>
-         <property name="maximum">
-          <number>1000</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="autoScaleButton">
-         <property name="toolTip">
-          <string>Rescale the scene</string>
-         </property>
-         <property name="text">
-          <string>rescale scene</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../qosmic.qrc">
-           <normaloff>:/icons/silk/shape_group.xpm</normaloff>:/icons/silk/shape_group.xpm</iconset>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="sceneCenterSelector">
-         <item>
-          <property name="text">
-           <string>scene</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>origin</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>mark</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>circum</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>box</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>O</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>X</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Y</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="sceneConfigButton">
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../qosmic.qrc">
-           <normaloff>:/icons/silk/bullet_wrench.xpm</normaloff>:/icons/silk/bullet_wrench.xpm</iconset>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -166,7 +57,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>566</width>
+     <width>270</width>
      <height>17</height>
     </rect>
    </property>
@@ -224,19 +115,6 @@
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>SnapSlider</class>
-   <extends>QSlider</extends>
-   <header>snapslider.h</header>
-  </customwidget>
-  <customwidget>
-   <class>EditModeSelectorWidget</class>
-   <extends>QWidget</extends>
-   <header>editmodeselectorwidget.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="../qosmic.qrc"/>
  </resources>

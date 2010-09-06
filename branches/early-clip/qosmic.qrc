@@ -9,11 +9,12 @@
         <file>icons/qosmicicon.xpm</file>
         <file>icons/qosmic.xpm</file>
         <file>icons/silk/add.xpm</file>
-		<file>icons/silk/arrow_updown.xpm</file>
-		<file>icons/silk/arrow_inout.xpm</file>
+        <file>icons/silk/arrow_updown.xpm</file>
+        <file>icons/silk/arrow_left_right.xpm</file>
+        <file>icons/silk/arrow_inout.xpm</file>
         <file>icons/silk/arrow_undo.xpm</file>
         <file>icons/silk/arrow_redo.xpm</file>
-		<file>icons/silk/arrow_rotate_clockwise.xpm</file>
+        <file>icons/silk/arrow_rotate_clockwise.xpm</file>
         <file>icons/silk/application.xpm</file>
         <file>icons/silk/application_go.xpm</file>
         <file>icons/silk/application_get.xpm</file>
@@ -41,6 +42,7 @@
         <file>icons/silk/delete.xpm</file>
         <file>icons/silk/disk_multiple.xpm</file>
         <file>icons/silk/disk.xpm</file>
+        <file>icons/silk/film.xpm</file>
         <file>icons/silk/folder.xpm</file>
         <file>icons/silk/folder_explore.xpm</file>
         <file>icons/silk/folder_find.xpm</file>
@@ -69,6 +71,11 @@
         <file>icons/silk/script.xpm</file>
         <file>icons/silk/shape_flip_vertical.xpm</file>
         <file>icons/silk/shape_flip_horizontal.xpm</file>
+        <file>icons/silk/shape_triangle_add.xpm</file>
+        <file>icons/silk/shape_triangle_delete.xpm</file>
+        <file>icons/silk/shape_triangle_go.xpm</file>
+        <file>icons/silk/shape_post_triangle.xpm</file>
+        <file>icons/silk/shape_final_triangle.xpm</file>
         <file>icons/silk/shape_group.xpm</file>
         <file>icons/silk/shape_rotate_anticlockwise.xpm</file>
         <file>icons/silk/shape_rotate_clockwise.xpm</file>
