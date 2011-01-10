@@ -100,7 +100,11 @@ void MainPreviewWidget::mousePressEvent(QMouseEvent* e)
 		{
 			QAction* a = popupMenu->addAction(s);
 			if (current == s)
-				popupMenu->setDefaultAction(a);
+			{
+				a->setCheckable(true);
+				a->setChecked(true);
+				popupMenu->setActiveAction(a);
+			}
 		}
 		popupMenu->popup(e->globalPos());
 	}

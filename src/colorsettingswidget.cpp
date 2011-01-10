@@ -33,10 +33,11 @@ ColorSettingsWidget::ColorSettingsWidget(GenomeVector* g, QWidget* parent)
 	connect(m_colorLineEdit, SIGNAL(valueUpdated()), this, SLOT(colorChangedAction()));
 	connect(m_colorLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
 
-	m_symLineEdit->setWheelEventUpdate(true);
-	m_symLineEdit->restoreSettings();
-	connect(m_symLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
-	connect(m_symLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
+	m_speedLineEdit->setWheelEventUpdate(true);
+	m_speedLineEdit->restoreSettings();
+	connect(m_speedLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
+	connect(m_speedLineEdit, SIGNAL(valueUpdated()), m_colorSelector, SLOT(repaintLabel()));
+	connect(m_speedLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
 
 	m_opacityLineEdit->setWheelEventUpdate(true);
 	m_opacityLineEdit->restoreSettings();
@@ -58,13 +59,12 @@ void ColorSettingsWidget::reset()
 void ColorSettingsWidget::updateFormData()
 {
 	logFiner("ColorSettingsWidget::updateFormData : updating color settings");
-	m_symLineEdit->updateValue(selectedTriangle->xform()->color_speed);
+	m_speedLineEdit->updateValue(selectedTriangle->xform()->color_speed);
 	m_opacityLineEdit->updateValue(selectedTriangle->xform()->opacity);
 	m_backgroundLabel->setColor(
 		QColor::fromRgbF(genome_ptr->background[0],
 			genome_ptr->background[1],
 			genome_ptr->background[2]));
-	m_colorSelector->setGenome(0);
 	updateColorLabel();
 }
 
@@ -82,7 +82,7 @@ void ColorSettingsWidget::updateColorLabel()
 
 void ColorSettingsWidget::fieldEditedAction()
 {
-	selectedTriangle->xform()->color_speed = m_symLineEdit->value();
+	selectedTriangle->xform()->color_speed = m_speedLineEdit->value();
 	selectedTriangle->xform()->opacity = m_opacityLineEdit->value();
 	emit dataChanged();
 }
@@ -91,7 +91,6 @@ void ColorSettingsWidget::fieldEditedAction()
 void ColorSettingsWidget::colorChangedAction()
 {
 	colorSelectedAction(m_colorLineEdit->value());
-	emit dataChanged();
 }
 
 // called when the button is held
@@ -100,6 +99,7 @@ void ColorSettingsWidget::colorSelectedAction(double idx)
 	selectedTriangle->xform()->color = idx;
 	updateColorLabel();
 	emit colorSelected(idx);
+	emit dataChanged();
 }
 
 void ColorSettingsWidget::changeBackground(QColor c)
@@ -113,7 +113,7 @@ void ColorSettingsWidget::changeBackground(QColor c)
 
 void ColorSettingsWidget::triangleSelectedSlot(Triangle* t)
 {
-    selectedTriangle = t;
+	selectedTriangle = t;
 	updateFormData();
 }
 

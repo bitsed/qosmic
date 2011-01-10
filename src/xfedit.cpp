@@ -92,6 +92,7 @@ FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
 	addItem(basisTriangle);
 
 	infoItem = new QGraphicsSimpleTextItem();
+	infoItem->setFont(QFont("Monospace", 8, QFont::Normal));
 	addItem(infoItem);
 
 	selectionItem = new TriangleSelection(this, basisTriangle);

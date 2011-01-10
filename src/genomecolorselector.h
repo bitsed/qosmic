@@ -39,18 +39,18 @@ class GenomeColorSelector : public QLabel
 		void mouseMoveEvent (QMouseEvent*);
 		void mouseReleaseEvent (QMouseEvent*);
 		void setSelectedIndex(int);
+		int selectedIndex();
 
 	signals:
 		void colorSelected(double);
-		void colorChanged(double);
 		void undoStateSignal();
 
-	protected:
+	public slots:
 		void repaintLabel();
 
 	private:
-		int genome_offset;
 		GenomeVector* genome;
+		int selected_y;
 		int last_y;
 };
 

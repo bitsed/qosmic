@@ -27,7 +27,6 @@ AdjustSceneWidget::AdjustSceneWidget(FigureEditor* e, QWidget* parent)
 	setupUi(this);
 
 	m_gridCheckBox->setChecked(editor->gridVisible());
-	m_gridColorButton->setEnabled(editor->gridVisible());
 	m_guideCheckBox->setChecked(editor->guideVisible());
 	m_guideColorButton->setEnabled(editor->guideVisible());
 	m_previewCheckBox->setChecked(editor->previewVisible());
