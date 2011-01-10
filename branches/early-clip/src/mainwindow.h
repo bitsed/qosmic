@@ -112,7 +112,6 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		void about();
 		void mainViewerResizedAction(const QSize&);
 		void previewResizedAction(const QSize&);
-		void colorSelected(double);
 		void openRecentFile();
 		void mainViewerHiddenAction();
 		void addUndoState();

@@ -64,7 +64,6 @@ class MainViewer : public QWidget, public QosmicWidget,
 		void setPixmap(const QPixmap& p, bool resized=true);
 		void rescalePixmap();
 		void rescaleViewer();
-		void mousePressEvent(QMouseEvent*);
 		bool isDockWidget();
 		bool isPresetSelected();
 		QString preset();
@@ -87,6 +86,7 @@ class MainViewer : public QWidget, public QosmicWidget,
 		void resizeEvent(QResizeEvent*);
 		void showEvent(QShowEvent*);
 		void hideEvent(QHideEvent*);
+		bool eventFilter(QObject*, QEvent*);
 
 	protected slots:
 		void checkResized();

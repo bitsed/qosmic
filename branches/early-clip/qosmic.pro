@@ -62,10 +62,10 @@ else {
 	## flam3-palettes.xml file installed by the flam3 package.
 
 	## Point to the dir containing the compiled flam3-2.8 if it's not installed
-	FLAM3_2.8_DIR = $$system(readlink -e ../flam3-2.8)
-	PALETTESDIR = $$FLAM3_2.8_DIR
-	INCLUDEPATH += $$FLAM3_2.8_DIR /usr/include/libxml2
-	LIBS += -L$$FLAM3_2.8_DIR/.libs -L/usr/lib/libxml2 -lflam3 -lm -ljpeg -lxml2 -llua
+	FLAM3_SRC_DIR = $$system(readlink -e ../flam3-3.0)
+	PALETTESDIR = $$FLAM3_SRC_DIR
+	INCLUDEPATH += $$FLAM3_SRC_DIR /usr/include/libxml2
+	LIBS += -L$$FLAM3_SRC_DIR/.libs -L/usr/lib/libxml2 -lflam3 -lm -ljpeg -lxml2 -llua
 }
 
 

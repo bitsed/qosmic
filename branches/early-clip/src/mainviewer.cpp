@@ -22,6 +22,7 @@
 #include <QFileInfo>
 #include <QFileDialog>
 #include <QSettings>
+#include <QGraphicsSceneMouseEvent>
 
 #include "mainviewer.h"
 #include "viewerpresetsmodel.h"
@@ -96,6 +97,7 @@ MainViewer::MainViewer ( QWidget* parnt, QString title )
 	p.fill(Qt::black);
 	m_pitem = m_scene.addPixmap(p);
 	m_graphicsView->setScene(&m_scene);
+	m_scene.installEventFilter(this);
 	m_scene.setBackgroundBrush( Qt::black );
 
 	m_titem = new QGraphicsTextItem("");
@@ -305,33 +307,52 @@ void MainViewer::hideEvent(QHideEvent* e)
 		emit viewerHidden();
 }
 
-
-void MainViewer::mousePressEvent(QMouseEvent* e)
+// This handles displaying the popup menu when MainViewer is installed
+// as an eventFilter for the QGraphicsScene
+bool MainViewer::eventFilter(QObject* obj, QEvent* event)
 {
-	if (e->button() == Qt::RightButton)
+	if (event->type() == QEvent::GraphicsSceneMousePress)
 	{
-		if (isDockWidget())
+		QGraphicsSceneMouseEvent* mouseEvent = static_cast<QGraphicsSceneMouseEvent*>(event);
+		if (mouseEvent->button() == Qt::RightButton)
 		{
-			popupMenu->clear();
-
-			QStringList presets = ViewerPresetsModel::getInstance()->presetNames();
-			foreach (QString s, presets)
+			if (isDockWidget())
 			{
-				QAction* a = popupMenu->addAction(s);
-				if (selected_preset == s)
-					popupMenu->setDefaultAction(a);
+				popupMenu->clear();
+
+				QStringList presets = ViewerPresetsModel::getInstance()->presetNames();
+				foreach (QString s, presets)
+				{
+					QAction* a = popupMenu->addAction(s);
+					if (selected_preset == s)
+					{
+						a->setCheckable(true);
+						a->setChecked(true);
+						popupMenu->setActiveAction(a);
+					}
+				}
+
+				// Add the action to select the same image rendering settings
+				// as used by the mainpreviewwidget.
+				QAction* a = popupMenu->addAction(nullPresetText);
+				if (!isPresetSelected())
+				{
+					a->setCheckable(true);
+					a->setChecked(true);
+					popupMenu->setActiveAction(a);
+				}
+
+				popupMenu->addSeparator();
+				popupMenu->addAction(status_action);
+				status_action->setChecked(show_status);
 			}
-
-			QAction* a = popupMenu->addAction(nullPresetText);
-			if (!isPresetSelected())
-				popupMenu->setDefaultAction(a);
-
-			popupMenu->addSeparator();
-			popupMenu->addAction(status_action);
-			status_action->setChecked(show_status);
+			popupMenu->popup(mouseEvent->screenPos());
 		}
-		popupMenu->popup(e->globalPos());
+		return false;
 	}
+
+	// standard event processing
+	return QObject::eventFilter(obj, event);
 }
 
 void MainViewer::popupMenuTriggeredSlot(QAction* action)

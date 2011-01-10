@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>134</width>
+    <width>137</width>
     <height>334</height>
    </rect>
   </property>
@@ -231,7 +231,7 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="DoubleValueEditor" name="m_symLineEdit">
+         <widget class="DoubleValueEditor" name="m_speedLineEdit">
           <property name="decimals">
            <number>3</number>
           </property>

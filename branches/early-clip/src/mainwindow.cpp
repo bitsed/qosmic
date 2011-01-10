@@ -236,7 +236,7 @@ MainWindow::MainWindow() : QMainWindow()
 			m_colorSettingsWidget, SLOT(triangleSelectedSlot(Triangle*)));
 	connect(m_colorSettingsWidget, SIGNAL(dataChanged()), this, SLOT(render()));
 	connect(m_colorSettingsWidget, SIGNAL(colorSelected(double)),
-			this, SLOT(colorSelected(double)));
+			m_xfeditor, SLOT(colorChangedAction(double)));
 	connect(m_colorSettingsWidget, SIGNAL(undoStateSignal()),
 			this, SLOT(addUndoState()));
 	lastDock = dock;
@@ -578,9 +578,6 @@ void MainWindow::open()
 				render();
 				genome_modified_flag = false;
 			}
-			else
-				QMessageBox::warning(this, tr("Error"),
-					tr("Cannot open file %1").arg(fileName));
 		}
 	}
 }
@@ -1401,14 +1398,6 @@ MainWindow::~MainWindow()
 }
 
 
-// called when the button is held
-void MainWindow::colorSelected(double idx)
-{
-	m_xfeditor->colorChangedAction(idx);
-	render();
-}
-
-
 void MainWindow::paletteChangedAction()
 {
 	// copy palette to g.palette
@@ -1534,8 +1523,6 @@ void MainWindow::flam3FileSelectedAction(const QString& name, bool append)
 		render();
 		genome_modified_flag = false;
 	}
-	else
-		QMessageBox::warning(this, tr("Error"), tr("Cannot open file %1").arg(name));
 }
 
 void MainWindow::mutationSelectedSlot(flam3_genome* newg)
