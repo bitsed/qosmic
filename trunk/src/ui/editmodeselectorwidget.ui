@@ -1,0 +1,824 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>EditModeSelectorWidget</class>
+ <widget class="QWidget" name="EditModeSelectorWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>680</width>
+    <height>54</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>EditModeSelector</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_11">
+     <item>
+      <widget class="QFrame" name="frame">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_9">
+        <property name="spacing">
+         <number>2</number>
+        </property>
+        <property name="margin">
+         <number>2</number>
+        </property>
+        <item>
+         <widget class="QToolButton" name="m_moveButton">
+          <property name="toolTip">
+           <string>Move triangle</string>
+          </property>
+          <property name="text">
+           <string>Move Tringle</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qosmic.qrc">
+            <normaloff>:/icons/silk/arrow_updown.xpm</normaloff>:/icons/silk/arrow_updown.xpm</iconset>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_rotateButton">
+          <property name="toolTip">
+           <string>Rotate triangle</string>
+          </property>
+          <property name="text">
+           <string>Move Tringle</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qosmic.qrc">
+            <normaloff>:/icons/silk/arrow_rotate_clockwise.xpm</normaloff>:/icons/silk/arrow_rotate_clockwise.xpm</iconset>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_scaleButton">
+          <property name="toolTip">
+           <string>Scale triangle</string>
+          </property>
+          <property name="text">
+           <string>Move Tringle</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qosmic.qrc">
+            <normaloff>:/icons/silk/arrow_inout.xpm</normaloff>:/icons/silk/arrow_inout.xpm</iconset>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_flipButton">
+          <property name="toolTip">
+           <string>Flip triangle</string>
+          </property>
+          <property name="text">
+           <string>Move Tringle</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qosmic.qrc">
+            <normaloff>:/icons/silk/arrow_left_right.xpm</normaloff>:/icons/silk/arrow_left_right.xpm</iconset>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QStackedWidget" name="m_stackedWidget">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="movePage">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>4</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QToolButton" name="m_moveLeftButton">
+           <property name="toolTip">
+            <string>move left</string>
+           </property>
+           <property name="text">
+            <string>&lt;</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../qosmic.qrc">
+             <normaloff>:/icons/silk/bullet_arrow_left.xpm</normaloff>:/icons/silk/bullet_arrow_left.xpm</iconset>
+           </property>
+           <property name="autoRepeat">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_moveRightButton">
+           <property name="toolTip">
+            <string>move right</string>
+           </property>
+           <property name="text">
+            <string>&gt;</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../qosmic.qrc">
+             <normaloff>:/icons/silk/bullet_arrow_right.xpm</normaloff>:/icons/silk/bullet_arrow_right.xpm</iconset>
+           </property>
+           <property name="autoRepeat">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_moveUpButton">
+           <property name="toolTip">
+            <string>move up</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="../qosmic.qrc">
+             <normaloff>:/icons/silk/bullet_arrow_up.xpm</normaloff>:/icons/silk/bullet_arrow_up.xpm</iconset>
+           </property>
+           <property name="autoRepeat">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_moveDownButton">
+           <property name="toolTip">
+            <string>move down</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="../qosmic.qrc">
+             <normaloff>:/icons/silk/bullet_arrow_down.xpm</normaloff>:/icons/silk/bullet_arrow_down.xpm</iconset>
+           </property>
+           <property name="autoRepeat">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="DoubleValueEditor" name="m_multiplierEditor">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="rotatePage">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="leftMargin">
+          <number>4</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>deg</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="DoubleValueEditor" name="m_rotateEditor">
+           <property name="minimum">
+            <double>-360.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>360.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>1.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QToolButton" name="m_rotateLeftButton">
+             <property name="text">
+              <string>&lt;</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="m_rotateRightButton">
+             <property name="text">
+              <string>&gt;</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>0</width>
+             <height>1</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="scalePage">
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <property name="leftMargin">
+          <number>4</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="DoubleValueEditor" name="m_scaleEditor">
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>100.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>1.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>10.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="QToolButton" name="m_scaleUpButton">
+             <property name="text">
+              <string>+</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="m_scaleDownButton">
+             <property name="text">
+              <string>-</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="flipPage">
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QToolButton" name="m_hFlipButton">
+           <property name="toolTip">
+            <string>flip horizontally</string>
+           </property>
+           <property name="text">
+            <string>horiz</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../qosmic.qrc">
+             <normaloff>:/icons/silk/shape_flip_horizontal.xpm</normaloff>:/icons/silk/shape_flip_horizontal.xpm</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_vFlipButton">
+           <property name="toolTip">
+            <string>flip vertically</string>
+           </property>
+           <property name="text">
+            <string>vert</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../qosmic.qrc">
+             <normaloff>:/icons/silk/shape_flip_vertical.xpm</normaloff>:/icons/silk/shape_flip_vertical.xpm</iconset>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="frame_2">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_10">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>2</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>2</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>axis:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="m_sceneAxesSelector">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>transform axis</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>origin</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>mark</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>circum</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>box</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>O</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>X</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Y</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="frame_5">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_13">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="margin">
+         <number>2</number>
+        </property>
+        <item>
+         <widget class="QToolButton" name="m_addTriangleButton">
+          <property name="toolTip">
+           <string>add a triangle</string>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qosmic.qrc">
+            <normaloff>:/icons/silk/shape_triangle_add.xpm</normaloff>:/icons/silk/shape_triangle_add.xpm</iconset>
+          </property>
+          <property name="arrowType">
+           <enum>Qt::NoArrow</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_delTriangleButton">
+          <property name="toolTip">
+           <string>remove the selected triangle</string>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qosmic.qrc">
+            <normaloff>:/icons/silk/shape_triangle_delete.xpm</normaloff>:/icons/silk/shape_triangle_delete.xpm</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_resetTriangleButton">
+          <property name="toolTip">
+           <string>reset the triangle</string>
+          </property>
+          <property name="text">
+           <string>final</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qosmic.qrc">
+            <normaloff>:/icons/silk/shape_triangle_go.xpm</normaloff>:/icons/silk/shape_triangle_go.xpm</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_postTriangleButton">
+          <property name="toolTip">
+           <string>edit the post transform</string>
+          </property>
+          <property name="text">
+           <string>post</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qosmic.qrc">
+            <normaloff>:/icons/silk/shape_post_triangle.xpm</normaloff>:/icons/silk/shape_post_triangle.xpm</iconset>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_finalTriangleButton">
+          <property name="toolTip">
+           <string>enable the final transform</string>
+          </property>
+          <property name="text">
+           <string>final</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qosmic.qrc">
+            <normaloff>:/icons/silk/shape_final_triangle.xpm</normaloff>:/icons/silk/shape_final_triangle.xpm</iconset>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="frame_3">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_8">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>2</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>2</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>select:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="m_selectionItemsSelector">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>selection type</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>triangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>nodes</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>1</width>
+            <height>1</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="frame_4">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_12">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="margin">
+         <number>2</number>
+        </property>
+        <item>
+         <widget class="QToolButton" name="sceneConfigButton">
+          <property name="toolTip">
+           <string>scene settings</string>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qosmic.qrc">
+            <normaloff>:/icons/silk/bullet_wrench.xpm</normaloff>:/icons/silk/bullet_wrench.xpm</iconset>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QFrame" name="sceneSliderFrame">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>0</number>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
+      <property name="margin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="SnapSlider" name="sceneScaleSlider">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimum">
+         <number>-1000</number>
+        </property>
+        <property name="maximum">
+         <number>1000</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="autoScaleButton">
+        <property name="toolTip">
+         <string>zoom visible</string>
+        </property>
+        <property name="text">
+         <string>rescale scene</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../qosmic.qrc">
+          <normaloff>:/icons/silk/shape_group.xpm</normaloff>:/icons/silk/shape_group.xpm</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="sceneCenterSelector">
+        <property name="toolTip">
+         <string>zoom center</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>scene</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>origin</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>mark</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>circum</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>box</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>O</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>X</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Y</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SnapSlider</class>
+   <extends>QSlider</extends>
+   <header>snapslider.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DoubleValueEditor</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>doublevalueeditor.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../qosmic.qrc"/>
+ </resources>
+ <connections/>
+</ui>

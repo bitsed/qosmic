@@ -1,0 +1,51 @@
+<ui version="4.0" >
+ <class>DirectoryViewWidget</class>
+ <widget class="QWidget" name="DirectoryViewWidget" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>275</width>
+    <height>420</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" >
+   <item row="0" column="0" >
+    <widget class="QLineEdit" name="m_dirLineEdit" />
+   </item>
+   <item row="0" column="1" >
+    <widget class="QToolButton" name="m_openButton" >
+     <property name="text" >
+      <string>...</string>
+     </property>
+     <property name="icon" >
+      <iconset resource="../qosmic.qrc" >:/icons/silk/folder.xpm</iconset>
+     </property>
+     <property name="iconSize" >
+      <size>
+       <width>18</width>
+       <height>18</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2" >
+    <widget class="DirectoryListView" name="m_dirListView" />
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DirectoryListView</class>
+   <extends>QListView</extends>
+   <header>directorylistview.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../qosmic.qrc" />
+ </resources>
+ <connections/>
+</ui>

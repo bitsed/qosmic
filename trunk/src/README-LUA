@@ -1,0 +1,473 @@
+--
+-- The Lua script environment includes a single Frame object type that is
+-- initialized before execution.  The Frame is the main object with which a
+-- script interacts with the qosmic application, and it is bound globally to
+-- the 'frame' variable.
+--
+-- The script environment also contains values for the xform variation types.
+-- They are globally bound to variables having the same name as the variation,
+-- but with only capital letters.  These values are listed at the bottom of
+-- this document.
+--
+-- Be sure to also look at the example.lua and functions.lua scripts in the
+-- scripts directory for more examples.
+--
+-- With each function listed below the optional arguments are given in brackets,
+-- and their default values follow an equal sign.
+--
+-- Please note that the objects in the environment follow the Lua convention
+-- of beginning array indexes with 1 instead of 0.  Additionally, if an array
+-- index of 0 is passed as an argument this will be internally translated to an
+-- index of 1.
+--
+
+
+--
+-- Frame Object Interface
+--
+frame:get_genome([idx =1])  -- Returns a reference to the Genome type at offset
+							-- idx in the genomes list.  If there is no genome
+							-- at that offset, the list is filled with default
+							-- Genome types up to idx.
+
+frame:num_genomes() -- Returns the number of genomes in the genomes list
+
+frame:render([idx =1, [filename]])  -- Renders the genome at offset idx in the
+									-- genomes list.  If filename is given, then
+									-- the rendered image is saved to that file
+									-- in png format.  If filename is not given,
+									-- then the preview image is rendered.
+
+frame:update([idx =1, [filename]])  -- Renders the genome at offset idx in the
+									-- genomes list.  If filename is given, then
+									-- the rendered image is saved to that file
+									-- in png format.  If filename is not given,
+									-- then the GUI is updated and the preview
+									-- image is rendered.  Use update to redraw
+									-- the triangles in the figure editor.
+
+frame:load(filename)    -- Load the flam3 xml file given by string filename. The
+						-- existing genome list is cleared beforehand.
+
+frame:save(filename)    -- Saves the current genome list to string in filename
+						-- in flam3 xml format.
+
+frame:copy_genome(a, b) -- Copies the genome at offset a to offset b.  Offset
+						-- 'a' must be a valid genomes offset.
+
+frame:del_genome(idx)   -- Removes the genome at offset idx
+
+frame:bitdepth()        -- Returns the bit depth used to render genomes.
+
+
+
+
+--
+-- Genome Type Interface
+--
+-- The Genome type provides access to the xforms (triangle), palette, and image
+-- settings for an entry in the genomes list.  A genome variable value obtained
+-- from the frame using frame:get_genome() is not a copy, and it refers directly
+-- to the data in the list.
+
+index()             -- Returns the offset for this genome in the genomes list.
+
+center([x,y])       -- The coordinates of the center of the genome.
+
+rot_center([x,y])   -- Rotate around this position
+
+background([r,g,b]) -- Accessor for the background color of the genome.
+					-- Valid values for r,g, and b variables are in [0.0, 1.0].
+
+num_xforms()        -- Returns the number of xforms in the xforms list.
+
+final_xform_index([idx]) -- Returns the offset of the final xform.
+
+get_xform(idx)      -- Returns a reference to the XForm at offset idx in the
+					-- xform list for this genome.  The given offset must be a
+					-- valid index.
+
+add_xform([n =1])  -- Add n xform(s) to the xform list.  Returns a reference to
+				   -- the last xform added.
+
+del_xform(idx)     -- Removes the xform at offset idx from the xform list.  The
+				   -- xforms at higher offsets are re-indexed.
+
+copy_xform(a, b)   -- Copy values in XForm at offset a to the XForm at offset b.
+				   -- The first argument may also be a valid XForm type.
+
+clear_xforms()     -- Remove all xform from the list.
+
+load_palette(idx)  -- Load the built-in palette given by idx into the genome's
+				   -- palette.  Valid values for idx are on [1, NUM_PALETTES].
+
+palette(idx, [r,g,b])  -- Get/set the color in the palette at offset idx.  The
+					   -- palette is indexed on [1,256], and the color
+					   -- components are valid on [0.0,1.0].
+
+highlight_power([real]) -- The maximum Value for an RGB color before trending
+						-- the color towards white as the density increases.
+						-- -1 = disabled, 0 = no highlights
+
+chaos([table])          -- Access and return the entire genome chaos array table
+chaos(idx, [table])     -- Access and return an xform genome chaos array table
+chaos(idx, rdx, [real]) -- Access and return a genome chaos array entry
+
+width([value])
+
+height([value])
+
+rotate([deg])                   -- rotates the genome
+
+vibrancy([real])
+
+hue_rotation([real])
+
+zoom([value])                   -- deprecated. use image scale + quality instead
+
+pixels_per_unit([value])        -- image scale
+
+spatial_filter_radius([value])  -- filter radius
+
+spatial_filter_select([n])      -- the filter shape to use (see below)
+
+sample_density([value])         -- image quality
+
+brightness([value])
+
+contrast([value])
+
+gamma([value])
+
+time([value])
+
+estimator([value])
+
+estimator_curve([value])
+
+estimator_minimum([value])
+
+gam_lin_thresh([value])
+
+motion_exp([value])
+
+interpolation([value])
+
+interpolation_space([value])
+
+palette_interpolation([value])
+
+final_xform_enable([value])     -- set to 1 if the final xform is used
+
+symmetry([n])                   -- calculate n'th the genome symmetry group
+
+palette_index([value])          -- index of built-in palette is used
+
+spatial_oversample([value])     -- oversample
+
+nbatches([value])               -- passes
+
+ntemporal_samples([value])      -- temporal samples
+
+
+
+
+--
+-- XForm Type Interface
+--
+-- The XForm type returned by a Genome supports the following interface.  An
+-- XForm cooresponds to a triangle object in the editor.
+--
+index()              -- This xform offset in the genome's xform list
+
+density([real])      -- density
+
+color([idx])         -- The index of the color palette used by this xform
+					 -- valid on [0.0, 1.0]
+
+color_speed([real])  -- Scaling factor on the color added to current iteration
+
+opacity([real])      -- The xform opacity valid on [0.0, 1.0] where 1.0=opaque
+
+var(n, [real, [table]]) -- The value of variation 'n'.  'n' may be a string
+						-- containing the variation name, or it may be an
+						-- integer given by one of the global variation
+						-- names (ie LINEAR, WAVES, ...).  'table' is a
+						-- table of the variation's variable values if they
+						-- exist (see below).  This method returns the
+						-- variation value and a table of it's variables.
+
+param(n, [real, [table]])  -- An alias for var()
+
+animate([real])      -- Set if this xform rotates (in sheep >0 means stationary)
+					 -- valid on [0.0, inf]
+
+o([x,y])             -- The O coordinate for this xform's triangle
+a([x,y])             -- An alias for o()
+
+x([x,y])             -- The X coordinate for this xform's triangle
+b([x,y])             -- An alias for x()
+
+y([x,y])             -- The Y coordinate for this xform's triangle
+c([x,y])             -- An alias for y()
+
+pos([x,y])           -- The coordinates of the center of the xform's triangle.
+
+translate(dx, dy)    -- Move the center of the xform's triangle by dx, dy
+
+rotate(deg,[x,y])    -- Rotate the xform's triangle around [x,y].
+					 -- [x,y]=pos() if not given
+
+scale(dz,[dy,[x,y]]) -- Scale the xform's triangle by dz,dy with respect to
+					 -- [x,y]. [x,y]=pos() if not given. dy = dz if not given.
+
+shear(dx,dy,[x,y])   -- Shear the xform's triangle by dz,dy with respect to
+					 -- [x,y]. [x,y]=pos() if not given
+
+
+xa([value])  -- The xform's 'a' value.
+xb([value])  -- The xform's 'b' value.
+xc([value])  -- The xform's 'c' value.
+xd([value])  -- The xform's 'd' value.
+xe([value])  -- The xform's 'e' value.
+xf([value])  -- The xform's 'f' value.
+
+
+op([x,y])             -- The O coordinate for this xform's post triangle
+
+xp([x,y])             -- The X coordinate for this xform's post triangle
+
+yp([x,y])             -- The Y coordinate for this xform's post triangle
+
+posp([x,y])           -- The coordinates of the center of the xform's post triangle.
+
+translatep(dx, dy)    -- Move the center of the xform's post triangle by dx, dy
+
+rotatep(deg,[x,y])    -- Rotate the xform's post triangle around [x,y].
+					  -- [x,y]=pos() if not given
+
+scalep(dz,[dy,[x,y]]) -- Scale the xform's post triangle by dz,dy with respect
+					  -- to [x,y]. [x,y]=pos() if not given, and dy = dz
+
+shearp(dx,dy,[x,y])   -- Shear the xform's post triangle by dx,dy with respect
+					  -- to [x,y].  [x,y]=pos() if not given
+
+xap([value])  -- The xform's post triangle 'a' value.
+xbp([value])  -- The xform's post triangle 'b' value.
+xcp([value])  -- The xform's post triangle 'c' value.
+xdp([value])  -- The xform's post triangle 'd' value.
+xep([value])  -- The xform's post triangle 'e' value.
+xfp([value])  -- The xform's post triangle 'f' value.
+
+
+
+--
+-- Looping and thread control
+--
+-- The script environment also contains a stopped() function so that scripts
+-- can check if they have been requested to stop executing by the controlling
+-- application.  This is useful for scripts that may want to use an infinite
+-- loop which don't call a qosmic function.
+
+while not stopped() do
+	-- ... do something ...
+end
+
+-- You can "restart" a stopped script, or reset the stopped() function by
+-- passing it a boolean.
+
+if stopped() then
+	stopped(false)  -- returns false
+end
+
+
+-- There is also an irand() function that returns a random value between zero
+-- and one.  This is the same random number generator that is used by libflam3.
+
+while true do
+	print('irand() = ' .. irand())
+end
+
+
+-- Use msleep() to temporarily halt thread execution for one second.
+
+while true do
+	print('irand() = ' .. irand())
+	msleep(1000)
+end
+
+
+
+--
+-- Variation Types
+--
+-- The following is a list of the globally bound variables corresponding to the
+-- transform variations.  There is also a variable called RANDOM which has a
+-- value of -1, and the number of variations available is set in a variable
+-- called NUM_VARS.  The variation names are also available as strings in a globally
+-- bound array called VARIATIONS.
+--
+1  LINEAR
+2  SINUSOIDAL
+3  SPHERICAL
+4  SWIRL
+5  HORSESHOE
+6  POLAR
+7  HANDKERCHIEF
+8  HEART
+9  DISC
+10 SPIRAL
+11 HYPERBOLIC
+12 DIAMOND
+13 EX
+14 JULIA
+15 BENT
+16 WAVES
+17 FISHEYE
+18 POPCORN
+19 EXPONENTIAL
+20 POWER
+21 COSINE
+22 RINGS
+23 FAN
+24 BLOB
+25 PDJ
+26 FAN2
+27 RINGS2
+28 EYEFISH
+29 BUBBLE
+30 CYLINDER
+31 PERSPECTIVE
+32 NOISE
+33 JULIAN
+34 JULIASCOPE
+35 BLUR
+36 GAUSSIAN_BLUR
+37 RADIAL_BLUR
+38 PIE
+39 NGON
+40 CURL
+41 RECTANGLES
+42 ARCH
+43 TANGENT
+44 SQUARE
+45 RAYS
+46 BLADE
+47 SECANT2
+48 TWINTRIAN
+49 CROSS
+50 DISC2
+51 SUPER_SHAPE
+52 FLOWER
+53 CONIC
+54 PARABOLA
+55 BENT2
+56 BIPOLAR
+57 BOARDERS
+58 BUTTERFLY
+59 CELL
+60 CPOW
+61 CURVE
+62 EDISC
+63 ELLIPTIC
+64 ESCHER
+65 FOCI
+66 LAZYSUSAN
+67 LOONIE
+68 PRE_BLUR
+69 MODULUS
+70 OSCILLOSCOPE
+71 POLAR2
+72 POPCORN2
+73 SCRY
+74 SEPARATION
+75 SPLIT
+76 SPLITS
+77 STRIPES
+78 WEDGE
+79 WEDGE_JULIA
+80 WEDGE_SPH
+81 WHORL
+82 WAVES2
+83 EXP
+84 LOG
+85 SIN
+86 COS
+87 TAN
+88 SEC
+89 CSC
+90 COT
+91 SINH
+92 COSH
+93 TANH
+94 SECH
+95 CSCH
+96 COTH
+97 AUGER
+
+
+-- Some xform variations have additional parameters called variables associated
+-- with them.  The xform:var() accessor can be passed, and will return, a table
+-- indexed by the string name of the variable for these variations.  These
+-- variations and the string names of their variables are listed here.
+BLOB:         low, high, waves
+PDJ:          a, b, c, d
+FAN2:         x, y
+RINGS2:       val
+PERSPECTIVE:  angle, dist
+JULIAN:       power, dist
+JULIASCOPE:   power, dist
+RADIAL_BLUR:  angle
+PIE:          slices, rotation, thickness
+NGON:         sides, power, circle, corners
+CURL:         c1, c2
+RECTANGLES:   x, y
+DISC2:        rot, twist
+SUPER_SHAPE:  rnd, m, n1, n2, n3, holes
+FLOWER:       petals, holes
+CONIC:        eccen, holes
+PARABOLA:     height, width
+BENT2:        x, y
+BIPOLAR:      shift
+CELL:         size
+CPOW:         r, i, power
+CURVE:        xamp, yamp, xlength, ylength
+ESCHER:       beta
+LAZYSUSAN:    spin, space, twist, x, y
+MODULUS:      x, y
+OSCILLOSCOPE: separation, frequency, amplitude, damping
+POPCORN2:     x, y, c
+SEPARATION:   x, y, xinside, yinside
+SPLIT:        xsize, ysize
+SPLITS:       x, y
+STRIPES:      space, warp
+WEDGE:        angle, count, hole, swirl
+WEDGE_JULIA:  angle, count, power, dist
+WEDGE_SPH:    angle, count, hole, swirl
+WHORL:        inside, outside
+WAVES2:       freqx, freqy, scalex, scaley
+AUGER:        sym, freq, weight, scale
+
+
+--
+-- Filter Shapes
+--
+-- The following is a list of the globally bound variables corresponding to the
+-- spatial kernel shapes that can be used to set/check a genome's
+-- spatial_filter_select() accessor.
+--
+GAUSSIAN_KERNEL
+HERMITE_KERNEL
+BOX_KERNEL
+TRIANGLE_KERNEL
+BELL_KERNEL
+B_SPLINE_KERNEL
+LANCZOS3_KERNEL
+LANCZOS2_KERNEL
+MITCHELL_KERNEL
+BLACKMAN_KERNEL
+CATROM_KERNEL
+HAMMING_KERNEL
+HANNING_KERNEL
+QUADRATIC_KERNEL
+

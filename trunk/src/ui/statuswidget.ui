@@ -1,0 +1,66 @@
+<ui version="4.0" >
+ <class>StatusWidget</class>
+ <widget class="QWidget" name="StatusWidget" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>272</width>
+    <height>22</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>status</string>
+  </property>
+  <layout class="QGridLayout" >
+   <property name="leftMargin" >
+    <number>0</number>
+   </property>
+   <property name="topMargin" >
+    <number>0</number>
+   </property>
+   <property name="rightMargin" >
+    <number>0</number>
+   </property>
+   <property name="bottomMargin" >
+    <number>0</number>
+   </property>
+   <property name="horizontalSpacing" >
+    <number>0</number>
+   </property>
+   <property name="verticalSpacing" >
+    <number>0</number>
+   </property>
+   <item row="0" column="0" >
+    <widget class="QLabel" name="m_statusLabel" >
+     <property name="minimumSize" >
+      <size>
+       <width>2</width>
+       <height>22</height>
+      </size>
+     </property>
+     <property name="maximumSize" >
+      <size>
+       <width>300</width>
+       <height>22</height>
+      </size>
+     </property>
+     <property name="frameShape" >
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow" >
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <property name="text" >
+      <string>Some status text. .. . . .</string>
+     </property>
+     <property name="textFormat" >
+      <enum>Qt::PlainText</enum>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,279 @@
+<ui version="4.0" >
+ <class>TriangleDensityWidget</class>
+ <widget class="QWidget" name="TriangleDensityWidget" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>244</width>
+    <height>385</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Densities</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" >
+   <item row="0" column="0" >
+    <widget class="QSplitter" name="splitter" >
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <widget class="QWidget" name="layoutWidget" >
+      <layout class="QVBoxLayout" name="verticalLayout_2" >
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout" >
+         <item>
+          <spacer name="horizontalSpacer" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>1</width>
+             <height>1</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_zeroToolButton" >
+           <property name="minimumSize" >
+            <size>
+             <width>1</width>
+             <height>1</height>
+            </size>
+           </property>
+           <property name="text" >
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_equalToolButton" >
+           <property name="minimumSize" >
+            <size>
+             <width>1</width>
+             <height>1</height>
+            </size>
+           </property>
+           <property name="text" >
+            <string>=</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_randToolButton" >
+           <property name="minimumSize" >
+            <size>
+             <width>1</width>
+             <height>1</height>
+            </size>
+           </property>
+           <property name="text" >
+            <string>?</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QScrollArea" name="m_scrollArea" >
+         <property name="sizePolicy" >
+          <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize" >
+          <size>
+           <width>0</width>
+           <height>1</height>
+          </size>
+         </property>
+         <property name="horizontalScrollBarPolicy" >
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="widgetResizable" >
+          <bool>true</bool>
+         </property>
+         <property name="alignment" >
+          <set>Qt::AlignHCenter|Qt::AlignTop</set>
+         </property>
+         <widget class="QWidget" name="m_scrollAreaWidgetContents" >
+          <property name="geometry" >
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>222</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Maximum" hsizetype="Preferred" >
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layoutWidget_2" >
+      <layout class="QVBoxLayout" name="verticalLayout" >
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3" >
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2" >
+           <item>
+            <widget class="QComboBox" name="m_crossComboBox" >
+             <property name="sizePolicy" >
+              <sizepolicy vsizetype="Fixed" hsizetype="Maximum" >
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize" >
+              <size>
+               <width>1</width>
+               <height>1</height>
+              </size>
+             </property>
+             <property name="toolTip" >
+              <string>select a genome</string>
+             </property>
+             <item>
+              <property name="text" >
+               <string>none</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_mergeToolButton" >
+           <property name="minimumSize" >
+            <size>
+             <width>1</width>
+             <height>1</height>
+            </size>
+           </property>
+           <property name="toolTip" >
+            <string>merge this genome</string>
+           </property>
+           <property name="text" >
+            <string>*</string>
+           </property>
+           <property name="icon" >
+            <iconset resource="../qosmic.qrc" >
+             <normaloff>:/icons/silk/star.xpm</normaloff>:/icons/silk/star.xpm</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>1</width>
+             <height>1</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_zeroToolButton_2" >
+           <property name="minimumSize" >
+            <size>
+             <width>1</width>
+             <height>1</height>
+            </size>
+           </property>
+           <property name="text" >
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_equalToolButton_2" >
+           <property name="minimumSize" >
+            <size>
+             <width>1</width>
+             <height>1</height>
+            </size>
+           </property>
+           <property name="text" >
+            <string>=</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="m_randToolButton_2" >
+           <property name="minimumSize" >
+            <size>
+             <width>1</width>
+             <height>1</height>
+            </size>
+           </property>
+           <property name="text" >
+            <string>?</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QScrollArea" name="m_scrollArea_2" >
+         <property name="sizePolicy" >
+          <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize" >
+          <size>
+           <width>0</width>
+           <height>1</height>
+          </size>
+         </property>
+         <property name="horizontalScrollBarPolicy" >
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="widgetResizable" >
+          <bool>true</bool>
+         </property>
+         <property name="alignment" >
+          <set>Qt::AlignHCenter|Qt::AlignTop</set>
+         </property>
+         <widget class="QWidget" name="m_scrollAreaWidgetContents_2" >
+          <property name="geometry" >
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>222</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Maximum" hsizetype="Preferred" >
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../qosmic.qrc" />
+ </resources>
+ <connections/>
+</ui>
