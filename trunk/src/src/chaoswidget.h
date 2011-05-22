@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -60,6 +60,7 @@ class ChaosTableView : public QTableView
 		QPointF last_pos;
 		int vars_precision;
 };
+
 #include "ui_chaoswidget.h"
 
 class ChaosWidget : public QWidget, private Ui::ChaosWidget

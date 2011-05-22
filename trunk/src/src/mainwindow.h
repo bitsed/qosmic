@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,36 +22,29 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QCloseEvent>
-#include <QLabel>
 
 #include "ui_mainwindow.h"
 #include "renderthread.h"
-
-class FigureEditor;
-class Triangle;
-class BasisTriangle;
-class MutationWidget;
-class CameraSettingsWidget;
-class ColorSettingsWidget;
-class ColorBalanceWidget;
-class ImageSettingsWidget;
-class TriangleCoordsWidget;
-class TriangleDensityWidget;
-class MainPreviewWidget;
-class VariationsWidget;
-class ChaosWidget;
-class DirectoryViewWidget;
-class StatusWidget;
-class ScriptEditWidget;
-class MainViewer;
-class PaletteEditor;
-class SelectGenomeWidget;
-class ViewerPresetsWidget;
-class SelectTriangleWidget;
-class AdjustSceneWidget;
-class EditModeSelectorWidget;
-class GenomeVector;
+#include "mainviewer.h"
+#include "mutationwidget.h"
+#include "camerasettingswidget.h"
+#include "colorsettingswidget.h"
+#include "colorbalancewidget.h"
+#include "imgsettingswidget.h"
+#include "trianglecoordswidget.h"
+#include "triangledensitywidget.h"
+#include "mainpreviewwidget.h"
+#include "variationswidget.h"
+#include "chaoswidget.h"
+#include "directoryviewwidget.h"
+#include "statuswidget.h"
+#include "scripteditwidget.h"
+#include "paletteeditor.h"
+#include "selectgenomewidget.h"
+#include "selecttrianglewidget.h"
+#include "adjustscenewidget.h"
+#include "editmodeselectorwidget.h"
+#include "xfedit.h"
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -139,7 +132,6 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		RenderRequest m_file_request;
 		FigureEditor* m_xfeditor;
 		RenderThread* m_rthread;
-		bool genome_modified_flag;
 		bool m_dialogsEnabled;
 
 		MainViewer* m_viewer;
@@ -213,6 +205,5 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		QAction* recentFileActions[NumRecentFiles];
 };
 
-#include "xfedit.h"
 
 #endif

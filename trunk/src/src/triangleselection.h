@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,12 +22,14 @@
 
 #include <QGraphicsPolygonItem>
 
+#include "transformablegraphicsitem.h"
+
 class Triangle;
 class FigureEditor;
 class BasisTriangle;
 class NodeItem;
 
-class TriangleSelection : public QGraphicsPolygonItem
+class TriangleSelection : public QGraphicsPolygonItem, public TransformableGraphicsItem
 {
 	private:
 		FigureEditor* m_editor;
@@ -58,11 +60,11 @@ class TriangleSelection : public QGraphicsPolygonItem
 		void addItem(QGraphicsItem*);
 		QList<QGraphicsItem*> allItems() const;
 		bool contains(QGraphicsItem* item) const;
+		bool containsAnyOf(Triangle*) const;
 		void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget =0);
 
 		static const int RTTI = 2020202;
 };
 
-#include "xfedit.h"
 
 #endif

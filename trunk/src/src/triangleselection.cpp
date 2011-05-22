@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "triangleselection.h"
+#include "xfedit.h"
 #include "logger.h"
 
 TriangleSelection::TriangleSelection(FigureEditor* f, BasisTriangle* b)
@@ -67,6 +68,8 @@ void TriangleSelection::rotate( double rad, QPointF cpos )
 	}
 	setTransform(trans);
 	setPolygon(pa);
+	if (m_adapter)
+		m_adapter->update();
 }
 
 void TriangleSelection::scale( double dx, double dy, QPointF cpos )
@@ -85,6 +88,8 @@ void TriangleSelection::scale( double dx, double dy, QPointF cpos )
 	}
 	setTransform(trans);
 	setPolygon(pa);
+	if (m_adapter)
+		m_adapter->update();
 }
 
 void TriangleSelection::flipHorizontally(QPointF cpos)
@@ -106,6 +111,8 @@ void TriangleSelection::flipHorizontally(QPointF cpos)
 		pa << p;
 	}
 	setPolygon(pa);
+	if (m_adapter)
+		m_adapter->update();
 }
 
 void TriangleSelection::flipVertically(QPointF cpos)
@@ -127,6 +134,8 @@ void TriangleSelection::flipVertically(QPointF cpos)
 		pa << p;
 	}
 	setPolygon(pa);
+	if (m_adapter)
+		m_adapter->update();
 }
 
 void TriangleSelection::selectCoveredItems()
@@ -242,6 +251,29 @@ bool TriangleSelection::contains(QGraphicsItem* item) const
 			logWarn(QString("TriangleSelection::contains : unsupported type %1")
 			.arg(item->type()));
 	}
+	return false;
+}
+
+// return true if selection contains any part of a Triangle or its PostTriangle
+bool TriangleSelection::containsAnyOf(Triangle* t) const
+{
+	if (contains(t))
+		return true;
+
+	if (t == m_editor->getSelectedTriangle() && m_editor->postEnabled())
+	{
+		Triangle* post = m_editor->post();
+		if (contains(post))
+			return true;
+		foreach (NodeItem* node, post->getNodes())
+			if (contains(node))
+				return true;
+	}
+
+	foreach (NodeItem* node, t->getNodes())
+		if (contains(node))
+			return true;
+
 	return false;
 }
 

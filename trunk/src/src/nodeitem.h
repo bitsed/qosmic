@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,7 +23,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsEllipseItem>
 
-class Triangle;
+#include "triangle.h"
 
 class NodeItem : public QGraphicsEllipseItem
 {
@@ -32,6 +32,7 @@ class NodeItem : public QGraphicsEllipseItem
 	QString m_name;
 	QRectF m_boundingRect;
 	QGraphicsSimpleTextItem* label;
+	QPen std_pen;
 	int m_index;
 
 	public:
@@ -49,10 +50,14 @@ class NodeItem : public QGraphicsEllipseItem
 		int id() const;
 		void setVisible(bool);
 
+	protected:
+		void hoverEnterEvent(QGraphicsSceneHoverEvent*);
+		void hoverLeaveEvent(QGraphicsSceneHoverEvent*);
+
+	public:
 		static const int RTTI = 349497;
 };
 
 
-#include "triangle.h"
 
 #endif

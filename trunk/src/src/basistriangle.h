@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -25,8 +25,6 @@
 #include <QPointF>
 #include <QGraphicsPolygonItem>
 #include <QGraphicsSceneWheelEvent>
-
-#include "flam3util.h"
 
 typedef QPolygonF TriangleCoords;
 typedef QList<QPointF>::iterator TriangleCoordsIterator;
@@ -57,8 +55,4 @@ class BasisTriangle : public QGraphicsPolygonItem
 };
 
 
-
-
-
 #endif
-

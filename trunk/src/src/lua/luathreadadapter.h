@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007 by David Bitseff                                   *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,15 +23,15 @@
 #include <QObject>
 #include <QMutex>
 
+#include "luathread.h"
 
-class GenomeVector;
+
 class BasisTriangle;
-class RenderEvent;
 class MainWindow;
 
 namespace Lua
 {
-class LuaThread;
+
 class LuaThreadAdapter : public QObject
 {
 	Q_OBJECT
@@ -69,7 +69,5 @@ class LuaThreadAdapter : public QObject
 };
 
 }
-#include "mainwindow.h"
-#include "luathread.h"
 
 #endif

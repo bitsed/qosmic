@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,6 +18,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "xform.h"
+#include "luathreadadapter.h"
+
 #include <math.h>
 
 namespace Lua
@@ -179,7 +181,7 @@ int XForm::var(lua_State* L)
 	else
 	{
 		const char* name = luaL_checkstring(L, 1);
-		var_num = Util::variation_number(QString(name));
+		var_num = Util::variation_number(QString(name).toLower());
 		if (var_num == -1)
 			luaL_error(L, "variation %s not found", name);
 	}
@@ -477,6 +479,23 @@ void XForm::get_variables_from_table(lua_State* L, int variation)
 			get_table_var(auger, scale)
 			break;
 		}
+		case VAR_FLUX:
+		{
+			get_table_var(flux, spread)
+			break;
+		}
+		case VAR_MOBIUS:
+		{
+			get_table_var(mobius, re_a)
+			get_table_var(mobius, im_a)
+			get_table_var(mobius, re_b)
+			get_table_var(mobius, im_b)
+			get_table_var(mobius, re_c)
+			get_table_var(mobius, im_c)
+			get_table_var(mobius, re_d)
+			get_table_var(mobius, im_d)
+			break;
+		}
 		default:
 			break;
 	}
@@ -743,6 +762,23 @@ void XForm::set_variables_to_table(lua_State* L, int variation)
 			set_table_var(auger, weight)
 			set_table_var(auger, freq)
 			set_table_var(auger, scale)
+			break;
+		}
+		case VAR_FLUX:
+		{
+			set_table_var(flux, spread)
+			break;
+		}
+		case VAR_MOBIUS:
+		{
+			set_table_var(mobius, re_a)
+			set_table_var(mobius, im_a)
+			set_table_var(mobius, re_b)
+			set_table_var(mobius, im_b)
+			set_table_var(mobius, re_c)
+			set_table_var(mobius, im_c)
+			set_table_var(mobius, re_d)
+			set_table_var(mobius, im_d)
 			break;
 		}
 		default:

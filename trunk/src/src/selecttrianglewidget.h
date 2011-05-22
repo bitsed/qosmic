@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,12 +20,11 @@
 #ifndef SELECTTRIANGLEWIDGET_H
 #define SELECTTRIANGLEWIDGET_H
 
-#include <ui_selecttrianglewidget.h>
+#include "ui_selecttrianglewidget.h"
 #include "qosmicwidget.h"
+#include "xfedit.h"
 
-class Triangle;
-class FigureEditor;
-class GenomeVector;
+
 class SelectTriangleWidget
 	: public QWidget, public QosmicWidget, private Ui::SelectTriangleWidget
 {
@@ -56,6 +55,5 @@ class SelectTriangleWidget
 		void finalStateChangedSlot(bool);
 };
 
-#include "xfedit.h"
 
 #endif

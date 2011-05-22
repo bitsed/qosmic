@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include "frame.h"
 #include "genome.h"
+#include "luathreadadapter.h"
 
 #define method(name) {#name, &Frame::name}
 namespace Lua
@@ -65,7 +66,7 @@ int Frame::get_genome(lua_State *L)
 	{
 		logInfo(QString("Frame::get_genome, adding %1 genomes")
 			.arg(idx - lsize + 1));
-		flam3_genome g;
+		flam3_genome g = flam3_genome();
 		Util::init_genome(&g);
 		for (int n = 0 ; n < idx - lsize + 1 ; n++)
 			genome_vec->append(g);
@@ -225,7 +226,7 @@ int Frame::copy_genome(lua_State* L)
 		luaL_error(L, "genome %d is null", from);
 	if (genome_vec->size() <= to)
 	{
-		flam3_genome g;
+		flam3_genome g = flam3_genome();
 		Util::init_genome(&g);
 		int lsize = genome_vec->size();
 		for (int n = 0 ; n < to - lsize + 1 ; n++)

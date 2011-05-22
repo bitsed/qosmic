@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -27,7 +27,9 @@
 
 TriangleDensityWidget::TriangleDensityWidget(GenomeVector* g, FigureEditor* e, QWidget* parent)
 	: QWidget(parent), QosmicWidget(this, "TriangleDensityWidget"),
-	triangleScene(e), genome(g), grouped_slider_idx(0), is_merged(false)
+	triangleScene(e), genome(g), grouped_slider_idx(0),
+	other_genome(), merged_genome(),
+	merged_grouped_slider_idx(), is_merged(false)
 {
 	setupUi(this);
 

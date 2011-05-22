@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -51,6 +51,19 @@ EditModeSelectorWidget::EditModeSelectorWidget(FigureEditor* e, QWidget* parent)
 	settings.beginGroup("editmodselectorwidget");
 	m_multiplierEditor->updateValue(settings.value("movemultiplier", 1.0).toDouble());
 
+	// set the dropdown menu index for the triangle selection type
+	int selection_type = m_xfeditor->selection()->selectedType();
+	if (selection_type == Triangle::RTTI)
+		m_selectionItemsSelector->setCurrentIndex(0);
+	else
+		m_selectionItemsSelector->setCurrentIndex(1);
+
+	// restore the edit mode button state
+	setSelectedButton(m_xfeditor->mode());
+
+	// set the dropdown menu index for the scene editing origin
+	m_sceneAxesSelector->setCurrentIndex((int)m_xfeditor->transformLocation() - 1);
+
 	connect(m_rotateEditor, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
 	connect(m_rotateEditor, SIGNAL(valueUpdated()), this, SLOT(triangleRotateAction()));
 
@@ -75,20 +88,13 @@ EditModeSelectorWidget::EditModeSelectorWidget(FigureEditor* e, QWidget* parent)
 	connect(m_sceneAxesSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(sceneAxesSelected(int)));
 	connect(m_selectionItemsSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(selectionItemsChangedAction(int)));
 
-	connect(m_hFlipButton, SIGNAL(released()), this, SIGNAL(undoStateSignal()));
 	connect(m_hFlipButton, SIGNAL(pressed()), m_xfeditor, SLOT(flipTriangleHAction()));
-
-	connect(m_vFlipButton, SIGNAL(released()), this, SIGNAL(undoStateSignal()));
 	connect(m_vFlipButton, SIGNAL(pressed()), m_xfeditor, SLOT(flipTriangleVAction()));
 
-	connect(m_finalTriangleButton, SIGNAL(clicked(bool)), this, SLOT(finalTriangleButtonClicked(bool)));
 	connect(m_postTriangleButton, SIGNAL(clicked(bool)), m_xfeditor, SLOT(editPostTriangle(bool)));
 	connect(m_resetTriangleButton, SIGNAL(pressed()), m_xfeditor, SLOT(resetTriangleCoordsAction()));
-	connect(m_resetTriangleButton, SIGNAL(released()), this, SIGNAL(undoStateSignal()));
 	connect(m_addTriangleButton, SIGNAL(pressed()), m_xfeditor, SLOT(addTriangleAction()));
-	connect(m_addTriangleButton, SIGNAL(released()), this, SIGNAL(undoStateSignal()));
 	connect(m_delTriangleButton, SIGNAL(pressed()), m_xfeditor, SLOT(removeTriangleAction()));
-	connect(m_delTriangleButton, SIGNAL(released()), this, SIGNAL(undoStateSignal()));
 
 	connect(m_xfeditor, SIGNAL(editModeChangedSignal(FigureEditor::EditMode)), this, SLOT(setSelectedButton(FigureEditor::EditMode)));
 	connect(sceneScaleSlider, SIGNAL(valueChanged(int)), this, SLOT(sceneScaledSlot()));
@@ -335,48 +341,9 @@ void EditModeSelectorWidget::reset()
 {
 	m_rotateEditor->updateValue(0.0);
 	lastRotateValue = 0.0;
-	GenomeVector* genomes = m_xfeditor->genomeVector();
-	if (genomes)
-	{
-		flam3_genome* genome_ptr = genomes->selectedGenome();
-		m_finalTriangleButton->setChecked(genome_ptr->final_xform_enable);
-		m_postTriangleButton->setChecked(m_xfeditor->postEnabled());
-	}
+	m_postTriangleButton->setChecked(m_xfeditor->postEnabled());
 }
 
-void EditModeSelectorWidget::finalTriangleButtonClicked(bool checked)
-{
-	GenomeVector* genomes = m_xfeditor->genomeVector();
-	if (genomes)
-	{
-		flam3_genome* genome_ptr = genomes->selectedGenome();
-		bool hasFinal = genome_ptr->final_xform_enable;
-		bool finalSelected = (genome_ptr->final_xform_index == m_xfeditor->selectedTriangleIndex());
-		if (checked)
-			m_xfeditor->enableFinalXform(true);
-		else
-		{
-			if (hasFinal)
-			{
-				if (!finalSelected)
-				{
-					m_xfeditor->selectTriangle(genome_ptr->final_xform_index);
-					m_finalTriangleButton->setChecked(true);
-				}
-				else
-				{
-					m_xfeditor->enableFinalXform(false);
-					m_finalTriangleButton->setChecked(false);
-				}
-			}
-			else
-			{
-				m_xfeditor->enableFinalXform(true);
-				m_finalTriangleButton->setChecked(true);
-			}
-		}
-	}
-}
 
 void EditModeSelectorWidget::sceneAxesSelected(int idx)
 {

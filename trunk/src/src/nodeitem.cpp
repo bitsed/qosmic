@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,7 +23,7 @@
 
 
 NodeItem::NodeItem( QGraphicsScene* c, Triangle* t, int id, const char* n )
-    : canvas(c), edges(t), m_name(n), m_index(id)
+	: QGraphicsEllipseItem(t), canvas(c), edges(t), m_name(n), m_index(id)
 {
 	setRect(-4., -4., 8., 8.);
 	setZValue( 0 );
@@ -34,6 +34,7 @@ NodeItem::NodeItem( QGraphicsScene* c, Triangle* t, int id, const char* n )
 	label->setZValue(0);
 	label->moveBy(-15., 3.);
 	canvas->addItem(label);
+	setAcceptHoverEvents(true);
 }
 
 NodeItem::~NodeItem()
@@ -75,7 +76,7 @@ void NodeItem::setPen(const QPen& ppen, const QPen& lpen)
  */
 void NodeItem::movePoint(double dx, double dy)
 {
-    logFinest(QString("NodeItem::movePoint : %1 (%2, %3)")
+	logFinest(QString("NodeItem::movePoint : %1 (%2, %3)")
 			.arg(m_name).arg(dx).arg(dy));
 	QGraphicsEllipseItem::moveBy(dx, dy);
 	label->moveBy(dx, dy);
@@ -88,14 +89,14 @@ void NodeItem::moveBy(double dx, double dy)
 {
 	logFinest(QString("NodeItem::moveBy : %1 (%2, %3)")
 			.arg(m_name).arg(dx).arg(dy));
-    QGraphicsEllipseItem::moveBy( dx, dy );
+	QGraphicsEllipseItem::moveBy( dx, dy );
 	label->moveBy(dx, dy);
-    edges->moveEdges();
+	edges->moveEdges();
 }
 
 int NodeItem::type() const
 {
-    return RTTI;
+	return RTTI;
 }
 
 QString NodeItem::name() const
@@ -112,4 +113,17 @@ void NodeItem::setVisible(bool flag)
 {
 	QGraphicsEllipseItem::setVisible(flag);
 	label->setVisible(flag);
+}
+
+void NodeItem::hoverEnterEvent(QGraphicsSceneHoverEvent*)
+{
+	QPen p(pen());
+	std_pen = p;
+	p.setColor(p.color().lighter(200));
+	QGraphicsEllipseItem::setPen(p);
+}
+
+void NodeItem::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
+{
+	QGraphicsEllipseItem::setPen(std_pen);
 }

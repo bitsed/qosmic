@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -29,16 +29,16 @@
 #include <QKeyEvent>
 
 #include "qosmicwidget.h"
-#include "flam3util.h"
+#include "genomevector.h"
+#include "basistriangle.h"
+#include "triangle.h"
+#include "nodeitem.h"
+#include "coordinatemark.h"
+#include "triangleselection.h"
+#include "transformablegraphicsguide.h"
+#include "posttriangle.h"
+#include "undoring.h"
 
-class BasisTriangle;
-class Triangle;
-class NodeItem;
-class CoordinateMark;
-class TriangleSelection;
-class PostTriangle;
-class GenomeVector;
-class UndoState;
 
 typedef QList<Triangle*> TriangleList;
 
@@ -141,6 +141,7 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget
 		void scaleOutScene();
 		void autoScale();
 		void setMode(FigureEditor::EditMode);
+		void updatePreview();
 
 		// graphicsitem horiz and vert flipping
 		void flipTriangleHAction();
@@ -160,6 +161,7 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget
 		void drawBackground(QPainter*, const QRectF&);
 		Triangle* getCurrentOrSelected();
 		void adjustSceneRect();
+		void createXformPreview();
 
 	private slots:
 		void triangleMenuAction(QAction*);
@@ -168,6 +170,7 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget
 		QAbstractGraphicsShapeItem* moving;
 		QPointF moving_start;
 		QPointF box_center;
+		QPointF scene_start;
 		QGraphicsSimpleTextItem* infoItem;
 		TriangleList trianglesList;
 		GenomeVector* genomes;
@@ -193,10 +196,12 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget
 		bool guide_visible;
 		QColor guide_color;
 		TriangleSelection* selectionItem;
+		TransformableGraphicsGuide* guideAdapter;
 		PostTriangle* postTriangle;
 		SceneLocation centered_scaling;
 		SceneLocation transform_location;
 		QVector<flam3_xform> xformClip;
+		QVector<QVector<double>*> xformPreview;
 		EditMode editMode;
 		bool move_edge_mode;
 		bool has_selection;
@@ -206,17 +211,10 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget
 		bool menu_visible;
 		bool preview_visible;
 		int preview_density;
+		int preview_depth;
 };
 
 
-#include "genomevector.h"
-#include "basistriangle.h"
-#include "triangle.h"
-#include "nodeitem.h"
-#include "coordinatemark.h"
-#include "triangleselection.h"
-#include "posttriangle.h"
-#include "undoring.h"
 
 #endif
 

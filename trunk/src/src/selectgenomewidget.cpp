@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -188,11 +188,17 @@ void SelectGenomeWidget::addButtonPressedSlot()
 
 void SelectGenomeWidget::delButtonPressedSlot()
 {
-	int idx = model->genomeVector()->selectedIndex();
-	if (model->removeRow(idx))
+	if (model->genomeVector()->size() <= 1)
+		// don't remove the only genome, just clear it
+		clearTrianglesButtonPressedSlot();
+	else
 	{
-		setSelectedGenome(qMax(0, idx - 1));
-		emit genomesModified();
+		int idx = model->genomeVector()->selectedIndex();
+		if (model->removeRow(idx))
+		{
+			setSelectedGenome(qMax(0, idx - 1));
+			emit genomesModified();
+		}
 	}
 }
 
@@ -242,8 +248,7 @@ void SelectGenomeWidget::indexesMovedSlot(const QModelIndexList& idxList)
 	logFine(QString("SelectGenomeWidget::indexesMovedSlot : dropped at row %1 from %2").arg(drop_row).arg(drag_row));
 	GenomeVector* genomes = model->genomeVector();
 	flam3_genome* drag_genome = genomes->data() + drag_row;
-	flam3_genome swap_genome;
-	Util::init_genome(&swap_genome);
+	flam3_genome swap_genome = flam3_genome();
 	flam3_copy(&swap_genome, drag_genome);
 
 	for (int n = 0 ; n < genomes->size() ; n++)

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -24,7 +24,7 @@
 #include "genome.h"
 #include "xform.h"
 #include "qosmic.h"
-
+#include "mainwindow.h"
 #include "luathreadadapter.h"
 
 namespace Lua
@@ -321,6 +321,8 @@ void LuaThread::lua_load_environment(lua_State* L)
 	lua_pushinteger(L, VAR_CSCH + 1); lua_setglobal(L, "CSCH");
 	lua_pushinteger(L, VAR_COTH + 1); lua_setglobal(L, "COTH");
 	lua_pushinteger(L, VAR_AUGER + 1); lua_setglobal(L, "AUGER");
+	lua_pushinteger(L, VAR_FLUX + 1); lua_setglobal(L, "FLUX");
+	lua_pushinteger(L, VAR_MOBIUS + 1); lua_setglobal(L, "MOBIUS");
 	lua_pushinteger(L, -1); lua_setglobal(L, "RANDOM");
 	lua_pushinteger(L, flam3_nvariations); lua_setglobal(L, "NUM_VARS");
 
@@ -447,6 +449,8 @@ void LuaThread::lua_load_environment(lua_State* L)
 	lua_pushinteger(L, VAR_CSCH + 1); lua_pushstring(L, "CSCH"); lua_settable(L, -3);
 	lua_pushinteger(L, VAR_COTH + 1); lua_pushstring(L, "COTH"); lua_settable(L, -3);
 	lua_pushinteger(L, VAR_AUGER + 1); lua_pushstring(L, "AUGER"); lua_settable(L, -3);
+	lua_pushinteger(L, VAR_FLUX + 1); lua_pushstring(L, "FLUX"); lua_settable(L, -3);
+	lua_pushinteger(L, VAR_MOBIUS + 1); lua_pushstring(L, "MOBIUS"); lua_settable(L, -3);
 	lua_setglobal(L, "VARIATIONS");
 
 	// adjust the package.path to include user/app paths for require()

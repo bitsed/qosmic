@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,8 +18,9 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <QMap>
-#include <math.h>
-#include <locale.h>
+#include <QHash>
+#include <cmath>
+#include <clocale>
 
 #include "logger.h"
 #include "flam3util.h"
@@ -95,370 +96,356 @@ namespace Util
 		return os;
 	}
 
+	struct xform_variable_accessor
+	{
+		xform_variable_accessor() {}
+		virtual double get_var(flam3_xform*)=0;
+		virtual void set_var(flam3_xform*, double)=0;
+	};
+
+	static QHash<QString, xform_variable_accessor*> xform_variable_accessors;
+
+#define create_xform_variable_accessor(name) \
+	struct xform_variable_accessor_##name : public xform_variable_accessor \
+	{\
+		xform_variable_accessor_##name() {} \
+		double get_var(flam3_xform* xform) { return xform->name; } \
+		void set_var(flam3_xform* xform, double value) { xform->name = value; } \
+	};
+
+	create_xform_variable_accessor(blob_low)
+	create_xform_variable_accessor(blob_high)
+	create_xform_variable_accessor(blob_waves)
+
+	create_xform_variable_accessor(pdj_a)
+	create_xform_variable_accessor(pdj_b)
+	create_xform_variable_accessor(pdj_c)
+	create_xform_variable_accessor(pdj_d)
+
+	create_xform_variable_accessor(fan2_x)
+	create_xform_variable_accessor(fan2_y)
+
+	create_xform_variable_accessor(rings2_val)
+
+	create_xform_variable_accessor(perspective_angle)
+	create_xform_variable_accessor(perspective_dist)
+
+	create_xform_variable_accessor(julian_power)
+	create_xform_variable_accessor(julian_dist)
+
+	create_xform_variable_accessor(juliascope_power)
+	create_xform_variable_accessor(juliascope_dist)
+
+	create_xform_variable_accessor(radial_blur_angle)
+
+	create_xform_variable_accessor(pie_slices)
+	create_xform_variable_accessor(pie_rotation)
+	create_xform_variable_accessor(pie_thickness)
+
+	create_xform_variable_accessor(ngon_sides)
+	create_xform_variable_accessor(ngon_power)
+	create_xform_variable_accessor(ngon_circle)
+	create_xform_variable_accessor(ngon_corners)
+
+	create_xform_variable_accessor(curl_c1)
+	create_xform_variable_accessor(curl_c2)
+
+	create_xform_variable_accessor(rectangles_x)
+	create_xform_variable_accessor(rectangles_y)
+
+	create_xform_variable_accessor(amw_amp)
+
+	create_xform_variable_accessor(disc2_rot)
+	create_xform_variable_accessor(disc2_twist)
+
+	create_xform_variable_accessor(super_shape_rnd)
+	create_xform_variable_accessor(super_shape_m)
+	create_xform_variable_accessor(super_shape_n1)
+	create_xform_variable_accessor(super_shape_n2)
+	create_xform_variable_accessor(super_shape_n3)
+	create_xform_variable_accessor(super_shape_holes)
+
+	create_xform_variable_accessor(flower_petals)
+	create_xform_variable_accessor(flower_holes)
+
+	create_xform_variable_accessor(conic_eccentricity)
+	create_xform_variable_accessor(conic_holes)
+
+	create_xform_variable_accessor(parabola_height)
+	create_xform_variable_accessor(parabola_width)
+
+	create_xform_variable_accessor(bent2_x)
+	create_xform_variable_accessor(bent2_y)
+
+	create_xform_variable_accessor(bipolar_shift)
+
+	create_xform_variable_accessor(cell_size)
+
+	create_xform_variable_accessor(cpow_r)
+	create_xform_variable_accessor(cpow_i)
+	create_xform_variable_accessor(cpow_power)
+
+	create_xform_variable_accessor(curve_xamp)
+	create_xform_variable_accessor(curve_yamp)
+	create_xform_variable_accessor(curve_xlength)
+	create_xform_variable_accessor(curve_ylength)
+
+	create_xform_variable_accessor(escher_beta)
+
+	create_xform_variable_accessor(lazysusan_spin)
+	create_xform_variable_accessor(lazysusan_space)
+	create_xform_variable_accessor(lazysusan_twist)
+	create_xform_variable_accessor(lazysusan_x)
+	create_xform_variable_accessor(lazysusan_y)
+
+	create_xform_variable_accessor(modulus_x)
+	create_xform_variable_accessor(modulus_y)
+
+	create_xform_variable_accessor(oscope_separation)
+	create_xform_variable_accessor(oscope_frequency)
+	create_xform_variable_accessor(oscope_amplitude)
+	create_xform_variable_accessor(oscope_damping)
+
+	create_xform_variable_accessor(popcorn2_x)
+	create_xform_variable_accessor(popcorn2_y)
+	create_xform_variable_accessor(popcorn2_c)
+
+	create_xform_variable_accessor(separation_x)
+	create_xform_variable_accessor(separation_xinside)
+	create_xform_variable_accessor(separation_y)
+	create_xform_variable_accessor(separation_yinside)
+
+	create_xform_variable_accessor(split_xsize)
+	create_xform_variable_accessor(split_ysize)
+
+	create_xform_variable_accessor(splits_x)
+	create_xform_variable_accessor(splits_y)
+
+	create_xform_variable_accessor(stripes_space)
+	create_xform_variable_accessor(stripes_warp)
+
+	create_xform_variable_accessor(wedge_angle)
+	create_xform_variable_accessor(wedge_hole)
+	create_xform_variable_accessor(wedge_count)
+	create_xform_variable_accessor(wedge_swirl)
+
+	create_xform_variable_accessor(wedge_julia_angle)
+	create_xform_variable_accessor(wedge_julia_count)
+	create_xform_variable_accessor(wedge_julia_power)
+	create_xform_variable_accessor(wedge_julia_dist)
+
+	create_xform_variable_accessor(wedge_sph_angle)
+	create_xform_variable_accessor(wedge_sph_count)
+	create_xform_variable_accessor(wedge_sph_hole)
+	create_xform_variable_accessor(wedge_sph_swirl)
+
+	create_xform_variable_accessor(whorl_inside)
+	create_xform_variable_accessor(whorl_outside)
+
+	create_xform_variable_accessor(waves2_freqx)
+	create_xform_variable_accessor(waves2_scalex)
+	create_xform_variable_accessor(waves2_freqy)
+	create_xform_variable_accessor(waves2_scaley)
+
+	create_xform_variable_accessor(auger_sym)
+	create_xform_variable_accessor(auger_weight)
+	create_xform_variable_accessor(auger_freq)
+	create_xform_variable_accessor(auger_scale)
+
+	create_xform_variable_accessor(flux_spread)
+
+	create_xform_variable_accessor(mobius_re_a)
+	create_xform_variable_accessor(mobius_im_a)
+	create_xform_variable_accessor(mobius_re_b)
+	create_xform_variable_accessor(mobius_im_b)
+	create_xform_variable_accessor(mobius_re_c)
+	create_xform_variable_accessor(mobius_im_c)
+	create_xform_variable_accessor(mobius_re_d)
+	create_xform_variable_accessor(mobius_im_d)
+
+
+#define add_xform_variable_accessor(name) \
+		xform_variable_accessors.insert(QString(#name), new xform_variable_accessor_##name)
+
+	void init_xform_variable_accessors()
+	{
+		add_xform_variable_accessor(blob_low);
+		add_xform_variable_accessor(blob_high);
+		add_xform_variable_accessor(blob_waves);
+
+		add_xform_variable_accessor(pdj_a);
+		add_xform_variable_accessor(pdj_b);
+		add_xform_variable_accessor(pdj_c);
+		add_xform_variable_accessor(pdj_d);
+
+		add_xform_variable_accessor(fan2_x);
+		add_xform_variable_accessor(fan2_y);
+
+		add_xform_variable_accessor(rings2_val);
+
+		add_xform_variable_accessor(perspective_angle);
+		add_xform_variable_accessor(perspective_dist);
+
+		add_xform_variable_accessor(julian_power);
+		add_xform_variable_accessor(julian_dist);
+
+		add_xform_variable_accessor(juliascope_power);
+		add_xform_variable_accessor(juliascope_dist);
+
+		add_xform_variable_accessor(radial_blur_angle);
+
+		add_xform_variable_accessor(pie_slices);
+		add_xform_variable_accessor(pie_rotation);
+		add_xform_variable_accessor(pie_thickness);
+
+		add_xform_variable_accessor(ngon_sides);
+		add_xform_variable_accessor(ngon_power);
+		add_xform_variable_accessor(ngon_circle);
+		add_xform_variable_accessor(ngon_corners);
+
+		add_xform_variable_accessor(curl_c1);
+		add_xform_variable_accessor(curl_c2);
+
+		add_xform_variable_accessor(rectangles_x);
+		add_xform_variable_accessor(rectangles_y);
+
+		add_xform_variable_accessor(amw_amp);
+
+		add_xform_variable_accessor(disc2_rot);
+		add_xform_variable_accessor(disc2_twist);
+
+		add_xform_variable_accessor(super_shape_rnd);
+		add_xform_variable_accessor(super_shape_m);
+		add_xform_variable_accessor(super_shape_n1);
+		add_xform_variable_accessor(super_shape_n2);
+		add_xform_variable_accessor(super_shape_n3);
+		add_xform_variable_accessor(super_shape_holes);
+
+		add_xform_variable_accessor(flower_petals);
+		add_xform_variable_accessor(flower_holes);
+
+		add_xform_variable_accessor(conic_eccentricity);
+		add_xform_variable_accessor(conic_holes);
+
+		add_xform_variable_accessor(parabola_height);
+		add_xform_variable_accessor(parabola_width);
+
+		add_xform_variable_accessor(bent2_x);
+		add_xform_variable_accessor(bent2_y);
+
+		add_xform_variable_accessor(bipolar_shift);
+
+		add_xform_variable_accessor(cell_size);
+
+		add_xform_variable_accessor(cpow_r);
+		add_xform_variable_accessor(cpow_i);
+		add_xform_variable_accessor(cpow_power);
+
+		add_xform_variable_accessor(curve_xamp);
+		add_xform_variable_accessor(curve_yamp);
+		add_xform_variable_accessor(curve_xlength);
+		add_xform_variable_accessor(curve_ylength);
+
+		add_xform_variable_accessor(escher_beta);
+
+		add_xform_variable_accessor(lazysusan_spin);
+		add_xform_variable_accessor(lazysusan_space);
+		add_xform_variable_accessor(lazysusan_twist);
+		add_xform_variable_accessor(lazysusan_x);
+		add_xform_variable_accessor(lazysusan_y);
+
+		add_xform_variable_accessor(modulus_x);
+		add_xform_variable_accessor(modulus_y);
+
+		add_xform_variable_accessor(oscope_separation);
+		add_xform_variable_accessor(oscope_frequency);
+		add_xform_variable_accessor(oscope_amplitude);
+		add_xform_variable_accessor(oscope_damping);
+
+		add_xform_variable_accessor(popcorn2_x);
+		add_xform_variable_accessor(popcorn2_y);
+		add_xform_variable_accessor(popcorn2_c);
+
+		add_xform_variable_accessor(separation_x);
+		add_xform_variable_accessor(separation_xinside);
+		add_xform_variable_accessor(separation_y);
+		add_xform_variable_accessor(separation_yinside);
+
+		add_xform_variable_accessor(split_xsize);
+		add_xform_variable_accessor(split_ysize);
+
+		add_xform_variable_accessor(splits_x);
+		add_xform_variable_accessor(splits_y);
+
+		add_xform_variable_accessor(stripes_space);
+		add_xform_variable_accessor(stripes_warp);
+
+		add_xform_variable_accessor(wedge_angle);
+		add_xform_variable_accessor(wedge_hole);
+		add_xform_variable_accessor(wedge_count);
+		add_xform_variable_accessor(wedge_swirl);
+
+		add_xform_variable_accessor(wedge_julia_angle);
+		add_xform_variable_accessor(wedge_julia_count);
+		add_xform_variable_accessor(wedge_julia_power);
+		add_xform_variable_accessor(wedge_julia_dist);
+
+		add_xform_variable_accessor(wedge_sph_angle);
+		add_xform_variable_accessor(wedge_sph_count);
+		add_xform_variable_accessor(wedge_sph_hole);
+		add_xform_variable_accessor(wedge_sph_swirl);
+
+		add_xform_variable_accessor(whorl_inside);
+		add_xform_variable_accessor(whorl_outside);
+
+		add_xform_variable_accessor(waves2_freqx);
+		add_xform_variable_accessor(waves2_scalex);
+		add_xform_variable_accessor(waves2_freqy);
+		add_xform_variable_accessor(waves2_scaley);
+
+		add_xform_variable_accessor(auger_sym);
+		add_xform_variable_accessor(auger_weight);
+		add_xform_variable_accessor(auger_freq);
+		add_xform_variable_accessor(auger_scale);
+
+		add_xform_variable_accessor(flux_spread);
+
+		add_xform_variable_accessor(mobius_re_a);
+		add_xform_variable_accessor(mobius_im_a);
+		add_xform_variable_accessor(mobius_re_b);
+		add_xform_variable_accessor(mobius_im_b);
+		add_xform_variable_accessor(mobius_re_c);
+		add_xform_variable_accessor(mobius_im_c);
+		add_xform_variable_accessor(mobius_re_d);
+		add_xform_variable_accessor(mobius_im_d);
+	}
 
 	double get_xform_variable ( flam3_xform* xform, QString name )
 	{
-		if ( name == "blob_low" ) { return xform->blob_low ; }
-		else if ( name == "blob_high" ) { return xform->blob_high ; }
-		else if ( name == "blob_waves" ) { return xform->blob_waves ; }
-
-
-		else if ( name == "pdj_a" ) { return xform->pdj_a ; }
-		else if ( name == "pdj_b" ) { return xform->pdj_b ; }
-		else if ( name == "pdj_c" ) { return xform->pdj_c ; }
-		else if ( name == "pdj_d" ) { return xform->pdj_d ; }
-
-
-		else if ( name == "fan2_x" ) { return xform->fan2_x ; }
-		else if ( name == "fan2_y" ) { return xform->fan2_y ; }
-
-
-		else if ( name == "rings2_val" ) { return xform->rings2_val ; }
-
-
-		else if ( name == "perspective_angle" ) { return xform->perspective_angle ; }
-		else if ( name == "perspective_dist" ) { return xform->perspective_dist ; }
-
-
-		else if ( name == "julian_power" ) { return xform->julian_power ; }
-		else if ( name == "julian_dist" ) { return xform->julian_dist ; }
-
-
-		else if ( name == "juliascope_power" ) { return xform->juliascope_power ; }
-		else if ( name == "juliascope_dist" ) { return xform->juliascope_dist ; }
-
-
-		else if ( name == "radial_blur_angle" ) { return xform->radial_blur_angle ; }
-
-
-		else if ( name == "pie_slices" ) { return xform->pie_slices ; }
-		else if ( name == "pie_rotation" ) { return xform->pie_rotation ; }
-		else if ( name == "pie_thickness" ) { return xform->pie_thickness ; }
-
-
-		else if ( name == "ngon_sides" ) { return xform->ngon_sides ; }
-		else if ( name == "ngon_power" ) { return xform->ngon_power ; }
-		else if ( name == "ngon_circle" ) { return xform->ngon_circle ; }
-		else if ( name == "ngon_corners" ) { return xform->ngon_corners ; }
-
-		else if ( name == "curl_c1" ) { return xform->curl_c1 ; }
-		else if ( name == "curl_c2" ) { return xform->curl_c2 ; }
-
-		else if ( name == "rectangles_x" ) { return xform->rectangles_x ; }
-		else if ( name == "rectangles_y" ) { return xform->rectangles_y ; }
-
-
-		else if ( name == "amw_amp" ) { return xform->amw_amp ; }
-
-
-		else if ( name == "disc2_rot" ) { return xform->disc2_rot ; }
-		else if ( name == "disc2_twist" ) { return xform->disc2_twist ; }
-
-
-		else if ( name == "super_shape_rnd" ) { return xform->super_shape_rnd ; }
-		else if ( name == "super_shape_m" ) { return xform->super_shape_m ; }
-		else if ( name == "super_shape_n1" ) { return xform->super_shape_n1 ; }
-		else if ( name == "super_shape_n2" ) { return xform->super_shape_n2 ; }
-		else if ( name == "super_shape_n3" ) { return xform->super_shape_n3 ; }
-		else if ( name == "super_shape_holes" ) { return xform->super_shape_holes ; }
-
-
-		else if ( name == "flower_petals" ) { return xform->flower_petals ; }
-		else if ( name == "flower_holes" ) { return xform->flower_holes ; }
-
-
-		else if ( name == "conic_eccentricity" ) { return xform->conic_eccentricity ; }
-		else if ( name == "conic_holes" ) { return xform->conic_holes ; }
-
-
-		else if ( name == "parabola_height" ) { return xform->parabola_height ; }
-		else if ( name == "parabola_width" ) { return xform->parabola_width ; }
-
-
-		else if ( name == "bent2_x" ) { return xform->bent2_x ; }
-		else if ( name == "bent2_y" ) { return xform->bent2_y ; }
-
-
-		else if ( name == "bipolar_shift" ) { return xform->bipolar_shift ; }
-
-
-		else if ( name == "cell_size" ) { return xform->cell_size ; }
-
-
-		else if ( name == "cpow_r" ) { return xform->cpow_r ; }
-		else if ( name == "cpow_i" ) { return xform->cpow_i ; }
-		else if ( name == "cpow_power" ) { return xform->cpow_power ; }
-
-
-		else if ( name == "curve_xamp" ) { return xform->curve_xamp ; }
-		else if ( name == "curve_yamp" ) { return xform->curve_yamp ; }
-		else if ( name == "curve_xlength" ) { return xform->curve_xlength ; }
-		else if ( name == "curve_ylength" ) { return xform->curve_ylength ; }
-
-
-		else if ( name == "escher_beta" ) { return xform->escher_beta ; }
-
-
-		else if ( name == "lazysusan_spin" ) { return xform->lazysusan_spin ; }
-		else if ( name == "lazysusan_space" ) { return xform->lazysusan_space ; }
-		else if ( name == "lazysusan_twist" ) { return xform->lazysusan_twist ; }
-		else if ( name == "lazysusan_x" ) { return xform->lazysusan_x ; }
-		else if ( name == "lazysusan_y" ) { return xform->lazysusan_y ; }
-
-
-		else if ( name == "modulus_x" ) { return xform->modulus_x ; }
-		else if ( name == "modulus_y" ) { return xform->modulus_y ; }
-
-
-		else if ( name == "oscope_separation" ) { return xform->oscope_separation ; }
-		else if ( name == "oscope_frequency" ) { return xform->oscope_frequency ; }
-		else if ( name == "oscope_amplitude" ) { return xform->oscope_amplitude ; }
-		else if ( name == "oscope_damping" ) { return xform->oscope_damping ; }
-
-
-		else if ( name == "popcorn2_x" ) { return xform->popcorn2_x ; }
-		else if ( name == "popcorn2_y" ) { return xform->popcorn2_y ; }
-		else if ( name == "popcorn2_c" ) { return xform->popcorn2_c ; }
-
-
-		else if ( name == "separation_x" ) { return xform->separation_x ; }
-		else if ( name == "separation_xinside" ) { return xform->separation_xinside ; }
-		else if ( name == "separation_y" ) { return xform->separation_y ; }
-		else if ( name == "separation_yinside" ) { return xform->separation_yinside ; }
-
-
-		else if ( name == "split_xsize" ) { return xform->split_xsize ; }
-		else if ( name == "split_ysize" ) { return xform->split_ysize ; }
-
-
-		else if ( name == "splits_x" ) { return xform->splits_x ; }
-		else if ( name == "splits_y" ) { return xform->splits_y ; }
-
-
-		else if ( name == "stripes_space" ) { return xform->stripes_space ; }
-		else if ( name == "stripes_warp" ) { return xform->stripes_warp ; }
-
-
-		else if ( name == "wedge_angle" ) { return xform->wedge_angle ; }
-		else if ( name == "wedge_hole" ) { return xform->wedge_hole ; }
-		else if ( name == "wedge_count" ) { return xform->wedge_count ; }
-		else if ( name == "wedge_swirl" ) { return xform->wedge_swirl ; }
-
-
-		else if ( name == "wedge_julia_angle" ) { return xform->wedge_julia_angle ; }
-		else if ( name == "wedge_julia_count" ) { return xform->wedge_julia_count ; }
-		else if ( name == "wedge_julia_power" ) { return xform->wedge_julia_power ; }
-		else if ( name == "wedge_julia_dist" ) { return xform->wedge_julia_dist ; }
-
-
-		else if ( name == "wedge_sph_angle" ) { return xform->wedge_sph_angle ; }
-		else if ( name == "wedge_sph_count" ) { return xform->wedge_sph_count ; }
-		else if ( name == "wedge_sph_hole" ) { return xform->wedge_sph_hole ; }
-		else if ( name == "wedge_sph_swirl" ) { return xform->wedge_sph_swirl ; }
-
-
-		else if ( name == "whorl_inside" ) { return xform->whorl_inside ; }
-		else if ( name == "whorl_outside" ) { return xform->whorl_outside ; }
-
-
-		else if ( name == "waves2_freqx" ) { return xform->waves2_freqx ; }
-		else if ( name == "waves2_scalex" ) { return xform->waves2_scalex ; }
-		else if ( name == "waves2_freqy" ) { return xform->waves2_freqy ; }
-		else if ( name == "waves2_scaley" ) { return xform->waves2_scaley ; }
-
-
-		else if ( name == "auger_sym" ) { return xform->auger_sym ; }
-		else if ( name == "auger_weight" ) { return xform->auger_weight ; }
-		else if ( name == "auger_freq" ) { return xform->auger_freq ; }
-		else if ( name == "auger_scale" ) { return xform->auger_scale ; }
-
-		else if ( name == "flux_spread" ) { return xform->flux_spread ; }
-
+		if (xform_variable_accessors.isEmpty())
+			init_xform_variable_accessors();
+
+		QString lookup(name.replace(QChar(' '),QString("_")).toLower());
+		xform_variable_accessor* accessor = xform_variable_accessors.value(lookup);
+		if (accessor)
+			return accessor->get_var(xform);
 		else
-			logWarn(QString("Util::get_xform_variable : unknown variable '%1'").arg(name));
+			logError(QString("Util::get_xform_variable : Unknown variable '%1'").arg(lookup));
 
 		return 0.;
 	}
 
 	void set_xform_variable ( flam3_xform* xform, QString name, double value )
 	{
-		if ( name == "blob_low" ) { xform->blob_low = value ; }
-		else if ( name == "blob_high" ) { xform->blob_high = value ; }
-		else if ( name == "blob_waves" ) { xform->blob_waves = value ; }
-
-
-		else if ( name == "pdj_a" ) { xform->pdj_a = value ; }
-		else if ( name == "pdj_b" ) { xform->pdj_b = value ; }
-		else if ( name == "pdj_c" ) { xform->pdj_c = value ; }
-		else if ( name == "pdj_d" ) { xform->pdj_d = value ; }
-
-
-		else if ( name == "fan2_x" ) { xform->fan2_x = value ; }
-		else if ( name == "fan2_y" ) { xform->fan2_y = value ; }
-
-
-		else if ( name == "rings2_val" ) { xform->rings2_val = value ; }
-
-
-		else if ( name == "perspective_angle" ) { xform->perspective_angle = value ; }
-		else if ( name == "perspective_dist" ) { xform->perspective_dist = value ; }
-
-
-		else if ( name == "julian_power" ) { xform->julian_power = value ; }
-		else if ( name == "julian_dist" ) { xform->julian_dist = value ; }
-
-
-		else if ( name == "juliascope_power" ) { xform->juliascope_power = value ; }
-		else if ( name == "juliascope_dist" ) { xform->juliascope_dist = value ; }
-
-
-		else if ( name == "radial_blur_angle" ) { xform->radial_blur_angle = value ; }
-
-
-		else if ( name == "pie_slices" ) { xform->pie_slices = value ; }
-		else if ( name == "pie_rotation" ) { xform->pie_rotation = value ; }
-		else if ( name == "pie_thickness" ) { xform->pie_thickness = value ; }
-
-
-		else if ( name == "ngon_sides" ) { xform->ngon_sides = value ; }
-		else if ( name == "ngon_power" ) { xform->ngon_power = value ; }
-		else if ( name == "ngon_circle" ) { xform->ngon_circle = value ; }
-		else if ( name == "ngon_corners" ) { xform->ngon_corners = value ; }
-
-		else if ( name == "curl_c1" ) { xform->curl_c1 = value ; }
-		else if ( name == "curl_c2" ) { xform->curl_c2 = value ; }
-
-		else if ( name == "rectangles_x" ) { xform->rectangles_x = value ; }
-		else if ( name == "rectangles_y" ) { xform->rectangles_y = value ; }
-
-		else if ( name == "amw_amp" ) { xform->amw_amp = value ; }
-
-		else if ( name == "disc2_rot" ) { xform->disc2_rot = value ; }
-		else if ( name == "disc2_twist" ) { xform->disc2_twist = value ; }
-
-
-		else if ( name == "super_shape_rnd" ) { xform->super_shape_rnd = value ; }
-		else if ( name == "super_shape_m" ) { xform->super_shape_m = value ; }
-		else if ( name == "super_shape_n1" ) { xform->super_shape_n1 = value ; }
-		else if ( name == "super_shape_n2" ) { xform->super_shape_n2 = value ; }
-		else if ( name == "super_shape_n3" ) { xform->super_shape_n3 = value ; }
-		else if ( name == "super_shape_holes" ) { xform->super_shape_holes = value ; }
-
-
-		else if ( name == "flower_petals" ) { xform->flower_petals = value ; }
-		else if ( name == "flower_holes" ) { xform->flower_holes = value ; }
-
-
-		else if ( name == "conic_eccentricity" ) { xform->conic_eccentricity = value ; }
-		else if ( name == "conic_holes" ) { xform->conic_holes = value ; }
-
-
-		else if ( name == "parabola_height" ) { xform->parabola_height = value ; }
-		else if ( name == "parabola_width" ) { xform->parabola_width = value ; }
-
-
-		else if ( name == "bent2_x" ) { xform->bent2_x = value ; }
-		else if ( name == "bent2_y" ) { xform->bent2_y = value ; }
-
-
-		else if ( name == "bipolar_shift" ) { xform->bipolar_shift = value ; }
-
-
-		else if ( name == "cell_size" ) { xform->cell_size = value ; }
-
-
-		else if ( name == "cpow_r" ) { xform->cpow_r = value ; }
-		else if ( name == "cpow_i" ) { xform->cpow_i = value ; }
-		else if ( name == "cpow_power" ) { xform->cpow_power = value ; }
-
-
-		else if ( name == "curve_xamp" ) { xform->curve_xamp = value ; }
-		else if ( name == "curve_yamp" ) { xform->curve_yamp = value ; }
-		else if ( name == "curve_xlength" ) { xform->curve_xlength = value ; }
-		else if ( name == "curve_ylength" ) { xform->curve_ylength = value ; }
-
-
-		else if ( name == "escher_beta" ) { xform->escher_beta = value ; }
-
-
-		else if ( name == "lazysusan_spin" ) { xform->lazysusan_spin = value ; }
-		else if ( name == "lazysusan_space" ) { xform->lazysusan_space = value ; }
-		else if ( name == "lazysusan_twist" ) { xform->lazysusan_twist = value ; }
-		else if ( name == "lazysusan_x" ) { xform->lazysusan_x = value ; }
-		else if ( name == "lazysusan_y" ) { xform->lazysusan_y = value ; }
-
-
-		else if ( name == "modulus_x" ) { xform->modulus_x = value ; }
-		else if ( name == "modulus_y" ) { xform->modulus_y = value ; }
-
-
-		else if ( name == "oscope_separation" ) { xform->oscope_separation = value ; }
-		else if ( name == "oscope_frequency" ) { xform->oscope_frequency = value ; }
-		else if ( name == "oscope_amplitude" ) { xform->oscope_amplitude = value ; }
-		else if ( name == "oscope_damping" ) { xform->oscope_damping = value ; }
-
-
-		else if ( name == "popcorn2_x" ) { xform->popcorn2_x = value ; }
-		else if ( name == "popcorn2_y" ) { xform->popcorn2_y = value ; }
-		else if ( name == "popcorn2_c" ) { xform->popcorn2_c = value ; }
-
-
-		else if ( name == "separation_x" ) { xform->separation_x = value ; }
-		else if ( name == "separation_xinside" ) { xform->separation_xinside = value ; }
-		else if ( name == "separation_y" ) { xform->separation_y = value ; }
-		else if ( name == "separation_yinside" ) { xform->separation_yinside = value ; }
-
-
-		else if ( name == "split_xsize" ) { xform->split_xsize = value ; }
-		else if ( name == "split_ysize" ) { xform->split_ysize = value ; }
-
-
-		else if ( name == "splits_x" ) { xform->splits_x = value ; }
-		else if ( name == "splits_y" ) { xform->splits_y = value ; }
-
-
-		else if ( name == "stripes_space" ) { xform->stripes_space = value ; }
-		else if ( name == "stripes_warp" ) { xform->stripes_warp = value ; }
-
-
-		else if ( name == "wedge_angle" ) { xform->wedge_angle = value ; }
-		else if ( name == "wedge_hole" ) { xform->wedge_hole = value ; }
-		else if ( name == "wedge_count" ) { xform->wedge_count = value ; }
-		else if ( name == "wedge_swirl" ) { xform->wedge_swirl = value ; }
-
-
-		else if ( name == "wedge_julia_angle" ) { xform->wedge_julia_angle = value ; }
-		else if ( name == "wedge_julia_count" ) { xform->wedge_julia_count = value ; }
-		else if ( name == "wedge_julia_power" ) { xform->wedge_julia_power = value ; }
-		else if ( name == "wedge_julia_dist" ) { xform->wedge_julia_dist = value ; }
-
-
-		else if ( name == "wedge_sph_angle" ) { xform->wedge_sph_angle = value ; }
-		else if ( name == "wedge_sph_count" ) { xform->wedge_sph_count = value ; }
-		else if ( name == "wedge_sph_hole" ) { xform->wedge_sph_hole = value ; }
-		else if ( name == "wedge_sph_swirl" ) { xform->wedge_sph_swirl = value ; }
-
-
-		else if ( name == "whorl_inside" ) { xform->whorl_inside = value ; }
-		else if ( name == "whorl_outside" ) { xform->whorl_outside = value ; }
-
-
-		else if ( name == "waves2_freqx" ) { xform->waves2_freqx = value ; }
-		else if ( name == "waves2_scalex" ) { xform->waves2_scalex = value ; }
-		else if ( name == "waves2_freqy" ) { xform->waves2_freqy = value ; }
-		else if ( name == "waves2_scaley" ) { xform->waves2_scaley = value ; }
-
-
-		else if ( name == "auger_sym" ) { xform->auger_sym = value ; }
-		else if ( name == "auger_weight" ) { xform->auger_weight = value ; }
-		else if ( name == "auger_freq" ) { xform->auger_freq = value ; }
-		else if ( name == "auger_scale" ) { xform->auger_scale = value ; }
-
-		else if ( name == "flux_spread" ) { xform->flux_spread = value ; }
-
+		if (xform_variable_accessors.isEmpty())
+			init_xform_variable_accessors();
+
+		QString lookup(name.replace(QChar(' '),QString("_")).toLower());
+		xform_variable_accessor* accessor = xform_variable_accessors.value(lookup);
+		if (accessor)
+			accessor->set_var(xform, value);
 		else
-			logWarn(QString("Util::set_xform_variable : unknown variable '%1'").arg(name));
-
+			logError(QString("Util::set_xform_variable : Unknown variable '%1'").arg(lookup));
 	}
 
 	QStringList& get_variable_names()
@@ -595,6 +582,11 @@ namespace Util
 		<< "auger_freq" << "auger_scale"
 
 		<< "flux_spread"
+
+		<< "mobius_Re a" << "mobius_Im a"
+		<< "mobius_Re b" << "mobius_Im b"
+		<< "mobius_Re c" << "mobius_Im c"
+		<< "mobius_Re d" << "mobius_Im d"
 
 		);
 

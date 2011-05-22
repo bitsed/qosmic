@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,16 +22,13 @@
 #define MUTATIONWIDGET_H
 
 #include <QWidget>
-#include <QMouseEvent>
 #include <QMenu>
 
 #include "ui_mutationwidget.h"
 #include "genomevector.h"
+#include "renderthread.h"
+#include "previewwidget.h"
 
-class PreviewWidget;
-class RenderRequest;
-class RenderEvent;
-class RenderThread;
 
 class MutationWidget : public QWidget, private Ui::MutationWidget
 {
@@ -70,7 +67,5 @@ class MutationWidget : public QWidget, private Ui::MutationWidget
 
 };
 
-#include "renderthread.h"
-#include "previewwidget.h"
 
 #endif

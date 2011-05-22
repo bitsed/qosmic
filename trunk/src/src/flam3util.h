@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -30,9 +30,6 @@ extern "C" {
 #include "filters.h"
 }
 
-
-static QTextStream cout(stdout);
-static QTextStream cerr(stderr);
 
 namespace Util
 {

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,9 +20,12 @@
 #ifndef INCLUDE_LOGGER_H
 #define INCLUDE_LOGGER_H
 
-#include<QMutex>
+#include <QMutex>
+#include <QTextStream>
 
-#include "flam3util.h"
+
+extern QTextStream cout;
+extern QTextStream cerr;
 
 namespace Util
 {

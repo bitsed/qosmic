@@ -17,29 +17,22 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef STATUSWIDGET_H
-#define STATUSWIDGET_H
 
-#include <QWidget>
-#include <QResizeEvent>
+#include "transformablegraphicsitem.h"
+#include "transformablegraphicsguide.h"
 
-#include "ui_statuswidget.h"
-#include "renderthread.h"
-
-class StatusWidget : public QWidget, private Ui::StatusWidget
+TransformableGraphicsItem::TransformableGraphicsItem() : m_adapter(0)
 {
-	Q_OBJECT
+}
 
-	public:
-		StatusWidget(QWidget* parent);
-		~StatusWidget();
+void TransformableGraphicsItem::setGuideAdapter(TransformableGraphicsGuide* adapter)
+{
+	m_adapter = adapter;
+	if (adapter)
+		adapter->setParentItem(dynamic_cast<QGraphicsItem*>(this));
+}
 
-	public slots:
-		void setRenderStatus(RenderStatus*);
-
-
-	protected:
-		void resizeEvent(QResizeEvent*);
-};
-
-#endif
+TransformableGraphicsGuide* TransformableGraphicsItem::guideAdapter() const
+{
+	return m_adapter;
+}

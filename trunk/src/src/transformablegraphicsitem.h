@@ -17,29 +17,30 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef STATUSWIDGET_H
-#define STATUSWIDGET_H
+#ifndef TRANSFORMABLE_H
+#define TRANSFORMABLE_H
 
-#include <QWidget>
-#include <QResizeEvent>
+class TransformableGraphicsGuide;
 
-#include "ui_statuswidget.h"
-#include "renderthread.h"
-
-class StatusWidget : public QWidget, private Ui::StatusWidget
+/**
+ * An interface that accepts a GuideAdapter.
+ *
+ * It's also necessary for the child class to extend the QGraphicsItem
+ * interface as well since the main purpose of this class is to handle
+ * reparenting of the guideAdapter instance.
+ *
+ */
+class TransformableGraphicsItem
 {
-	Q_OBJECT
+	protected:
+		TransformableGraphicsGuide* m_adapter;
 
 	public:
-		StatusWidget(QWidget* parent);
-		~StatusWidget();
-
-	public slots:
-		void setRenderStatus(RenderStatus*);
-
-
-	protected:
-		void resizeEvent(QResizeEvent*);
+		TransformableGraphicsItem();
+		virtual void setGuideAdapter(TransformableGraphicsGuide*);
+		TransformableGraphicsGuide* guideAdapter() const;
 };
 
-#endif
+//--------------------------------------------------------------------------
+
+#endif // TRANSFORMABLE_H

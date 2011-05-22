@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -209,15 +209,6 @@ void RenderThread::run()
 		// add symmetry xforms before rendering
 		if (genome.symmetry != 1)
 			flam3_add_symmetry(&genome, genome.symmetry);
-
-		// add the "designated" final xform
-		if (genome.final_xform_enable)
-		{
-			flam3_add_xforms(&genome, 1, 0, 0);
-			int idx = genome.num_xforms - 1;
-			genome.xform[idx] = genome.xform[genome.final_xform_index];
-			genome.final_xform_index = idx;
-		}
 		init_status_cb();
 
 		logFinest(QString("allocated %1 bytes, rendering...").arg(msize));
