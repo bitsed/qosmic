@@ -1,0 +1,223 @@
+/***************************************************************************
+ *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   dbitsef@zipcon.net                                                    *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#ifndef RENDERTHREAD_H
+#define RENDERTHREAD_H
+
+#include <QImage>
+#include <QTime>
+#include <QStatusBar>
+#include <QThread>
+#include <QMutex>
+#include <QQueue>
+#include "genomevector.h"
+
+/**
+  * Clients submit a RenderRequest to the RenderThread which calls
+  * flam3_render().  A RenderResponse is emitted from the RenderThread once the
+  * requested work is completed.  A RenderRequest's Type determines how the work
+  * is scheduled in relation to other currently running requests.
+  */
+class RenderRequest
+{
+	public:
+		enum Type { Preview, Image, File, Queued } ;
+
+		RenderRequest(flam3_genome* g=0, QSize s=QSize(),
+						QString n=QString(), Type t=Queued);
+
+		void setImagePresets(flam3_genome);
+		flam3_genome* imagePresets();
+		void setGenome(flam3_genome*);
+		flam3_genome* genome() const;
+		void setSize(const QSize&);
+		QSize size() const;
+		QImage& image();
+		void setImage(QImage&);
+		void setName(const QString&);
+		QString name() const;
+		void setType(const Type&);
+		Type type() const;
+		void setFinished(bool);
+		bool finished() const;
+
+	private:
+		flam3_genome* m_genome;
+		flam3_genome m_genome_template;
+		QSize m_size;
+		QString m_name;
+		Type m_type;
+		QImage m_image;  // i'm using an image here.  copying a pixmap many
+		                 // times seems to make X unhappy
+		bool m_finished;
+		QMutex m_img_mutex;
+};
+typedef QList<RenderRequest*> RenderRequestList;
+
+/**
+  * The RenderThread emits a RenderEvent once the work associated with a
+  * RenderRequest has completed.
+  */
+class RenderEvent
+{
+	RenderRequest* m_request;
+	bool m_accepted;
+	public:
+		RenderEvent();
+		void accept(bool=true);
+		bool accepted() const;
+		void setRequest(RenderRequest*);
+		RenderRequest* request() const;
+};
+
+
+/**
+ * Since the progress callback to flam3_render() uses C linkage, this helper
+ * class allows a status message to be updated asynchronously.  Implement this
+ * to have the current status given to your class.
+ */
+class RenderStatus : public QObject
+{
+	Q_OBJECT
+
+	public:
+		enum Flag { Busy, Killed, Idle }  ;
+		Flag State;
+		RenderRequest::Type Type;
+		QString Name;
+		QTime Runtime;
+		QTime EstRemain;
+		double Percent;
+
+		RenderStatus();
+		RenderStatus(const RenderStatus&);
+		RenderStatus& operator=(const RenderStatus&);
+		QString getMessage();
+		QString getEstRemain();
+		QString getRuntime();
+		void createMessage();
+
+	private:
+		QString message;
+		QString estRemainString;
+		QString runtimeString;
+};
+
+// The RenderThread is the StatusProvider
+class StatusProvider
+{
+	public:
+		virtual RenderStatus& getStatus() =0;
+		virtual ~StatusProvider() =0 ;
+};
+
+// The thread that moves StatusProvider info to the StatusWatchers
+class StatusObserver : public QThread
+{
+	Q_OBJECT
+
+	public:
+		StatusObserver(StatusProvider*);
+		void start();
+		void run();
+
+		bool running;
+		StatusProvider* provider;
+		RenderStatus status;
+
+	signals:
+		void statusUpdated(RenderStatus*);
+};
+
+
+/**
+ * This is the thread that schedules calls to the flam3_render() function.
+ * RenderThread serializes all calls to flam3_render(). Clients are notified
+ * when their jobs are finished.  Clients submit a RenderRequest to this class,
+ * and they catch RenderResponse signals when a job is complete.
+ */
+class RenderThread : public QThread, public StatusProvider
+{
+	Q_OBJECT
+
+	public:
+		enum ImageFormat { RGB32, ARGB32_OPAQUE, ARGB32_TRANS } ;
+
+	private:
+		static bool _stop_current_job;
+		static double _est_remain;
+		static double _percent_finished;
+		static stat_struct _stats;
+		static QTime ptimer;
+		static int _progress_callback(void*, double, int, double);
+		static RenderThread* singleInstance;
+
+		flam3_frame flame;
+		RenderRequest* preview_request;
+		RenderRequest* image_request;
+		QList<RenderEvent*> event_list;
+		QQueue<RenderRequest*> request_queue;
+		QMutex rqueue_mutex;
+		RenderRequest* current_request;
+		RenderStatus status;
+
+		QString msg;
+		bool rendering;
+		bool render_loop_flag;
+		bool kill_all_jobs;
+		QImage img_buf;
+		StatusObserver* so;
+		void init_status_cb();
+		int channels;
+		int alpha_trans;
+		int millis;
+		ImageFormat img_format;
+		QString rtype;
+
+		RenderThread();
+
+	public:
+		bool running; // flag to kill thread
+		static RenderThread* getInstance();
+		~RenderThread();
+		virtual void run();
+		void setRenderAgain(bool); // start/stop all rendering
+		RenderStatus& getStatus();
+		double finished();
+		bool isRendering();
+		void setFormat(ImageFormat);
+		ImageFormat format() const;
+		bool earlyClip() const;
+		void setEarlyClip(bool);
+		RenderRequest* current() const;
+
+	public slots:
+		void render(RenderRequest*);
+		void stopRendering();
+		void killAll();
+
+	signals:
+		void flameRenderingKilled();
+		void flameRendered(RenderEvent*);
+		void statusUpdated(RenderStatus*);
+};
+
+
+
+#endif

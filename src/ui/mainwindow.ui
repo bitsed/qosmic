@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <author>David Bitseff</author>
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>270</width>
+    <height>255</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Qosmic</string>
+  </property>
+  <property name="documentMode">
+   <bool>true</bool>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks|QMainWindow::VerticalTabs</set>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QGraphicsView" name="m_xfeditview">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOn</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOn</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="renderHints">
+       <set>QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
+      </property>
+      <property name="transformationAnchor">
+       <enum>QGraphicsView::AnchorViewCenter</enum>
+      </property>
+      <property name="resizeAnchor">
+       <enum>QGraphicsView::AnchorViewCenter</enum>
+      </property>
+      <property name="optimizationFlags">
+       <set>QGraphicsView::DontSavePainterState</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>270</width>
+     <height>17</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="m_statusbar"/>
+  <action name="addTriangleAction">
+   <property name="icon">
+    <iconset resource="../qosmic.qrc">
+     <normaloff>:/icons/silk/shape_square_add.xpm</normaloff>:/icons/silk/shape_square_add.xpm</iconset>
+   </property>
+   <property name="text">
+    <string>Add Triangle</string>
+   </property>
+  </action>
+  <action name="moveModeAction">
+   <property name="icon">
+    <iconset resource="../qosmic.qrc">
+     <normaloff>:/icons/silk/arrow_updown.xpm</normaloff>:/icons/silk/arrow_updown.xpm</iconset>
+   </property>
+   <property name="text">
+    <string>Move Triangles</string>
+   </property>
+  </action>
+  <action name="rotateModeAction">
+   <property name="icon">
+    <iconset resource="../qosmic.qrc">
+     <normaloff>:/icons/silk/arrow_rotate_clockwise.xpm</normaloff>:/icons/silk/arrow_rotate_clockwise.xpm</iconset>
+   </property>
+   <property name="text">
+    <string>Rotate Triangles</string>
+   </property>
+  </action>
+  <action name="scaleModeAction">
+   <property name="icon">
+    <iconset resource="../qosmic.qrc">
+     <normaloff>:/icons/silk/arrow_inout.xpm</normaloff>:/icons/silk/arrow_inout.xpm</iconset>
+   </property>
+   <property name="text">
+    <string>Scale Triangles</string>
+   </property>
+   <property name="toolTip">
+    <string>Scale Triangles</string>
+   </property>
+  </action>
+  <action name="flipModeAction">
+   <property name="icon">
+    <iconset resource="../qosmic.qrc">
+     <normaloff>:/icons/silk/shape_flip_horizontal.xpm</normaloff>:/icons/silk/shape_flip_horizontal.xpm</iconset>
+   </property>
+   <property name="text">
+    <string>Flip Triangles</string>
+   </property>
+   <property name="toolTip">
+    <string>Flip Triangles</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../qosmic.qrc"/>
+ </resources>
+ <connections/>
+ <designerdata>
+  <property name="gridDeltaX">
+   <number>10</number>
+  </property>
+  <property name="gridDeltaY">
+   <number>10</number>
+  </property>
+  <property name="gridSnapX">
+   <bool>true</bool>
+  </property>
+  <property name="gridSnapY">
+   <bool>true</bool>
+  </property>
+  <property name="gridVisible">
+   <bool>true</bool>
+  </property>
+ </designerdata>
+</ui>
