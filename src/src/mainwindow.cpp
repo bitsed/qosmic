@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -26,31 +26,8 @@
 
 #include "qosmic.h"
 #include "mainwindow.h"
-#include "genomevector.h"
-#include "flam3util.h"
-#include "mainviewer.h"
-#include "paletteeditor.h"
-#include "colorselector.h"
-#include "mutationwidget.h"
-#include "camerasettingswidget.h"
-#include "colorsettingswidget.h"
-#include "colorbalancewidget.h"
-#include "imgsettingswidget.h"
-#include "trianglecoordswidget.h"
-#include "triangledensitywidget.h"
-#include "mainpreviewwidget.h"
-#include "variationswidget.h"
-#include "chaoswidget.h"
-#include "directoryviewwidget.h"
-#include "statuswidget.h"
-#include "scripteditwidget.h"
-#include "selectgenomewidget.h"
-#include "viewerpresetsmodel.h"
-#include "selecttrianglewidget.h"
-#include "coordinatemark.h"
 #include "renderdialog.h"
 #include "renderprogressdialog.h"
-#include "editmodeselectorwidget.h"
 
 MainWindow::MainWindow() : QMainWindow()
 {
@@ -280,7 +257,7 @@ MainWindow::MainWindow() : QMainWindow()
 	m_dockWidgets << dock;
 	connect(m_xfeditor, SIGNAL(triangleSelectedSignal(Triangle*)),
 			m_variationsWidget, SLOT(triangleSelectedSlot(Triangle*)));
-	connect(m_variationsWidget, SIGNAL(dataChanged()), m_xfeditor, SLOT(update()));
+	connect(m_variationsWidget, SIGNAL(dataChanged()), m_xfeditor, SLOT(updatePreview()));
 	connect(m_variationsWidget, SIGNAL(dataChanged()), this, SLOT(render()));
 	connect(m_variationsWidget, SIGNAL(undoStateSignal()), this, SLOT(addUndoState()));
 	lastDock = dock;
@@ -542,7 +519,6 @@ void MainWindow::showEvent(QShowEvent* event)
 		}
 
 		render();
-		genome_modified_flag = false;
 
 		connect(m_viewer, SIGNAL(viewerResized(const QSize&)),
 			this, SLOT(mainViewerResizedAction(const QSize&)));
@@ -574,10 +550,7 @@ void MainWindow::open()
 		{
 			lastDir = QFileInfo(fileName).dir().canonicalPath();
 			if (loadFile(fileName))
-			{
 				render();
-				genome_modified_flag = false;
-			}
 		}
 	}
 }
@@ -746,10 +719,7 @@ void MainWindow::importAction()
 	{
 		lastDir = QFileInfo(fileName).dir().canonicalPath();
 		if (importGenome(fileName))
-		{
 			render();
-			genome_modified_flag = false;
-		}
 		else
 			QMessageBox::warning(this, tr("Error"),
 				tr("Cannot import file %1").arg(fileName));
@@ -782,7 +752,7 @@ void MainWindow::about()
 {
 	static const char* msg =
 	"<p><b>Qosmic version %1</b></p>"
-	"<p>Copyright (c) 2007, 2008, 2009 David Bitseff</p>"
+	"<p>Copyright (c) 2007 - 2011 David Bitseff</p>"
 	"<p>Use and redistribute under the terms of the<br>"
 	"<a href=\"http://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU General Public License Version 2</a></p>"
 	"<p>Thanks to:<br>"
@@ -1203,7 +1173,6 @@ void MainWindow::setFlameXML(const QString& s)
 	reset();
 	m_previewWidget->parentWidget()->show();
 	render();
-	genome_modified_flag = false;
 }
 
 void MainWindow::openRecentFile()
@@ -1213,7 +1182,6 @@ void MainWindow::openRecentFile()
 	{
 		loadFile(action->data().toString());
 		render();
-		genome_modified_flag = false;
 	}
 }
 
@@ -1438,7 +1406,6 @@ void MainWindow::render()
 {
 	renderPreview();
 	renderViewer();
-	genome_modified_flag = true;
 }
 
 void MainWindow::renderViewer()
@@ -1519,10 +1486,7 @@ void MainWindow::flam3FileSelectedAction(const QString& name, bool append)
 		rv = loadFile(name);
 
 	if (rv)
-	{
 		render();
-		genome_modified_flag = false;
-	}
 }
 
 void MainWindow::mutationSelectedSlot(flam3_genome* newg)
@@ -1568,14 +1532,13 @@ void MainWindow::scriptFinishedSlot()
 	// make sure there is something to reset, scripts can do wacky things
 	if (genomes.size() < 1)
 	{
-		flam3_genome gen;
+		flam3_genome gen = flam3_genome();
 		Util::init_genome(&gen);
 		genomes.append(gen);
 	}
 	reset();
 	// reset the last selected genome
 	m_genomeSelectWidget->setSelectedGenome(genomes.selectedIndex());
-	genome_modified_flag = true;
 	addUndoState();
 }
 
@@ -1613,7 +1576,6 @@ void MainWindow::selectGenomeSlot(int idx)
 	logFine(QString("MainWindow::selectGenomeSlot : %1").arg(idx));
 	reset();
 	render();
-	genome_modified_flag = false;
 }
 
 void MainWindow::presetSelectedSlot()
@@ -1648,7 +1610,6 @@ bool MainWindow::eventFilter(QObject* /*obj*/, QEvent* event)
 		if (key == Qt::Key_Space
 			&& (ev->modifiers() & Qt::ControlModifier) )
 		{
-			genome_modified_flag = true;
 			addUndoState();
 			return true;
 		}
@@ -1666,15 +1627,10 @@ bool MainWindow::eventFilter(QObject* /*obj*/, QEvent* event)
 
 void MainWindow::undo()
 {
-	if (genome_modified_flag)
-		addUndoState();
-
 	if (genomes.undoRing()->atTail())
 		statusBar()->showMessage(tr("last undo"), 1000);
 	else
 		setUndoState(genomes.undoRing()->prev());
-
-	genome_modified_flag = false;
 }
 
 void MainWindow::redo()
@@ -1683,8 +1639,6 @@ void MainWindow::redo()
 		statusBar()->showMessage(tr("last redo"), 1000);
 	else
 		setUndoState(genomes.undoRing()->next());
-
-	genome_modified_flag = false;
 }
 
 void MainWindow::setUndoState(UndoState* state)
@@ -1701,15 +1655,11 @@ void MainWindow::setUndoState(UndoState* state)
 
 void MainWindow::addUndoState()
 {
-	if (genome_modified_flag)
-	{
-		logFine(QString("MainWindow::addUndoState : adding"));
-		UndoState* state = genomes.undoRing()->advance();
-		flam3_copy(&(state->Genome), genomes.selectedGenome());
-		m_xfeditor->saveUndoState(state);
-		genome_modified_flag = false;
-		m_genomeSelectWidget->updateSelectedPreview();
-	}
+	logFine(QString("MainWindow::addUndoState : adding"));
+	UndoState* state = genomes.undoRing()->advance();
+	flam3_copy(&(state->Genome), genomes.selectedGenome());
+	m_xfeditor->saveUndoState(state);
+	m_genomeSelectWidget->updateSelectedPreview();
 }
 
 

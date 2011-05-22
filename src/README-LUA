@@ -404,6 +404,8 @@ end
 95 CSCH
 96 COTH
 97 AUGER
+98 FLUX
+99 MOBIUS
 
 
 -- Some xform variations have additional parameters called variables associated
@@ -447,6 +449,8 @@ WEDGE_SPH:    angle, count, hole, swirl
 WHORL:        inside, outside
 WAVES2:       freqx, freqy, scalex, scaley
 AUGER:        sym, freq, weight, scale
+FLUX:         spread
+MOBIUS:       re_a, im_a, re_b, im_b, re_c, im_c, re_d, im_d
 
 
 --

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -24,7 +24,7 @@
 #include <QMouseEvent>
 #include <QHideEvent>
 
-class MainViewer;
+#include "mainviewer.h"
 
 class DirectoryListView : public QListView
 {
@@ -48,6 +48,5 @@ class DirectoryListView : public QListView
 		bool toggle;
 };
 
-#include "mainviewer.h"
 
 #endif

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -30,9 +30,7 @@ SelectTriangleWidget::SelectTriangleWidget(GenomeVector* g, QWidget* parent)
 	m_densLineEdit->restoreSettings();
 	m_densLineEdit->setWheelEventUpdate(true);
 
-	m_selectedTriangleEditor->setMinimum(1);
-
-	connect(m_selectedTriangleEditor, SIGNAL(valueChanged(int)), this, SLOT(triangleSelectedSlot(int)));
+	connect(m_selectedTriangleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(triangleSelectedSlot(int)));
 	connect(m_densLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
 	connect(m_densLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
 	connect(m_addTriangleButton, SIGNAL(pressed()), this, SLOT(addTriangleAction()));
@@ -51,23 +49,28 @@ void SelectTriangleWidget::triangleSelectedSlot(Triangle* t)
 {
 	selectedTriangle = t;
 	triangleScene = dynamic_cast<FigureEditor*>(selectedTriangle->scene());
-	m_selectedTriangleEditor->blockSignals(true);
-	m_selectedTriangleEditor->setMaximum(triangleScene->getNumberOfTriangles());
-	m_selectedTriangleEditor->setValue(triangleScene->selectedTriangleIndex() + 1);
-	m_selectedTriangleEditor->blockSignals(false);
+	m_selectedTriangleBox->blockSignals(true);
+	int num_triangles = triangleScene->getNumberOfTriangles();
+	int count = m_selectedTriangleBox->count();
+	m_selectedTriangleBox->setMaxCount(num_triangles);
+	while (count < num_triangles)
+		m_selectedTriangleBox->addItem(QString::number(count++ + 1));
+	m_selectedTriangleBox->setCurrentIndex(triangleScene->selectedTriangleIndex());
+	m_selectedTriangleBox->blockSignals(false);
 	reset();
 }
 
 // and this one is connected to the doublevalueeditor
 void SelectTriangleWidget::triangleSelectedSlot(int /*idx*/)
 {
-	triangleScene->selectTriangle(m_selectedTriangleEditor->value() - 1);
+	triangleScene->selectTriangle(m_selectedTriangleBox->currentIndex());
 }
 
 
 void SelectTriangleWidget::reset()
 {
 	m_densLineEdit->updateValue(selectedTriangle->xform()->density);
+	m_densLineEdit->setEnabled(selectedTriangle->index() != genome_ptr->final_xform_index);
 	m_finalButton->setChecked(genome_ptr->final_xform_enable);
 	m_animateButton->setChecked(selectedTriangle->xform()->animate == 0.0);
 }

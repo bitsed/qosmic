@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,14 +21,17 @@
 #define TRIANGLE_H
 
 #include "basistriangle.h"
+#include "flam3util.h"
+#include "transformablegraphicsitem.h"
 
 class NodeItem;
 class FigureEditor;
+class TransformableGraphicsGuide;
 
 typedef QList<NodeItem*>           TriangleNodes;
 typedef QListIterator<NodeItem*>   TriangleNodesIterator;
 
-class Triangle : public QGraphicsPolygonItem
+class Triangle : public QGraphicsPolygonItem, public TransformableGraphicsItem
 {
 	public:
 		static const int RTTI = 349495;
@@ -76,6 +79,7 @@ class Triangle : public QGraphicsPolygonItem
 		void flipVertically(QPointF);
 		void scale(double, double, QPointF);
 		void rotate(double, QPointF);
+		void rotateNode(NodeItem*, double, QPointF);
 		BasisTriangle* basis() const;
 		void setNodeColor(const QColor&, const QColor&);
 		FigureEditor* editor() const;
@@ -84,13 +88,17 @@ class Triangle : public QGraphicsPolygonItem
 		void basisScaledSlot();
 		int index() const;
 		NodeItem* getNode(int) const;
-		void findEdge(QPointF);
 		EdgeType getEdgeType();
 		void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget =0);
 		QPointF circumCenter();
 
 	protected:
+		void findEdge(const QPointF&);
+		void clearFoundEdge();
 		void addNode( NodeItem* );
+		void hoverEnterEvent(QGraphicsSceneHoverEvent*);
+		void hoverMoveEvent(QGraphicsSceneHoverEvent*);
+		void hoverLeaveEvent(QGraphicsSceneHoverEvent*);
 };
 
 

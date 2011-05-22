@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -66,7 +66,6 @@ class EditModeSelectorWidget : public QWidget, private Ui::EditModeSelectorWidge
 		void sceneScaledSlot();
 		void sceneCenteredSlot(int);
 		void sceneConfigSlot();
-		void finalTriangleButtonClicked(bool);
 
 	protected:
 		void closeEvent(QCloseEvent*);

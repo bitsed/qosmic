@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,13 +22,13 @@
 
 #include <QStyleOptionGraphicsItem>
 #include <QGraphicsPolygonItem>
-#include <QGraphicsScene>
 #include <QPainter>
 #include <QPainterPath>
 
 class CoordinateMark : public QGraphicsPolygonItem
 {
 	QPainterPath m_path;
+
 	public:
 		static const int RTTI = 887872;
 

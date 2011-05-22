@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,7 +21,7 @@
 #include <QGraphicsView>
 #include <QScrollBar>
 #include <QSettings>
-#include <math.h>
+#include <cmath>
 
 #include "xfedit.h"
 #include "logger.h"
@@ -79,6 +79,7 @@ FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
 	popupMenu->addAction(rescaleAction);
 
 	preview_density = settings.value("previewdensity", 10).toInt();
+	preview_depth = settings.value("previewdepth", 1).toInt();
 	preview_visible = settings.value("previewvisible", false).toBool();
 	grid_visible = settings.value("gridvisible", true).toBool();
 	grid_color = QColor(settings.value("gridcolor", "#999999").toString());
@@ -86,6 +87,8 @@ FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
 	guide_color = QColor(settings.value("guidecolor", "#ee0000").toString());
 	bg_color   = QColor(settings.value("bgcolor", "#000000").toString());
 	centered_scaling = (SceneLocation)settings.value("centeredscaling", false).toInt();
+	transform_location = (SceneLocation)settings.value("transformlocation", (int)Origin).toInt();
+	editMode = (EditMode)settings.value("editmode", (int)Move).toInt();
 
 	setBackgroundBrush(Qt::black);
 	basisTriangle->setGraphicsScene(this);
@@ -101,6 +104,9 @@ FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
 	selectionItem->setVisible(false);
 	selectionItem->setSelectedType(settings.value("selectiontype", Triangle::RTTI).toInt());
 	addItem(selectionItem);
+
+	// The single GuideAdapter instance passed around to all TransformableGraphicsItems
+	guideAdapter = new TransformableGraphicsGuide(this);
 
 	bLabelA = new QGraphicsSimpleTextItem(QString("O"));
 	bLabelA->setPos(basisTriangle->polygon().at(0) + QPointF(-10.0,0.0));
@@ -124,7 +130,7 @@ FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
 	coordinateMark->setPen(QPen(Qt::gray));
 	addItem(coordinateMark);
 	coordinateMark->centerOn(QPointF(0.0,0.0));
-	coordinateMark->setVisible(false);
+	coordinateMark->setVisible(transform_location == Mark);
 	coordinateMark->setZValue(0);
 
 	connect(triangleMenu, SIGNAL(triggered(QAction*)), this, SLOT(triangleMenuAction(QAction*)));
@@ -141,6 +147,7 @@ FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
 FigureEditor::~FigureEditor()
 {
 	delete selectionItem;
+	delete guideAdapter;
 	delete postTriangle;
 	delete infoItem;
 	delete bLabelA;
@@ -170,7 +177,9 @@ void FigureEditor::writeSettings()
 	settings.setValue("guidecolor", guide_color.name());
 	settings.setValue("bgcolor", bg_color.name());
 	settings.setValue("centeredscaling", centered_scaling);
+	settings.setValue("transformlocation", transform_location);
 	settings.setValue("selectiontype", selectionItem->selectedType());
+	settings.setValue("editmode", editMode);
 }
 
 void FigureEditor::enableFinalXform(bool enable)
@@ -238,6 +247,9 @@ void FigureEditor::cutTriangleAction()
 		else
 			triangles = selectionItem->triangles();
 
+		// flam3_delete_xform() moves down the higher indexed xforms after removing an xform,
+		// so we remove xforms indexed from highest to lowest
+		QList<int> idxs;
 		foreach (Triangle* t, triangles)
 		{
 			if (t->type() == PostTriangle::RTTI)
@@ -247,10 +259,13 @@ void FigureEditor::cutTriangleAction()
 				else
 					continue;
 			}
-			int idx = trianglesList.indexOf(t, 0);
-			logFine(QString("FigureEditor::cutTriangleAction : removing triangle %1").arg(idx));
-			flam3_delete_xform(genome_ptr, idx);
+			idxs << trianglesList.indexOf(t, 0);
 		}
+		qSort(idxs);
+		QListIterator<int> i(idxs);
+		i.toBack();
+		while (i.hasPrevious())
+			flam3_delete_xform(genome_ptr, i.previous());
 	}
 	else
 	{
@@ -310,9 +325,11 @@ void FigureEditor::pasteTriangleAction()
 		logFine(QString("FigureEditor::pasteTriangleAction : "
 			"copying %1 triangles to slot %2").arg(size).arg(n));
 		flam3_add_xforms(genome_ptr, size, 0, 0);
+		if (genome_ptr->final_xform_enable == 1)
+			n -= 1; // don't copy over the final xform
 		memcpy(genome_ptr->xform + n, xformClip.data(), sizeof(flam3_xform) * size);
 		reset();
-		selectTriangle(trianglesList.last());
+		selectTriangle(n + size - 1);
 		emit triangleModifiedSignal(selectedTriangle);
 		emit undoStateSignal();
 	}
@@ -399,8 +416,9 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 	{
 		moving = 0;
 	}
-	else if (e->modifiers() & Qt::ControlModifier && !(e->modifiers() & Qt::ShiftModifier)) // LeftButton+Ctrl to select
+	else if (e->modifiers() & Qt::ControlModifier && !(e->modifiers() & Qt::ShiftModifier))
 	{
+		// LeftButton+Ctrl to activate selection and start selecting items
 		is_selecting = true;
 		has_selection = false;
 		selectionItem->setPos(QPointF(0.0,0.0));
@@ -418,10 +436,11 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 			coordinateMark->centerOn(moving_start);
 			if (!trianglesList.isEmpty())
 				coordinateMark->setZValue(trianglesList.first()->nextZPos());
+			guideAdapter->update();
 			update();
 		}
 	}
-	else // LeftButton, no control modifier
+	else // LeftButton, possibly with control+shift modifiers
 	{
 		QGraphicsItem* item = itemAt(moving_start);
 		if (item == infoItem) // skip the infoItem if possible
@@ -444,13 +463,11 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 				Triangle* t = dynamic_cast<Triangle*>(item);
 				moving = t;
 				selectTriangle(t);
-				t->findEdge(t->mapFromScene(e->scenePos()));
 			}
 			else if ( item->type() == PostTriangle::RTTI )
 			{
 				PostTriangle* t = dynamic_cast<PostTriangle*>(item);
 				moving = t;
-				t->findEdge(t->mapFromScene(e->scenePos()));
 			}
 			else if ( item->type() == NodeItem::RTTI )
 			{
@@ -461,9 +478,14 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 				if (t->type() == Triangle::RTTI)
 					selectTriangle(t);
 			}
+			else if ( item->type() == GraphicsGuideScaleButton::RTTI )
+			{
+				GraphicsGuideScaleButton* b = dynamic_cast<GraphicsGuideScaleButton*>(item);
+				moving = b;
+			}
 
 			// holding control+shift will activate and add an item to the selection
-			if (e->modifiers() & Qt::ControlModifier && e->modifiers() & Qt::ShiftModifier)
+			if (e->modifiers() & (Qt::ControlModifier | Qt::ShiftModifier))
 			{
 				// select the triangle for a node if selecting triangles
 				if (selectionItem->selectedType() == Triangle::RTTI
@@ -483,11 +505,12 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 					selectionItem->setZValue(selectedTriangle->nextZPos());
 					selectionItem->setVisible(true);
 					has_selection = true;
+					selectionItem->setGuideAdapter(guideAdapter);
 				}
 			}
 
 			// if the selection is active, then only ever select it
-			if (hasSelection())
+			if (hasSelection() && (item->type() != GraphicsGuideScaleButton::RTTI))
 			{
 				if (item->type() != TriangleSelection::RTTI)
 				{
@@ -511,6 +534,7 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 		else
 			logFine("FigureEditor::mousePressEvent : no item selected");
 	}
+	QGraphicsScene::mousePressEvent(e);
 }
 
 void FigureEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e)
@@ -529,14 +553,17 @@ void FigureEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e)
 		else
 		{
 			if (move_edge_mode)
+			{
 				editMode = Move;
+				move_edge_mode = false;
+				guideAdapter->update();
+			}
 			else if (editMode == Move)
 				setTransformLocation(transform_location);
-			move_edge_mode = false;
 			update();
+			if (dz != QPointF(0.0, 0.0) || wheel_moved)
+				emit undoStateSignal();
 		}
-		if (dz != QPointF(0.0, 0.0) || wheel_moved)
-			emit undoStateSignal();
 	}
 	else if (is_selecting)
 	{
@@ -548,6 +575,10 @@ void FigureEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e)
 			selectionItem->setVisible(false);
 			selectionItem->setZValue(-1);
 			selectionItem->clear();
+			if (editing_post)
+				postTriangle->setGuideAdapter(guideAdapter);
+			else
+				selectedTriangle->setGuideAdapter(guideAdapter);
 			has_selection = false;
 		}
 		else
@@ -555,11 +586,14 @@ void FigureEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e)
 			selectionItem->setZValue(selectedTriangle->nextZPos());
 			selectionItem->selectCoveredItems();
 			has_selection = true;
+			selectionItem->setGuideAdapter(guideAdapter);
+			emit undoStateSignal();
 		}
 		update();
 	}
 	views().first()->setCursor(Qt::ArrowCursor);
 	moving_start = QPointF(0.0,0.0);
+	QGraphicsScene::mouseReleaseEvent(e);
 }
 
 void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
@@ -586,12 +620,8 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 		{
 			if ( editMode == Move )
 			{
-				selectionItem->moveBy(dx, dy);
-				logFiner(QString("FigureEditor::mouseMoveEvent : triangle set moved to %1,%2")
-						.arg(selectionItem->scenePos().x())
-						.arg(selectionItem->scenePos().y()));
-				if (selectionItem->hasItems())
-					emit triangleModifiedSignal(selectionItem->first());
+				QPointF p( selectedTriangle->mapFromScene( dx, dy ) );
+				moveSelectionBy(p.x(), p.y());
 				views().first()->setCursor(Qt::SizeAllCursor);
 			}
 			else if ( editMode == Rotate )
@@ -602,9 +632,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 						dx /= 10.0;
 					else if (e->modifiers() & Qt::ControlModifier)
 						dx *= 10.0;
-					selectionItem->rotate(dx, selectionTransformPos());
-					if (selectionItem->hasItems())
-						emit triangleModifiedSignal(selectionItem->first());
+					rotateSelection(dx, selectionTransformPos());
 				}
 			}
 			else if ( editMode == Scale )
@@ -629,9 +657,44 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 						else
 							dx = 0.9523;
 					}
-					selectionItem->scale(dx, dx, selectionTransformPos());
-					if (selectionItem->hasItems())
-						emit triangleModifiedSignal(selectionItem->first());
+					scaleSelection(dx, dx, selectionTransformPos());
+				}
+			}
+		}
+		else if ( moving->type() == GraphicsGuideScaleButton::RTTI )
+		{
+			QGraphicsItem* parent( moving->parentItem() );
+			QGraphicsItem* t = dynamic_cast<QGraphicsItem*>( parent->parentItem() );
+			QRectF mrect( moving->mapRectToScene(moving->boundingRect()) );
+			QPointF bpos( mrect.center() );
+			QPointF tpos;
+			if (t->type() == TriangleSelection::RTTI)
+				tpos = selectionTransformPos();
+			else
+				tpos = triangleTransformPos();
+			QPointF cen( t->mapToScene(tpos) );
+			qreal dx( qAbs(bpos.x() - cen.x()) );
+			qreal dy( qAbs(bpos.y() - cen.y()) );
+
+			if (dx != 0.0 && dy != 0.0)
+			{
+				qreal sx( qAbs(scenePos.x() - cen.x()) / dx );
+				qreal sy( qAbs(scenePos.y() - cen.y()) / dy );
+
+				QTransform trans( parent->transform() );
+				trans.scale(sx,sy);
+				QRectF trect( t->mapRectToScene(trans.mapRect(parent->boundingRect())) );
+				qreal blen = mrect.width();
+				if ( (trect.width() < blen*2.0) )
+					sx = 1.0;
+				if ( (trect.height() < blen*2.0) )
+					sy = 1.0;
+				if ((sx != 1.0) || (sy != 1.0))
+				{
+					if (t->type() == TriangleSelection::RTTI)
+						scaleSelection(qMin(sx, 1.15), qMin(sy, 1.15), tpos);
+					else
+						scaleTriangle(dynamic_cast<Triangle*>(t), qMin(sx, 1.15), qMin(sy, 1.15), tpos);
 				}
 			}
 		}
@@ -664,8 +727,15 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 						editMode = Rotate;
 						move_edge_mode = true;
 					}
-					rotateTriangle(t, dx, triangleTransformPos());
-					emit triangleModifiedSignal(selectedTriangle);
+					if (node)
+					{
+						t->rotateNode(node, dx, triangleTransformPos());
+						if (editing_post)
+							t = selectedTriangle;
+						triangleModifiedAction(t);
+					}
+					else
+						rotateTriangle(t, dx, triangleTransformPos());
 				}
 
 			}
@@ -701,7 +771,6 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 						move_edge_mode = true;
 					}
 					scaleTriangle(t, dx, dx, triangleTransformPos());
-					emit triangleModifiedSignal(selectedTriangle);
 				}
 			}
 			else if ( editMode == Flip )
@@ -722,7 +791,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 					node->moveBy(dx, dy);
 				else
 					t->moveBy(dx, dy);
-				emit triangleModifiedSignal(selectedTriangle);
+				triangleModifiedAction(selectedTriangle);
 				views().first()->setCursor(Qt::SizeAllCursor);
 			}
 		}
@@ -741,6 +810,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 		if (coordinateMark->isVisible() && e->modifiers() & Qt::ShiftModifier)
 		{
 			coordinateMark->centerOn(scenePos);
+			guideAdapter->update();
 			update();
 		}
 
@@ -781,6 +851,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 		if (coordinateMark->isVisible() && e->modifiers() & Qt::ShiftModifier)
 		{
 			coordinateMark->centerOn(scenePos);
+			guideAdapter->update();
 			update();
 		}
 
@@ -814,8 +885,6 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 				{
 					// show the xform's infoItem for this triangle
 					Triangle* t = dynamic_cast<Triangle*>(item);
-					if (t == selectedTriangle && editMode == Move)
-						t->findEdge(t->mapFromScene(e->scenePos()));
 					if (lastt != t)
 					{
 						infoItem->setText(getInfoLabel(t));
@@ -833,9 +902,6 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 				}
 			case PostTriangle::RTTI:
 			{
-				PostTriangle* post = dynamic_cast<PostTriangle*>(item);
-				if (editMode == Move)
-					post->findEdge(post->mapFromScene(e->scenePos()));
 				Triangle* t = selectedTriangle;
 				int tidx = trianglesList.indexOf(t);
 				infoItem->setText(tr("post transform: %1\n").arg(tidx + 1));
@@ -857,9 +923,9 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 	{
 		infoItem->hide();
 		lastt = 0;
-		update();
 	}
 	emit coordinateChangeSignal( scenePos.x(), scenePos.y() );
+	QGraphicsScene::mouseMoveEvent(e);
 }
 
 
@@ -1005,7 +1071,7 @@ void FigureEditor::triangleModifiedAction(Triangle* t)
 	if (t->type() == PostTriangle::RTTI)
 		t = selectedTriangle;
 	selectTriangle(t);
-	update();
+	updatePreview();
 	emit triangleModifiedSignal(t);
 }
 
@@ -1017,6 +1083,7 @@ void FigureEditor::flipTriangleHAction()
 		flipTriangleHAction(post(), triangleTransformPos());
 	else
 		flipTriangleHAction(selectedTriangle, triangleTransformPos());
+	emit undoStateSignal();
 }
 
 void FigureEditor::flipTriangleVAction()
@@ -1027,6 +1094,7 @@ void FigureEditor::flipTriangleVAction()
 		flipTriangleVAction(post(), triangleTransformPos());
 	else
 		flipTriangleVAction(selectedTriangle, triangleTransformPos());
+	emit undoStateSignal();
 }
 
 void FigureEditor::flipTriangleHPopupAction()
@@ -1038,6 +1106,7 @@ void FigureEditor::flipTriangleHPopupAction()
 			postTriangle->mapFromScene(moving_start));
 	else
 		flipTriangleHAction(selectedTriangle, selectedTriangle->mapFromScene(moving_start));
+	emit undoStateSignal();
 }
 
 void FigureEditor::flipTriangleHAction(Triangle* t, QPointF cpos)
@@ -1055,6 +1124,7 @@ void FigureEditor::flipTriangleVPopupAction()
 			postTriangle->mapFromScene(moving_start));
 	else
 		flipTriangleVAction(selectedTriangle, selectedTriangle->mapFromScene(moving_start));
+	emit undoStateSignal();
 }
 
 void FigureEditor::flipTriangleVAction(Triangle* t, QPointF cpos)
@@ -1116,12 +1186,57 @@ void FigureEditor::selectTriangle(Triangle* t)
 	selectedTriangle->setPen(QPen(c, 0, Qt::SolidLine));
 	selectedTriangle->setBrush(brush);
 	selectedTriangle->moveToFront();
-	triangleMenu->setDefaultAction(triangleMenu->actions().value(selectedTriangleIndex()));
+	triangleMenu->setActiveAction(triangleMenu->actions().value(selectedTriangleIndex()));
 	box_center = selectedTriangle->polygon().boundingRect().center();
+	// the guide adapter is applied to the selected triangle in editPostTriangle()
 	editPostTriangle(post);
 	blockSignals(false);
-	update();
+	updatePreview();
 	emit triangleSelectedSignal(t);
+}
+
+void FigureEditor::createXformPreview()
+{
+	int xi = selectedTriangleIndex();
+	logFiner(QString("FigureEditor::createXformPreview : xi = %1").arg(xi));
+	double range = 1.0;
+	int numvals = preview_density;
+	int depth = preview_depth;
+	int rcnt = 2* (2*numvals+1)*(2*numvals+1);
+	QVector<double>* result;
+	randctx* rc = Util::get_isaac_randctx();
+	flam3_genome g = flam3_genome();
+	for (int n = 0 ; n < depth ; n++)
+	{
+		if (n < xformPreview.size())
+		{
+			result = xformPreview.at(n);
+			result->resize(rcnt);
+		}
+		else
+		{
+			result = new QVector<double>(rcnt);
+			xformPreview.append(result);
+		}
+		flam3_copy(&g, genomes->selectedGenome());
+		flam3_xform_preview(&g, xi, range, numvals, n+1, result->data(), rc);
+	}
+	clear_cp(&g, flam3_defaults_on);
+	while ( xformPreview.size() > depth )
+	{
+		QVector<double>*result = xformPreview.last();
+		xformPreview.pop_back();
+		delete result;
+	}
+}
+
+void FigureEditor::updatePreview()
+{
+	if (preview_visible)
+	{
+		createXformPreview();
+		update();
+	}
 }
 
 void FigureEditor::reset()
@@ -1165,6 +1280,8 @@ void FigureEditor::reset()
 		}
 	else if (dn < 0)
 	{
+		// Temporarily re-parent the guideAdapter in case its parent triangle is deleted
+		trianglesList.first()->setGuideAdapter(guideAdapter);
 		for (int n = 0 ; n > dn ; n--)
 		{
 			Triangle* t = trianglesList.takeLast();
@@ -1207,6 +1324,11 @@ void FigureEditor::reset()
 		selectTriangle(trianglesList.at(selected_idx));
 	else
 		selectTriangle(trianglesList.last());
+
+	// recenter the scene on the current center point in the view
+	QGraphicsView* view( views().first() );
+	QPointF view_center( view->mapToScene(view->frameRect()).boundingRect().center() );
+	transform().inverted().map(view_center.x(), view_center.y(), &scene_start.rx(), &scene_start.ry());
 
 	adjustSceneRect();
 	logFiner(QString("FigureEditor::reset : sceneRect %1,%2")
@@ -1266,6 +1388,8 @@ void FigureEditor::adjustSceneRect()
 	}
 	else if (!moving_start.isNull())
 		views().first()->centerOn(moving_start);
+	else
+		views().first()->centerOn(basisTriangle->mapToScene(scene_start));
 
 	if (infoItem->isVisible())
 	{
@@ -1307,106 +1431,16 @@ void FigureEditor::drawBackground(QPainter* p, const QRectF& r)
 
 	if (preview_visible)
 	{
-		int xi = selectedTriangle->index();
-		double range = 1.0;
 		int numvals = preview_density;
-		int depth = 1;
+		int depth = preview_depth;
 		int rcnt = 2* (2*numvals+1)*(2*numvals+1);
-		double* result = new double[rcnt];
-		randctx *rc = Util::get_isaac_randctx();
-		flam3_genome g;
-		Util::init_genome(&g);
-		flam3_copy(&g, genomes->selectedGenome());
-		flam3_xform_preview(&g, xi, range, numvals, depth, result, rc);
 		p->setPen(selectedTriangle->pen());
-		for (int i = 0 ; i < rcnt  ; i+=2)
-			p->drawPoint(selectedTriangle->mapToScene(result[i], -result[i+1]));
-		clear_cp(&g, flam3_defaults_on);
-		delete[] result;
-	}
-
-	if (guide_visible)
-	{
-		QPointF  cen;
-		QPolygonF poly;
-		QPen pen;
-		if (has_selection)
+		for (int n = 0 ; n < depth ; n++)
 		{
-			cen  = selectionItem->mapToScene(selectionTransformPos());
-			poly = selectionItem->mapToScene(selectionItem->polygon());
-			pen  = selectionItem->pen();
+			double* result = xformPreview.at(n)->data();
+			for (int i = 0 ; i < rcnt  ; i+=2)
+				p->drawPoint(selectedTriangle->mapToScene(result[i], -(result[i+1])));
 		}
-		else
-		{
-			Triangle* t = selectedTriangle;
-			if (postEnabled())
-				t = postTriangle;
-			cen  = t->mapToScene(triangleTransformPos());
-			poly = t->mapToScene(t->polygon());
-			pen  = t->pen();
-		}
-		pen.setColor(guide_color);
-
-		if (editMode == FigureEditor::Rotate)
-		{
-			qreal rmax = 0.0;
-			foreach (QPointF p, poly)
-			{
-				QLineF l(p, cen);
-				qreal len(l.length());
-				if (len > rmax)
-					rmax = len;
-			}
-			pen.setStyle(Qt::SolidLine);
-			p->setPen(pen);
-			p->drawEllipse(cen, rmax, rmax);
-			p->setBrush(QBrush(pen.color(), Qt::SolidPattern));
-			QRectF r(-1., -1., 2., 2.);
-			r.moveCenter(cen);
-			p->drawEllipse(r);
-		}
-		else if (editMode == FigureEditor::Flip)
-		{
-			QPolygonF pa = poly;
-			double tx = cen.x();
-			int n = 0;
-			pen.setStyle(Qt::SolidLine);
-			p->setPen(pen);
-			p->setBrush(Qt::NoBrush);
-			foreach (QPointF p, pa)
-			{
-				p.rx()  = p.x() - 2.0 * (p.x() - tx);
-				pa[n++] = p;
-			}
-			p->drawPolygon(pa);
-			pa = poly;
-			tx = cen.y();
-			n = 0;
-			foreach (QPointF p, pa)
-			{
-				p.ry()  = p.y() - 2.0 * (p.y() - tx);
-				pa[n++] = p;
-			}
-			p->drawPolygon(pa);
-		}
-		else if (editMode == FigureEditor::Scale)
-		{
-			QRectF r( poly.boundingRect() );
-			qreal xmax = qMax(qAbs(r.left() - cen.x()), qAbs(r.right()  - cen.x()));
-			qreal ymax = qMax(qAbs(r.top()  - cen.y()), qAbs(r.bottom() - cen.y()));
-			QPointF pmax(xmax, ymax);
-			QRectF f(pmax, -pmax);
-			f.moveCenter(cen);
-			pen.setStyle(Qt::SolidLine);
-			p->setPen(pen);
-			p->drawRect(f);
-			pen.setStyle(Qt::DotLine);
-			p->setPen(pen);
-			p->drawLine(f.topLeft(),f.bottomRight());
-			p->drawLine(f.topRight(),f.bottomLeft());
-		}
-
-
 	}
 }
 
@@ -1462,6 +1496,7 @@ bool FigureEditor::guideVisible() const
 void FigureEditor::setGuideVisible(bool value)
 {
 	guide_visible = value;
+	guideAdapter->setVisible(value);
 	update();
 }
 
@@ -1473,7 +1508,7 @@ int FigureEditor::previewDensity() const
 void FigureEditor::setPreviewDensity(int value)
 {
 	preview_density = value;
-	update();
+	updatePreview();
 }
 
 bool FigureEditor::previewVisible() const
@@ -1484,7 +1519,8 @@ bool FigureEditor::previewVisible() const
 void FigureEditor::setPreviewVisible(bool value)
 {
 	preview_visible = value;
-	update();
+	updatePreview();
+	if(!value) update(); // call update() when !value to hide the preview
 }
 
 
@@ -1517,6 +1553,7 @@ QColor FigureEditor::guideColor() const
 void FigureEditor::setGuideColor(QColor c)
 {
 	guide_color = c;
+	guideAdapter->update();
 	update();
 }
 
@@ -1574,6 +1611,8 @@ QRectF FigureEditor::itemsSceneBounds()
 		bounds = bounds.united(selectionItem->sceneBoundingRect());
 	if (coordinateMark->isVisible())
 		bounds = bounds.united(coordinateMark->sceneBoundingRect());
+//	if (guideAdapter->isVisible())
+//		bounds = bounds.united(guideAdapter->sceneBoundingRect());
 	return bounds;
 }
 
@@ -1622,6 +1661,11 @@ void FigureEditor::scaleBasis(double dx, double dy)
 	QPointF cursor_start;
 	transform().inverted().map(moving_start.x(), moving_start.y(), &cursor_start.rx(), &cursor_start.ry());
 
+	// recenter the scene on the current center point in the view
+	QGraphicsView* view( views().first() );
+	QPointF view_center( view->mapToScene(view->frameRect()).boundingRect().center() );
+	transform().inverted().map(view_center.x(), view_center.y(), &scene_start.rx(), &scene_start.ry());
+
 	basisTriangle->scale(dx, dy);
 	bLabelA->setPos(basisTriangle->mapToScene(basisTriangle->A) + QPointF(-8.0,0.0));
 	bLabelB->setPos(basisTriangle->mapToScene(basisTriangle->B));
@@ -1653,6 +1697,9 @@ void FigureEditor::scaleBasis(double dx, double dy)
 	// put back the moving_start position
 	transform().map(cursor_start.x(), cursor_start.y(), &moving_start.rx(), &moving_start.ry());
 
+	// update the guide dimensions
+	guideAdapter->update();
+
 	// adjust scene rect and repaint
 	adjustSceneRect();
 	update();
@@ -1682,7 +1729,12 @@ void FigureEditor::rotateSelection( double rad, QPointF pos )
 				.arg(pos.x())
 				.arg(pos.y()));
 	if (selectionItem->hasItems())
-		triangleModifiedAction(selectedTriangle);
+	{
+		if (selectionItem->containsAnyOf(selectedTriangle))
+			triangleModifiedAction(selectedTriangle);
+		else
+			emit triangleModifiedSignal(selectionItem->first());
+	}
 }
 
 void FigureEditor::scaleSelection( double dx, double dy, QPointF pos )
@@ -1693,7 +1745,12 @@ void FigureEditor::scaleSelection( double dx, double dy, QPointF pos )
 				.arg(pos.x())
 				.arg(pos.y()));
 	if (selectionItem->hasItems())
-		triangleModifiedAction(selectedTriangle);
+	{
+		if (selectionItem->containsAnyOf(selectedTriangle))
+			triangleModifiedAction(selectedTriangle);
+		else
+			emit triangleModifiedSignal(selectionItem->first());
+	}
 }
 
 bool FigureEditor::hasSelection() const
@@ -1727,12 +1784,19 @@ void FigureEditor::moveSelectionBy(double dx, double dy)
 			.arg(selectionItem->scenePos().x())
 			.arg(selectionItem->scenePos().y()));
 	if (selectionItem->hasItems())
-		triangleModifiedAction(selectionItem->first());
+	{
+		if (selectionItem->containsAnyOf(selectedTriangle))
+			triangleModifiedAction(selectedTriangle);
+		else
+			emit triangleModifiedSignal(selectionItem->first());
+	}
 }
 
 
 void FigureEditor::editPostTriangle(bool flag)
 {
+	editing_post = flag;
+
 	if (postTriangle)
 	{
 		flam3_xform* xf = selectedTriangle->xform();
@@ -1765,14 +1829,17 @@ void FigureEditor::editPostTriangle(bool flag)
 		postTriangle->moveToFront();
 		postTriangle->adjustSceneRect();
 		box_center = postTriangle->polygon().boundingRect().center();
+		if (!has_selection) // don't steal the guide from the selection
+			postTriangle->setGuideAdapter(guideAdapter);
 	}
 	else
 	{
-		box_center = selectedTriangle->polygon().boundingRect().center();
 		postTriangle->setVisible(false);
+		box_center = selectedTriangle->polygon().boundingRect().center();
+		if (!has_selection)
+			selectedTriangle->setGuideAdapter(guideAdapter);
 	}
 
-	editing_post = flag;
 	update();
 	emit triangleSelectedSignal(selectedTriangle);
 }
@@ -1819,6 +1886,7 @@ void FigureEditor::enableSelection(bool flag)
 	has_selection = flag;
 	if (!flag)
 		selectionItem->clear();
+	guideAdapter->update();
 	update();
 }
 
@@ -1844,6 +1912,7 @@ void FigureEditor::setTransformLocation(SceneLocation location)
 		box_center = postTriangle->polygon().boundingRect().center();
 	else
 		box_center = selectedTriangle->polygon().boundingRect().center();
+	guideAdapter->update();
 }
 
 void FigureEditor::saveUndoState(UndoState* state)

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -185,8 +185,7 @@ bool GenomeVectorListModel::appendRow()
 	int row = rowCount();
 	beginInsertRows(index(0,0).parent(), row, row);
 	flam3_genome* current = genomes->selectedGenome();
-	flam3_genome gen;
-	Util::init_genome(&gen);
+	flam3_genome gen = flam3_genome();
 	flam3_copy(&gen, current);
 	// preserve values not copied in flam3_apply_template()
 	gen.pixels_per_unit = current->pixels_per_unit;

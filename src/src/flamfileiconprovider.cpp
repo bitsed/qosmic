@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,12 +17,10 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "flamfileiconprovider.h"
-
-#include <QIcon>
 #include <QDir>
 #include <QDateTime>
 
+#include "flamfileiconprovider.h"
 #include "logger.h"
 
 FlamFileIconProvider::FlamFileIconProvider(): QFileIconProvider()
@@ -71,16 +69,16 @@ QIcon FlamFileIconProvider::icon(const QFileInfo& info) const
 			return QIcon(cache_file.absoluteFilePath());
 		}
 	}
-    return QFileIconProvider::icon(info);
+	return QFileIconProvider::icon(info);
 }
 
 QIcon FlamFileIconProvider::icon(IconType type) const
 {
-    return QFileIconProvider::icon(type);
+	return QFileIconProvider::icon(type);
 }
 
 QString FlamFileIconProvider::type(const QFileInfo& info) const
 {
-    return QFileIconProvider::type(info);
+	return QFileIconProvider::type(info);
 }
 

@@ -17,29 +17,60 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef STATUSWIDGET_H
-#define STATUSWIDGET_H
 
-#include <QWidget>
-#include <QResizeEvent>
+#ifndef TRANSFORMABLEGRAPHICSGUIDE_H
+#define TRANSFORMABLEGRAPHICSGUIDE_H
 
-#include "ui_statuswidget.h"
-#include "renderthread.h"
+#include <QGraphicsObject>
+#include <QGraphicsRectItem>
 
-class StatusWidget : public QWidget, private Ui::StatusWidget
+#include "xfedit.h"
+
+class GraphicsGuideScaleButton : public QGraphicsRectItem
+{
+	public:
+		static const int RTTI = 148198;
+
+		enum Location { TopRight, TopLeft, BottomRight, BottomLeft };
+
+		Location location;
+		QPen std_pen;
+
+		GraphicsGuideScaleButton(QGraphicsItem* =0);
+		int type() const;
+
+	protected:
+		void hoverEnterEvent(QGraphicsSceneHoverEvent*);
+		void hoverLeaveEvent(QGraphicsSceneHoverEvent*);
+};
+
+
+class TransformableGraphicsGuide : public QGraphicsObject
 {
 	Q_OBJECT
 
+	FigureEditor* editor;
+	QRectF outerRect;
+	QPolygonF hFlipPoly;
+	QPolygonF vFlipPoly;
+	GraphicsGuideScaleButton topLeftRect;
+	GraphicsGuideScaleButton topRightRect;
+	GraphicsGuideScaleButton bottomLeftRect;
+	GraphicsGuideScaleButton bottomRightRect;
+	GraphicsGuideScaleButton bottomRect;
+	GraphicsGuideScaleButton topRect;
+	GraphicsGuideScaleButton leftRect;
+	GraphicsGuideScaleButton rightRect;
+
 	public:
-		StatusWidget(QWidget* parent);
-		~StatusWidget();
-
-	public slots:
-		void setRenderStatus(RenderStatus*);
-
-
-	protected:
-		void resizeEvent(QResizeEvent*);
+		explicit TransformableGraphicsGuide(FigureEditor*, QGraphicsItem* =0);
+		QRectF boundingRect() const;
+		void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget* =0);
+		void setParentItem(QGraphicsItem*);
+		void setVisible(bool);
+		void update();
+		QPainterPath shape() const;
 };
 
-#endif
+
+#endif // TRANSFORMABLEGRAPHICSGUIDE_H

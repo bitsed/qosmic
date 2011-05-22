@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -25,9 +25,9 @@
 
 #include "ui_variationswidget.h"
 #include "genomevector.h"
+#include "triangle.h"
+#include "varstablewidget.h"
 
-class Triangle;
-class VarsTableModel;
 
 class VariationsWidget : public QWidget, private Ui::VariationsWidget
 {
@@ -62,7 +62,5 @@ class VariationsWidget : public QWidget, private Ui::VariationsWidget
 		QString lastVariation;
 };
 
-#include "triangle.h"
-#include "varstablewidget.h"
 
 #endif

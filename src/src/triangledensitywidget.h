@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -24,13 +24,11 @@
 #include <QLabel>
 #include <QMouseEvent>
 
-#include <ui_triangledensitywidget.h>
+#include "ui_triangledensitywidget.h"
 #include "qosmicwidget.h"
 #include "flam3util.h"
+#include "xfedit.h"
 
-class Triangle;
-class FigureEditor;
-class GenomeVector;
 
 // this is an interface the TriangleDensityWidget implements to use the sliders.
 class SliderGroup
@@ -129,6 +127,5 @@ class TriangleDensityWidget
 		double getNorm();
 };
 
-#include "xfedit.h"
 
 #endif

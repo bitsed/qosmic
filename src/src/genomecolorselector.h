@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,8 +21,8 @@
 #ifndef GENOMECOLORSELECTOR_H
 #define GENOMECOLORSELECTOR_H
 
+#include <QMenu>
 #include <QLabel>
-#include <QPainter>
 #include <QMouseEvent>
 
 #include "genomevector.h"
@@ -47,11 +47,15 @@ class GenomeColorSelector : public QLabel
 
 	public slots:
 		void repaintLabel();
+		void toggleShowHistAction(bool);
 
 	private:
 		GenomeVector* genome;
+		QMenu* popupMenu;
+		QAction* histMenuAction;
 		int selected_y;
 		int last_y;
+		bool show_histogram;
 };
 
 

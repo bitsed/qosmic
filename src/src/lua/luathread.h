@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,15 +21,17 @@
 #define LUATHREAD_H
 
 #include <QThread>
-#include "isaac.h"
+
+#include "flam3util.h"
+#include "lunar.h"
+#include "frame.h"
 #include "renderthread.h"
 
 class MainWindow;
-class lua_State;
 
 namespace Lua
 {
-class Frame;
+
 class LuaThread : public QThread
 {
 	Q_OBJECT
@@ -67,7 +69,6 @@ class LuaThread : public QThread
 
 };
 }
-#include "frame.h"
 
 
 #endif

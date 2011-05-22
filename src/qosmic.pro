@@ -243,7 +243,9 @@ HEADERS += \
  src/gradientstopseditor.h \
  src/editmodeselectorwidget.h \
  src/genomevectorlistview.h \
- src/chaoswidget.h
+ src/chaoswidget.h \
+ src/transformablegraphicsitem.h \
+ src/transformablegraphicsguide.h
 
 SOURCES += \
  src/qosmic.cpp \
@@ -306,7 +308,10 @@ SOURCES += \
  src/gradientstopseditor.cpp \
  src/editmodeselectorwidget.cpp \
  src/genomevectorlistview.cpp \
- src/chaoswidget.cpp
+ src/chaoswidget.cpp \
+ src/transformablegraphicsitem.cpp \
+ src/transformablegraphicsguide.cpp
+
 
 TRANSLATIONS = ts/qosmic_fr.ts
 

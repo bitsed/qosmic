@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2010 by David Bitseff                             *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,12 +17,13 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include <math.h>
+#include <cmath>
 
 #include "triangle.h"
 #include "logger.h"
 #include "nodeitem.h"
 #include "xfedit.h"
+#include "transformablegraphicsguide.h"
 
 uint Triangle::zpos = 0;
 
@@ -44,6 +45,28 @@ Triangle::Triangle( FigureEditor* c, flam3_xform* x, BasisTriangle* b, int idx)
 	moveToFront();
 	setBrush(Qt::NoBrush);
 	setPen(QPen(Qt::gray));
+	setAcceptHoverEvents(true);
+}
+
+void Triangle::hoverEnterEvent(QGraphicsSceneHoverEvent* e)
+{
+	hoverMoveEvent(e);
+}
+
+void Triangle::hoverMoveEvent(QGraphicsSceneHoverEvent* e)
+{
+	if (canvas->mode() == FigureEditor::Move)
+	{
+		bool postEnabled( canvas->postEnabled() );
+		if ((!postEnabled && canvas->getSelectedTriangle() == this)  ||
+			( postEnabled && canvas->post() == this) )
+			findEdge(e->pos());
+	}
+}
+
+void Triangle::hoverLeaveEvent(QGraphicsSceneHoverEvent* /*e*/)
+{
+	clearFoundEdge();
 }
 
 Triangle::~Triangle()
@@ -113,6 +136,8 @@ void Triangle::basisScaledSlot()
 		b.setMatrix(basisTriangle->coordTransform());
 		setBrush(b);
 	}
+	if (m_adapter)
+		m_adapter->update();
 }
 
 void Triangle::setPoints(TriangleCoords& points)
@@ -197,74 +222,62 @@ void Triangle::moveEdges()
 
 void Triangle::scale(double dx, double dy, QPointF cpos)
 {
-	double tx =  cpos.x();
-	double ty =  cpos.y();
-	QTransform trans = transform();
+	double tx(cpos.x());
+	double ty(cpos.y());
+	QTransform trans;
 	// scale
-	translate(tx, ty);
-	QGraphicsPolygonItem::scale(dx, dy);
-	translate(-tx, -ty);
-
-	QPolygonF pa = polygon();
+	trans.translate(tx, ty);
+	trans.scale(dx, dy);
+	trans.translate(-tx, -ty);
+	QPolygonF pa( mapToScene(trans.map(polygon())) );
 	TriangleNodesIterator it( nList );
-	NodeItem *node;
-	int n = 0;
+	int n(0);
 	// rebuild triangle + nodes
 	while ( it.hasNext() )
-	{
-		node = it.next();
-		QPointF p = mapToScene(pa[n]);
-		node->setPos( p );
-		n++;
-	}
-	setTransform(trans);
-	it = TriangleNodesIterator( nList );
-	cList.clear();
-	while ( it.hasNext() )
-	{
-		node = it.next();
-		cList << mapFromScene(node->pos());
-	}
-	QGraphicsPolygonItem::setPolygon(cList);
-	adjustSceneRect();
-	coordsToXForm();
+		it.next()->setPos( pa.at(n++) );
+	moveEdges();
 }
 
 void Triangle::rotate(double rad, QPointF cpos)
 {
-	double tx =  cpos.x();
-	double ty =  cpos.y();
-	QTransform trans = transform();
+	double tx(cpos.x());
+	double ty(cpos.y());
+	QTransform trans;
 	// rotate
-	translate(tx, ty);
-	QGraphicsPolygonItem::rotate(rad);
-	translate(-tx, -ty);
+	trans.translate(tx, ty);
+	trans.rotate(rad);
+	trans.translate(-tx, -ty);
+	QPolygonF pa( mapToScene(trans.map(polygon())) );
+	TriangleNodesIterator it( nList );
+	int n(0);
+	// rebuild triangle + nodes
+	while ( it.hasNext() )
+		it.next()->setPos( pa.at(n++) );
+	moveEdges();
+}
 
-	QPolygonF pa = polygon();
+void Triangle::rotateNode(NodeItem* nodeItem, double rad, QPointF cpos)
+{
+	double tx(cpos.x());
+	double ty(cpos.y());
+	QTransform trans;
+	trans.translate(tx, ty);
+	trans.rotate(rad);
+	trans.translate(-tx, -ty);
+	QPolygonF pa( mapToScene(trans.map(polygon())) );
 	TriangleNodesIterator it( nList );
 	NodeItem *node;
-	int n = 0;
+	int n(0);
 	// rebuild triangle + nodes
 	while ( it.hasNext() )
 	{
 		node = it.next();
-		QPointF p = mapToScene(pa[n]);
-		node->setPos( p );
+		if (node == nodeItem)
+			node->setPos( pa.at(n) );
 		n++;
 	}
-	setTransform(trans);
-	it = TriangleNodesIterator( nList );
-	cList.clear();
-	while ( it.hasNext() )
-	{
-		node = it.next();
-		cList << mapFromScene(node->pos());
-	}
-	QGraphicsPolygonItem::setPolygon(cList);
-	adjustSceneRect();
-	coordsToXForm();
+	moveEdges();
 }
-
 
 void Triangle::flipHorizontally()
 {
@@ -383,6 +396,9 @@ void Triangle::adjustSceneRect()
 		QRectF scene_r = scene()->sceneRect();
 		if (!scene_r.contains(r))
 			scene()->setSceneRect(scene_r.united(r));
+
+		if (m_adapter)
+			m_adapter->update();
 	}
 }
 
@@ -396,8 +412,16 @@ void Triangle::setXform(flam3_xform* xform)
 	m_xform = xform;
 }
 
+// Clear found edges
+void Triangle::clearFoundEdge()
+{
+	m_edgeType = NoEdge;
+	m_edgeLine.setLength(0);
+	update();
+}
+
 // Find the edge closest to the given point.
-void Triangle::findEdge(QPointF pos)
+void Triangle::findEdge(const QPointF& pos)
 {
 	QPolygonF poly(polygon());
 	QList<QLineF> lines;
@@ -415,16 +439,28 @@ void Triangle::findEdge(QPointF pos)
 		// determine the minimum distance between pos and each of the edges
 		QPointF n0( line.p1() );
 		QPointF n1( line.p2() );
-		double m( (n1.y() - n0.y()) / (n1.x() - n0.x()) );
-		double b( n0.y() -  m * n0.x() );
-		double x( (pos.x() + m * (pos.y() - b)) / (m*m + 1 ) );
-		double y( m * x + b );
+
+		qreal denom(n1.x() - n0.x());
+		qreal x, y;
+		if (denom == 0.0) // the edge is a vertical line
+		{
+			x = n0.x();
+			y = pos.y();
+		}
+		else
+		{
+			qreal m( ( n1.y() - n0.y() ) / denom );
+			qreal b( n0.y() -  m * n0.x() );
+			x = ( pos.x() + m * (pos.y() - b) ) / (m*m + 1 );
+			y = m * x + b ;
+		}
+
 		QPointF scenePoint( mapToScene( x, y ) );
-		double dx( scenePoint.x() - scenePos.x() );
-		double dy( scenePoint.y() - scenePos.y() );
-		double d( sqrt( dx*dx + dy*dy ) );
-		// choose the edge that is <3 pixels from pos
-		if (d < 3.0)
+		qreal dx( scenePoint.x() - scenePos.x() );
+		qreal dy( scenePoint.y() - scenePos.y() );
+		qreal d( sqrt( dx*dx + dy*dy ) );
+		// choose the edge that is <5 pixels from pos
+		if (d < 5.0)
 		{
 			logFiner(QString("Triangle::findEdge : found triangle %1 edge at (%2,%3)")
 				.arg(m_index).arg(x).arg(y));
@@ -437,7 +473,8 @@ void Triangle::findEdge(QPointF pos)
 		}
 		n++;
 	}
-	if (lastLength != m_edgeLine.length() || lastType != m_edgeType) canvas->update();
+	if (lastLength != m_edgeLine.length() || lastType != m_edgeType)
+		update();
 }
 
 QPointF Triangle::circumCenter()
@@ -481,3 +518,5 @@ Triangle::EdgeType Triangle::getEdgeType()
 {
 	return m_edgeType;
 }
+
+

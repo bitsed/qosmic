@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009 by David Bitseff                       *
+ *   Copyright (C) 2007 - 2011 by David Bitseff                            *
  *   dbitsef@zipcon.net                                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,13 +23,13 @@
 #include "lunar.h"
 #include "flam3util.h"
 #include "luatype.h"
+#include "basistriangle.h"
 
 #define intAcc_H(name) int name(lua_State *L);
 #define intAcc_HRO(name) int name(lua_State *L);
 #define realAcc_H(name) int name(lua_State *L);
 #define realAcc_HRO(name) int name(lua_State *L);
 
-class BasisTriangle;
 
 namespace Lua
 {
@@ -97,6 +97,5 @@ class Genome : public LuaType
 	static Lunar<Genome>::RegType methods[];
 };
 }
-#include "basistriangle.h"
 
 #endif
