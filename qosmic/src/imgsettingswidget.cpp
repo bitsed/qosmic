@@ -30,12 +30,10 @@ ImageSettingsWidget::ImageSettingsWidget(GenomeVector* gen, QWidget* parent)
 	m_filterLineEdit->restoreSettings();
 	m_oversampleLineEdit->restoreSettings();
 	m_batchesLineEdit->restoreSettings();
-	m_temporalLineEdit->restoreSettings();
 	m_estimatorLineEdit->restoreSettings();
 	m_estimatorCurveLineEdit->restoreSettings();
 	m_estimatorMinLineEdit->restoreSettings();
 	m_symmetryLineEdit->restoreSettings();
-	m_timeLineEdit->restoreSettings();
 
 	presets = new ViewerPresetsWidget(genome);
 	presets->hide();
@@ -52,16 +50,12 @@ ImageSettingsWidget::ImageSettingsWidget(GenomeVector* gen, QWidget* parent)
 	connect(m_filterLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
 	connect(m_oversampleLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
 	connect(m_batchesLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
-	connect(m_temporalLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
 	connect(m_estimatorLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
 	connect(m_estimatorCurveLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
 	connect(m_estimatorMinLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
 	connect(m_symmetryLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
 	connect(m_filterShapeBox, SIGNAL(activated(int)), this, SLOT(fieldEditedAction()));
 	connect(m_applySymmetryButton, SIGNAL(pressed()), this, SLOT(applySymmetryAction()));
-	connect(m_timeLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
-	connect(m_interpolationBox, SIGNAL(activated(int)), this, SLOT(fieldEditedAction()));
-	connect(m_interpolationTypeBox, SIGNAL(activated(int)), this, SLOT(fieldEditedAction()));
 
 	connect(m_goLeftButton, SIGNAL(pressed()), this, SLOT(moveStackLeftAction()));
 	connect(m_goRightButton, SIGNAL(pressed()), this, SLOT(moveStackRightAction()));
@@ -142,12 +136,10 @@ void ImageSettingsWidget::updateFormData()
 	m_filterLineEdit->updateValue(genome_ptr->spatial_filter_radius);
 	m_oversampleLineEdit->updateValue(genome_ptr->spatial_oversample);
 	m_batchesLineEdit->updateValue(genome_ptr->nbatches);
-	m_temporalLineEdit->updateValue(genome_ptr->ntemporal_samples);
 	m_estimatorLineEdit->updateValue(genome_ptr->estimator);
 	m_estimatorCurveLineEdit->updateValue(genome_ptr->estimator_curve);
 	m_estimatorMinLineEdit->updateValue(genome_ptr->estimator_minimum);
 	m_symmetryLineEdit->updateValue(genome_ptr->symmetry);
-	m_timeLineEdit->updateValue(genome_ptr->time);
 
 	// filter_shape
 	QString option;
@@ -181,22 +173,6 @@ void ImageSettingsWidget::updateFormData()
 		option ="quadratic";
 	m_filterShapeBox->setCurrentIndex(m_filterShapeBox->findText(option));
 
-	if (genome_ptr->interpolation == flam3_interpolation_linear)
-		option = "linear";
-	else
-		option = "smooth";
-	m_interpolationBox->setCurrentIndex(m_interpolationBox->findText(option));
-
-	if (genome_ptr->interpolation_type == flam3_inttype_linear)
-		option = "linear";
-	else if (genome_ptr->interpolation_type == flam3_inttype_log)
-		option = "log";
-	else if (genome_ptr->interpolation_type == flam3_inttype_compat)
-		option = "compat";
-	else
-		option = "older";
-	m_interpolationTypeBox->setCurrentIndex(m_interpolationTypeBox->findText(option));
-
 	timer->start();
 }
 
@@ -206,13 +182,11 @@ void ImageSettingsWidget::fieldEditedAction()
 	genome_ptr->spatial_filter_radius = m_filterLineEdit->value();
 	genome_ptr->spatial_oversample = m_oversampleLineEdit->value();
 	genome_ptr->nbatches = m_batchesLineEdit->value();
-	genome_ptr->ntemporal_samples = QString(m_temporalLineEdit->text()).toInt();
 	genome_ptr->estimator = m_estimatorLineEdit->value();
 	genome_ptr->estimator_curve = m_estimatorCurveLineEdit->value();
 	genome_ptr->estimator_minimum
 		= qMin(m_estimatorMinLineEdit->value(), genome_ptr->estimator);
 	genome_ptr->symmetry = m_symmetryLineEdit->value();
-	genome_ptr->time = m_timeLineEdit->value();
 
 	QString option = m_filterShapeBox->currentText();
 	if (option == "gaussian")
@@ -245,22 +219,6 @@ void ImageSettingsWidget::fieldEditedAction()
 		genome_ptr->spatial_filter_select = flam3_quadratic_kernel;
 	else
 		genome_ptr->spatial_filter_select = flam3_gaussian_kernel;
-
-	option = m_interpolationBox->currentText();
-	if (option == "linear")
-		genome_ptr->interpolation = flam3_interpolation_linear;
-	else
-		genome_ptr->interpolation = flam3_interpolation_smooth;
-
-	option = m_interpolationTypeBox->currentText();
-	if (option == "linear")
-		genome_ptr->interpolation_type = flam3_inttype_linear;
-	else if (option == "log")
-		genome_ptr->interpolation_type = flam3_inttype_log;
-	else if (option == "compat")
-		genome_ptr->interpolation_type = flam3_inttype_compat;
-	else
-		genome_ptr->interpolation_type = flam3_inttype_older;
 
 	resetPresetsComboBoxAction();
 

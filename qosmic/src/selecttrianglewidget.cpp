@@ -36,7 +36,6 @@ SelectTriangleWidget::SelectTriangleWidget(GenomeVector* g, QWidget* parent)
 	connect(m_addTriangleButton, SIGNAL(pressed()), this, SLOT(addTriangleAction()));
 	connect(m_delTriangleButton, SIGNAL(pressed()), this, SLOT(delTriangleAction()));
 	connect(m_finalButton, SIGNAL(clicked(bool)), this, SLOT(finalStateChangedSlot(bool)));
-	connect(m_animateButton, SIGNAL(clicked(bool)), this, SLOT(animateStateChangedSlot(bool)));
 }
 
 
@@ -72,7 +71,6 @@ void SelectTriangleWidget::reset()
 	m_densLineEdit->updateValue(selectedTriangle->xform()->density);
 	m_densLineEdit->setEnabled(selectedTriangle->index() != genome_ptr->final_xform_index);
 	m_finalButton->setChecked(genome_ptr->final_xform_enable);
-	m_animateButton->setChecked(selectedTriangle->xform()->animate == 0.0);
 }
 
 
@@ -121,9 +119,3 @@ void SelectTriangleWidget::finalStateChangedSlot(bool checked)
 		}
 	}
 }
-
-void SelectTriangleWidget::animateStateChangedSlot(bool checked)
-{
-	selectedTriangle->xform()->animate = !checked;
-}
-

@@ -64,13 +64,13 @@ class Logger
 		void finer( const QString&);
 		void finest( const QString&);
 
-		void info(const char*);
-		void warn(const char*);
-		void error(const char*);
-		void critical(const char*);
-		void fine(const char*);
-		void finer(const char*);
-		void finest(const char*);
+		void info(const char*, ...);
+		void warn(const char*, ...);
+		void error(const char*, ...);
+		void critical(const char*, ...);
+		void fine(const char*, ...);
+		void finer(const char*, ...);
+		void finest(const char*, ...);
 
 
 		Logger& operator<<(QString&);
@@ -87,23 +87,23 @@ class Logger
 
 #define toNum(n) QString::number(n)
 
-#define logCrit(s) Util::Logger::getInstance()->critical(s)
-#define logError(s) Util::Logger::getInstance()->error(s)
-#define logWarn(s) Util::Logger::getInstance()->warn(s)
+#define logCrit(...) Util::Logger::getInstance()->critical(__VA_ARGS__)
+#define logError(...) Util::Logger::getInstance()->error(__VA_ARGS__)
+#define logWarn(...) Util::Logger::getInstance()->warn(__VA_ARGS__)
 
 #ifdef LOGGING
 
-#define logInfo(s) Util::Logger::getInstance()->info(s)
-#define logFine(s) Util::Logger::getInstance()->fine(s)
-#define logFiner(s) Util::Logger::getInstance()->finer(s)
-#define logFinest(s) Util::Logger::getInstance()->finest(s)
+#define logInfo(...) Util::Logger::getInstance()->info(__VA_ARGS__)
+#define logFine(...) Util::Logger::getInstance()->fine(__VA_ARGS__)
+#define logFiner(...) Util::Logger::getInstance()->finer(__VA_ARGS__)
+#define logFinest(...) Util::Logger::getInstance()->finest(__VA_ARGS__)
 
 #else
 
-#define logInfo(s)
-#define logFine(s)
-#define logFiner(s)
-#define logFinest(s)
+#define logInfo(...)
+#define logFine(...)
+#define logFiner(...)
+#define logFinest(...)
 
 #endif
 

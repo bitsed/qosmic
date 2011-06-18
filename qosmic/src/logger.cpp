@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include <QThread>
 #include <QMutexLocker>
+#include <cstdarg>
 
 #include "logger.h"
 
@@ -156,60 +157,102 @@ void Logger::finest(const QString& msg)
 }
 
 
-void Logger::info(const char* msg)
+void Logger::info(const char* msg, ...)
 {
-  QMutexLocker locker(&m_mutex);
-  if(m_level >= INFO)
-	*m_stream << QString("info [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	QMutexLocker locker(&m_mutex);
+	if(m_level >= INFO)
+	{
+		va_list ap;
+		va_start(ap, msg);
+		*m_stream << QString("info [%1]: ").arg((long)QThread::currentThreadId())
+				  << QString().vsprintf(msg, ap)
+				  << endl;
+		va_end(ap);
+	}
 }
 
-void Logger::warn(const char* msg)
+void Logger::warn(const char* msg, ...)
 {
-  QMutexLocker locker(&m_mutex);
-  if(m_level >= WARN)
-	*m_stream << QString("warn [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	QMutexLocker locker(&m_mutex);
+	if(m_level >= WARN)
+	{
+		va_list ap;
+		va_start(ap, msg);
+		*m_stream << QString("warn [%1]: ").arg((long)QThread::currentThreadId())
+				  << QString().vsprintf(msg, ap)
+				  << endl;
+		va_end(ap);
+	}
 }
 
-void Logger::error(const char* msg)
+void Logger::error(const char* msg, ...)
 {
-  QMutexLocker locker(&m_mutex);
-  if(m_level >= ERROR)
-	*m_stream << QString("error [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	QMutexLocker locker(&m_mutex);
+	if(m_level >= ERROR)
+	{
+		va_list ap;
+		va_start(ap, msg);
+		*m_stream << QString("error [%1]: ").arg((long)QThread::currentThreadId())
+				  << QString().vsprintf(msg, ap)
+				  << endl;
+		va_end(ap);
+	}
 }
 
-void Logger::critical(const char* msg)
+void Logger::critical(const char* msg, ...)
 {
-  QMutexLocker locker(&m_mutex);
-  if(m_level >= CRITICAL)
-	*m_stream << QString("critical [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	QMutexLocker locker(&m_mutex);
+	if(m_level >= CRITICAL)
+	{
+		va_list ap;
+		va_start(ap, msg);
+		*m_stream << QString("critical [%1]: ").arg((long)QThread::currentThreadId())
+				  << QString().vsprintf(msg, ap)
+				  << endl;
+		va_end(ap);
+	}
 }
 
-void Logger::fine(const char* msg)
+void Logger::fine(const char* msg, ...)
 {
-  QMutexLocker locker(&m_mutex);
-  if(m_level >= FINE)
-	*m_stream << QString("fine [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	QMutexLocker locker(&m_mutex);
+	if(m_level >= FINE)
+	{
+		va_list ap;
+		va_start(ap, msg);
+		*m_stream << QString("fine [%1]: ").arg((long)QThread::currentThreadId())
+				  << QString().vsprintf(msg, ap)
+				  << endl;
+		va_end(ap);
+	}
 }
 
-void Logger::finer(const char* msg)
+void Logger::finer(const char* msg, ...)
 {
-  QMutexLocker locker(&m_mutex);
-  if(m_level >= FINER)
-	*m_stream << QString("finer [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	QMutexLocker locker(&m_mutex);
+	if(m_level >= FINER)
+	{
+		va_list ap;
+		va_start(ap, msg);
+		*m_stream << QString("finer [%1]: ").arg((long)QThread::currentThreadId())
+				  << QString().vsprintf(msg, ap)
+				  << endl;
+		va_end(ap);
+	}
 }
 
-void Logger::finest(const char* msg)
+void Logger::finest(const char* msg, ...)
 {
-  QMutexLocker locker(&m_mutex);
-  if(m_level >= FINEST)
-	*m_stream << QString("finest [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	QMutexLocker locker(&m_mutex);
+	if(m_level >= FINEST)
+	{
+		va_list ap;
+		va_start(ap, msg);
+		*m_stream << QString("finest [%1]: ").arg((long)QThread::currentThreadId())
+				  << QString().vsprintf(msg, ap)
+				  << endl;
+		va_end(ap);
+	}
 }
 
 

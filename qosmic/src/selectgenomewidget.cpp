@@ -21,6 +21,7 @@
 #include <QSettings>
 
 #include "selectgenomewidget.h"
+#include "viewerpresetsmodel.h"
 #include "logger.h"
 
 SelectGenomeWidget::SelectGenomeWidget(GenomeVector* g, RenderThread* r, QWidget* parent)
@@ -28,7 +29,11 @@ SelectGenomeWidget::SelectGenomeWidget(GenomeVector* g, RenderThread* r, QWidget
 {
 	setupUi(this);
 
-	label_size = QSettings().value("selectgenomewidget/labelsize", QSize(72, 56)).toSize();
+	QSettings s;
+	s.beginGroup("selectgenomewidget");
+	label_size = s.value("labelsize", QSize(72, 56)).toSize();
+	quality_preset = s.value("preset", ViewerPresetsModel::getInstance()->presetNames().first()).toString();
+	s.endGroup();
 
 	connect(m_genomeSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(selectorIndexChangedSlot(int)));
 	connect(r_thread, SIGNAL(flameRendered(RenderEvent*)), this, SLOT(flameRenderedAction(RenderEvent*)));
@@ -43,6 +48,7 @@ SelectGenomeWidget::SelectGenomeWidget(GenomeVector* g, RenderThread* r, QWidget
 	connect(m_genomesListView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(genomeSelectedAction(const QModelIndex&)));
 	connect(m_genomesListView, SIGNAL(indexesMoved(const QModelIndexList&)), this, SLOT(indexesMovedSlot(const QModelIndexList&)));
 	connect(m_genomesListView, SIGNAL(genomesModified()), this, SIGNAL(genomesModified()));
+	connect(m_genomesListView, SIGNAL(genomeUpdated(int)), this, SLOT(updateSelectedPreview(int)));
 
 	setSelectedGenome(0);
 }
@@ -50,12 +56,15 @@ SelectGenomeWidget::SelectGenomeWidget(GenomeVector* g, RenderThread* r, QWidget
 void SelectGenomeWidget::genomeSelectedAction(const QModelIndex& idx)
 {
 	int row = idx.row();
-	logFine(QString("SelectGenomeWidget::genomeSelectedAction : genome %1 selected").arg(row + 1));
-	m_genomeSelector->blockSignals(true);
-	m_genomeSelector->setCurrentIndex(row);
-	m_genomeSelector->blockSignals(false);
-	model->genomeVector()->setSelectedIndex(row);
-	emit genomeSelected(row);
+	if (row != m_genomeSelector->currentIndex())
+	{
+		logFine(QString("SelectGenomeWidget::genomeSelectedAction : genome %1 selected").arg(row + 1));
+		m_genomeSelector->blockSignals(true);
+		m_genomeSelector->setCurrentIndex(row);
+		m_genomeSelector->blockSignals(false);
+		model->genomeVector()->setSelectedIndex(row);
+		emit genomeSelected(row);
+	}
 }
 
 
@@ -71,6 +80,22 @@ void SelectGenomeWidget::selectorIndexChangedSlot(int idx)
 	model->genomeVector()->setSelectedIndex(idx);
 	m_genomesListView->setCurrentIndex(model->index(idx));
 	emit genomeSelected(idx);
+}
+
+void SelectGenomeWidget::updateSelectedPreview(int idx)
+{
+	GenomeVector* genomes = model->genomeVector();
+	if (isVisible() && idx >= 0 && idx < genomes->size())
+	{
+		if (genomes->size() > r_requests.size())
+			reset();
+		else
+		{
+			r_thread->render(r_requests[idx]);
+			if (idx == genomes->selectedIndex())
+				emit genomesModified();
+		}
+	}
 }
 
 void SelectGenomeWidget::updateSelectedPreview()
@@ -124,6 +149,7 @@ void SelectGenomeWidget::reset()
 
 	double ltime = -1.0;
 	genomes->data()->time = -1.0;
+	flam3_genome preset = ViewerPresetsModel::getInstance()->preset(quality_preset);
 	for (int i = 0 ; i < genomes->size() ; i++)
 	{
 		logFine(QString("SelectGenomeWidget::reset : sending request %1").arg(i));
@@ -133,6 +159,7 @@ void SelectGenomeWidget::reset()
 			g->time = ltime + 1.0;
 		ltime = g->time;
 		req->setGenome(g);
+		req->setImagePresets(preset);
 		if (isVisible())
 			r_thread->render(req);
 	}
@@ -168,7 +195,11 @@ void SelectGenomeWidget::showEvent(QShowEvent* e)
 
 void SelectGenomeWidget::closeEvent(QCloseEvent* e)
 {
-	QSettings().setValue("selectgenomewidget/labelsize", label_size);
+	QSettings s;
+	s.beginGroup("selectgenomewidget");
+	s.setValue("labelsize", label_size);
+	s.setValue("preset", quality_preset);
+	s.endGroup();
 	e->accept();
 }
 
@@ -206,16 +237,30 @@ void SelectGenomeWidget::configButtonPressedSlot()
 {
 	SelectGenomeConfigDialog d(this);
 	d.setPreviewSize(label_size);
+	d.setPreset(quality_preset);
 	d.move(QCursor::pos());
 	d.exec();
 	QSize s = d.previewSize();
+	QString p = d.preset();
+	bool render = false;
 	if (s != label_size)
 	{
 		label_size = s;
 		m_genomesListView->setGridSize(label_size + QSize(4,4));
+		render = true;
+	}
+	if (p != quality_preset)
+	{
+		quality_preset = p;
+		render = true;
+	}
+	if (render)
+	{
 		clearPreviews();
+		flam3_genome preset = ViewerPresetsModel::getInstance()->preset(quality_preset);
 		foreach (RenderRequest* r, r_requests)
 		{
+			r->setImagePresets(preset);
 			r->setSize(label_size);
 			r_thread->render(r);
 		}
@@ -279,6 +324,7 @@ void SelectGenomeWidget::indexesMovedSlot(const QModelIndexList& idxList)
 SelectGenomeConfigDialog::SelectGenomeConfigDialog(QWidget* parent) : QDialog(parent)
 {
 	setupUi(this);
+	qualityComboBox->setModel(ViewerPresetsModel::getInstance());
 }
 
 void SelectGenomeConfigDialog::setPreviewSize(const QSize& size)
@@ -292,3 +338,12 @@ QSize SelectGenomeConfigDialog::previewSize() const
 	return QSize(sizewLineEdit->value(), sizehLineEdit->value());
 }
 
+QString SelectGenomeConfigDialog::preset() const
+{
+	return qualityComboBox->currentText();
+}
+
+void SelectGenomeConfigDialog::setPreset(const QString& s)
+{
+	qualityComboBox->setCurrentIndex(qualityComboBox->findText(s));
+}

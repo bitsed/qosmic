@@ -25,26 +25,20 @@
 #include "logger.h"
 #include "flam3util.h"
 
+
 namespace Util
 {
 
-	static QMap<QString, int> variations;
-	static QStringList variationNames;
-
+	static QMap<QString, int> variation_map;
 	const QMap<QString, int>& flam3_variations()
 	{
-		if (variations.isEmpty())
-			for (int n = 0 ; n < flam3_nvariations ; n++)
-				variations.insert(flam3_variation_names[n], n);
-		return variations;
+		return variation_map;
 	}
 
+	static QStringList variation_name_list;
 	const QStringList& variation_names()
 	{
-		if (variationNames.isEmpty())
-			for (int n = 0 ; n < flam3_nvariations ; n++)
-				variationNames.append(flam3_variation_names[n]);
-			return variationNames;
+		return variation_name_list;
 	}
 
 	int variation_number(const char* var)
@@ -56,11 +50,9 @@ namespace Util
 	int variation_number(const QString& s)
 	{
 		// reverse map variations,
-		if (variations.isEmpty())
-			flam3_variations();
-		if (!variations.contains(s))
+		if (!variation_map.contains(s))
 			return -1;
-		return variations.value( s );
+		return variation_map.value( s );
 	}
 
 	QColor get_xform_color(flam3_genome* g, flam3_xform* xform)
@@ -422,9 +414,6 @@ namespace Util
 
 	double get_xform_variable ( flam3_xform* xform, QString name )
 	{
-		if (xform_variable_accessors.isEmpty())
-			init_xform_variable_accessors();
-
 		QString lookup(name.replace(QChar(' '),QString("_")).toLower());
 		xform_variable_accessor* accessor = xform_variable_accessors.value(lookup);
 		if (accessor)
@@ -435,11 +424,9 @@ namespace Util
 		return 0.;
 	}
 
+
 	void set_xform_variable ( flam3_xform* xform, QString name, double value )
 	{
-		if (xform_variable_accessors.isEmpty())
-			init_xform_variable_accessors();
-
 		QString lookup(name.replace(QChar(' '),QString("_")).toLower());
 		xform_variable_accessor* accessor = xform_variable_accessors.value(lookup);
 		if (accessor)
@@ -777,4 +764,184 @@ namespace Util
 		return &r;
 	}
 
+
+	// The static initializer routine to populate the static variables used
+	// by the functions defined above.
+	static const struct util_initializer
+	{
+		util_initializer()
+		{
+			for (int n = 0 ; n < flam3_nvariations ; n++)
+			{
+				char* name = flam3_variation_names[n];
+
+				// populate the variation name->number map
+				variation_map.insert(name, n);
+
+				// and add the variation to a list of available names
+				variation_name_list.append(name);
+			}
+
+			// create the xform variable name accessors
+			init_xform_variable_accessors();
+		}
+	} init;
+}
+
+
+/***************************************************************************
+ * Any resemblance of functions, variables, or algorithms described below
+ * here to code listed in flam3 source is more than a coincidence.  Most
+ * everything was taken from flam3-genome.c and modified to fit our own
+ * needs.
+ ***************************************************************************/
+
+void Util::spin(flam3_genome* parent, flam3_genome* dest, int frame, double blend)
+{
+	// Spin the parent blend*360 degrees
+	flam3_genome* result = sheep_loop(parent, blend);
+
+	// Set genome parameters
+	result->time = (double)frame;
+	result->interpolation = flam3_interpolation_linear;
+	result->palette_interpolation = flam3_palette_interpolation_hsv;
+	flam3_copy(dest, result);
+	// Free the cp allocated in flam3_sheep_loop
+	clear_cp(result, flam3_defaults_on);
+	free(result);
+}
+
+void Util::spin_inter(flam3_genome* parents, flam3_genome* dest, int frame, double blend, bool seqflag, double stagger)
+{
+   // Interpolate between rotated parents
+   flam3_genome* result = sheep_edge(parents, blend, (int)seqflag, stagger);
+
+   // Why check for random palettes on both ends?
+   if ((parents[0].palette_index != flam3_palette_random) &&
+	  (parents[1].palette_index != flam3_palette_random))
+	  {
+		  result->palette_index = flam3_palette_interpolated;
+		  result->palette_index0 = parents[0].palette_index;
+		  result->hue_rotation0 = parents[0].hue_rotation;
+		  result->palette_index1 = parents[1].palette_index;
+		  result->hue_rotation1 = parents[1].hue_rotation;
+		  result->palette_blend = blend;
+	  }
+
+   // Set genome attributes
+   result->time = (double)frame;
+   flam3_copy(dest, result);
+   // Free genome storage
+   clear_cp(result, flam3_defaults_on);
+   free(result);
+}
+
+flam3_genome* Util::create_genome_sequence(flam3_genome* cp, int ncp, int* dncp, int nframes, int loops, double stagger)
+{
+	if (nframes <= 0)
+	{
+		nframes = qMax(nframes, 1);
+		logWarn(QString("Util::create_genome_sequence : Setting non-positive value for nframes = %1").arg(nframes));
+	}
+
+	int tframes(0);
+	tframes = ncp * nframes * loops;
+	tframes += (ncp - 1) * nframes + 1;
+
+	flam3_genome* dcp = (flam3_genome*)calloc(tframes, sizeof(flam3_genome));
+	if (dcp == NULL)
+	{
+		logError(QString("Util::create_genome_sequence : Couldn't calloc %1 genome structures").arg(tframes));
+		return 0;
+	}
+
+	int framecount(0);
+	int seqflag;
+	double blend;
+	for (int i = 0 ; i < ncp ; i++)
+	{
+		for (int n = 0 ; n < loops ; n++)
+			for (int frame = 0; frame < nframes; frame++)
+			{
+				blend = frame / (double)nframes;
+				spin(&cp[i], &dcp[framecount], framecount, blend);
+				framecount++;
+			}
+
+		if (i < ncp - 1)
+			for (int frame = 0; frame < nframes; frame++)
+			{
+				if (0 == frame || (( nframes - 1 ) == frame))
+					seqflag = true;
+				else
+					seqflag = false;
+				blend = frame / (double)nframes;
+				spin_inter(&cp[i], &dcp[framecount], framecount, blend, seqflag, stagger);
+				framecount++;
+			}
+	}
+	spin(&cp[ncp - 1], &dcp[framecount], framecount, 0.0);
+	*dncp = framecount + 1;
+	return dcp;
+}
+
+flam3_genome* Util::create_genome_interpolation(flam3_genome* cp, int ncp, int* dncp, double stagger)
+{
+	for (int i = 0 ; i < ncp ; i++)
+	{
+		if (i > 0 && cp[i].time <= cp[i-1].time)
+		{
+			logWarn(QString("error: control points must be sorted by time, but %1 <= %2, index %3")
+					.arg(cp[i].time).arg(cp[i-1].time).arg(i));
+			return NULL;
+		}
+		/* Strip out all motion elements here.  Why? */
+//		for (int j = 0 ; j < cp[i].num_xforms ; j++)
+//			flam3_delete_motion_elements(&cp[i].xform[j]);
+	}
+
+	int first_frame = (int) cp[0].time;
+	int last_frame  = (int) cp[ncp-1].time;
+	if (last_frame < first_frame)
+		last_frame = first_frame;
+	int tframes = last_frame - first_frame + 1;
+
+	flam3_genome* dcp = (flam3_genome*)calloc(tframes, sizeof(flam3_genome));
+	if (dcp == NULL)
+	{
+		logError(QString("Util::create_genome_interp : Couldn't calloc %1 genome structures").arg(tframes));
+		return 0;
+	}
+
+	int framecount = 0;
+	for (int ftime = first_frame ; ftime <= last_frame ; ftime += 1)
+	{
+		int iscp = 0;
+		for (int i = 0; i < ncp ; i++)
+		{
+			if (ftime == cp[i].time)
+			{
+				flam3_copy(dcp + (framecount++), cp + i);
+				iscp = 1;
+			}
+		}
+		if (iscp == 0)
+		{
+			flam3_interpolate(cp, ncp, (double)ftime, stagger, dcp + (framecount++));
+			for (int i = 0 ; i < ncp ; i++)
+			{
+				if ( ftime == cp[i].time - 1 )
+					iscp = 1;
+			}
+			if (iscp == 0)
+				(dcp + framecount)->interpolation_type = flam3_inttype_linear;
+		}
+
+	}
+
+	// reset the time for each frame so flam3_render can find each frame
+	for (int n = 0 ; n < framecount ; n++)
+		(dcp + n)->time = n;
+	*dncp = framecount;
+	return dcp;
 }

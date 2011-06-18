@@ -23,6 +23,7 @@
 
 #include <QWidget>
 #include <QShowEvent>
+#include <QTimer>
 #include <QMenu>
 
 #include "ui_mainpreviewwidget.h"
@@ -36,16 +37,21 @@ class MainPreviewWidget
 
 	GenomeVector* genome;
 	QMenu* popupMenu;
+	QTimer* wheel_stopped_timer;
+	bool wheel_moved;
 	QPointF last_pos;
 	QPointF start_pos;
-	bool wheel_moved;
 	QSize last_size;
+	QString null_preset;
+	QString selected_preset;
 
 	public:
 		MainPreviewWidget(GenomeVector* g, QWidget* parent=0);
 		void setPixmap(const QPixmap&);
-		QSize getPreviewSize();
+		QSize getPreviewSize() const;
 		void setPreviewMaximumSize(QSize);
+		bool isPresetSelected() const;
+		QString preset() const;
 
 	signals:
 		void previewResized(const QSize&);

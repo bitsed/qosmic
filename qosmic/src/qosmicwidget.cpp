@@ -39,7 +39,7 @@ QosmicWidget::QosmicWidget(QosmicWidget* parent, QString name)
 }
 
 
-QosmicWidget* QosmicWidget::getWidget(const QString& name)
+QosmicWidget* QosmicWidget::getWidget(const QString& name) const
 {
 	QosmicWidget* w =  widgets[name];
 	if (!w)

@@ -40,6 +40,19 @@ class RenderRequest
 	public:
 		enum Type { Preview, Image, File, Queued } ;
 
+	private:
+		flam3_genome* m_genome;
+		flam3_genome m_genome_template;
+		double m_time;
+		int m_ngenomes;
+		Type m_type;
+		QSize m_size;
+		QString m_name;
+		QImage m_image;
+		bool m_finished;
+		QMutex m_img_mutex;
+
+	public:
 		RenderRequest(flam3_genome* g=0, QSize s=QSize(),
 						QString n=QString(), Type t=Queued);
 
@@ -47,27 +60,20 @@ class RenderRequest
 		flam3_genome* imagePresets();
 		void setGenome(flam3_genome*);
 		flam3_genome* genome() const;
-		void setSize(const QSize&);
-		QSize size() const;
-		QImage& image();
-		void setImage(QImage&);
-		void setName(const QString&);
-		QString name() const;
+		void setTime(double);
+		double time() const;
+		void setNumGenomes(int);
+		int numGenomes() const;
 		void setType(const Type&);
 		Type type() const;
+		void setSize(const QSize&);
+		QSize size() const;
+		void setName(const QString&);
+		QString name() const;
+		void setImage(QImage&);
+		QImage& image();
 		void setFinished(bool);
 		bool finished() const;
-
-	private:
-		flam3_genome* m_genome;
-		flam3_genome m_genome_template;
-		QSize m_size;
-		QString m_name;
-		Type m_type;
-		QImage m_image;  // i'm using an image here.  copying a pixmap many
-						 // times seems to make X unhappy
-		bool m_finished;
-		QMutex m_img_mutex;
 };
 typedef QList<RenderRequest*> RenderRequestList;
 
@@ -79,6 +85,7 @@ class RenderEvent
 {
 	RenderRequest* m_request;
 	bool m_accepted;
+
 	public:
 		RenderEvent();
 		void accept(bool=true);
@@ -198,7 +205,6 @@ class RenderThread : public QThread, public StatusProvider
 		static RenderThread* getInstance();
 		~RenderThread();
 		virtual void run();
-		void setRenderAgain(bool); // start/stop all rendering
 		RenderStatus& getStatus();
 		double finished();
 		bool isRendering();

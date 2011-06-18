@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>212</width>
-    <height>84</height>
+    <width>211</width>
+    <height>83</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -168,29 +168,6 @@
         <property name="icon">
          <iconset resource="../qosmic.qrc">
           <normaloff>:/icons/silk/shape_triangle_delete.xpm</normaloff>:/icons/silk/shape_triangle_delete.xpm</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QToolButton" name="m_animateButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="toolTip">
-         <string>animate this transform in the electricsheep loop</string>
-        </property>
-        <property name="text">
-         <string>post</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../qosmic.qrc">
-          <normaloff>:/icons/silk/film.xpm</normaloff>:/icons/silk/film.xpm</iconset>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
         </property>
        </widget>
       </item>

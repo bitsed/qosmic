@@ -47,8 +47,10 @@ MainViewer::MainViewer ( QWidget* parnt, QString title )
 	{
 		// popupMenu for the dockable viewer has image preset/quality options
 		QSettings settings;
-		selected_preset = settings.value("mainviewer/preset", "").toString();
-		show_status = settings.value("mainviewer/showstatus", false).toBool();
+		settings.beginGroup("mainviewer");
+		selected_preset = settings.value("preset", ViewerPresetsModel::getInstance()->presetNames().first()).toString();
+		show_status = settings.value("showstatus", false).toBool();
+		settings.endGroup();
 		popupMenu = new QMenu(tr("presets"));
 		connect(popupMenu, SIGNAL(triggered(QAction*)),
 				this, SLOT(popupMenuTriggeredSlot(QAction*)));
@@ -56,7 +58,7 @@ MainViewer::MainViewer ( QWidget* parnt, QString title )
 		status_action = new QAction(tr("show status"), this);
 		status_action->setCheckable(true);
 		status_action->setChecked(show_status);
-		nullPresetText = tr("preview quality");
+		nullPresetText = tr("genome quality");
 	}
 	else
 	{
@@ -331,6 +333,7 @@ bool MainViewer::eventFilter(QObject* obj, QEvent* event)
 						popupMenu->setActiveAction(a);
 					}
 				}
+				popupMenu->addSeparator();
 
 				// Add the action to select the same image rendering settings
 				// as used by the mainpreviewwidget.
@@ -342,7 +345,6 @@ bool MainViewer::eventFilter(QObject* obj, QEvent* event)
 					popupMenu->setActiveAction(a);
 				}
 
-				popupMenu->addSeparator();
 				popupMenu->addAction(status_action);
 				status_action->setChecked(show_status);
 			}

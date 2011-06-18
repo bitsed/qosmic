@@ -72,7 +72,7 @@ else {
 ################################################################################
 ## Build style flags.  Adding debug enables more verbose logging.
 # CONFIG += release warn_off
-CONFIG += debug warn_on
+#CONFIG += debug warn_on
 
 
 ################################################################################
@@ -83,7 +83,7 @@ CONFIG += debug warn_on
 
 ################################################################################
 ## qosmic app version
-VERSION = 1.5_alpha1
+VERSION = 1.5.0_alpha2
 
 ################################################################################
 ## Check for correct package versions
@@ -173,13 +173,15 @@ FORMS += \
  ui/selectgenomewidget.ui \
  ui/genomevectorlistmodelitemeditor.ui \
  ui/selectgenomeconfigdialog.ui \
+ ui/mutationconfigdialog.ui \
  ui/viewerpresetswidget.ui \
  ui/selecttrianglewidget.ui \
  ui/renderdialog.ui \
  ui/renderprogressdialog.ui \
  ui/adjustscenewidget.ui \
  ui/editmodeselectorwidget.ui \
- ui/chaoswidget.ui
+ ui/chaoswidget.ui \
+ ui/sheeploopwidget.ui
 
 HEADERS += \
  src/qosmic.h \
@@ -195,7 +197,6 @@ HEADERS += \
  src/genomecolorselector.h \
  src/paletteeditor.h \
  src/mutationwidget.h \
- src/previewwidget.h \
  src/colorlabel.h \
  src/doublevalueeditor.h \
  src/intvalueeditor.h \
@@ -245,7 +246,8 @@ HEADERS += \
  src/genomevectorlistview.h \
  src/chaoswidget.h \
  src/transformablegraphicsitem.h \
- src/transformablegraphicsguide.h
+ src/transformablegraphicsguide.h \
+ src/sheeploopwidget.h
 
 SOURCES += \
  src/qosmic.cpp \
@@ -271,7 +273,6 @@ SOURCES += \
  src/mainpreviewwidget.cpp \
  src/trianglecoordswidget.cpp \
  src/variationswidget.cpp \
- src/previewwidget.cpp \
  src/colorbalancewidget.cpp \
  src/gradientlistmodel.cpp \
  src/varstablewidget.cpp \
@@ -310,7 +311,8 @@ SOURCES += \
  src/genomevectorlistview.cpp \
  src/chaoswidget.cpp \
  src/transformablegraphicsitem.cpp \
- src/transformablegraphicsguide.cpp
+ src/transformablegraphicsguide.cpp \
+ src/sheeploopwidget.cpp
 
 
 TRANSLATIONS = ts/qosmic_fr.ts
