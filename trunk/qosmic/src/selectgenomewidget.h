@@ -26,7 +26,6 @@
 
 #include "genomevector.h"
 #include "renderthread.h"
-#include "previewwidget.h"
 #include "qosmicwidget.h"
 
 class SelectGenomeWidget : public QWidget, public QosmicWidget,
@@ -43,6 +42,7 @@ class SelectGenomeWidget : public QWidget, public QosmicWidget,
 	public slots:
 		void flameRenderedAction(RenderEvent*);
 		void updateSelectedPreview();
+		void updateSelectedPreview(int);
 
 	signals:
 		void genomeSelected(int);
@@ -64,6 +64,7 @@ class SelectGenomeWidget : public QWidget, public QosmicWidget,
 
 	private:
 		QSize label_size;
+		QString quality_preset;
 		QList<RenderRequest*> r_requests;
 		GenomeVectorListModel* model;
 		RenderThread* r_thread;
@@ -82,6 +83,8 @@ class SelectGenomeConfigDialog : public QDialog, private Ui::SelectGenomeConfigD
 		SelectGenomeConfigDialog(QWidget* parent=0);
 		void setPreviewSize(const QSize& size);
 		QSize previewSize() const;
+		void setPreset(const QString &s);
+		QString preset() const;
 };
 
 #endif

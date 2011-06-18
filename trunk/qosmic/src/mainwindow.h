@@ -44,6 +44,7 @@
 #include "selecttrianglewidget.h"
 #include "adjustscenewidget.h"
 #include "editmodeselectorwidget.h"
+#include "sheeploopwidget.h"
 #include "xfedit.h"
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
@@ -86,12 +87,14 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		void open();
 		bool saveAs();
 		bool quickSave();
-		void selectGenomeSlot(int);
+		void genomeSelectedSlot(int);
 		void genomesModifiedSlot();
 		void presetSelectedSlot();
 		void scriptFinishedSlot();
 		void importAction();
 		void exportAction();
+		void runSheepLoop(bool);
+		void saveSheepLoop();
 
 	signals:
 		void mainWindowChanged();
@@ -123,6 +126,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		void updateRecentFileActions();
 		void appendFlam3ToGenome(flam3_genome*, int);
 		bool readFlam3File(const QString&, flam3_genome**, int*);
+		bool writeGenomesToFile(const QString&, flam3_genome*, int);
 		void setUndoState(UndoState*);
 
 	protected:
@@ -130,16 +134,18 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		RenderRequest m_preview_request;
 		RenderRequest m_viewer_request;
 		RenderRequest m_file_request;
-		FigureEditor* m_xfeditor;
-		RenderThread* m_rthread;
+		RenderRequestList m_sheep_requests;
 		bool m_dialogsEnabled;
 
+		FigureEditor* m_xfeditor;
+		RenderThread* m_rthread;
 		MainViewer* m_viewer;
 		MutationWidget* m_mutations;
 		CameraSettingsWidget* m_cameraSettingsWidget;
 		ColorSettingsWidget* m_colorSettingsWidget;
 		ColorBalanceWidget* m_colorBalanceWidget;
 		ImageSettingsWidget* m_imageSettingsWidget;
+		SheepLoopWidget* m_sheepLoopWidget;
 		TriangleCoordsWidget* m_coordsWidget;
 		TriangleDensityWidget* m_triangleDensityWidget;
 		MainPreviewWidget* m_previewWidget;
@@ -193,7 +199,6 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		QAction* cutAct;
 		QAction* copyAct;
 		QAction* pasteAct;
-		QAction* addTriangleAct;
 		QAction* importAct;
 		QAction* exportAct;
 		QAction* selPrevAct;

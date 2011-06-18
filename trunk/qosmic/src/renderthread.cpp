@@ -59,7 +59,6 @@ void RenderThread::init_status_cb()
 {
 	_est_remain = 0.0;
 	_percent_finished = 0.0;
-	_stop_current_job = false;
 }
 
 RenderThread::RenderThread() :
@@ -82,6 +81,7 @@ RenderThread::RenderThread() :
 	flame.sub_batch_size = 10000;
 	flame.nthreads = QString(getenv("flam3_nthreads")).toInt();
 	flame.verbose  = QString(getenv("flam3_verbose")).toInt();
+	flame.earlyclip = 0;
 
 	if (flame.nthreads < 1)
 		flame.nthreads = flam3_count_nthreads();
@@ -143,8 +143,7 @@ void RenderThread::run()
 		render_loop_flag = true;
 		current_request = job;
 
-		logFiner(QString("RenderThread::run : rendering request 0x%1")
-				.arg((long)job,0,16));
+		logFiner(QString("RenderThread::run : rendering request 0x%1").arg((long)job,0,16));
 
 		// make sure there is something to calculate
 		bool no_pos_xf = true;
@@ -157,62 +156,78 @@ void RenderThread::run()
 			}
 		if (no_pos_xf)
 		{
-			logWarn(QString("RenderThread::run : no xform in request 0x%1")
-				.arg((long)job,0,16));
+			logWarn(QString("RenderThread::run : no xform in request 0x%1").arg((long)job,0,16));
 			continue;
 		}
 
-		flam3_genome genome;
-		flame.genomes = &genome;
-		flam3_copy(&genome, job->genome());
 		rtype = job->name();
+		flame.time = job->time();
+		flame.ngenomes = job->numGenomes();
+		flam3_genome* genomes = new flam3_genome[flame.ngenomes]();
+		flam3_genome* job_genome = job->genome();
+		for (int n = 0 ; n < flame.ngenomes ; n++)
+			flam3_copy(genomes + n, job_genome + n);
+		flame.genomes = genomes;
 		QSize imgSize(job->size());
 		if (!imgSize.isEmpty())
 		{
-			// scale images, previews, etc. if necessary
-			int width  = genome.width;
-			genome.width  = imgSize.width();
-			genome.height = imgSize.height();
+			for (int n = 0 ; n < flame.ngenomes ; n++)
+			{
+				flam3_genome* genome = genomes + n;
+				// scale images, previews, etc. if necessary
+				int width  = genome->width;
+				genome->width  = imgSize.width();
+				genome->height = imgSize.height();
 
-			// "rescale" the image scale to maintain the camera
-			// for smaller/larger image size
-			genome.pixels_per_unit /= (double)(width) / genome.width;
+				// "rescale" the image scale to maintain the camera
+				// for smaller/larger image size
+				genome->pixels_per_unit /= ((double)width) / genome->width;
+			}
 		}
 
-		// only the Image type doesn't use it's own quality settings
+		// Load image quality settings for Image, Preview, and File types
 		switch (job->type())
 		{
 			case RenderRequest::File:
-			rtype = QFileInfo(job->name()).fileName();
+				rtype = QFileInfo(job->name()).fileName();
 
 			case RenderRequest::Image:
+			case RenderRequest::Preview:
+			case RenderRequest::Queued:
 			{
-			const flam3_genome* g = job->imagePresets();
-			genome.sample_density =            g->sample_density;
-			genome.spatial_filter_radius =     g->spatial_filter_radius;
-			genome.spatial_oversample =        g->spatial_oversample;
-			genome.nbatches =                  g->nbatches;
-			genome.ntemporal_samples =         g->ntemporal_samples;
-			genome.estimator =                 g->estimator;
-			genome.estimator_curve =           g->estimator_curve;
-			genome.estimator_minimum =         g->estimator_minimum;
-			}
+				const flam3_genome* g = job->imagePresets();
+				if (g->nbatches > 0) // valid quality settings for nbatches > 0
+					for (int n = 0 ; n < flame.ngenomes ; n++)
+					{
+						flam3_genome* genome = genomes + n;
+						genome->sample_density =            g->sample_density;
+						genome->spatial_filter_radius =     g->spatial_filter_radius;
+						genome->spatial_oversample =        g->spatial_oversample;
+						genome->nbatches =                  g->nbatches;
+						genome->ntemporal_samples =         g->ntemporal_samples;
+						genome->estimator =                 g->estimator;
+						genome->estimator_curve =           g->estimator_curve;
+						genome->estimator_minimum =         g->estimator_minimum;
+					}
+		}
 
 			default:
 				;
 		}
 
-		int msize = channels * genome.width * genome.height;
+		// add symmetry xforms before rendering
+		for (int n = 0 ; n < flame.ngenomes ; n++)
+		{
+			flam3_genome* genome = genomes + n;
+			if (genome->symmetry != 1)
+				flam3_add_symmetry(genome, genome->symmetry);
+		}
+
+		int msize = channels * genomes->width * genomes->height;
 		unsigned char* out = new unsigned char[msize];
 		unsigned char* head = out;
-
-		// add symmetry xforms before rendering
-		if (genome.symmetry != 1)
-			flam3_add_symmetry(&genome, genome.symmetry);
+		logFine(QString("allocated %1 bytes, rendering...").arg(msize));
 		init_status_cb();
-
-		logFinest(QString("allocated %1 bytes, rendering...").arg(msize));
-		kill_all_jobs = false;
 		rendering = true;
 		ptimer.start();
 		flam3_render(&flame, out, 0, channels, alpha_trans, &_stats);
@@ -222,10 +237,11 @@ void RenderThread::run()
 
 		if (_stop_current_job) // if stopRendering() is called
 		{
-			logFiner(QString("RenderThread::run : ")
-					+ QString(rtype).append(" rendering stopped"));
+			logFine(QString("RenderThread::run : %1 rendering stopped").arg(rtype));
 			delete[] head;
-			clear_cp(&genome, flam3_defaults_off);
+			for (int n = 0 ; n < flame.ngenomes ; n++)
+				clear_cp(genomes + n, flam3_defaults_off);
+			delete[] genomes;
 			if (kill_all_jobs)
 			{
 				preview_request = 0;
@@ -233,6 +249,8 @@ void RenderThread::run()
 				rqueue_mutex.lock();
 				request_queue.clear();
 				rqueue_mutex.unlock();
+				kill_all_jobs = false;
+				emit flameRenderingKilled();
 			}
 			else
 				if (job->type() == RenderRequest::Queued)
@@ -243,29 +261,31 @@ void RenderThread::run()
 					rqueue_mutex.unlock();
 				}
 
-			emit flameRenderingKilled();
+			_stop_current_job = false;
 			continue;
 		}
 
-		QSize buf_size(genome.width, genome.height);
+		QSize buf_size(genomes->width, genomes->height);
 		if (img_format == RGB32)
 		{
 			if (buf_size != img_buf.size())
 				img_buf = QImage(buf_size, QImage::Format_RGB32);
-			for (int h = 0 ; h < genome.height ; h++)
-				for (int w = 0 ; w < genome.width ; w++, out += channels)
+			for (int h = 0 ; h < genomes->height ; h++)
+				for (int w = 0 ; w < genomes->width ; w++, out += channels)
 					img_buf.setPixel(QPoint(w, h), qRgb(out[0], out[1], out[2]));
 		}
 		else
 		{
 			if (buf_size != img_buf.size())
 				img_buf = QImage(buf_size, QImage::Format_ARGB32);
-			for (int h = 0 ; h < genome.height ; h++)
-				for (int w = 0 ; w < genome.width ; w++, out += channels)
+			for (int h = 0 ; h < genomes->height ; h++)
+				for (int w = 0 ; w < genomes->width ; w++, out += channels)
 					img_buf.setPixel(QPoint(w, h), qRgba(out[0], out[1], out[2], out[3]));
 		}
 		delete[] head;
-		clear_cp(&genome, flam3_defaults_off);
+		for (int n = 0 ; n < flame.ngenomes ; n++)
+			clear_cp(genomes + n, flam3_defaults_off);
+		delete[] genomes;
 
 		if (job->type() == RenderRequest::File)
 			img_buf.save(job->name(), "png", 100);
@@ -340,9 +360,11 @@ bool RenderThread::isRendering()
  */
 void RenderThread::killAll()
 {
-	kill_all_jobs = true;
-	_stop_current_job = true;
-
+	if (render_loop_flag)
+	{
+		kill_all_jobs = true;
+		_stop_current_job = true;
+	}
 }
 
 /**
@@ -350,7 +372,8 @@ void RenderThread::killAll()
  */
 void RenderThread::stopRendering()
 {
-	_stop_current_job = true;
+	if (render_loop_flag)
+		_stop_current_job = true;
 }
 
 double RenderThread::finished()
@@ -555,7 +578,8 @@ bool RenderEvent::accepted() const
 
 // rendering requests
 RenderRequest::RenderRequest(flam3_genome* g, QSize s, QString n, Type t)
-	: m_genome(g), m_size(s), m_name(n), m_type(t), m_finished(true)
+: m_genome(g), m_genome_template(), m_time(0), m_ngenomes(1), m_type(t),
+	m_size(s), m_name(n), m_finished(true)
 {
 }
 
@@ -641,8 +665,29 @@ void RenderRequest::setFinished(bool value)
 	m_finished = value;
 }
 
+double RenderRequest::time() const
+{
+	return m_time;
+}
+
+void RenderRequest::setTime(double time)
+{
+	m_time = time;
+}
+
+int RenderRequest::numGenomes() const
+{
+	return m_ngenomes;
+}
+
+void RenderRequest::setNumGenomes(int n)
+{
+	m_ngenomes = n;
+}
 
 RenderRequest* RenderThread::current() const
 {
 	return current_request;
 }
+
+

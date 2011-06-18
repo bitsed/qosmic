@@ -216,10 +216,9 @@ void FigureEditor::enableFinalXform(bool enable)
 
 void FigureEditor::addTriangleAction()
 {
-	int n = genome_ptr->num_xforms;
-	Util::add_default_xform(genome_ptr);
 	logFine(QString("FigureEditor::addTriangleAction : adding triangle to slot %1")
-		.arg(n));
+		.arg(genome_ptr->num_xforms));
+	Util::add_default_xform(genome_ptr);
 	reset();
 	logFine(QString("FigureEditor::addTriangleAction : %1 items in triangleList")
 		.arg(trianglesList.size()));
@@ -455,8 +454,6 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 			moving = 0;
 			logFine(QString("FigureEditor::mousePressEvent : rtti %1")
 					.arg(item->type()));
-			logFine(QString("FigureEditor::mousePressEvent : Found item %1")
-					.arg((long)item));
 
 			if ( item->type() == Triangle::RTTI )
 			{
@@ -531,8 +528,6 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 
 			wheel_moved = false;
 		}
-		else
-			logFine("FigureEditor::mousePressEvent : no item selected");
 	}
 	QGraphicsScene::mousePressEvent(e);
 }
@@ -1444,9 +1439,8 @@ void FigureEditor::drawBackground(QPainter* p, const QRectF& r)
 	}
 }
 
-void FigureEditor::colorChangedAction(double idx)
+void FigureEditor::colorChangedAction(double /*idx*/)
 {
-	logFinest(QString("FigureEditor::colorChangedAction : idx=0x%1").arg(idx));
 	foreach (Triangle* triangle, trianglesList)
 	{
 		const QColor c( Util::get_xform_color(genome_ptr, triangle->xform()) );

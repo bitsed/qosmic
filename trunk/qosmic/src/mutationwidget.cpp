@@ -17,67 +17,262 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
-
-#include <QAction>
+#include <QSettings>
 
 #include "mutationwidget.h"
+#include "viewerpresetsmodel.h"
 #include "logger.h"
 
-MutationWidget::MutationWidget(GenomeVector* gen,  RenderThread* t,
-							   QWidget* parent)
-	: QWidget(parent), genome_offset(0), genome(gen), rthread(t), speed(0.1)
+MutationWidget::MutationWidget(GenomeVector* gen,  RenderThread* t, QWidget* parent)
+: QWidget(parent), genome_offset(0), labels_size(82,68), mutation_speed(0.1),
+  mutateA_start(0), mutateB_start(0), genome(gen), rthread(t)
 {
 	setupUi(this);
 
-	labels << label << label_2 << label_3  // labels are defined in the .ui file
-			<< label_4 << label_5 << label_6
-			<< label_7 << label_8 << label_9;
+	labels << label_a1 << label_a2 << label_a3  // labels are defined in the .ui file
+		   << label_a4 << label_a5 << label_a6
+		   << label_a7 << label_a8
+		   << label_b1 << label_b2 << label_b3
+		   << label_b4 << label_b5 << label_b6
+		   << label_b7 << label_b8
+		   << label_c11 << label_c12 << label_c13
+		   << label_c21 << label_c22 << label_c23
+		   << label_c31 << label_c32 << label_c33
+		   << label_c41 << label_c42 << label_c43
+		   << label_c51 << label_c52 << label_c53
+		   << label_c61 << label_c62 << label_c63
+		   << label_c71 << label_c72 << label_c73
+		   << label_c81 << label_c82 << label_c83;
 
-	varsMenu = new QMenu(this);
-	QMap<QString, int>map = Util::flam3_variations();
-	foreach(QString s, map.keys())
-	{
-		QAction* act = new QAction(s, this);
-		act->setCheckable(true);
-		varsActions << act;
-		varsMenu->addAction(act);
-	}
-	clearMenuAct = new QAction(tr("clear selected"), this);
-	clearMenuAct->setCheckable(false);
-	varsMenu->addAction(clearMenuAct);
+	label_a1->setToolTip(QString("genome A"));
+	label_b1->setToolTip(QString("genome B"));
 
-	for ( int n = 0 ;  n < 9 ; n++)
+	ViewerPresetsModel* presets = ViewerPresetsModel::getInstance();
+
+	QSettings s;
+	s.beginGroup("mutationwidget");
+	labels_size = s.value("labelsize", labels_size).toSize();
+	mutation_speed = s.value("speed", mutation_speed).toReal();
+	quality_preset = s.value("preset", presets->presetNames().first()).toString();
+	s.endGroup();
+
+	for ( int n = 0 ;  n < 40 ; n++)
 	{
-		flam3_genome* g = new flam3_genome;
-		memset(g, 0, sizeof(flam3_genome));
+		flam3_genome* g = new flam3_genome();
 		clear_cp(g, flam3_defaults_off);
 		mutations << g;
 		labels[n]->setGenome(g);
-		RenderRequest* r = new RenderRequest(genome->data(), QSize(80,80), "mutation",
-											 RenderRequest::Queued);
+		labels[n]->setMinimumSize(labels_size);
+		labels[n]->setMaximumSize(labels_size);
+		RenderRequest* r = new RenderRequest(genome->data(), labels_size, QString("mutation %1").arg(n + 1), RenderRequest::Queued);
 		requests << r;
-		connect(labels[n], SIGNAL(mutationSelected(PreviewWidget*)),
-				this, SLOT(mutationSelectedAction(PreviewWidget*)));
-		connect(labels[n], SIGNAL(genomeSelected(PreviewWidget*)),
-				this, SLOT(genomeSelectedAction(PreviewWidget*)));
+		connect(labels[n], SIGNAL(mutationASelected(MutationPreviewWidget*)), this, SLOT(mutationASelectedAction(MutationPreviewWidget*)));
+		connect(labels[n], SIGNAL(mutationBSelected(MutationPreviewWidget*)), this, SLOT(mutationBSelectedAction(MutationPreviewWidget*)));
+		connect(labels[n], SIGNAL(genomeSelected(MutationPreviewWidget*)), this, SLOT(genomeSelectedAction(MutationPreviewWidget*)));
 	}
 
-	m_speedSlider->setValue(10);
-	speedChangedAction(10);
-	connect(m_speedSlider, SIGNAL(valueChanged(int)),
-			this, SLOT(speedChangedAction(int)));
-	connect(m_variationsButton, SIGNAL(released()),
-			this, SLOT(selectVariationsAction()));
-
-	connect(rthread, SIGNAL(flameRendered(RenderEvent*)),
-			this, SLOT(flameRenderedAction(RenderEvent*)));
-
-	connect(clearMenuAct, SIGNAL(triggered(bool)),
-			this, SLOT(clearMenuAction()));
+	connect(aComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectorAIndexChangedSlot(int)));
+	connect(bComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectorBIndexChangedSlot(int)));
+	connect(labels[0], SIGNAL(genomeDropped(int)), this, SLOT(selectorAIndexChangedSlot(int)));
+	connect(labels[8], SIGNAL(genomeDropped(int)), this, SLOT(selectorBIndexChangedSlot(int)));
+	connect(aUpButton, SIGNAL(clicked()), this, SLOT(rotateAMutationsUp()));
+	connect(aDownButton, SIGNAL(clicked()), this, SLOT(rotateAMutationsDown()));
+	connect(bUpButton, SIGNAL(clicked()), this, SLOT(rotateBMutationsUp()));
+	connect(bDownButton, SIGNAL(clicked()), this, SLOT(rotateBMutationsDown()));
+	connect(rthread, SIGNAL(flameRendered(RenderEvent*)), this, SLOT(flameRenderedAction(RenderEvent*)));
+	connect(configButton, SIGNAL(clicked()), this, SLOT(showConfigDialog()));
+	connect(regenButton, SIGNAL(clicked()), this, SLOT(mutate()));
 }
 
-void MutationWidget::genomeSelectedAction(PreviewWidget* ptr)
+void MutationWidget::showConfigDialog()
+{
+	MutationConfigDialog d(this);
+	d.setPreviewSize(labels_size);
+	d.setSpeed(mutation_speed);
+	d.setPreset(quality_preset);
+	d.move(QCursor::pos());
+	d.exec();
+	QSize s = d.previewSize();
+	qreal speed = d.speed();
+	QString preset = d.preset();
+	bool render = false;
+	if (speed != mutation_speed)
+	{
+		mutation_speed = speed;
+		QSettings().setValue("mutationwidget/speed", mutation_speed);
+	}
+	if (s != labels_size)
+	{
+		labels_size = s;
+		QSettings().setValue("mutationwidget/labelsize", labels_size);
+		foreach (MutationPreviewWidget* p, labels)
+		{	p->setMinimumSize(labels_size);
+			p->setMaximumSize(labels_size);
+		}
+		render = true;
+	}
+	if (preset != quality_preset)
+	{
+		quality_preset = preset;
+		QSettings().setValue("mutationwidget/preset", quality_preset);
+		ViewerPresetsModel* presets = ViewerPresetsModel::getInstance();
+		foreach (MutationPreviewWidget* p, labels)
+			presets->applyPreset(quality_preset, p->genome());
+		render = true;
+	}
+	if (render)
+		foreach (RenderRequest* r, requests)
+		{
+			r->setSize(labels_size);
+			rthread->render(r);
+		}
+}
+
+void MutationWidget::rotateAMutationsUp()
+{
+	mutateA_start = (mutateA_start + 1) % 7;
+	logInfo("MutationWidget::rotateAMutationsUp : mutateA_start %d", mutateA_start);
+	flam3_genome tmp_genome = flam3_genome();
+	QList<MutationPreviewWidget*>::iterator i = labels.begin() + 1;
+	QList<MutationPreviewWidget*>::iterator e = labels.begin() + 8;
+	flam3_copy(&tmp_genome, (*i)->genome());
+	QPixmap tmp_pixmap(*((*i)->pixmap()));
+	QString tmp_tip((*i)->toolTip());
+	while (++i != e)
+	{
+		QList<MutationPreviewWidget*>::iterator p = i - 1;
+		flam3_copy((*p)->genome(), (*i)->genome());
+		(*p)->setPixmap(*((*i)->pixmap()));
+		(*p)->setToolTip((*i)->toolTip());
+	}
+	e--;
+	flam3_copy((*e)->genome(), &tmp_genome);
+	(*e)->setPixmap(tmp_pixmap);
+	(*e)->setToolTip(tmp_tip);
+	cross();
+}
+
+void MutationWidget::rotateAMutationsDown()
+{
+	mutateA_start = (mutateA_start + 6) % 7;
+	logInfo("MutationWidget::rotateAMutationsUp : mutateA_start %d", mutateA_start);
+	flam3_genome tmp_genome = flam3_genome();
+	QList<MutationPreviewWidget*>::iterator i = labels.begin() + 7;
+	QList<MutationPreviewWidget*>::iterator e = labels.begin() + 0;
+	flam3_copy(&tmp_genome, (*i)->genome());
+	QPixmap tmp_pixmap(*((*i)->pixmap()));
+	QString tmp_tip((*i)->toolTip());
+	while (--i != e)
+	{
+		QList<MutationPreviewWidget*>::iterator p = i + 1;
+		flam3_copy((*p)->genome(), (*i)->genome());
+		(*p)->setPixmap(*((*i)->pixmap()));
+		(*p)->setToolTip((*i)->toolTip());
+	}
+	e++;
+	flam3_copy((*e)->genome(), &tmp_genome);
+	(*e)->setPixmap(tmp_pixmap);
+	(*e)->setToolTip(tmp_tip);
+	cross();
+}
+
+void MutationWidget::rotateBMutationsUp()
+{
+	mutateB_start = (mutateB_start + 1) % 7;
+	flam3_genome tmp_genome = flam3_genome();
+	QList<MutationPreviewWidget*>::iterator i = labels.begin() + 9;
+	QList<MutationPreviewWidget*>::iterator e = labels.begin() + 16;
+	flam3_copy(&tmp_genome, (*i)->genome());
+	QPixmap tmp_pixmap(*((*i)->pixmap()));
+	QString tmp_tip((*i)->toolTip());
+	while (++i != e)
+	{
+		QList<MutationPreviewWidget*>::iterator p = i - 1;
+		flam3_copy((*p)->genome(), (*i)->genome());
+		(*p)->setPixmap(*((*i)->pixmap()));
+		(*p)->setToolTip((*i)->toolTip());
+	}
+	e--;
+	flam3_copy((*e)->genome(), &tmp_genome);
+	(*e)->setPixmap(tmp_pixmap);
+	(*e)->setToolTip(tmp_tip);
+	cross();
+}
+
+void MutationWidget::rotateBMutationsDown()
+{
+	mutateB_start = (mutateB_start + 6) % 7;
+	flam3_genome tmp_genome = flam3_genome();
+	QList<MutationPreviewWidget*>::iterator i = labels.begin() + 15;
+	QList<MutationPreviewWidget*>::iterator e = labels.begin() + 8;
+	flam3_copy(&tmp_genome, (*i)->genome());
+	QPixmap tmp_pixmap(*((*i)->pixmap()));
+	QString tmp_tip((*i)->toolTip());
+	while (--i != e)
+	{
+		QList<MutationPreviewWidget*>::iterator p = i + 1;
+		flam3_copy((*p)->genome(), (*i)->genome());
+		(*p)->setPixmap(*((*i)->pixmap()));
+		(*p)->setToolTip((*i)->toolTip());
+	}
+	e++;
+	flam3_copy((*e)->genome(), &tmp_genome);
+	(*e)->setPixmap(tmp_pixmap);
+	(*e)->setToolTip(tmp_tip);
+	cross();
+}
+
+
+void MutationWidget::selectorAIndexChangedSlot(int idx)
+{
+	int idx_a = qMax(0, idx);
+	if (idx_a != aComboBox->currentIndex())
+	{
+		aComboBox->blockSignals(true);
+		aComboBox->setCurrentIndex(idx_a);
+		aComboBox->blockSignals(false);
+	}
+
+	flam3_genome* genome_a = genome->data() + idx_a;
+	if (genome_a->num_xforms > 0)
+	{
+		logFine(QString("MutationWidget::selectorAIndexChangedSlot : genome_a has %1 xforms").arg(genome_a->num_xforms));
+		flam3_copy(mutations[0], genome_a);
+		ViewerPresetsModel::getInstance()->applyPreset(quality_preset, mutations[0]);
+		labels[0]->setGenome(mutations[0]);
+		requests[0]->setGenome(mutations.at(0));
+	}
+
+	mutateAB('a');
+	cross();
+}
+
+void MutationWidget::selectorBIndexChangedSlot(int idx)
+{
+	int idx_b = qMax(0, idx);
+	if (idx_b != bComboBox->currentIndex())
+	{
+		bComboBox->blockSignals(true);
+		bComboBox->setCurrentIndex(idx_b);
+		bComboBox->blockSignals(false);
+	}
+
+	flam3_genome* genome_b = genome->data() + idx_b;
+	if (genome_b->num_xforms > 0)
+	{
+		logFine(QString("MutationWidget::selectorBIndexChangedSlot : genome_b has %1 xforms").arg(genome_b->num_xforms));
+		flam3_copy(mutations[8], genome_b);
+		ViewerPresetsModel::getInstance()->applyPreset(quality_preset, mutations[8]);
+		labels[8]->setGenome(mutations[8]);
+		requests[8]->setGenome(mutations.at(8));
+	}
+
+	mutateAB('b');
+	cross();
+}
+
+
+void MutationWidget::genomeSelectedAction(MutationPreviewWidget* ptr)
 {
 	int idx = mutations.indexOf(ptr->genome(),0);
 	logFine(QString("MutationWidget::genomeSelectedAction : genome %1 selected").arg(idx));
@@ -85,13 +280,12 @@ void MutationWidget::genomeSelectedAction(PreviewWidget* ptr)
 		emit genomeSelected(mutations[idx]);
 }
 
-void MutationWidget::mutationSelectedAction(PreviewWidget* ptr)
+void MutationWidget::mutationASelectedAction(MutationPreviewWidget* ptr)
 {
 	if (ptr)
 	{
-		int idx = mutations.indexOf(ptr->genome(),0);
-		logFine(QString("MutationWidget::mutationSelectedAction : mutating %1")
-				.arg(idx));
+		int idx = mutations.indexOf(ptr->genome(), 0);
+		logFine(QString("MutationWidget::mutationASelectedAction : mutating %1").arg(idx));
 		if (idx == -1)
 			reset();
 		else
@@ -101,7 +295,31 @@ void MutationWidget::mutationSelectedAction(PreviewWidget* ptr)
 				mutations.swap(idx, 0);
 				labels[0]->setGenome(ptr->genome());
 			}
-			mutate(0);
+			mutateAB('a');
+			cross();
+		}
+	}
+	else
+		reset();
+}
+
+void MutationWidget::mutationBSelectedAction(MutationPreviewWidget* ptr)
+{
+	if (ptr)
+	{
+		int idx = mutations.indexOf(ptr->genome(), 0);
+		logFine(QString("MutationWidget::mutationBSelectedAction : mutating %1").arg(idx));
+		if (idx == -1)
+			reset();
+		else
+		{
+			if (idx >= 0)
+			{
+				mutations.swap(idx, 8);
+				labels[8]->setGenome(ptr->genome());
+			}
+			mutateAB('b');
+			cross();
 		}
 	}
 	else
@@ -130,54 +348,54 @@ void MutationWidget::showEvent(QShowEvent* e)
 		logFine(QString("MutationWidget::showEvent : resetting"));
 		reset();
 	}
-
 }
 
 #define genome_ptr (genome->selectedGenome())
 
-void MutationWidget::mutate(int /*idx*/)
+void MutationWidget::mutateAB(char ab='a')
 {
-	flam3_genome tmp_genome;
-	memset(&tmp_genome, 0, sizeof(flam3_genome));
-	clear_cp(&tmp_genome, flam3_defaults_on);
-
-	int variations[flam3_nvariations];
-	int nvars = 0;
-	foreach (QAction* a, varsActions)
-		if (a->isChecked() && (a != clearMenuAct))
-			variations[nvars++] = Util::variation_number(a->text());
-	if (nvars == 0)
-	{
-		variations[0] = flam3_variation_random;
-		nvars = 1;
-	}
-
+	flam3_genome tmp_genome = flam3_genome();
+	int variations[flam3_nvariations] = { flam3_variation_random };
+	int nvars = 1;
 	int symmetry = 0;
-	for ( int n = 0 ;  n < 9 ; n++)
+	double speed = mutation_speed;
+	int mutate_mode = mutateA_start;
+	int mutate_idx  = 0;
+	int start_idx = 0;
+	int end_idx = 8;
+	if (ab == 'b')
+	{
+		start_idx = 8;
+		end_idx = 16;
+		mutate_mode = mutateB_start;
+	}
+	for ( int n = start_idx ; n < end_idx ; n++ )
 	{
 		flam3_genome* g = mutations.at(n);
-		logFine(QString("MutationWidget::mutate : genome 0x%1 at %2")
-				 .arg((long)g,0,16).arg(n));
-		if (n > 0)
+		if ( (n % 8) == 0 )
 		{
-			if (n % 3 == 0)
-				flam3_copy(&tmp_genome, mutations.at(n - 3));
-			else
-				flam3_copy(&tmp_genome, mutations.at(n - 1));
-
+			logFine(QString("MutationWidget::mutateAB : rendering genome %1").arg(n));
+			mutate_idx  = n;
+		}
+		else
+		{
+			logFine(QString("MutationWidget::mutateAB : mutating %1 -> %2 mode %3").arg(mutate_idx).arg(n).arg(mutate_mode));
+			flam3_copy(&tmp_genome, mutations.at(mutate_idx));
 			// flam3_mutate() calls add_to_action() which needs this size char[]
 			char modstr[flam3_max_action_length] = "";
-			flam3_mutate(&tmp_genome, -1, variations, nvars, symmetry, speed,
-				Util::get_isaac_randctx(), modstr);
+			flam3_mutate(&tmp_genome, (mutate_mode++ % 7), variations, nvars, symmetry, speed, Util::get_isaac_randctx(), modstr);
 			if (tmp_genome.num_xforms > 0)
 			{
 				flam3_copy(g, &tmp_genome);
-				logFine(QString("MutationWidget::mutate : modstr '%1'").arg(QString(modstr)));
+				// apply any symmetry set by the mutation
+				flam3_add_symmetry(g, tmp_genome.symmetry);
+				g->symmetry = 1;
+				labels[n]->setToolTip(QString(modstr));
+				logFine(QString("MutationWidget::mutateAB : modstr '%1'").arg(QString(modstr)));
 			}
 			else
-				logWarn("MutationWidget::mutate : zero xforms in mutation");
+				logWarn("MutationWidget::mutateAB : zero xforms in mutation");
 		}
-
 		RenderRequest* req = requests.at(n);
 		req->setGenome(g);
 		rthread->render(req);
@@ -185,34 +403,218 @@ void MutationWidget::mutate(int /*idx*/)
 	clear_cp(&tmp_genome, flam3_defaults_on);
 }
 
+void MutationWidget::cross()
+{
+	flam3_genome tmp_genome = flam3_genome();
+	for ( int n = 16, k = 0 ; n < 40 ; n += 3, k++ )
+	{
+		for ( int j = 0 ; j < 3 ; j++)
+		{
+			flam3_genome* g = mutations.at(n + j);
+			flam3_genome* a = mutations.at(n - 16 - 2*k);
+			flam3_genome* b = mutations.at(n - 8  - 2*k);
+			char modstr[flam3_max_action_length] = "";
+			logFine(QString("MutationWidget::cross : crossing %1 and %2 -> %3 mode %4").arg(n - 16 - 2*k).arg(n - 8 - 2*k).arg(n + j).arg(j));
+			flam3_cross(a, b, &tmp_genome, j, Util::get_isaac_randctx(), modstr);
+			if (tmp_genome.num_xforms > 0)
+			{
+				flam3_copy(g, &tmp_genome);
+				// apply any symmetry set by the mutation
+				flam3_add_symmetry(g, tmp_genome.symmetry);
+				g->symmetry = 1;
+				labels[n + j]->setToolTip(QString(modstr));
+				logFine(QString("MutationWidget::cross : modstr '%1'").arg(QString(modstr)));
+			}
+			else
+				logWarn("MutationWidget::cross : zero xforms in cross");
+
+			RenderRequest* req = requests.at(n + j);
+			req->setGenome(g);
+			rthread->render(req);
+		}
+	}
+	clear_cp(&tmp_genome, flam3_defaults_on);
+}
+
+void MutationWidget::mutate()
+{
+	mutateAB('a');
+	mutateAB('b');
+	cross();
+}
+
 void MutationWidget::reset()
 {
-	if (genome_ptr->num_xforms > 0)
+	// first sync the comboBoxes to number of genomes
+	int idx_a = aComboBox->currentIndex();
+	int idx_b = bComboBox->currentIndex();
+	aComboBox->blockSignals(true);
+	bComboBox->blockSignals(true);
+	aComboBox->clear();
+	bComboBox->clear();
+	for ( int n = 1 ; n <= genome->size() ; n++ )
 	{
-		logFine(QString("MutationWidget::reset : genome has %1 xforms")
-				.arg(genome_ptr->num_xforms));
-		flam3_copy(mutations[0], genome_ptr);
+		QString num(QString::number(n));
+		aComboBox->addItem(num);
+		bComboBox->addItem(num);
+	}
+	aComboBox->setCurrentIndex(qMax(0, idx_a));
+	bComboBox->setCurrentIndex(qMax(0, idx_b));
+	aComboBox->blockSignals(false);
+	bComboBox->blockSignals(false);
+	idx_a = qMax(0, aComboBox->currentIndex());
+	idx_b = qMax(0, bComboBox->currentIndex());
+
+
+	flam3_genome* genome_a = genome->data() + idx_a;
+	flam3_genome* genome_b = genome->data() + idx_b;
+
+	bool init_a = mutations[0]->num_xforms < 1 && genome_a->num_xforms > 0;
+	bool init_b = mutations[8]->num_xforms < 1 && genome_b->num_xforms > 0;
+	if (init_a)
+	{
+		logFine(QString("MutationWidget::reset : genome_a has %1 xforms").arg(genome_a->num_xforms));
+		flam3_copy(mutations[0], genome_a);
+		ViewerPresetsModel::getInstance()->applyPreset(quality_preset, mutations[0]);
 		labels[0]->setGenome(mutations[0]);
 		requests[0]->setGenome(mutations.at(0));
-		if (isVisible())
-			mutate(0);
+	}
+
+	if (init_b)
+	{
+		logFine(QString("MutationWidget::reset : genome_b has %1 xforms").arg(genome_b->num_xforms));
+		flam3_copy(mutations[8], genome_b);
+		ViewerPresetsModel::getInstance()->applyPreset(quality_preset, mutations[8]);
+		labels[8]->setGenome(mutations[8]);
+		requests[8]->setGenome(mutations.at(8));
+	}
+
+	if (isVisible() && (init_a || init_b)) mutate();
+}
+
+//------------------------------------------------------------------------------
+
+MutationPreviewWidget::MutationPreviewWidget(QWidget* parent)
+	: QLabel(parent)
+{
+}
+
+MutationPreviewWidget::MutationPreviewWidget(flam3_genome* gen, QWidget* parent)
+	: QLabel(parent), g(gen)
+{
+}
+
+void MutationPreviewWidget::mousePressEvent(QMouseEvent* e)
+{
+	if (e->button() == Qt::LeftButton)
+		 dragStartPosition = e->pos();
+	emit previewClicked(this, e);
+}
+
+void MutationPreviewWidget::mouseMoveEvent(QMouseEvent* e)
+{
+	if (!(e->buttons() & Qt::LeftButton))
+		return;
+	if ((e->pos() - dragStartPosition).manhattanLength()
+			< QApplication::startDragDistance())
+		return;
+
+	QDrag* drag = new QDrag(this);
+	QMimeData* mimeData = new QMimeData;
+	mimeData->setData("application/x-mutationpreviewwidget", QByteArray());
+	drag->setMimeData(mimeData);
+	drag->setPixmap(*pixmap());
+	drag->exec(Qt::CopyAction | Qt::MoveAction);
+}
+
+void MutationPreviewWidget::mouseReleaseEvent(QMouseEvent* e)
+{
+	if (e->button() == Qt::LeftButton)
+	{
+		if ((e->pos() - dragStartPosition).manhattanLength()
+			< QApplication::startDragDistance())
+				emit mutationASelected(this);
+	}
+	else if (e->button() == Qt::RightButton)
+		emit mutationBSelected(this);
+	else
+		emit genomeSelected(this);
+}
+
+flam3_genome* MutationPreviewWidget::genome()
+{
+	return g;
+}
+
+void MutationPreviewWidget::setGenome(flam3_genome* gen)
+{
+	g = gen;
+}
+
+void MutationPreviewWidget::dragEnterEvent(QDragEnterEvent* event)
+{
+	if (event->mimeData()->hasFormat("application/x-qabstractitemmodeldatalist"))
+		event->acceptProposedAction();
+	else if ((event->source() != this)
+			 && event->mimeData()->hasFormat("application/x-mutationpreviewwidget"))
+		event->acceptProposedAction();
+}
+
+void MutationPreviewWidget::dropEvent(QDropEvent* event)
+{
+	if (event->mimeData()->hasFormat("application/x-qabstractitemmodeldatalist"))
+	{
+		int genome_idx = event->mimeData()->data("application/x-qabstractitemmodeldatalist").toInt();
+		emit genomeDropped(genome_idx);
+		event->acceptProposedAction();
+	}
+	else if ((event->source() != this)
+			 && event->mimeData()->hasFormat("application/x-mutationpreviewwidget"))
+	{
+		if (objectName() == "label_a1")
+			emit mutationASelected(qobject_cast<MutationPreviewWidget*>(event->source()));
+		else
+			emit mutationBSelected(qobject_cast<MutationPreviewWidget*>(event->source()));
+		event->acceptProposedAction();
 	}
 }
 
-void MutationWidget::speedChangedAction( int )
+//-------------------------------------------------------------------------------------------
+
+MutationConfigDialog::MutationConfigDialog(QWidget* parent) : QDialog(parent)
 {
-	speed = m_speedSlider->value() / 100.;
-	m_speedLabel->setText(QString::number(speed, 'f', 2));
+	setupUi(this);
+
+	qualityComboBox->setModel(ViewerPresetsModel::getInstance());
 }
 
-void MutationWidget::selectVariationsAction( )
+void MutationConfigDialog::setPreviewSize(const QSize& size)
 {
-	varsMenu->popup(mapToGlobal(QPoint(0,0)));
-
+	sizewLineEdit->updateValue(size.width());
+	sizehLineEdit->updateValue(size.height());
 }
 
-void MutationWidget::clearMenuAction()
+QSize MutationConfigDialog::previewSize() const
 {
-	foreach (QAction* act, varsActions)
-		act->setChecked(false);
+	return QSize(sizewLineEdit->value(), sizehLineEdit->value());
+}
+
+void MutationConfigDialog::setSpeed(const qreal value)
+{
+	speedEditor->setValue(value);
+}
+
+qreal MutationConfigDialog::speed() const
+{
+	return speedEditor->value();
+}
+
+QString MutationConfigDialog::preset() const
+{
+	return qualityComboBox->currentText();
+}
+
+void MutationConfigDialog::setPreset(const QString& s)
+{
+	qualityComboBox->setCurrentIndex(qualityComboBox->findText(s));
 }

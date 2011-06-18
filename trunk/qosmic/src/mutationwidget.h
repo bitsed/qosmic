@@ -23,12 +23,49 @@
 
 #include <QWidget>
 #include <QMenu>
+#include <QLabel>
+#include <QMouseEvent>
 
-#include "ui_mutationwidget.h"
+
 #include "genomevector.h"
 #include "renderthread.h"
-#include "previewwidget.h"
+#include "flam3util.h"
 
+
+class MutationPreviewWidget;
+class MutationPreviewWidget : public QLabel
+{
+	Q_OBJECT
+
+	public:
+		MutationPreviewWidget(QWidget* parent=0);
+		MutationPreviewWidget(flam3_genome*, QWidget* parent=0);
+		void setGenome(flam3_genome*);
+		flam3_genome* genome();
+
+
+	signals:
+		void previewClicked(MutationPreviewWidget*, QMouseEvent*);
+		void mutationASelected(MutationPreviewWidget*);
+		void mutationBSelected(MutationPreviewWidget*);
+		void genomeSelected(MutationPreviewWidget*);
+		void genomeDropped(int);
+
+	protected:
+		void dragEnterEvent(QDragEnterEvent*);
+		void dropEvent(QDropEvent*);
+		void mousePressEvent(QMouseEvent*);
+		void mouseMoveEvent(QMouseEvent*);
+		void mouseReleaseEvent(QMouseEvent*);
+
+	private:
+		flam3_genome* g;
+		QPoint dragStartPosition;
+
+};
+
+
+#include "ui_mutationwidget.h"
 
 class MutationWidget : public QWidget, private Ui::MutationWidget
 {
@@ -36,36 +73,60 @@ class MutationWidget : public QWidget, private Ui::MutationWidget
 
 	public:
 		MutationWidget(GenomeVector*, RenderThread*, QWidget* parent=0);
-		void showEvent(QShowEvent*);
-		void mutate(int);
-		void reset();
 
 	public slots:
-		void mutationSelectedAction(PreviewWidget*);
-		void genomeSelectedAction(PreviewWidget*);
+		void mutationASelectedAction(MutationPreviewWidget*);
+		void mutationBSelectedAction(MutationPreviewWidget*);
+		void genomeSelectedAction(MutationPreviewWidget*);
+		void reset();
 
-	private slots:
+	protected:
+		void showEvent(QShowEvent*);
+		void mutateAB(char);
+		void cross();
+
+	protected slots:
 		void flameRenderedAction(RenderEvent*);
-		void speedChangedAction(int);
-		void selectVariationsAction();
-		void clearMenuAction();
+		void selectorAIndexChangedSlot(int);
+		void selectorBIndexChangedSlot(int);
+		void rotateAMutationsUp();
+		void rotateAMutationsDown();
+		void rotateBMutationsUp();
+		void rotateBMutationsDown();
+		void showConfigDialog();
+		void mutate();
 
 	signals:
 		void genomeSelected(flam3_genome*);
 
 	private:
 		int genome_offset;
+		QSize labels_size;
+		qreal mutation_speed;
+		int mutateA_start;
+		int mutateB_start;
+		QString quality_preset;
 		GenomeVector* genome;
 		RenderThread* rthread;
-		QList<PreviewWidget*> labels;
+		QList<MutationPreviewWidget*> labels;
 		QList<flam3_genome*> mutations;
-		QList<QAction*> varsActions;
 		QList<RenderRequest*> requests;
-		double speed;
-		QMenu* varsMenu;
-		QAction* clearMenuAct;
-
 };
 
+#include "ui_mutationconfigdialog.h"
+
+class MutationConfigDialog : public QDialog, private Ui::MutationConfigDialog
+{
+	Q_OBJECT
+
+	public:
+		MutationConfigDialog(QWidget* parent=0);
+		void setPreviewSize(const QSize& size);
+		QSize previewSize() const;
+		void setSpeed(const qreal);
+		qreal speed() const;
+		void setPreset(const QString &s);
+		QString preset() const;
+};
 
 #endif

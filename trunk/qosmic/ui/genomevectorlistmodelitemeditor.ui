@@ -31,18 +31,9 @@
     </widget>
    </item>
    <item>
-    <widget class="DoubleValueEditor" name="m_timeLineEdit">
-     <property name="decimals">
-      <number>2</number>
-     </property>
-     <property name="minimum">
-      <double>0.000000000000000</double>
-     </property>
+    <widget class="IntValueEditor" name="m_timeLineEdit">
      <property name="maximum">
-      <double>99.989999999999995</double>
-     </property>
-     <property name="singleStep">
-      <double>0.100000000000000</double>
+      <number>2000000000</number>
      </property>
     </widget>
    </item>
@@ -73,9 +64,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>DoubleValueEditor</class>
-   <extends>QDoubleSpinBox</extends>
-   <header>doublevalueeditor.h</header>
+   <class>IntValueEditor</class>
+   <extends>QSpinBox</extends>
+   <header>intvalueeditor.h</header>
   </customwidget>
  </customwidgets>
  <resources>

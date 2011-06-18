@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "genomevectorlistview.h"
+#include "mutationwidget.h"
 #include "logger.h"
 
 
@@ -29,28 +30,97 @@ GenomeVectorListView::GenomeVectorListView(QWidget* parent)
 
 void GenomeVectorListView::mousePressEvent(QMouseEvent* event)
 {
+	// save the currentIndex so it can be restored after a startDrag event
+	mousePressIndex = currentIndex();
 	QListView::mousePressEvent(event);
 	dragStartIndex = indexAt(event->pos());
 }
 
+void GenomeVectorListView::startDrag(Qt::DropActions supportedActions)
+{
+	QDrag* drag = new QDrag(this);
+	QMimeData* mimeData = new QMimeData;
+	mimeData->setData("application/x-qabstractitemmodeldatalist", QByteArray::number(dragStartIndex.row()));
+	drag->setMimeData(mimeData);
+	drag->setPixmap(model()->data(dragStartIndex, Qt::DecorationRole).value<QPixmap>());
+	drag->exec(supportedActions);
+	if (mousePressIndex.isValid())
+		setCurrentIndex(mousePressIndex);
+}
+
 void GenomeVectorListView::dropEvent(QDropEvent* event)
 {
-	if (!(event->source() == this && (event->possibleActions() & Qt::MoveAction)))
-		return;
+	if ((event->source() == this && (event->possibleActions() & Qt::MoveAction)))
+	{
+		QListView::dropEvent(event);
+		event->acceptProposedAction();
+		// Process the data from the event.
+		QModelIndexList idxlist;
+		idxlist << indexAt(event->pos()) << dragStartIndex;
+		reset();
+		emit indexesMoved(idxlist);
+	}
+	else
+	{
+		if (event->mimeData()->hasFormat("application/x-mutationpreviewwidget"))
+		{
+			QModelIndex idx = indexAt(event->pos());
+			flam3_genome* mutation = qobject_cast<MutationPreviewWidget*>(event->source())->genome();
+			GenomeVector* genomes = qobject_cast<GenomeVectorListModel*>(model())->genomeVector();
+			if (idx.isValid())
+			{
+				flam3_genome* g = genomes->data() + idx.row();
+				double time = g->time;
+				flam3_copy(g, mutation);
+				g->time = time;
+				emit genomeUpdated(idx.row());
+			}
+			else
+			{
+				double time = genomes->last().time + 1.0;
+				flam3_genome tmp = flam3_genome();
+				flam3_copy(&tmp, mutation);
+				tmp.time = time;
+				genomes->append(tmp);
+				emit genomeUpdated(genomes->size() - 1);
+			}
+			event->acceptProposedAction();
+		}
 
-	QListView::dropEvent(event);
-	event->acceptProposedAction();
-	// Process the data from the event.
-	QModelIndexList idxlist;
-	idxlist << indexAt(event->pos()) << dragStartIndex;
-	reset();
-	emit indexesMoved(idxlist);
+	}
+}
+
+void GenomeVectorListView::dragEnterEvent(QDragEnterEvent* event)
+{
+	if ((event->source() == this && (event->possibleActions() & Qt::MoveAction)))
+		QListView::dragEnterEvent(event);
+	else
+	{
+		if (event->mimeData()->hasFormat("application/x-mutationpreviewwidget"))
+			event->acceptProposedAction();
+	}
+}
+
+void GenomeVectorListView::dragMoveEvent(QDragMoveEvent* event)
+{
+	if ((event->source() == this && (event->possibleActions() & Qt::MoveAction)))
+		QListView::dragMoveEvent(event);
+	else
+	{
+		if (event->mimeData()->hasFormat("application/x-mutationpreviewwidget"))
+		{
+			setCurrentIndex(indexAt(event->pos()));
+			event->acceptProposedAction();
+		}
+	}
 }
 
 void GenomeVectorListView::commitData(QWidget* editor)
 {
 	QListView::commitData(editor);
-	emit genomesModified();
+	QAbstractListModel* m = qobject_cast<QAbstractListModel*>(model());
+	for (int n = 0 ; n < m->rowCount() ; n++ )
+		update(m->index(n));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -67,20 +137,24 @@ void GenomeVectorListModelItemEditor::setEditorData(GenomeVector* genomes, int i
 {
 	flam3_genome* current = genomes->data() + idx;
 	m_timeLineEdit->updateValue(current->time);
-	if (idx > 0)
-		m_timeLineEdit->setMinimum( (current - 1)->time );
-	else
-		m_timeLineEdit->setMinimum( 0.0 );
-
-	if (idx < (genomes->size() - 1))
-		m_timeLineEdit->setMaximum( (current + 1)->time );
-	else
-		m_timeLineEdit->setMaximum( 1000.0 );
+	m_timeLineEdit->setMinimum( 0.0 );
 }
 
 void GenomeVectorListModelItemEditor::setModelData(GenomeVector* genomes, int idx)
 {
-	(genomes->data() + idx)->time = m_timeLineEdit->value();
+	int ngenomes = genomes->size();
+	double time = m_timeLineEdit->value();
+	(genomes->data() + idx)->time = time;
+	for (int i = idx - 1 ; i >= 0 ; i--)
+	{
+		if (time < (genomes->data() + i)->time)
+			(genomes->data() + i)->time = time;
+	}
+	for (int i = idx + 1 ; i < ngenomes ; i++)
+	{
+		if (time > (genomes->data() + i)->time)
+			(genomes->data() + i)->time = time;
+	}
 }
 
 

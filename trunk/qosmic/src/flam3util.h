@@ -49,6 +49,11 @@ namespace Util
 	char* setup_C_locale();
 	void replace_C_locale(char*);
 
+	flam3_genome* create_genome_sequence(flam3_genome* cp, int ncp, int* dncp, int nframes=100, int loops=1, double stagger=0.0);
+	flam3_genome* create_genome_interpolation(flam3_genome* cp, int ncp, int* dncp, double stagger=0.0);
+	void spin(flam3_genome* cp, flam3_genome* dcp, int framecount, double blend);
+	void spin_inter(flam3_genome* cp, flam3_genome* dcp, int framecount, double blend, bool seqflag, double stagger);
+
 	void rectToPolar(double, double, double*, double*);
 	void rectToPolarDeg(double, double, double*, double*);
 	void polarToRect(double, double, double*, double*);

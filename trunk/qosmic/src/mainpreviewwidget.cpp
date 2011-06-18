@@ -29,16 +29,29 @@ MainPreviewWidget::MainPreviewWidget(GenomeVector* g, QWidget* p)
 {
 	setupUi(this);
 	popupMenu = new QMenu(tr("presets"));
-	QSize size(QSettings().value("mainpreview/imagesize", QSize(160, 130)).toSize());
+	QSettings s;
+	s.beginGroup("mainpreview");
+	QSize size(s.value("imagesize", QSize(160, 130)).toSize());
 	setPreviewMaximumSize(size);
+	selected_preset = s.value("preset", ViewerPresetsModel::getInstance()->presetNames().first()).toString();
+	null_preset = tr("genome quality");
+	s.endGroup();
 
-	connect(popupMenu, SIGNAL(triggered(QAction*)),
-		this, SLOT(popupMenuTriggeredSlot(QAction*)));
+	wheel_stopped_timer = new QTimer(this);
+	wheel_stopped_timer->setInterval(500);
+	wheel_stopped_timer->setSingleShot(true);
+
+	connect(wheel_stopped_timer, SIGNAL(timeout()), this, SIGNAL(undoStateSignal()));
+	connect(popupMenu, SIGNAL(triggered(QAction*)), this, SLOT(popupMenuTriggeredSlot(QAction*)));
 }
 
 void MainPreviewWidget::closeEvent(QCloseEvent* e)
 {
-	QSettings().setValue("mainpreview/imagesize", m_previewLabel->maximumSize());
+	QSettings s;
+	s.beginGroup("mainpreview");
+	s.setValue("imagesize", m_previewLabel->maximumSize());
+	s.setValue("preset", selected_preset);
+	s.endGroup();
 	e->accept();
 }
 
@@ -61,7 +74,7 @@ void MainPreviewWidget::resizeEvent(QResizeEvent* e)
 	emit previewResized(last_size);
 }
 
-QSize MainPreviewWidget::getPreviewSize()
+QSize MainPreviewWidget::getPreviewSize() const
 {
 	return m_previewLabel->size();
 }
@@ -81,9 +94,12 @@ void MainPreviewWidget::setPreviewMaximumSize(QSize s)
 
 void MainPreviewWidget::popupMenuTriggeredSlot(QAction* a)
 {
-	ViewerPresetsWidget* w
-		= dynamic_cast<ViewerPresetsWidget*>(getWidget("ViewerPresetsWidget"));
-	w->selectPreset(a->text());
+	QString select = a->text();
+	if (selected_preset != select)
+	{
+		selected_preset = select;
+		emit previewResized(last_size);
+	}
 }
 
 void MainPreviewWidget::mousePressEvent(QMouseEvent* e)
@@ -91,21 +107,29 @@ void MainPreviewWidget::mousePressEvent(QMouseEvent* e)
 	if (e->button() == Qt::RightButton)
 	{
 		popupMenu->clear();
-		ViewerPresetsWidget* w
-			= dynamic_cast<ViewerPresetsWidget*>(getWidget("ViewerPresetsWidget"));
-		// danger!
-		QStringList presets = w->presetNames();
-		QString current = w->current();
+		QStringList presets = ViewerPresetsModel::getInstance()->presetNames();
 		foreach (QString s, presets)
 		{
 			QAction* a = popupMenu->addAction(s);
-			if (current == s)
+			if (selected_preset == s)
 			{
 				a->setCheckable(true);
 				a->setChecked(true);
 				popupMenu->setActiveAction(a);
 			}
 		}
+		popupMenu->addSeparator();
+
+		// Add the action to select the same image rendering settings
+		// as used by the mainpreviewwidget.
+		QAction* a = popupMenu->addAction(null_preset);
+		if (!isPresetSelected())
+		{
+			a->setCheckable(true);
+			a->setChecked(true);
+			popupMenu->setActiveAction(a);
+		}
+
 		popupMenu->popup(e->globalPos());
 	}
 	else
@@ -157,5 +181,16 @@ void MainPreviewWidget::wheelEvent(QWheelEvent* e)
 		genome->selectedGenome()->pixels_per_unit += n;
 		wheel_moved = true;
 		emit previewMoved();
+		wheel_stopped_timer->start();
 	}
+}
+
+bool MainPreviewWidget::isPresetSelected() const
+{
+	return selected_preset != null_preset;
+}
+
+QString MainPreviewWidget::preset() const
+{
+	return selected_preset;
 }
