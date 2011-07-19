@@ -20,6 +20,7 @@
 #include <QStandardItemModel>
 
 #include "sheeploopwidget.h"
+#include "mainpreviewwidget.h"
 #include "logger.h"
 
 //------------------------------------------------------------------------------
@@ -168,7 +169,7 @@ void MotionViewItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* m
 //------------------------------------------------------------------------------
 
 SheepLoopWidget::SheepLoopWidget(GenomeVector* gv, QWidget* parent) :
-	QWidget(parent), genomes(gv), running(false)
+	QWidget(parent), QosmicWidget(this, objectName()), genomes(gv), running(false)
 {
 	setupUi(this);
 
@@ -185,6 +186,7 @@ SheepLoopWidget::SheepLoopWidget(GenomeVector* gv, QWidget* parent) :
 	connect(m_addToolButton, SIGNAL(clicked()), this, SLOT(addNewMotionElement()));
 	connect(m_delToolButton, SIGNAL(clicked()), this, SLOT(delCurrentMotionElement()));
 	connect(m_xformIdxBox, SIGNAL(currentIndexChanged(int)), this, SLOT(xformIdxBoxIndexChanged(int)));
+	connect(m_genomeIdxBox, SIGNAL(currentIndexChanged(int)), this, SLOT(genomeSelectedSlot(int)));
 	connect(m_animateModeBox, SIGNAL(currentIndexChanged(int)), this, SLOT(modeBoxIndexChanged(int)));
 	connect(m_temporalFilterComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(temporalFilterTypeIndexChanged(int)));
 	connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabWidgetIndexChanged(int)));
@@ -193,14 +195,16 @@ SheepLoopWidget::SheepLoopWidget(GenomeVector* gv, QWidget* parent) :
 
 void SheepLoopWidget::xformIdxBoxIndexChanged(int idx)
 {
-	if (idx >= genomes->selectedGenome()->num_xforms)
+	int genome_idx = m_genomeIdxBox->currentIndex();
+	flam3_genome* genome = genomes->data() + genome_idx;
+	if (!genome || idx >= genome->num_xforms)
 	{
-		logWarn(QString("SheepLoopWidget::xformIdxBoxIndexChanged : no xform %1 in genome %2").arg(idx).arg(genomes->selectedIndex()));
+		logWarn("SheepLoopWidget::xformIdxBoxIndexChanged : no xform %d in genome %d", idx, genome_idx);
 		return;
 	}
 	QStandardItemModel* model = qobject_cast<QStandardItemModel*>(m_motionElementsView->model());
 	disconnect(model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(motionItemChanged(QStandardItem*)));
-	flam3_xform* xform = genomes->selectedGenome()->xform + idx;
+	flam3_xform* xform = genome->xform + idx;
 	m_animateButton->setChecked(xform->animate);
 	model->clear();
 	model->setHorizontalHeaderLabels(QStringList()
@@ -283,7 +287,9 @@ void SheepLoopWidget::xformIdxBoxIndexChanged(int idx)
 void SheepLoopWidget::motionItemChanged(QStandardItem* item)
 {
 	int xf_idx = m_xformIdxBox->currentIndex();
-	flam3_xform* xform = genomes->selectedGenome()->xform + xf_idx;
+	int genome_idx = m_genomeIdxBox->currentIndex();
+	flam3_genome* genome = genomes->data() + genome_idx;
+	flam3_xform* xform = genome->xform + xf_idx;
 	int row = item->row();
 	int col = item->column();
 	logFine(QString("SheepLoopWidget::motionItemChanged %1,%2").arg(row).arg(col));
@@ -380,7 +386,9 @@ void SheepLoopWidget::addNewMotionElement()
 {
 	logFine("SheepLoopWidget::addNewMotionElement : ");
 	int idx = m_xformIdxBox->currentIndex();
-	flam3_xform* xform = genomes->selectedGenome()->xform + idx;
+	int genome_idx = m_genomeIdxBox->currentIndex();
+	flam3_genome* genome = genomes->data() + genome_idx;
+	flam3_xform* xform = genome->xform + idx;
 	flam3_add_motion_element(xform);
 	QStandardItemModel* model = qobject_cast<QStandardItemModel*>(m_motionElementsView->model());
 	int row = model->rowCount();
@@ -397,7 +405,9 @@ void SheepLoopWidget::delCurrentMotionElement()
 	if (idx.isValid())
 	{
 		int xf_idx = m_xformIdxBox->currentIndex();
-		flam3_xform* xform = genomes->selectedGenome()->xform + xf_idx;
+		int genome_idx = m_genomeIdxBox->currentIndex();
+		flam3_genome* genome = genomes->data() + genome_idx;
+		flam3_xform* xform = genome->xform + xf_idx;
 		int row = idx.row();
 		flam3_xform* motion = xform->motion;
 		int last_motion = xform->num_motion - 1;
@@ -423,8 +433,11 @@ void SheepLoopWidget::changeEvent(QEvent *e)
 	}
 }
 
-void SheepLoopWidget::genomeSelectedSlot(int)
+void SheepLoopWidget::genomeSelectedSlot(int idx)
 {
+	m_genomeIdxBox->blockSignals(true);
+	m_genomeIdxBox->setCurrentIndex(idx);
+	m_genomeIdxBox->blockSignals(false);
 	genomesModifiedSlot();
 }
 
@@ -433,16 +446,26 @@ void SheepLoopWidget::genomesModifiedSlot()
 	int n_genomes = genomes->size();
 	QString b_text = m_beginBox->currentText();
 	QString e_text = m_endBox->currentText();
+	QString g_text = m_genomeIdxBox->currentText();
+
+	m_genomeIdxBox->blockSignals(true);
+	m_genomeIdxBox->clear();
+	for (int n = 1 ; n <= n_genomes ; n++)
+		m_genomeIdxBox->addItem(QString::number(n));
+	int text_idx = m_genomeIdxBox->findText(g_text);
+	if (text_idx != -1)
+		m_genomeIdxBox->setCurrentIndex(text_idx);
+	m_genomeIdxBox->blockSignals(false);
 
 	m_beginBox->clear();
 	for (int n = 1 ; n <= n_genomes ; n++)
 		m_beginBox->addItem(QString::number(n));
-	int text_idx = m_beginBox->findText(b_text);
+	text_idx = m_beginBox->findText(b_text);
 	if (text_idx != -1)
 		m_beginBox->setCurrentIndex(text_idx);
 
 	m_endBox->clear();
-	for (int n = 1 ; n <= n_genomes ; n++)
+	for (int n = m_beginBox->currentText().toInt() ; n <= n_genomes ; n++)
 		m_endBox->addItem(QString::number(n));
 	text_idx = m_endBox->findText(e_text);
 	if (text_idx != -1)
@@ -453,7 +476,7 @@ void SheepLoopWidget::genomesModifiedSlot()
 	m_xformIdxBox->blockSignals(true);
 	int idx = m_xformIdxBox->currentIndex();
 	m_xformIdxBox->clear();
-	int n_xforms = genomes->selectedGenome()->num_xforms;
+	int n_xforms = (genomes->data () + m_genomeIdxBox->currentIndex())->num_xforms;
 	QStringList idxs;
 	for (int i = 1 ; i <= n_xforms ; i++)
 		idxs << QString::number(i);
@@ -563,7 +586,9 @@ void SheepLoopWidget::modeBoxIndexChanged(int idx)
 {
 	bool enabled = (idx == 0);
 	m_loopsBox->setEnabled(enabled);
+	label_loops->setEnabled(enabled);
 	m_framesBox->setEnabled(enabled);
+	label_frames->setEnabled(enabled);
 }
 
 int SheepLoopWidget::paletteInterpolation() const
@@ -595,7 +620,9 @@ void SheepLoopWidget::temporalFilterTypeIndexChanged(int idx)
 void SheepLoopWidget::xformAnimateButtonClicked(bool flag)
 {
 	int idx = m_xformIdxBox->currentIndex();
-	(genomes->selectedGenome()->xform + idx)->animate = flag;
+	int genome_idx = m_genomeIdxBox->currentIndex();
+	flam3_genome* genome = genomes->data() + genome_idx;
+	(genome->xform + idx)->animate = flag;
 }
 
 flam3_genome* SheepLoopWidget::createSheepLoop(int& ncp)
@@ -661,7 +688,7 @@ flam3_genome* SheepLoopWidget::createSheepLoop(int& ncp)
 		sheep = Util::create_genome_interpolation(genomes->data() + begin_idx, num_genomes, &dncp, stagger);
 	}
 
-	flam3_genome* current = genomes->selectedGenome();
+	flam3_genome current = dynamic_cast<MainPreviewWidget*>(getWidget("MainPreviewWidget"))->preset();
 	for (int i = 0 ; i < dncp ; i++)
 	{
 		// adjust the quality settings to match the current genome
@@ -670,13 +697,13 @@ flam3_genome* SheepLoopWidget::createSheepLoop(int& ncp)
 		genome->temporal_filter_type =      temp_filter;
 		genome->temporal_filter_width =     temp_filter_width;
 		genome->temporal_filter_exp =       temp_filter_exp;
-		genome->sample_density =            current->sample_density;
-		genome->spatial_filter_radius =     current->spatial_filter_radius;
-		genome->spatial_oversample =        current->spatial_oversample;
-		genome->nbatches =                  current->nbatches;
-		genome->estimator =                 current->estimator;
-		genome->estimator_curve =           current->estimator_curve;
-		genome->estimator_minimum =         current->estimator_minimum;
+		genome->sample_density =            current.sample_density;
+		genome->spatial_filter_radius =     current.spatial_filter_radius;
+		genome->spatial_oversample =        current.spatial_oversample;
+		genome->nbatches =                  current.nbatches;
+		genome->estimator =                 current.estimator;
+		genome->estimator_curve =           current.estimator_curve;
+		genome->estimator_minimum =         current.estimator_minimum;
 		genome->symmetry = 1;
 
 		if ((interp == flam3_interpolation_smooth) && (i > 0) && (i < (dncp - 2)))

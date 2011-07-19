@@ -24,6 +24,9 @@
 
 class FlamFileIconProvider : public QFileIconProvider
 {
+	QDir icons_dir;
+	bool has_icons;
+
 	public:
 		FlamFileIconProvider();
 		~FlamFileIconProvider();

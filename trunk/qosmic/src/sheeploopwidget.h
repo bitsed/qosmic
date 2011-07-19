@@ -26,6 +26,7 @@
 
 #include "ui_sheeploopwidget.h"
 #include "genomevector.h"
+#include "qosmicwidget.h"
 
 
 /**
@@ -107,7 +108,7 @@ class MotionViewIntItemEditor : public IntValueEditor
 };
 
 
-class SheepLoopWidget : public QWidget, private Ui::SheepLoopWidget
+class SheepLoopWidget : public QWidget, public QosmicWidget, private Ui::SheepLoopWidget
 {
 	Q_OBJECT
 

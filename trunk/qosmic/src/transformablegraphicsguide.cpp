@@ -114,7 +114,7 @@ void TransformableGraphicsGuide::setParentItem(QGraphicsItem* parent)
 {
 	QGraphicsItem* cparent = parentItem();
 	if (cparent && (parent != cparent))
-		dynamic_cast<TransformableGraphicsItem*>(cparent)->setGuideAdapter(0);
+		dynamic_cast<TransformableGraphicsItem*>(cparent)->setGraphicsGuide(0);
 
 	QGraphicsItem::setParentItem(parent);
 	parent->setAcceptHoverEvents(true);
@@ -137,7 +137,6 @@ void TransformableGraphicsGuide::update()
 		{
 			QPointF cen;
 			QPolygonF poly;
-			int zval = 0;
 
 			if (editor->hasSelection())
 			{
@@ -146,14 +145,12 @@ void TransformableGraphicsGuide::update()
 					return;
 				cen  = mapFromScene(editor->selectionTransformPos());
 				poly = mapFromScene(item->polygon());
-				zval = item->zValue() + 1;
 			}
 			else
 			{
 				QGraphicsPolygonItem* item = dynamic_cast<QGraphicsPolygonItem*>(parentItem());
 				cen  = editor->triangleTransformPos();
 				poly = item->polygon();
-				zval = item->zValue() + 1;
 			}
 			QRectF f( poly.boundingRect() );
 			qreal xmax = qMax(qAbs(f.left() - cen.x()), qAbs(f.right()  - cen.x()));
@@ -161,30 +158,26 @@ void TransformableGraphicsGuide::update()
 			QPointF pmax(xmax, ymax);
 			QRectF r(pmax, -pmax);
 
-			setZValue(zval);
 			r.moveCenter(cen);
 			outerRect = r;
 			QRectF l = parentItem()->mapRectFromScene(QRectF(QPointF(0.0, 0.0), QSizeF(10, 10)));
 			QPen pen( editor->guideColor() );
+
 			l.moveBottomLeft(r.topRight());
 			topRightRect.setPen(pen);
 			topRightRect.setRect(l);
-			topRightRect.setZValue(zval);
 
 			l.moveBottomRight(r.topLeft());
 			topLeftRect.setPen(pen);
 			topLeftRect.setRect(l);
-			topLeftRect.setZValue(zval);
 
 			l.moveTopLeft(r.bottomRight());
 			bottomRightRect.setPen(pen);
 			bottomRightRect.setRect(l);
-			bottomRightRect.setZValue(zval);
 
 			l.moveTopRight(r.bottomLeft());
 			bottomLeftRect.setPen(pen);
 			bottomLeftRect.setRect(l);
-			bottomLeftRect.setZValue(zval);
 		}
 		else if (mode == FigureEditor::Rotate)
 		{
@@ -255,7 +248,6 @@ void TransformableGraphicsGuide::update()
 			vFlipPoly = pa;
 			outerRect = poly.boundingRect().united(hFlipPoly.boundingRect()).united(vFlipPoly.boundingRect());
 		}
-		QGraphicsObject::update();
 	}
 }
 
@@ -269,8 +261,9 @@ void TransformableGraphicsGuide::paint(QPainter* p, const QStyleOptionGraphicsIt
 {
 	QPen pen( editor->guideColor() );
 	pen.setStyle(Qt::SolidLine);
+	p->save();
 	p->setPen(pen);
-	p->setBrush(Qt::NoBrush);
+	p->setBrush(QBrush(Qt::transparent, Qt::SolidPattern));
 
 	FigureEditor::EditMode mode = editor->mode();
 	if (mode == FigureEditor::Scale)
@@ -294,4 +287,5 @@ void TransformableGraphicsGuide::paint(QPainter* p, const QStyleOptionGraphicsIt
 		p->drawPolygon(hFlipPoly);
 		p->drawPolygon(vFlipPoly);
 	}
+	p->restore();
 }

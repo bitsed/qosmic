@@ -64,8 +64,9 @@ class MainViewer : public QWidget, public QosmicWidget,
 		void rescalePixmap();
 		void rescaleViewer();
 		bool isDockWidget();
-		bool isPresetSelected();
-		QString preset();
+		bool isPresetSelected() const;
+		QString presetName() const;
+		flam3_genome preset() const;
 
 	public slots:
 		void setRenderStatus(RenderStatus*);

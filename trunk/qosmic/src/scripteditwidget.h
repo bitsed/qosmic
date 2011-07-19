@@ -36,18 +36,48 @@ class ScriptEditWidget : public QWidget, private Ui::ScriptEditWidget
 	public:
 		ScriptEditWidget(MainWindow* m, QWidget *parent = 0);
 		~ScriptEditWidget();
+		bool isScriptRunning() const;
 
 	public slots:
-		void runScriptAction();
-		void stopScriptAction();
+		void startScript();
+		void stopScript();
 		void scriptFinishedAction();
-		void loadScriptAction();
-		void saveScriptAction();
-		void appendScriptOutput(const QString&);
+		void scriptLoadedAction();
+		void scriptSavedAction();
+		void loadScript(const QString&);
+
+	protected slots:
+		void runButtonPressedAction();
 		void updateCursorLabel();
+		void appendScriptOutput(const QString&);
+		void configPressedAction();
 
 	protected:
 		void closeEvent(QCloseEvent*);
+};
+
+
+#include "ui_scripteditconfigdialog.h"
+
+class ScriptEditConfigDialog : public QDialog, private Ui::ScriptEditConfigDialog
+{
+	Q_OBJECT
+
+	QFontDatabase fonts;
+	QString cur_size;
+
+	public:
+		explicit ScriptEditConfigDialog(QWidget* =0);
+		void setFont(const QFont&);
+		QFont getFont() const;
+		void setLuaEnvText(const QString&);
+		QString getLuaEnvText() const;
+
+	protected slots:
+		void fontSelectBoxChanged(const QFont&);
+
+	protected:
+		void changeEvent(QEvent*);
 };
 
 

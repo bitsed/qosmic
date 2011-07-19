@@ -196,7 +196,7 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget
 		bool guide_visible;
 		QColor guide_color;
 		TriangleSelection* selectionItem;
-		TransformableGraphicsGuide* guideAdapter;
+		TransformableGraphicsGuide* graphicsGuide;
 		PostTriangle* postTriangle;
 		SceneLocation centered_scaling;
 		SceneLocation transform_location;

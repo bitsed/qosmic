@@ -30,53 +30,24 @@
 namespace Lua
 {
 LuaThread::LuaThread(MainWindow* m, QObject* parent)
-	: QThread(parent), mw(m), lua_error()
+: QThread(parent), mw(m), lua_error(), lua_paths()
 {
-	f = 0;
+	lua_paths.append(QOSMIC_SCRIPTSDIR + "/?.lua");
+	lua_paths.append(";" + QDir::homePath()  + "/.qosmic/scripts/?.lua");
+	thread_adapter = new LuaThreadAdapter(mw, this);
 	irandinit(&ctx, 0);
 }
 
 LuaThread::~LuaThread()
 {
+	delete thread_adapter;
 }
 
 
 void LuaThread::run()
 {
-	lua_State *L = luaL_newstate();
+	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
-
-	Lunar<Frame>::Register(L);
-	Lunar<Genome>::Register(L);
-	Lunar<XForm>::Register(L);
-
-	luaL_getmetatable(L, Frame::className);
-	Lunar<Frame>::new_T(L);
-	f = Lunar<Frame>::check(L,1);
-	LuaThreadAdapter ctx(mw, this);
-	f->setContext(&ctx);
-	lua_setglobal(L, "frame");
-
-	lua_pushcfunction(L, &LuaThread::lua_stopluathread);
-	lua_pushlightuserdata(L, (void*)this);
-	lua_pushcclosure(L, &LuaThread::lua_stopluathread, 1);
-	lua_setglobal(L, "stopped");
-
-	lua_pushcfunction(L, &LuaThread::lua_irand);
-	lua_pushlightuserdata(L, (void*)this);
-	lua_pushcclosure(L, &LuaThread::lua_irand, 1);
-	lua_setglobal(L, "irand");
-
-	lua_pushcfunction(L, &LuaThread::lua_msleep);
-	lua_pushlightuserdata(L, (void*)this);
-	lua_pushcclosure(L, &LuaThread::lua_msleep, 1);
-	lua_setglobal(L, "msleep");
-
-	lua_pushcfunction(L, &LuaThread::lua_print);
-	lua_pushlightuserdata(L, (void*)this);
-	lua_pushcclosure(L, &LuaThread::lua_print, 1);
-	lua_setglobal(L, "print");
-
 	lua_load_environment(L);
 	mw->setDialogsEnabled(false);
 	lua_stopluathread_script = false;
@@ -102,7 +73,6 @@ void LuaThread::run()
 		lua_error = tr("ok");
 
 	lua_close(L);
-	f = 0;
 	mw->setDialogsEnabled(true);
 	emit scriptFinished();
 }
@@ -224,6 +194,40 @@ void LuaThread::msleep(unsigned long msecs)
 
 void LuaThread::lua_load_environment(lua_State* L)
 {
+	// register methods for flam3 types
+	Lunar<Frame>::Register(L);
+	Lunar<Genome>::Register(L);
+	Lunar<XForm>::Register(L);
+
+	/* registry["thread_adapter"] = &thread_adapter */
+	lua_pushlightuserdata(L, (void*)&LuaThreadAdapter::RegKey);  /* push address */
+	lua_pushlightuserdata(L, (void*)thread_adapter);
+	lua_settable(L, LUA_REGISTRYINDEX);
+
+	// created and bind a global Frame object
+	luaL_getmetatable(L, Frame::className);
+	Lunar<Frame>::new_T(L);
+	Lunar<Frame>::check(L, 1);
+	lua_setglobal(L, "frame");
+
+	// create and bind global support functions
+	lua_pushlightuserdata(L, (void*)this);
+	lua_pushcclosure(L, &LuaThread::lua_stopluathread, 1);
+	lua_setglobal(L, "stopped");
+
+	lua_pushlightuserdata(L, (void*)this);
+	lua_pushcclosure(L, &LuaThread::lua_irand, 1);
+	lua_setglobal(L, "irand");
+
+	lua_pushlightuserdata(L, (void*)this);
+	lua_pushcclosure(L, &LuaThread::lua_msleep, 1);
+	lua_setglobal(L, "msleep");
+
+	lua_pushlightuserdata(L, (void*)this);
+	lua_pushcclosure(L, &LuaThread::lua_print, 1);
+	lua_setglobal(L, "print");
+
+	// global flam3 variation constants
 	lua_pushinteger(L, VAR_LINEAR + 1); lua_setglobal(L, "LINEAR");
 	lua_pushinteger(L, VAR_SINUSOIDAL + 1); lua_setglobal(L, "SINUSOIDAL");
 	lua_pushinteger(L, VAR_SPHERICAL + 1); lua_setglobal(L, "SPHERICAL");
@@ -454,17 +458,19 @@ void LuaThread::lua_load_environment(lua_State* L)
 	lua_setglobal(L, "VARIATIONS");
 
 	// adjust the package.path to include user/app paths for require()
-	lua_getglobal(L, "package");
-	lua_pushstring(L, "path");
-	lua_gettable(L, -2);
-	QString path( lua_tostring(L, -1) );
-	path.append(";" + QOSMIC_SCRIPTSDIR + "/?.lua");
-	path.append(";" + QDir::homePath()  + "/.qosmic/scripts/?.lua");
-	lua_pop(L, 1);
-	lua_pushstring(L, "path");
-	lua_pushstring(L, path.toAscii().data());
-	lua_settable(L, -3);
-	lua_pop(L, 1);
+	if (!lua_paths.isEmpty())
+	{
+		lua_getglobal(L, "package");
+		lua_pushstring(L, "path");
+		lua_gettable(L, -2);
+		QString path( lua_tostring(L, -1) );
+		path.append(";" + lua_paths);
+		lua_pop(L, 1);
+		lua_pushstring(L, "path");
+		lua_pushstring(L, path.toAscii().data());
+		lua_settable(L, -3);
+		lua_pop(L, 1);
+	}
 }
 
 void LuaThread::setLuaText(QString str)
@@ -475,6 +481,16 @@ void LuaThread::setLuaText(QString str)
 const QString& LuaThread::luaText()
 {
 	return lua_text;
+}
+
+void LuaThread::setLuaPaths(const QString& paths)
+{
+	lua_paths = paths;
+}
+
+QString LuaThread::luaPaths() const
+{
+	return lua_paths;
 }
 
 bool LuaThread::stopping() const
@@ -496,3 +512,4 @@ QString LuaThread::getMessage()
 }
 
 }
+

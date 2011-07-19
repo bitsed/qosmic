@@ -23,8 +23,10 @@
 #include "logger.h"
 
 IntValueEditor::IntValueEditor(QWidget* parent)
-		: QSpinBox(parent), wheelEventSignal(true)
+		: QSpinBox(parent), wheelEventSignal(true), last_press(0)
 {
+	setKeyboardTracking(false);
+	connect(this, SIGNAL(valueChanged(int)), this, SIGNAL(valueUpdated()));
 }
 
 void IntValueEditor::restoreSettings()
@@ -101,6 +103,7 @@ void IntValueEditor::keyPressEvent(QKeyEvent* e)
 
 		case Qt::Key_Return:
 			emit valueUpdated();
+			emit undoStateSignal();
 			break;
 
 		case Qt::Key_Backslash:
@@ -117,8 +120,9 @@ void IntValueEditor::mousePressEvent(QMouseEvent* e)
 {
 	if (e->button() == Qt::LeftButton)
 	{
-		last_pos = e->posF();
+		start_pos = last_pos = e->posF();
 		start_value = value();
+		last_press = e;
 	}
 }
 
@@ -127,8 +131,9 @@ void IntValueEditor::mouseMoveEvent(QMouseEvent* e)
 	if (e->buttons() & Qt::LeftButton)
 	{
 		double dy = e->y() - last_pos.y();
-		last_pos = e->posF();
 		double step = default_step = singleStep();
+		last_pos = e->posF();
+		last_press = 0;
 
 		if (e->modifiers() & Qt::ShiftModifier)
 			setSingleStep(step /= 10.0);
@@ -153,8 +158,18 @@ void IntValueEditor::mouseMoveEvent(QMouseEvent* e)
 
 void IntValueEditor::mouseReleaseEvent(QMouseEvent* e)
 {
-	if ( (e->button() == Qt::LeftButton) && start_value != value())
-		emit undoStateSignal();
+	if (e->button() == Qt::LeftButton)
+	{
+		if (last_press && start_pos == e->posF())
+		{
+			QSpinBox::mousePressEvent(last_press);
+			QSpinBox::mouseReleaseEvent(e);
+			last_press = 0;
+		}
+
+		if (start_value != value())
+			emit undoStateSignal();
+	}
 }
 
 // redefine these since the qintspinbox versions also activate the selection

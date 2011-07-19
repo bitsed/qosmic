@@ -42,8 +42,8 @@ class ViewerPresetsModel : public QAbstractListModel
 		QVariant headerData(int section, Qt::Orientation orientation, int role=Qt::DisplayRole) const;
 		bool setData(const QModelIndex& index, const QVariant& value, int role);
 		QStringList presetNames();
-		void applyPreset(QString, flam3_genome*);
-		flam3_genome preset(QString);
+		void applyPreset(const QString&, flam3_genome*);
+		flam3_genome preset(const QString&);
 
 	public slots:
 		void addPresetSlot(const QString& name, flam3_genome* genome);

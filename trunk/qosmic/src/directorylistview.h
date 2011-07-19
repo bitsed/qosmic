@@ -42,10 +42,10 @@ class DirectoryListView : public QListView
 		void wheelEvent(QWheelEvent*);
 		void hideEvent(QHideEvent*);
 
+	private:
 		MainViewer* viewer;
 		QImage viewerImage;
 		QSize viewerSize;
-		bool toggle;
 };
 
 

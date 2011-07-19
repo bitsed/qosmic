@@ -68,8 +68,8 @@ void TriangleSelection::rotate( double rad, QPointF cpos )
 	}
 	setTransform(trans);
 	setPolygon(pa);
-	if (m_adapter)
-		m_adapter->update();
+	if (m_guide)
+		m_guide->update();
 }
 
 void TriangleSelection::scale( double dx, double dy, QPointF cpos )
@@ -88,8 +88,8 @@ void TriangleSelection::scale( double dx, double dy, QPointF cpos )
 	}
 	setTransform(trans);
 	setPolygon(pa);
-	if (m_adapter)
-		m_adapter->update();
+	if (m_guide)
+		m_guide->update();
 }
 
 void TriangleSelection::flipHorizontally(QPointF cpos)
@@ -111,8 +111,8 @@ void TriangleSelection::flipHorizontally(QPointF cpos)
 		pa << p;
 	}
 	setPolygon(pa);
-	if (m_adapter)
-		m_adapter->update();
+	if (m_guide)
+		m_guide->update();
 }
 
 void TriangleSelection::flipVertically(QPointF cpos)
@@ -134,8 +134,8 @@ void TriangleSelection::flipVertically(QPointF cpos)
 		pa << p;
 	}
 	setPolygon(pa);
-	if (m_adapter)
-		m_adapter->update();
+	if (m_guide)
+		m_guide->update();
 }
 
 void TriangleSelection::selectCoveredItems()

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>182</width>
-    <height>206</height>
+    <width>189</width>
+    <height>248</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -244,6 +244,9 @@ increases.  -1 = disabled, 0 = no highlights</string>
       </item>
       <item row="5" column="1">
        <widget class="DoubleValueEditor" name="m_highlightPowerEditor">
+        <property name="specialValueText">
+         <string>disabled</string>
+        </property>
         <property name="decimals">
          <number>4</number>
         </property>

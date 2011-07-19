@@ -23,22 +23,22 @@
 class TransformableGraphicsGuide;
 
 /**
- * An interface that accepts a GuideAdapter.
+ * An interface that accepts a GraphicsGuide decorator.
  *
  * It's also necessary for the child class to extend the QGraphicsItem
  * interface as well since the main purpose of this class is to handle
- * reparenting of the guideAdapter instance.
+ * reparenting of the GraphicsGuide instance.
  *
  */
 class TransformableGraphicsItem
 {
 	protected:
-		TransformableGraphicsGuide* m_adapter;
+		TransformableGraphicsGuide* m_guide;
 
 	public:
 		TransformableGraphicsItem();
-		virtual void setGuideAdapter(TransformableGraphicsGuide*);
-		TransformableGraphicsGuide* guideAdapter() const;
+		virtual void setGraphicsGuide(TransformableGraphicsGuide*);
+		TransformableGraphicsGuide* graphicsGuide() const;
 };
 
 //--------------------------------------------------------------------------

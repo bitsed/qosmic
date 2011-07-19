@@ -21,18 +21,18 @@
 #include "transformablegraphicsitem.h"
 #include "transformablegraphicsguide.h"
 
-TransformableGraphicsItem::TransformableGraphicsItem() : m_adapter(0)
+TransformableGraphicsItem::TransformableGraphicsItem() : m_guide(0)
 {
 }
 
-void TransformableGraphicsItem::setGuideAdapter(TransformableGraphicsGuide* adapter)
+void TransformableGraphicsItem::setGraphicsGuide(TransformableGraphicsGuide* guide)
 {
-	m_adapter = adapter;
-	if (adapter)
-		adapter->setParentItem(dynamic_cast<QGraphicsItem*>(this));
+	m_guide = guide;
+	if (guide)
+		guide->setParentItem(dynamic_cast<QGraphicsItem*>(this));
 }
 
-TransformableGraphicsGuide* TransformableGraphicsItem::guideAdapter() const
+TransformableGraphicsGuide* TransformableGraphicsItem::graphicsGuide() const
 {
-	return m_adapter;
+	return m_guide;
 }

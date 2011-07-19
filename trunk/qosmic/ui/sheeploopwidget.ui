@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>326</width>
+    <width>405</width>
     <height>279</height>
    </rect>
   </property>
@@ -37,7 +37,7 @@
            <string>temporal position of this genome in the animation sequence</string>
           </property>
           <property name="text">
-           <string>frame</string>
+           <string>genome</string>
           </property>
          </widget>
         </item>
@@ -129,7 +129,7 @@
       <item row="1" column="0">
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>2</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tab">
          <attribute name="title">
@@ -144,7 +144,7 @@
            </widget>
           </item>
           <item row="0" column="4">
-           <widget class="QLabel" name="label_4">
+           <widget class="QLabel" name="label_frames">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -179,7 +179,7 @@
            </widget>
           </item>
           <item row="1" column="4">
-           <widget class="QLabel" name="label_6">
+           <widget class="QLabel" name="label_loops">
             <property name="text">
              <string>loops</string>
             </property>
@@ -210,7 +210,8 @@
           <item row="0" column="1">
            <widget class="QComboBox" name="m_animateModeBox">
             <property name="toolTip">
-             <string>interpolation method</string>
+             <string>sequence - rotate animated xforms and interpolate adjacent genomes
+animate - time based interpolation of adjacent genomes</string>
             </property>
             <item>
              <property name="text">
@@ -638,6 +639,16 @@
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>genome</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="m_genomeIdxBox"/>
+            </item>
             <item>
              <widget class="QLabel" name="label_9">
               <property name="text">

@@ -226,7 +226,7 @@ void RenderThread::run()
 		int msize = channels * genomes->width * genomes->height;
 		unsigned char* out = new unsigned char[msize];
 		unsigned char* head = out;
-		logFine(QString("allocated %1 bytes, rendering...").arg(msize));
+		logFine("RenderThread::run : allocated %d bytes, rendering...", msize);
 		init_status_cb();
 		rendering = true;
 		ptimer.start();

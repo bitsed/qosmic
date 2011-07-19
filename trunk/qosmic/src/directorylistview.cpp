@@ -23,7 +23,7 @@
 #include "logger.h"
 
 DirectoryListView::DirectoryListView(QWidget* parent)
-	: QListView(parent), viewer(0), viewerSize(320,200), toggle(true)
+: QListView(parent), viewer(0), viewerSize(320,200)
 {
 }
 
@@ -73,10 +73,7 @@ void DirectoryListView::mousePressEvent(QMouseEvent* event)
 	{
 		// toggle showing hidden files in the model
 		QFileSystemModel* fsm = qobject_cast<QFileSystemModel*>(model());
-		if (fsm->filter() & QDir::Hidden)
-			fsm->setFilter( QDir::AllEntries | QDir::AllDirs );
-		else
-			fsm->setFilter( QDir::AllEntries | QDir::AllDirs | QDir::Hidden );
+		fsm->setFilter( fsm->filter() ^ QDir::Hidden );
 	}
 	else
 		QListView::mousePressEvent(event);
@@ -110,3 +107,5 @@ void DirectoryListView::viewerResizedAction(const QSize& /*s*/)
 	if (viewer->isVisible())
 		viewer->rescalePixmap();
 }
+
+

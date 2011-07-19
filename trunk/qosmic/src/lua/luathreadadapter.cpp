@@ -21,6 +21,8 @@
 #include "mainwindow.h"
 #include "logger.h"
 
+const char Lua::LuaThreadAdapter::RegKey = 'k';
+
 Lua::LuaThreadAdapter::LuaThreadAdapter(MainWindow* mw, LuaThread* t, QObject* parent)
  : QObject(parent), m_win(mw), m_thread(t)
 {

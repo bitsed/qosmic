@@ -23,8 +23,10 @@
 #include "logger.h"
 
 DoubleValueEditor::DoubleValueEditor(QWidget* parent)
-	: QDoubleSpinBox(parent), wheelEventSignal(true)
+	: QDoubleSpinBox(parent), wheelEventSignal(true), last_press(0)
 {
+	setKeyboardTracking(false);
+	connect(this, SIGNAL(valueChanged(double)), this, SIGNAL(valueUpdated()));
 }
 
 void DoubleValueEditor::restoreSettings()
@@ -68,6 +70,7 @@ void DoubleValueEditor::keyPressEvent(QKeyEvent* e)
 
 		case Qt::Key_Return:
 			emit valueUpdated();
+			emit undoStateSignal();
 			break;
 
 		case Qt::Key_Backslash:
@@ -124,8 +127,9 @@ void DoubleValueEditor::mousePressEvent(QMouseEvent* e)
 {
 	if (e->button() == Qt::LeftButton)
 	{
-		last_pos = e->posF();
+		start_pos = last_pos = e->posF();
 		start_value = value();
+		last_press = e;
 	}
 }
 
@@ -135,8 +139,9 @@ void DoubleValueEditor::mouseMoveEvent(QMouseEvent* e)
 	if (e->buttons() & Qt::LeftButton)
 	{
 		double dy = e->y() - last_pos.y();
-		last_pos = e->posF();
 		double step = default_step = singleStep();
+		last_pos = e->posF();
+		last_press = 0;
 
 		if (e->modifiers() & Qt::ShiftModifier)
 			setSingleStep(step /= 10.0);
@@ -161,8 +166,18 @@ void DoubleValueEditor::mouseMoveEvent(QMouseEvent* e)
 
 void DoubleValueEditor::mouseReleaseEvent(QMouseEvent* e)
 {
-	if ( e->button() == Qt::LeftButton && start_value != value() )
-		emit undoStateSignal();
+	if (e->button() == Qt::LeftButton)
+	{
+		if (last_press && start_pos == e->posF())
+		{
+			QDoubleSpinBox::mousePressEvent(last_press);
+			QDoubleSpinBox::mouseReleaseEvent(e);
+			last_press = 0;
+		}
+
+		if (start_value != value())
+			emit undoStateSignal();
+	}
 }
 
 
@@ -181,3 +196,4 @@ void DoubleValueEditor::stepDown()
 {
 	updateValue(value() - singleStep());
 }
+

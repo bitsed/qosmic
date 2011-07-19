@@ -25,10 +25,10 @@
 #include "luatype.h"
 #include "basistriangle.h"
 
-#define intAcc_H(name) int name(lua_State *L);
-#define intAcc_HRO(name) int name(lua_State *L);
-#define realAcc_H(name) int name(lua_State *L);
-#define realAcc_HRO(name) int name(lua_State *L);
+#define intAcc_H(name) int name(lua_State*);
+#define intAcc_HRO(name) int name(lua_State*);
+#define realAcc_H(name) int name(lua_State*);
+#define realAcc_HRO(name) int name(lua_State*);
 
 
 namespace Lua
@@ -36,18 +36,19 @@ namespace Lua
 
 class Genome : public LuaType
 {
-	int idx;
+	int m_idx;
+	flam3_genome m_genome;
 	flam3_genome* genome_ptr;
-	BasisTriangle* basis;
 
 	public:
-	Genome(lua_State *L);
+	Genome(lua_State*);
 	~Genome();
-	int index(lua_State *L);
+	int index(lua_State*);
 	int index() const;
-	int center(lua_State *L);
-	int rot_center(lua_State *L);
-	int background(lua_State *L);
+	int center(lua_State*);
+	int rot_center(lua_State*);
+	int background(lua_State*);
+	flam3_genome* get_genome_ptr(lua_State*);
 
 	intAcc_HRO(num_xforms);
 	intAcc_HRO(genome_index);
@@ -90,8 +91,12 @@ class Genome : public LuaType
 	int load_palette(lua_State*);
 	int palette(lua_State*);
 	int chaos(lua_State*);
+	int get_final_xform(lua_State*);
+	int xform(lua_State*);
+	int xforms(lua_State*);
 
-	void setContext(LuaThreadAdapter*, int);
+	void setContext(lua_State*, int);
+	flam3_genome* data();
 
 	static const char className[];
 	static Lunar<Genome>::RegType methods[];

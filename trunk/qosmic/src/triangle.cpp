@@ -136,8 +136,8 @@ void Triangle::basisScaledSlot()
 		b.setMatrix(basisTriangle->coordTransform());
 		setBrush(b);
 	}
-	if (m_adapter)
-		m_adapter->update();
+	if (m_guide)
+		m_guide->update();
 }
 
 void Triangle::setPoints(TriangleCoords& points)
@@ -397,8 +397,8 @@ void Triangle::adjustSceneRect()
 		if (!scene_r.contains(r))
 			scene()->setSceneRect(scene_r.united(r));
 
-		if (m_adapter)
-			m_adapter->update();
+		if (m_guide)
+			m_guide->update();
 	}
 }
 

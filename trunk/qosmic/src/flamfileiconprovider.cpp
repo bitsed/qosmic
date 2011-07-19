@@ -23,8 +23,15 @@
 #include "flamfileiconprovider.h"
 #include "logger.h"
 
-FlamFileIconProvider::FlamFileIconProvider(): QFileIconProvider()
+FlamFileIconProvider::FlamFileIconProvider()
+: QFileIconProvider(), icons_dir(QDir::home()), has_icons(false)
 {
+	QString path(".qosmic/icons");
+	icons_dir = QDir::home();
+	if (!icons_dir.exists(path))
+		icons_dir.mkpath(path);
+	has_icons = icons_dir.cd(path);
+	logFine(QString("FlamFileIconProvider::const : icons dir %1").arg(icons_dir.canonicalPath()));
 }
 
 
@@ -37,7 +44,7 @@ QIcon FlamFileIconProvider::icon(const QFileInfo& info) const
 {
 	QString file_name(info.fileName());
 	QRegExp rex("flam(3|e)$");
-	if (file_name.contains(rex))
+	if (has_icons && file_name.contains(rex))
 	{
 		QString img_file(file_name);
 		img_file.replace(rex, "png");
@@ -46,27 +53,26 @@ QIcon FlamFileIconProvider::icon(const QFileInfo& info) const
 		if (!img.exists())
 			return QFileIconProvider::icon(info);
 
-		QDir cache_dir(info.dir());
-		if (!cache_dir.exists(".icons"))
-			cache_dir.mkdir(".icons");
-		cache_dir.cd(".icons");
+		QDir cache_dir(icons_dir.canonicalPath() + info.dir().canonicalPath());
+		if (!cache_dir.exists() && !cache_dir.mkpath("."))
+			return QFileIconProvider::icon(info);
+
 		QFileInfo cache_file(cache_dir, img_file);
 
-		if (cache_file.exists()
-				  && (cache_file.lastModified() > img.lastModified()))
+		if (cache_file.exists() && (cache_file.lastModified() > img.lastModified()))
 		{
-			logFiner(QString("FlamFileIconProvider::icon : found %1")
-					.arg(cache_file.absoluteFilePath()));
+			logFiner(QString("FlamFileIconProvider::icon : found cached %1").arg(cache_file.absoluteFilePath()));
 			return QIcon(cache_file.absoluteFilePath());
 		}
 		else
 		{
-			logInfo(QString("FlamFileIconProvider::icon : creating %1")
-					.arg(cache_file.absoluteFilePath()));
-			QImage(img.absoluteFilePath())
-					.scaled(128,128,Qt::KeepAspectRatio, Qt::SmoothTransformation)
-					.save(cache_file.absoluteFilePath());
-			return QIcon(cache_file.absoluteFilePath());
+			QString cache(cache_file.absoluteFilePath());
+			QImage buf(img.absoluteFilePath());
+			if (!buf.isNull() && buf.scaled(128, 128, Qt::KeepAspectRatio, Qt::SmoothTransformation).save(cache))
+			{
+				logInfo(QString("FlamFileIconProvider::icon : creating icon  %1").arg(cache));
+				return QIcon(cache);
+			}
 		}
 	}
 	return QFileIconProvider::icon(info);

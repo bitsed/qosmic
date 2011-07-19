@@ -181,7 +181,8 @@ FORMS += \
  ui/adjustscenewidget.ui \
  ui/editmodeselectorwidget.ui \
  ui/chaoswidget.ui \
- ui/sheeploopwidget.ui
+ ui/sheeploopwidget.ui \
+ ui/scripteditconfigdialog.ui
 
 HEADERS += \
  src/qosmic.h \

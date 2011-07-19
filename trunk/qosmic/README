@@ -277,8 +277,8 @@ Bindings for the script editor
 Ctrl+1               - Open a script file
 Ctrl+2               - Save the current script
 Ctrl+3               - Save the script with a new name
-Ctrl+4, Ctrl+L       - Comment a single line or selection
-Ctrl+$, Ctrl+Shift+L - Uncomment a single line or selection
+Ctrl+/, Ctrl+L       - Comment a single line or selection
+Ctrl+?, Ctrl+Shift+L - Uncomment a single line or selection
 Tab                  - Indent the selection, otherwise tab
 Ctrl+Tab             - Unindent the selection, otherwise tab
 Ctrl+Return          - Run the current script

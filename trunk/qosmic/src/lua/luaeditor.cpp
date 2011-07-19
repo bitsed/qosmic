@@ -51,7 +51,7 @@ LuaEditor::LuaEditor(QWidget* pa) : QTextEdit(pa), parent(pa)
 	a->setShortcut(tr("Ctrl+1"));
 	a->setShortcutContext(Qt::WidgetShortcut);
 	addAction(a);
-	connect(a, SIGNAL(triggered()), this, SLOT(loadScript()));
+	connect(a, SIGNAL(triggered()), this, SLOT(load()));
 
 	a = new QAction(tr("Save file"), this);
 	a->setShortcut(tr("Ctrl+2"));
@@ -63,7 +63,7 @@ LuaEditor::LuaEditor(QWidget* pa) : QTextEdit(pa), parent(pa)
 	a->setShortcut(tr("Ctrl+3"));
 	a->setShortcutContext(Qt::WidgetShortcut);
 	addAction(a);
-	connect(a, SIGNAL(triggered()), this, SLOT(saveScript()));
+	connect(a, SIGNAL(triggered()), this, SLOT(saveAs()));
 }
 
 
@@ -74,9 +74,9 @@ LuaEditor::~LuaEditor()
 
 void LuaEditor::keyPressEvent(QKeyEvent* e)
 {
-	if (((e->key() == Qt::Key_4 || e->key() == Qt::Key_Dollar)
-			 && e->modifiers() & Qt::ControlModifier)
-		|| (e->key() == Qt::Key_L && e->modifiers() & Qt::ControlModifier))
+	if ((e->key() == Qt::Key_L || e->key() == Qt::Key_Slash
+		 || e->key() == Qt::Key_Question)
+			&& e->modifiers() & Qt::ControlModifier)
 	{
 		if (textCursor().hasSelection())
 		{
@@ -181,7 +181,7 @@ void LuaEditor::keyPressEvent(QKeyEvent* e)
 		QTextEdit::keyPressEvent(e);
 }
 
-bool LuaEditor::loadScript(QString filename)
+bool LuaEditor::load(QString filename)
 {
 	if (filename.isEmpty())
 	{
@@ -209,7 +209,7 @@ bool LuaEditor::loadScript(QString filename)
 }
 
 
-bool LuaEditor::saveScript(QString filename)
+bool LuaEditor::saveAs(QString filename)
 {
 	if (filename.isEmpty())
 	{
@@ -241,7 +241,7 @@ bool LuaEditor::saveScript(QString filename)
 
 bool LuaEditor::save()
 {
-	return saveScript(script_filename);
+	return saveAs(script_filename);
 }
 
 
@@ -250,4 +250,11 @@ QString LuaEditor::scriptFile() const
 	return script_filename;
 }
 
+}
+
+void Lua::LuaEditor::setCurrentFont(const QFont& f)
+{
+	QString text(toPlainText());
+	QTextEdit::setCurrentFont(f);
+	setPlainText(text);
 }

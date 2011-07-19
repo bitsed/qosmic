@@ -51,7 +51,8 @@ class MainPreviewWidget
 		QSize getPreviewSize() const;
 		void setPreviewMaximumSize(QSize);
 		bool isPresetSelected() const;
-		QString preset() const;
+		QString presetName() const;
+		flam3_genome preset() const;
 
 	signals:
 		void previewResized(const QSize&);

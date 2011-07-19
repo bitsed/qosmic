@@ -105,8 +105,8 @@ FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
 	selectionItem->setSelectedType(settings.value("selectiontype", Triangle::RTTI).toInt());
 	addItem(selectionItem);
 
-	// The single GuideAdapter instance passed around to all TransformableGraphicsItems
-	guideAdapter = new TransformableGraphicsGuide(this);
+	// The single GrahicsGuide instance passed around to all TransformableGraphicsItems
+	graphicsGuide = new TransformableGraphicsGuide(this);
 
 	bLabelA = new QGraphicsSimpleTextItem(QString("O"));
 	bLabelA->setPos(basisTriangle->polygon().at(0) + QPointF(-10.0,0.0));
@@ -147,7 +147,7 @@ FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
 FigureEditor::~FigureEditor()
 {
 	delete selectionItem;
-	delete guideAdapter;
+	delete graphicsGuide;
 	delete postTriangle;
 	delete infoItem;
 	delete bLabelA;
@@ -218,7 +218,7 @@ void FigureEditor::addTriangleAction()
 {
 	logFine(QString("FigureEditor::addTriangleAction : adding triangle to slot %1")
 		.arg(genome_ptr->num_xforms));
-	Util::add_default_xform(genome_ptr);
+	Util::add_default_xforms(genome_ptr);
 	reset();
 	logFine(QString("FigureEditor::addTriangleAction : %1 items in triangleList")
 		.arg(trianglesList.size()));
@@ -435,7 +435,7 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 			coordinateMark->centerOn(moving_start);
 			if (!trianglesList.isEmpty())
 				coordinateMark->setZValue(trianglesList.first()->nextZPos());
-			guideAdapter->update();
+			graphicsGuide->update();
 			update();
 		}
 	}
@@ -502,7 +502,7 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 					selectionItem->setZValue(selectedTriangle->nextZPos());
 					selectionItem->setVisible(true);
 					has_selection = true;
-					selectionItem->setGuideAdapter(guideAdapter);
+					selectionItem->setGraphicsGuide(graphicsGuide);
 				}
 			}
 
@@ -551,7 +551,7 @@ void FigureEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e)
 			{
 				editMode = Move;
 				move_edge_mode = false;
-				guideAdapter->update();
+				graphicsGuide->update();
 			}
 			else if (editMode == Move)
 				setTransformLocation(transform_location);
@@ -571,9 +571,9 @@ void FigureEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e)
 			selectionItem->setZValue(-1);
 			selectionItem->clear();
 			if (editing_post)
-				postTriangle->setGuideAdapter(guideAdapter);
+				postTriangle->setGraphicsGuide(graphicsGuide);
 			else
-				selectedTriangle->setGuideAdapter(guideAdapter);
+				selectedTriangle->setGraphicsGuide(graphicsGuide);
 			has_selection = false;
 		}
 		else
@@ -581,7 +581,7 @@ void FigureEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e)
 			selectionItem->setZValue(selectedTriangle->nextZPos());
 			selectionItem->selectCoveredItems();
 			has_selection = true;
-			selectionItem->setGuideAdapter(guideAdapter);
+			selectionItem->setGraphicsGuide(graphicsGuide);
 			emit undoStateSignal();
 		}
 		update();
@@ -805,7 +805,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 		if (coordinateMark->isVisible() && e->modifiers() & Qt::ShiftModifier)
 		{
 			coordinateMark->centerOn(scenePos);
-			guideAdapter->update();
+			graphicsGuide->update();
 			update();
 		}
 
@@ -846,7 +846,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 		if (coordinateMark->isVisible() && e->modifiers() & Qt::ShiftModifier)
 		{
 			coordinateMark->centerOn(scenePos);
-			guideAdapter->update();
+			graphicsGuide->update();
 			update();
 		}
 
@@ -1175,15 +1175,16 @@ void FigureEditor::selectTriangle(Triangle* t)
 	selectedTriangle = t;
 	logFine(QString("FigureEditor::selectTriangle : selecting triangle %1")
 		.arg(trianglesList.indexOf(t, 0) + 1));
-	const QColor c(Util::get_xform_color(genome_ptr, selectedTriangle->xform()));
-	QBrush brush(c, Qt::Dense5Pattern);
-	brush.setMatrix(basisTriangle->coordTransform());
+	QColor c(Util::get_xform_color(genome_ptr, selectedTriangle->xform()));
 	selectedTriangle->setPen(QPen(c, 0, Qt::SolidLine));
+	c.setAlphaF(0.5);
+	QBrush brush(c, Qt::SolidPattern);
+	brush.setMatrix(basisTriangle->coordTransform());
 	selectedTriangle->setBrush(brush);
 	selectedTriangle->moveToFront();
 	triangleMenu->setActiveAction(triangleMenu->actions().value(selectedTriangleIndex()));
 	box_center = selectedTriangle->polygon().boundingRect().center();
-	// the guide adapter is applied to the selected triangle in editPostTriangle()
+	// the guide decorator is applied to the selected triangle in editPostTriangle()
 	editPostTriangle(post);
 	blockSignals(false);
 	updatePreview();
@@ -1240,7 +1241,7 @@ void FigureEditor::reset()
 	if (genome_ptr->num_xforms < 1)
 	{
 		logWarn("FigureEditor::reset : no xforms, adding a default");
-		Util::add_default_xform(genome_ptr);
+		Util::add_default_xforms(genome_ptr);
 	}
 
 	int selected_idx = 0;
@@ -1275,8 +1276,8 @@ void FigureEditor::reset()
 		}
 	else if (dn < 0)
 	{
-		// Temporarily re-parent the guideAdapter in case its parent triangle is deleted
-		trianglesList.first()->setGuideAdapter(guideAdapter);
+		// Temporarily re-parent the graphicsGuide in case its parent triangle is deleted
+		trianglesList.first()->setGraphicsGuide(graphicsGuide);
 		for (int n = 0 ; n > dn ; n--)
 		{
 			Triangle* t = trianglesList.takeLast();
@@ -1443,15 +1444,16 @@ void FigureEditor::colorChangedAction(double /*idx*/)
 {
 	foreach (Triangle* triangle, trianglesList)
 	{
-		const QColor c( Util::get_xform_color(genome_ptr, triangle->xform()) );
+		QColor c( Util::get_xform_color(genome_ptr, triangle->xform()) );
 		QPen pen(triangle->pen());
 		QBrush brush(triangle->brush());
 		pen.setColor(c);
-		brush.setColor(c);
 		triangle->setPen(pen);
-		triangle->setBrush(brush);
 		foreach (NodeItem* n, triangle->getNodes())
 			n->setPen(QPen(grid_color), c);
+		c.setAlphaF(0.5);
+		brush.setColor(c);
+		triangle->setBrush(brush);
 	}
 	update();
 }
@@ -1490,7 +1492,7 @@ bool FigureEditor::guideVisible() const
 void FigureEditor::setGuideVisible(bool value)
 {
 	guide_visible = value;
-	guideAdapter->setVisible(value);
+	graphicsGuide->setVisible(value);
 	update();
 }
 
@@ -1547,7 +1549,7 @@ QColor FigureEditor::guideColor() const
 void FigureEditor::setGuideColor(QColor c)
 {
 	guide_color = c;
-	guideAdapter->update();
+	graphicsGuide->update();
 	update();
 }
 
@@ -1605,8 +1607,6 @@ QRectF FigureEditor::itemsSceneBounds()
 		bounds = bounds.united(selectionItem->sceneBoundingRect());
 	if (coordinateMark->isVisible())
 		bounds = bounds.united(coordinateMark->sceneBoundingRect());
-//	if (guideAdapter->isVisible())
-//		bounds = bounds.united(guideAdapter->sceneBoundingRect());
 	return bounds;
 }
 
@@ -1692,7 +1692,7 @@ void FigureEditor::scaleBasis(double dx, double dy)
 	transform().map(cursor_start.x(), cursor_start.y(), &moving_start.rx(), &moving_start.ry());
 
 	// update the guide dimensions
-	guideAdapter->update();
+	graphicsGuide->update();
 
 	// adjust scene rect and repaint
 	adjustSceneRect();
@@ -1824,14 +1824,14 @@ void FigureEditor::editPostTriangle(bool flag)
 		postTriangle->adjustSceneRect();
 		box_center = postTriangle->polygon().boundingRect().center();
 		if (!has_selection) // don't steal the guide from the selection
-			postTriangle->setGuideAdapter(guideAdapter);
+			postTriangle->setGraphicsGuide(graphicsGuide);
 	}
 	else
 	{
 		postTriangle->setVisible(false);
 		box_center = selectedTriangle->polygon().boundingRect().center();
 		if (!has_selection)
-			selectedTriangle->setGuideAdapter(guideAdapter);
+			selectedTriangle->setGraphicsGuide(graphicsGuide);
 	}
 
 	update();
@@ -1880,7 +1880,7 @@ void FigureEditor::enableSelection(bool flag)
 	has_selection = flag;
 	if (!flag)
 		selectionItem->clear();
-	guideAdapter->update();
+	graphicsGuide->update();
 	update();
 }
 
@@ -1906,7 +1906,7 @@ void FigureEditor::setTransformLocation(SceneLocation location)
 		box_center = postTriangle->polygon().boundingRect().center();
 	else
 		box_center = selectedTriangle->polygon().boundingRect().center();
-	guideAdapter->update();
+	graphicsGuide->update();
 }
 
 void FigureEditor::saveUndoState(UndoState* state)

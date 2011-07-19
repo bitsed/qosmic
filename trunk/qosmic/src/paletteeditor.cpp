@@ -311,6 +311,7 @@ void PaletteEditor::getPalette(flam3_palette in)
 		in[n].color[0] = p[i].color[0];
 		in[n].color[1] = p[i].color[1];
 		in[n].color[2] = p[i].color[2];
+		in[n].color[3] = p[i].color[3];
 	}
 }
 
@@ -322,6 +323,7 @@ void PaletteEditor::setPalette(flam3_palette in)
 		p[n].color[0] = in[n].color[0];
 		p[n].color[1] = in[n].color[1];
 		p[n].color[2] = in[n].color[2];
+		p[n].color[3] = in[n].color[3];
 	}
 	m_rotateSlider->blockSignals(true);
 	m_rotateSlider->setSliderPosition(0);

@@ -369,6 +369,7 @@ MainWindow::MainWindow() : QMainWindow()
 	dockActions << dock->toggleViewAction();
 	dock->hide();
 	m_dockWidgets << dock;
+	connect(m_directoryViewWidget, SIGNAL(luaScriptSelected(const QString&)), m_scriptEditWidget, SLOT(loadScript(const QString&)));
 
 	createActions();
 	createToolBars();
@@ -656,9 +657,10 @@ bool MainWindow::quickSave()
 bool MainWindow::saveImage(const QString& filename, int idx)
 {
 	QString fileName(filename);
+	QString origName(fileName);
 	if (fileName.isEmpty())
 	{
-		fileName = curFile;
+		fileName = origName = curFile;
 		if (fileName.isEmpty())
 			fileName = "untitled.png";
 		else
@@ -730,8 +732,11 @@ bool MainWindow::saveImage(const QString& filename, int idx)
 			return false;
 		}
 		else
+		{
 			if (progress.showMainViewer())
 				showMainViewer(fileName);
+			m_directoryViewWidget->fileImageRendered(origName);
+		}
 	}
 	return true;
 }
@@ -841,7 +846,7 @@ void MainWindow::createActions()
 	killAct = new QAction(QIcon(":icons/silk/stop.xpm"),tr("&Stop rendering"), this);
 	killAct->setShortcut(QString("Ctrl+K"));
 	killAct->setStatusTip(tr("Stop rendering"));
-	connect(killAct, SIGNAL(triggered()), m_rthread, SLOT(killAll()));
+	connect(killAct, SIGNAL(triggered()), this, SLOT(kill()));
 
 	randomAct = new QAction(QIcon(":icons/silk/wand.xpm"),tr("&Random Flame"), this);
 	randomAct->setShortcut(QString("Ctrl+R"));
@@ -1315,6 +1320,8 @@ void MainWindow::appendFlam3ToGenome(flam3_genome* gen, int ncps)
 	for (int n = 0 ; n < ncps ; n++, gen++)
 	{
 		gen->symmetry = 1; // clear genome symmetry flag
+		gen->ntemporal_samples = 1;  // temporal_samples is only for animations
+
 		genomes.append(*gen);
 	}
 }
@@ -1471,7 +1478,7 @@ void MainWindow::renderViewer()
 		if (m_viewer->isPresetSelected())
 		{
 			ViewerPresetsModel* model = ViewerPresetsModel::getInstance();
-			m_viewer_request.setImagePresets(model->preset(m_viewer->preset()));
+			m_viewer_request.setImagePresets(model->preset(m_viewer->presetName()));
 		}
 		else
 			m_viewer_request.setImagePresets(*render_genome);
@@ -1496,7 +1503,7 @@ void MainWindow::renderPreview(int idx)
 		if (m_previewWidget->isPresetSelected())
 		{
 			ViewerPresetsModel* model = ViewerPresetsModel::getInstance();
-			m_preview_request.setImagePresets(model->preset(m_previewWidget->preset()));
+			m_preview_request.setImagePresets(model->preset(m_previewWidget->presetName()));
 		}
 		else
 			m_preview_request.setImagePresets(*render_genome);
@@ -1553,6 +1560,9 @@ void MainWindow::mutationSelectedSlot(flam3_genome* newg)
 		flam3_copy_xform(g->xform + n, newg->xform + n);
 	memcpy(g->palette, newg->palette, sizeof(flam3_palette));
 	g->pixels_per_unit = newg->pixels_per_unit;
+	if (g->width != newg->width)
+		// "autoscale" the image to maintain image width with camera frame
+		g->pixels_per_unit *= (double)(g->width) / (newg->width);
 	g->center[0] = newg->center[0];
 	g->center[1] = newg->center[1];
 	g->rot_center[0] = newg->rot_center[0];
@@ -1680,6 +1690,13 @@ bool MainWindow::eventFilter(QObject* /*obj*/, QEvent* event)
 		}
 	}
 	return false;
+}
+
+void MainWindow::kill()
+{
+	 if (m_scriptEditWidget->isScriptRunning())
+		 m_scriptEditWidget->stopScript();
+	 m_rthread->killAll();
 }
 
 void MainWindow::undo()

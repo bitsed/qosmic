@@ -59,7 +59,6 @@ MutationWidget::MutationWidget(GenomeVector* gen,  RenderThread* t, QWidget* par
 	for ( int n = 0 ;  n < 40 ; n++)
 	{
 		flam3_genome* g = new flam3_genome();
-		clear_cp(g, flam3_defaults_off);
 		mutations << g;
 		labels[n]->setGenome(g);
 		labels[n]->setMinimumSize(labels_size);
@@ -445,6 +444,10 @@ void MutationWidget::mutate()
 
 void MutationWidget::reset()
 {
+	if (!isVisible())
+		return;
+
+	logFine("MutationWidget::reset : ");
 	// first sync the comboBoxes to number of genomes
 	int idx_a = aComboBox->currentIndex();
 	int idx_b = bComboBox->currentIndex();
@@ -469,8 +472,8 @@ void MutationWidget::reset()
 	flam3_genome* genome_a = genome->data() + idx_a;
 	flam3_genome* genome_b = genome->data() + idx_b;
 
-	bool init_a = mutations[0]->num_xforms < 1 && genome_a->num_xforms > 0;
-	bool init_b = mutations[8]->num_xforms < 1 && genome_b->num_xforms > 0;
+	bool init_a = (mutations[0]->num_xforms < 1) && (genome_a->num_xforms > 0);
+	bool init_b = (mutations[8]->num_xforms < 1) && (genome_b->num_xforms > 0);
 	if (init_a)
 	{
 		logFine(QString("MutationWidget::reset : genome_a has %1 xforms").arg(genome_a->num_xforms));
@@ -489,7 +492,8 @@ void MutationWidget::reset()
 		requests[8]->setGenome(mutations.at(8));
 	}
 
-	if (isVisible() && (init_a || init_b)) mutate();
+	if (init_a || init_b)
+		mutate();
 }
 
 //------------------------------------------------------------------------------

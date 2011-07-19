@@ -57,6 +57,8 @@
         <file>icons/silk/layers.xpm</file>
         <file>icons/silk/link.xpm</file>
         <file>icons/silk/monitor.xpm</file>
+        <file>icons/silk/magnifier_zoom_in.xpm</file>
+        <file>icons/silk/magnifier_zoom_out.xpm</file>
         <file>icons/silk/palette.xpm</file>
         <file>icons/silk/page_add.xpm</file>
         <file>icons/silk/page_delete.xpm</file>
