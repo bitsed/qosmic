@@ -10,7 +10,7 @@ g = frame:get_genome(GENOME_IDX)
 while true do
 	for i = 1, g:num_xforms() do
 		local xf = g:get_xform(i)
-		if xf:animate() == 0.0 then
+		if xf:animate() > 0.0 then
 			xf:rotate(-4.0, 0, 0);
 		end
 	end

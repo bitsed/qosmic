@@ -1,8 +1,9 @@
 --
--- The Lua script environment includes a single Frame object type that is
--- initialized before execution.  The Frame is the main object with which a
--- script interacts with the qosmic application, and it is bound globally to
--- the 'frame' variable.
+-- The Lua script environment includes a Frame object type that is
+-- initialized before execution and is bound to the global 'frame' variable.
+-- The Frame is the main object with which a script interacts with the qosmic
+-- application.  The Frame contains a vector of Genome types cooresponding to
+-- the items of flam3 genomes listed in the Genomes widget.
 --
 -- The script environment also contains values for the xform variation types.
 -- They are globally bound to variables having the same name as the variation,
@@ -25,20 +26,23 @@
 --
 -- Frame Object Interface
 --
-frame:get_genome([idx =1])  -- Returns a reference to the Genome type at offset
+Frame()                     -- Create a new Frame instance.  All Frame instances
+							-- reference the same environment.
+
+Frame:get_genome([idx =1])  -- Returns a reference to the Genome type at offset
 							-- idx in the genomes list.  If there is no genome
 							-- at that offset, the list is filled with default
 							-- Genome types up to idx.
 
-frame:num_genomes() -- Returns the number of genomes in the genomes list
+Frame:num_genomes() -- Returns the number of genomes in the genomes list
 
-frame:render([idx =1, [filename]])  -- Renders the genome at offset idx in the
+Frame:render([idx =1, [filename]])  -- Renders the genome at offset idx in the
 									-- genomes list.  If filename is given, then
 									-- the rendered image is saved to that file
 									-- in png format.  If filename is not given,
 									-- then the preview image is rendered.
 
-frame:update([idx =1, [filename]])  -- Renders the genome at offset idx in the
+Frame:update([idx =1, [filename]])  -- Renders the genome at offset idx in the
 									-- genomes list.  If filename is given, then
 									-- the rendered image is saved to that file
 									-- in png format.  If filename is not given,
@@ -46,18 +50,18 @@ frame:update([idx =1, [filename]])  -- Renders the genome at offset idx in the
 									-- image is rendered.  Use update to redraw
 									-- the triangles in the figure editor.
 
-frame:load(filename)    -- Load the flam3 xml file given by string filename. The
+Frame:load(filename)    -- Load the flam3 xml file given by string filename. The
 						-- existing genome list is cleared beforehand.
 
-frame:save(filename)    -- Saves the current genome list to string in filename
+Frame:save(filename)    -- Saves the current genome list to string in filename
 						-- in flam3 xml format.
 
-frame:copy_genome(a, b) -- Copies the genome at offset a to offset b.  Offset
-						-- 'a' must be a valid genomes offset.
+Frame:copy_genome(a, b) -- Copies the genome at offset a to offset b.  Value
+						-- 'a' must be a valid genomes offset or a Genome type.
 
-frame:del_genome(idx)   -- Removes the genome at offset idx
+Frame:del_genome(idx)   -- Removes the genome at offset idx
 
-frame:bitdepth()        -- Returns the bit depth used to render genomes.
+Frame:bitdepth()        -- Returns the bit depth used to render genomes.
 
 
 
@@ -70,6 +74,9 @@ frame:bitdepth()        -- Returns the bit depth used to render genomes.
 -- from the frame using frame:get_genome() is not a copy, and it refers directly
 -- to the data in the list.
 
+Genome([ref])       -- Create a new Genome instance.  An existing Genome
+					-- instance can be used to initialize the new one.
+
 index()             -- Returns the offset for this genome in the genomes list.
 
 center([x,y])       -- The coordinates of the center of the genome.
@@ -81,7 +88,10 @@ background([r,g,b]) -- Accessor for the background color of the genome.
 
 num_xforms()        -- Returns the number of xforms in the xforms list.
 
-final_xform_index([idx]) -- Returns the offset of the final xform.
+final_xform_index() -- Return the valid index of the final xform in the xforms
+					-- list.  If the final xform is enabled it's always the last
+					-- element in the list.  Returns 0 if the final xform is not
+					-- enabled.
 
 get_xform(idx)      -- Returns a reference to the XForm at offset idx in the
 					-- xform list for this genome.  The given offset must be a
@@ -93,17 +103,27 @@ add_xform([n =1])  -- Add n xform(s) to the xform list.  Returns a reference to
 del_xform(idx)     -- Removes the xform at offset idx from the xform list.  The
 				   -- xforms at higher offsets are re-indexed.
 
-copy_xform(a, b)   -- Copy values in XForm at offset a to the XForm at offset b.
-				   -- The first argument may also be a valid XForm type.
+copy_xform(a, b)   -- Copy values in XForm at offset 'a' to the XForm at offset
+				   -- 'b'.  The first argument may also be a valid XForm type.
 
 clear_xforms()     -- Remove all xform from the list.
 
 load_palette(idx)  -- Load the built-in palette given by idx into the genome's
 				   -- palette.  Valid values for idx are on [1, NUM_PALETTES].
 
-palette(idx, [r,g,b])  -- Get/set the color in the palette at offset idx.  The
-					   -- palette is indexed on [1,256], and the color
-					   -- components are valid on [0.0,1.0].
+palette([table])       -- Get/set the palette as a table.  The returned table is
+					   -- indexed on [1,256], and each table entry is a table
+					   -- of RGB values
+					   -- { ["r"] = r, ["g"] = g, ["b"] = b, ["a"] = a }.
+					   -- When used to set the palette, if the 'a' value is
+					   -- missing from a table entry it's assumed to have a
+					   -- value of 1.0.
+
+palette(idx, [r,g,b,a]) -- Get/set the color in the palette at offset idx.  The
+						-- palette is indexed on [1, 256], and the color
+						-- components are valid on [0.0, 1.0].  If the 'a'
+						-- argument has a default value of 1.0 if it's not given
+						-- when setting a palette's color value,
 
 highlight_power([real]) -- The maximum Value for an RGB color before trending
 						-- the color towards white as the density increases.
@@ -153,11 +173,12 @@ motion_exp([value])
 
 interpolation([value])
 
-interpolation_space([value])
+interpolation_type([value])
 
 palette_interpolation([value])
 
-final_xform_enable([value])     -- set to 1 if the final xform is used
+final_xform_enable([bool])      -- enable/disable the final xform. returns true
+								-- if the final xform is enabled.
 
 symmetry([n])                   -- calculate n'th the genome symmetry group
 
@@ -178,6 +199,9 @@ ntemporal_samples([value])      -- temporal samples
 -- The XForm type returned by a Genome supports the following interface.  An
 -- XForm cooresponds to a triangle object in the editor.
 --
+XForm([ref])        -- Create a new XForm instance.  An existing XForm
+					-- instance can be used to initialize the new one.
+
 index()              -- This xform offset in the genome's xform list
 
 density([real])      -- density
@@ -199,8 +223,11 @@ var(n, [real, [table]]) -- The value of variation 'n'.  'n' may be a string
 
 param(n, [real, [table]])  -- An alias for var()
 
-animate([real])      -- Set if this xform rotates (in sheep >0 means stationary)
+animate([real])      -- Set if this xform rotates (in sheep >0 means animate)
 					 -- valid on [0.0, inf]
+
+coords([table])      -- Access the coordinates for this xform using a table
+					 -- having indexes { ["o"], ["x"], ["y"] }
 
 o([x,y])             -- The O coordinate for this xform's triangle
 a([x,y])             -- An alias for o()
@@ -224,14 +251,19 @@ scale(dz,[dy,[x,y]]) -- Scale the xform's triangle by dz,dy with respect to
 shear(dx,dy,[x,y])   -- Shear the xform's triangle by dz,dy with respect to
 					 -- [x,y]. [x,y]=pos() if not given
 
+coefs([table])  -- Access the xform's coefficients using a table having indexes
+				-- { ["a"], ["b"], ["c"], ["d"], ["e"], ["f"] }
 
-xa([value])  -- The xform's 'a' value.
-xb([value])  -- The xform's 'b' value.
-xc([value])  -- The xform's 'c' value.
-xd([value])  -- The xform's 'd' value.
-xe([value])  -- The xform's 'e' value.
-xf([value])  -- The xform's 'f' value.
+xa([value])     -- The xform's 'a' value.
+xb([value])     -- The xform's 'b' value.
+xc([value])     -- The xform's 'c' value.
+xd([value])     -- The xform's 'd' value.
+xe([value])     -- The xform's 'e' value.
+xf([value])     -- The xform's 'f' value.
 
+
+coordsp([table])      -- Access the coordinates for this xform's post triangle
+					  -- using a table having indexes { ["o"], ["x"], ["y"] }
 
 op([x,y])             -- The O coordinate for this xform's post triangle
 
@@ -251,6 +283,9 @@ scalep(dz,[dy,[x,y]]) -- Scale the xform's post triangle by dz,dy with respect
 
 shearp(dx,dy,[x,y])   -- Shear the xform's post triangle by dx,dy with respect
 					  -- to [x,y].  [x,y]=pos() if not given
+
+coefsp([table])  -- Access the xform's post coefficients using a table having
+				 -- indexes { ["a"], ["b"], ["c"], ["d"], ["e"], ["f"] }
 
 xap([value])  -- The xform's post triangle 'a' value.
 xbp([value])  -- The xform's post triangle 'b' value.

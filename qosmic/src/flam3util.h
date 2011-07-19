@@ -43,7 +43,8 @@ namespace Util
 	flam3_genome* read_from_file(FILE*, char*, int, int*);
 	flam3_genome* read_xml_string(QString, int*);
 	void init_genome(flam3_genome*);
-	void add_default_xform(flam3_genome*);
+	void init_xform(flam3_xform*);
+	void add_default_xforms(flam3_genome*, int num=1);
 	const QMap<QString, int>& flam3_variations();
 	const QStringList& variation_names();
 	char* setup_C_locale();

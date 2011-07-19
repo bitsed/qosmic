@@ -23,16 +23,20 @@
 #include "lunar.h"
 #include "basistriangle.h"
 #include "luatype.h"
+#include "genome.h"
 
 namespace Lua
 {
 class XForm : public LuaType
 {
-	int idx;
-	TriangleCoords coords;
-	TriangleCoords coordsp;
-	BasisTriangle* basisTriangle;
+	int m_xfidx;
+	int m_gidx;
+	Genome* m_genome;
 	flam3_xform* xform_ptr;
+	flam3_xform m_xform;
+	BasisTriangle* basisTriangle;
+	TriangleCoords triangleCoords;
+	TriangleCoords triangleCoordsP;
 
 	void c2xf();
 	void c2xfp();
@@ -43,48 +47,54 @@ class XForm : public LuaType
 	void set_variables_to_table(lua_State*, int);
 
 	public:
-		XForm(lua_State* L);
+		XForm(lua_State*);
 		~XForm();
-		int index(lua_State* L);
-		int density(lua_State* L);
-		int color_speed(lua_State* L);
-		int color(lua_State* L);
-		int opacity(lua_State* L);
-		int animate(lua_State* L);
-		int var(lua_State* L);
-		int a(lua_State* L);
-		int b(lua_State* L);
-		int c(lua_State* L);
-		int pos(lua_State* L);
-		int translate(lua_State* L);
-		int rotate(lua_State* L);
-		int scale(lua_State* L);
-		int shear(lua_State* L);
+		int index(lua_State*);
+		int density(lua_State*);
+		int color_speed(lua_State*);
+		int color(lua_State*);
+		int opacity(lua_State*);
+		int animate(lua_State*);
+		int var(lua_State*);
+		int coords(lua_State*);
+		int a(lua_State*);
+		int b(lua_State*);
+		int c(lua_State*);
+		int pos(lua_State*);
+		int translate(lua_State*);
+		int rotate(lua_State*);
+		int scale(lua_State*);
+		int shear(lua_State*);
 
-		int xa(lua_State* L);
-		int xb(lua_State* L);
-		int xc(lua_State* L);
-		int xd(lua_State* L);
-		int xe(lua_State* L);
-		int xf(lua_State* L);
+		int coefs(lua_State*);
+		int xa(lua_State*);
+		int xb(lua_State*);
+		int xc(lua_State*);
+		int xd(lua_State*);
+		int xe(lua_State*);
+		int xf(lua_State*);
 
-		int ap(lua_State* L);
-		int bp(lua_State* L);
-		int cp(lua_State* L);
-		int posp(lua_State* L);
-		int translatep(lua_State* L);
-		int rotatep(lua_State* L);
-		int scalep(lua_State* L);
-		int shearp(lua_State* L);
+		int coordsp(lua_State*);
+		int ap(lua_State*);
+		int bp(lua_State*);
+		int cp(lua_State*);
+		int posp(lua_State*);
+		int translatep(lua_State*);
+		int rotatep(lua_State*);
+		int scalep(lua_State*);
+		int shearp(lua_State*);
 
-		int xap(lua_State* L);
-		int xbp(lua_State* L);
-		int xcp(lua_State* L);
-		int xdp(lua_State* L);
-		int xep(lua_State* L);
-		int xfp(lua_State* L);
+		int coefsp(lua_State*);
+		int xap(lua_State*);
+		int xbp(lua_State*);
+		int xcp(lua_State*);
+		int xdp(lua_State*);
+		int xep(lua_State*);
+		int xfp(lua_State*);
 
-		void setContext(LuaThreadAdapter*, int, int);
+
+		void setContext(lua_State*, Genome*, int);
+		flam3_xform* get_xform_ptr(lua_State*);
 		flam3_xform* data();
 
 		static const char className[];

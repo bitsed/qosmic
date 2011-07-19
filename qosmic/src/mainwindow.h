@@ -113,6 +113,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		void addUndoState();
 		void undo();
 		void redo();
+		void kill();
 
 	private:
 		void createActions();

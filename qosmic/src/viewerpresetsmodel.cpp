@@ -141,14 +141,14 @@ QStringList ViewerPresetsModel::presetNames()
 	return names;
 }
 
-flam3_genome ViewerPresetsModel::preset(QString preset)
+flam3_genome ViewerPresetsModel::preset(const QString& preset)
 {
 	if (presets.contains(preset))
 		return presets[preset];
 	return presets.values().first();
 }
 
-void ViewerPresetsModel::applyPreset(QString name, flam3_genome* current)
+void ViewerPresetsModel::applyPreset(const QString& name, flam3_genome* current)
 {
 	flam3_genome g = preset(name);
 

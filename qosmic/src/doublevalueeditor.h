@@ -55,7 +55,9 @@ class DoubleValueEditor : public QDoubleSpinBox
 		bool wheelEventSignal;
 		double start_value;
 		double default_step;
+		QPointF start_pos;
 		QPointF last_pos;
+		QMouseEvent* last_press;
 };
 
 

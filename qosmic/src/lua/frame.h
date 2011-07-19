@@ -47,6 +47,9 @@ class Frame : public LuaType
 		int save(lua_State*);
 		int copy_genome(lua_State*);
 		int del_genome(lua_State*);
+		int add_genome(lua_State*);
+		int genomes(lua_State*);
+		int genome(lua_State*);
 
 		void setContext(LuaThreadAdapter*);
 		static const char className[];

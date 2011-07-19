@@ -41,6 +41,8 @@ class LuaThreadAdapter : public QObject
 	QMutex m_mutex;
 
 	public:
+		static const char RegKey;
+
 		LuaThreadAdapter(MainWindow*, LuaThread*, QObject* =0);
 		~LuaThreadAdapter();
 
@@ -65,7 +67,6 @@ class LuaThreadAdapter : public QObject
 
 	private:
 		void waitForEvent();
-
 };
 
 }

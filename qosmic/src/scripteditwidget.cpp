@@ -29,21 +29,25 @@ ScriptEditWidget::ScriptEditWidget(MainWindow* m, QWidget* parent)
 	setupUi ( this );
 	mw = m;
 
-	QSettings settings;
-	QString s = settings.value("script_editor_text", "").toString();
-	m_scriptEdit->setPlainText(s);
+	QSettings s;
+	s.beginGroup("scripteditwidget");
+	m_scriptEdit->setPlainText(s.value("editortext", "").toString());
+	m_scriptEdit->setCurrentFont(s.value("editorfont", m_scriptEdit->currentFont()).value<QFont>());
+	lua_thread.setLuaPaths(s.value("luapaths", lua_thread.luaPaths()).toString());
+
 	m_printOutputEdit->setMinimumHeight(10);
 	QList<int> sizes;
 	sizes << 30 << 4;
 	m_splitter->setSizes(sizes);
-	m_splitter->restoreState(settings.value("script_editor_splitters").toByteArray());
+	m_splitter->restoreState(s.value("editorsplitters").toByteArray());
 
-	connect(m_runButton, SIGNAL(pressed()), this, SLOT(runScriptAction()));
-	connect(m_stopButton, SIGNAL(pressed()), this, SLOT(stopScriptAction()));
-	connect(m_openButton, SIGNAL(pressed()), m_scriptEdit, SLOT(loadScript()));
-	connect(m_saveButton, SIGNAL(pressed()), m_scriptEdit, SLOT(saveScript()));
-	connect(m_scriptEdit, SIGNAL(scriptLoaded()), this, SLOT(loadScriptAction()));
-	connect(m_scriptEdit, SIGNAL(scriptSaved()), this, SLOT(saveScriptAction()));
+	connect(m_runButton, SIGNAL(pressed()), this, SLOT(runButtonPressedAction()));
+	connect(m_openButton, SIGNAL(pressed()), m_scriptEdit, SLOT(load()));
+	connect(m_saveButton, SIGNAL(pressed()), m_scriptEdit, SLOT(save()));
+	connect(m_saveAsButton, SIGNAL(pressed()), m_scriptEdit, SLOT(saveAs()));
+	connect(m_configButton, SIGNAL(pressed()), this, SLOT(configPressedAction()));
+	connect(m_scriptEdit, SIGNAL(scriptLoaded()), this, SLOT(scriptLoadedAction()));
+	connect(m_scriptEdit, SIGNAL(scriptSaved()), this, SLOT(scriptSavedAction()));
 	connect(m_scriptEdit, SIGNAL(cursorPositionChanged()), this, SLOT(updateCursorLabel()));
 	connect(&lua_thread,  SIGNAL(scriptFinished()), this, SLOT(scriptFinishedAction()));
 	connect(&lua_thread,  SIGNAL(scriptHasOutput(const QString&)), this, SLOT(appendScriptOutput(const QString&)));
@@ -63,27 +67,35 @@ void ScriptEditWidget::appendScriptOutput(const QString& out)
 	m_printOutputEdit->ensureCursorVisible();
 }
 
-void ScriptEditWidget::runScriptAction()
+void ScriptEditWidget::runButtonPressedAction()
 {
 	if (lua_thread.isRunning())
-		return;
-	QSettings settings;
-	lua_thread.setLuaText(m_scriptEdit->toPlainText());
-	settings.setValue("script_editor_text", lua_thread.luaText());
+		stopScript();
+	else
+		startScript();
+}
+
+void ScriptEditWidget::startScript()
+{
+	QSettings s;
+	s.beginGroup("scripteditwidget");
+	QString text(m_scriptEdit->toPlainText());
+	lua_thread.setLuaText(text);
+	s.setValue("editortext", text);
 	logInfo("ScriptEditWidget::runScriptAction : running script");
 	m_filenameEdit->setText(tr("running script..."));
 	m_printOutputEdit->clear();
 	lua_thread.start();
+	m_runButton->setIcon(QIcon(":icons/silk/stop.xpm"));
 }
 
-
-void ScriptEditWidget::stopScriptAction()
+void ScriptEditWidget::stopScript()
 {
-	logInfo("ScriptEditWidget::stopScriptAction : signaling lua thread");
+	logInfo("ScriptEditWidget::stopScript : signaling lua thread");
 	lua_thread.stopScript();
 	m_filenameEdit->setText(tr("script stopped"));
+	m_runButton->setIcon(QIcon(":icons/silk/bullet_go.xpm"));
 }
-
 
 void ScriptEditWidget::scriptFinishedAction()
 {
@@ -91,16 +103,15 @@ void ScriptEditWidget::scriptFinishedAction()
 	m_filenameEdit->setText(m_scriptEdit->scriptFile());
 	mw->scriptFinishedSlot();
 	m_filenameEdit->setText(QString(lua_thread.getMessage()));
+	m_runButton->setIcon(QIcon(":icons/silk/bullet_go.xpm"));
 }
 
-
-void ScriptEditWidget::loadScriptAction()
+void ScriptEditWidget::scriptLoadedAction()
 {
 	m_filenameEdit->setText(m_scriptEdit->scriptFile());
 }
 
-
-void ScriptEditWidget::saveScriptAction()
+void ScriptEditWidget::scriptSavedAction()
 {
 	m_filenameEdit->setText(tr("saved: %1")
 			.arg(m_scriptEdit->scriptFile()));
@@ -109,10 +120,95 @@ void ScriptEditWidget::saveScriptAction()
 void ScriptEditWidget::closeEvent(QCloseEvent* /*event*/)
 {
 	logInfo("ScriptEditWidget::closeEvent : saving settings");
-	QSettings settings;
-	settings.setValue("script_editor_splitters", m_splitter->saveState());
+	QSettings s;
+	s.beginGroup("scripteditwidget");
+	s.setValue("editorsplitters", m_splitter->saveState());
 }
 
 ScriptEditWidget::~ScriptEditWidget()
 {
+}
+
+void ScriptEditWidget::loadScript(const QString& path)
+{
+	m_scriptEdit->load(path);
+}
+
+void ScriptEditWidget::configPressedAction()
+{
+	ScriptEditConfigDialog d(this);
+	d.setFont(m_scriptEdit->currentFont());
+	d.setLuaEnvText(lua_thread.luaPaths());
+	d.move(QCursor::pos());
+	if (d.exec() == QDialog::Accepted)
+	{
+		QFont f(d.getFont());
+		QString paths(d.getLuaEnvText());
+		QSettings s;
+		s.beginGroup("scripteditwidget");
+		s.setValue("editorfont", f);
+		s.setValue("luapaths", paths);
+		m_scriptEdit->setCurrentFont(f);
+		lua_thread.setLuaPaths(paths);
+	}
+}
+
+ScriptEditConfigDialog::ScriptEditConfigDialog(QWidget* parent)
+: QDialog(parent)
+{
+	setupUi(this);
+	connect(fontSelectBox, SIGNAL(currentFontChanged(const QFont&)), this, SLOT(fontSelectBoxChanged(const QFont&)));
+}
+
+void ScriptEditConfigDialog::changeEvent(QEvent* e)
+{
+	QDialog::changeEvent(e);
+	switch (e->type()) {
+	case QEvent::LanguageChange:
+		retranslateUi(this);
+		break;
+	default:
+		break;
+	}
+}
+
+void ScriptEditConfigDialog::setFont(const QFont& f)
+{
+	cur_size = QString::number(f.pointSize());
+	fontSelectBox->setCurrentFont(f);
+}
+
+QFont ScriptEditConfigDialog::getFont() const
+{
+	QFont f(fontSelectBox->currentFont());
+	f.setPointSize(fontSizeBox->currentText().toInt());
+	return f;
+}
+
+void ScriptEditConfigDialog::setLuaEnvText(const QString& text)
+{
+	plainTextEdit->setPlainText(text);
+}
+
+QString ScriptEditConfigDialog::getLuaEnvText() const
+{
+	return plainTextEdit->toPlainText();
+}
+
+void ScriptEditConfigDialog::fontSelectBoxChanged(const QFont& f)
+{
+	QString size = fontSizeBox->currentText();
+	if (!size.isEmpty())
+		cur_size = size;
+
+	QList<int> sizes = fonts.smoothSizes(f.family(), "Normal");
+	fontSizeBox->clear();
+	foreach (int i, sizes)
+		fontSizeBox->addItem(QString::number(i));
+	fontSizeBox->setCurrentIndex(qMax(0, fontSizeBox->findText(cur_size)));
+}
+
+bool ScriptEditWidget::isScriptRunning() const
+{
+	return lua_thread.isRunning();
 }

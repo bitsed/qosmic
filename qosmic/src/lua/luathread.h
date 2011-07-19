@@ -28,7 +28,7 @@
 #include "renderthread.h"
 
 class MainWindow;
-
+class LuaThreadAdapter;
 namespace Lua
 {
 
@@ -37,9 +37,10 @@ class LuaThread : public QThread
 	Q_OBJECT
 
 	MainWindow* mw;
-	Frame* f;
+	LuaThreadAdapter* thread_adapter;
 	QString lua_text;
 	QString lua_error;
+	QString lua_paths;
 	bool lua_stopluathread_script;
 	randctx ctx;
 
@@ -50,6 +51,8 @@ class LuaThread : public QThread
 		virtual void run();
 		void setLuaText(QString);
 		const QString& luaText();
+		void setLuaPaths(const QString&);
+		QString luaPaths() const;
 		void stopScript();
 		bool stopping() const;
 		QString getMessage();

@@ -36,9 +36,10 @@ class LuaEditor : public QTextEdit
 
 	public slots:
 		bool save();
-		bool loadScript(QString filename=QString());
-		bool saveScript(QString filename=QString());
+		bool load(QString filename=QString());
+		bool saveAs(QString filename=QString());
 		QString scriptFile() const;
+		void setCurrentFont(const QFont&);
 
 	signals:
 		void scriptLoaded();

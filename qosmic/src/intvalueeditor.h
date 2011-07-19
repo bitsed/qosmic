@@ -55,7 +55,9 @@ class IntValueEditor : public QSpinBox
 		bool wheelEventSignal;
 		int start_value;
 		int default_step;
+		QPointF start_pos;
 		QPointF last_pos;
+		QMouseEvent* last_press;
 };
 
 

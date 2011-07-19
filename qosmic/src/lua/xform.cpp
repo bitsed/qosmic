@@ -20,11 +20,12 @@
 #include "xform.h"
 #include "luathreadadapter.h"
 
-#include <math.h>
+#include <cmath>
 
 namespace Lua
 {
 const char XForm::className[] = "XForm";
+
 Lunar<XForm>::RegType XForm::methods[] =
 {
 	{ "index", &XForm::index },
@@ -37,12 +38,14 @@ Lunar<XForm>::RegType XForm::methods[] =
 	{ "param", &XForm::var },
 
 	// xform coordinates
+	{ "coords", &XForm::coords },
 	{ "o", &XForm::a },
 	{ "x", &XForm::b },
 	{ "y", &XForm::c },
 	{ "a", &XForm::a },
 	{ "b", &XForm::b },
 	{ "c", &XForm::c },
+	{ "coefs", &XForm::coefs },
 	{ "xa", &XForm::xa },
 	{ "xb", &XForm::xb },
 	{ "xc", &XForm::xc },
@@ -56,9 +59,11 @@ Lunar<XForm>::RegType XForm::methods[] =
 	{ "shear", &XForm::shear },
 
 	// post xform coordinates
+	{ "coordsp", &XForm::coordsp },
 	{ "op", &XForm::ap },
 	{ "xp", &XForm::bp },
 	{ "yp", &XForm::cp },
+	{ "coefsp", &XForm::coefsp },
 	{ "ap", &XForm::ap },
 	{ "bp", &XForm::bp },
 	{ "cp", &XForm::cp },
@@ -77,8 +82,48 @@ Lunar<XForm>::RegType XForm::methods[] =
 	{ 0, 0 }
 };
 
-XForm::XForm(lua_State* /*L*/)
+XForm::XForm(lua_State* L)
+:  m_xfidx(-1), m_gidx(-1), m_genome(0), m_xform()
 {
+	/* retrieve a context */
+	lua_pushlightuserdata(L, (void*)&LuaThreadAdapter::RegKey);  /* push address */
+	lua_gettable(L, LUA_REGISTRYINDEX);  /* retrieve value */
+	LuaType::setContext(static_cast<LuaThreadAdapter*>(lua_touserdata(L, -1)));
+	basisTriangle = m_adapter->basisTriangle();
+	lua_pop(L, 1);
+
+	if (lua_gettop(L) > 0 && lua_isuserdata(L, 1))
+	{
+		// check for a XForm type to copy
+		XForm* xf = Lunar<XForm>::check(L, 1);
+		flam3_copy_xform(&m_xform, xf->get_xform_ptr(L));
+		lua_pop(L, 1);
+	}
+	else
+		Util::init_xform(&m_xform);
+
+	get_xform_ptr(L);
+	xf2c(); // load Ax,Ay, Bx,By, Cx,Cy
+	xfp2c();
+}
+
+flam3_xform* XForm::get_xform_ptr(lua_State* L)
+{
+	if (m_genome != 0) // XForm associated with some Genome
+	{
+		flam3_genome* g = m_genome->get_genome_ptr(L);
+		if (m_xfidx >= 0 && m_xfidx < g->num_xforms) // has an xform index
+			xform_ptr = g->xform + m_xfidx;
+		else
+			luaL_error(L, "index out of bounds: Genome[%d].XForm[%d]", m_gidx + 1, m_xfidx + 1);
+	}
+	else
+	{
+		// XForm not associated with a Genome
+		xform_ptr = &m_xform;
+	}
+
+	return xform_ptr;
 }
 
 XForm::~XForm()
@@ -87,6 +132,7 @@ XForm::~XForm()
 
 #define intAcc(name) int XForm::name(lua_State* L)\
 {\
+	get_xform_ptr(L); \
 	if (lua_gettop(L) == 1)\
 		xform_ptr->name = luaL_checkint(L, 1);\
 	else\
@@ -99,6 +145,7 @@ XForm::~XForm()
 
 #define intAccRO(name) int XForm::name(lua_State* L)\
 {\
+	get_xform_ptr(L); \
 	lua_settop(L, 0);\
 	lua_pushinteger(L, xform_ptr->name);\
 	return 1;\
@@ -106,6 +153,7 @@ XForm::~XForm()
 
 #define realAcc(name) int XForm::name(lua_State* L)\
 {\
+	get_xform_ptr(L); \
 	if (lua_gettop(L) == 1)\
 		xform_ptr->name = luaL_checknumber(L, 1);\
 	else\
@@ -118,6 +166,7 @@ XForm::~XForm()
 
 #define realAccRO(name) int XForm::name(lua_State* L)\
 {\
+	get_xform_ptr(L); \
 	lua_settop(L, 0);\
 	lua_pushnumber(L, xform_ptr->name);\
 	return 1;\
@@ -125,8 +174,9 @@ XForm::~XForm()
 
 int XForm::index(lua_State* L)
 {
+	get_xform_ptr(L);
 	lua_settop(L, 0);
-	lua_pushinteger(L, idx + 1);
+	lua_pushinteger(L, m_xfidx + 1);
 	return 1;
 }
 
@@ -135,6 +185,7 @@ realAcc(color_speed);
 
 int XForm::color(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
 		xform_ptr->color = luaL_checknumber(L, 1);
 	else
@@ -147,6 +198,7 @@ int XForm::color(lua_State* L)
 
 int XForm::opacity(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
 		xform_ptr->opacity = qBound(0.0, luaL_checknumber(L, 1), 1.0);
 	else
@@ -159,6 +211,7 @@ int XForm::opacity(lua_State* L)
 
 int XForm::animate(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
 		xform_ptr->animate = qMax(0.0, luaL_checknumber(L, 1));
 	else
@@ -171,43 +224,135 @@ int XForm::animate(lua_State* L)
 
 int XForm::var(lua_State* L)
 {
-	int var_num;
-	if (lua_isnumber(L, 1) == 1)
+	get_xform_ptr(L);
+	if (lua_gettop(L) < 1)
 	{
-		var_num = lua_tointeger(L, 1) - 1;
-		if (var_num < 0 || var_num >= flam3_nvariations)
-			luaL_error(L, "invalid variation index %d", var_num + 1);
+		// return the entire set of variations
+		lua_newtable(L);
+		for (int i = 0 ; i < flam3_nvariations ; i++)
+		{
+			lua_pushinteger(L, i + 1);
+			lua_newtable(L);
+			lua_pushinteger(L, 1);
+			lua_pushnumber(L, xform_ptr->var[i]);
+			lua_rawset(L, -3);
+			lua_pushinteger(L, 2);
+			lua_newtable(L);
+			set_variables_to_table(L, i);
+			lua_rawset(L, -3);
+
+			lua_getglobal(L, "_xform_var_variables_metatable");
+			if (!lua_istable(L, -1))
+			{
+				lua_pop(L, 1);
+				int error = luaL_loadstring(L,
+					"if _xform_var_variables_metatable == nil then "
+					"_xform_var_variables_metatable = { __index = function (table, key) "
+					"if key == \"value\" then return rawget(table, 1) end "
+					"if key == \"variables\" then return rawget(table, 2) end "
+					"local v = rawget(rawget(table, 2), key) "
+					"if v ~= nil then return v end "
+					"return rawget(table, key) end, "
+					"__newindex = function(table, key, value) "
+					"if key == \"value\" then return rawset(table, 1, value) end "
+					"if key == \"variables\" then return rawset(table, 2, value) end "
+					"local v = rawget(rawget(table, 2), key) "
+					"if v ~= nil then return rawset(rawget(table, 2), key, value) end "
+					"return rawset(table, key, value) "
+					"end } end") || lua_pcall(L, 0, 0, 0);
+				if (error)
+				{
+					QString s("couldn't build metatables for var.variables: %1");
+					luaL_error(L, "%s", s.arg(lua_tostring(L, -1)).toAscii().constData());
+				}
+
+				lua_getglobal(L, "_xform_var_variables_metatable");
+			}
+			lua_setmetatable(L, -2);
+			lua_rawset(L, -3);
+		}
+
+		lua_getglobal(L, "_xform_var_metatable");
+		if (!lua_istable(L, -1))
+		{
+			lua_pop(L, 1);
+			int error = luaL_loadstring(L,
+				"if _xform_var_metatable == nil then "
+				"_xform_var_metatable = { __index = function(table, key) "
+				"local k = string.upper(key) "
+				"return rawget(table, _G[k]) "
+				"end } end") || lua_pcall(L, 0, 0, 0);
+			if (error)
+			{
+				QString s("couldn't build metatables for var: %1");
+				luaL_error(L, "%s", s.arg(lua_tostring(L, -1)).toAscii().constData());
+			}
+			lua_getglobal(L, "_xform_var_metatable");
+		}
+		lua_setmetatable(L, -2);
+	}
+	else if (lua_type(L, 1) == LUA_TTABLE)
+	{
+		// setting the all xform variations from a table
+		for (int i = 0 ; i < flam3_nvariations ; i++)
+		{
+			lua_pushinteger(L, i + 1);
+			lua_rawget(L, -2);
+			luaL_checktype(L, -1, LUA_TTABLE);
+
+			lua_pushinteger(L, 1);
+			lua_rawget(L, -2);
+			xform_ptr->var[i] = luaL_checknumber(L, -1);
+			lua_pop(L, 1);
+
+			lua_pushinteger(L, 2);
+			lua_rawget(L, -2);
+			luaL_checktype(L, -1, LUA_TTABLE);
+			get_variables_from_table(L, i);
+			lua_pop(L, 2);
+		}
 	}
 	else
 	{
-		const char* name = luaL_checkstring(L, 1);
-		var_num = Util::variation_number(QString(name).toLower());
-		if (var_num == -1)
-			luaL_error(L, "variation %s not found", name);
-	}
-
-	int args = lua_gettop(L);
-	if (args > 1)
-	{
-		// grab the variation value
-		xform_ptr->var[var_num] = luaL_checknumber(L, 2);
-		if (args == 3)
+		int var_num;
+		if (lua_isnumber(L, 1) == 1)
 		{
-			if (!lua_istable(L, 3))
-				luaL_error(L, "variables argument is not a valid table");
-			get_variables_from_table(L, var_num);
+			var_num = lua_tointeger(L, 1) - 1;
+			if (var_num < 0 || var_num >= flam3_nvariations)
+				luaL_error(L, "invalid variation index %d", var_num + 1);
 		}
 		else
-			return 1;
+		{
+			const char* name = luaL_checkstring(L, 1);
+			var_num = Util::variation_number(QString(name).toLower());
+			if (var_num == -1)
+				luaL_error(L, "variation %s not found", name);
+		}
+
+		int args = lua_gettop(L);
+		if (args > 1)
+		{
+			// grab the variation value
+			xform_ptr->var[var_num] = luaL_checknumber(L, 2);
+			if (args == 3)
+			{
+				if (!lua_istable(L, 3))
+					luaL_error(L, "variables argument is not a valid table");
+				get_variables_from_table(L, var_num);
+			}
+			else
+				return 1;
+		}
+		else
+		{
+			lua_settop(L, 0);
+			lua_pushnumber(L, xform_ptr->var[var_num]);
+			lua_newtable(L);
+			set_variables_to_table(L, var_num);
+		}
+		return 2;
 	}
-	else
-	{
-		lua_settop(L, 0);
-		lua_pushnumber(L, xform_ptr->var[var_num]);
-		lua_newtable(L);
-		set_variables_to_table(L, var_num);
-	}
-	return 2;
+	return 1;
 }
 
 /** this macro is used in get_variables_from_table() to copy the lua table
@@ -215,7 +360,7 @@ int XForm::var(lua_State* L)
   */
 #define get_table_var(VARIATION, VARIABLE)\
 	lua_pushstring(L, #VARIABLE);\
-	lua_gettable(L, -2);\
+	lua_rawget(L, -2);\
 	if (!lua_isnil(L, -1))\
 	{\
 		if (!lua_isnumber(L, -1))\
@@ -507,7 +652,7 @@ void XForm::get_variables_from_table(lua_State* L, int variation)
 #define set_table_var(VARIATION, VARIABLE)\
 	lua_pushstring(L, #VARIABLE);\
 	lua_pushnumber(L, xform_ptr->VARIATION##_##VARIABLE);\
-	lua_settable(L, -3);
+	lua_rawset(L, -3);
 
 /** Set the variables for the given variation to the table
   * on the top of the stack.
@@ -786,59 +931,161 @@ void XForm::set_variables_to_table(lua_State* L, int variation)
 	}
 }
 
+int XForm::coords(lua_State* L)
+{
+	get_xform_ptr(L);
+	const char* labels[] = { "o", "x", "y" };
+	if (lua_gettop(L) < 1)
+	{
+		lua_newtable(L);
+		for (int i = 0 ; i < 3 ; i++)
+		{
+			lua_pushstring(L, labels[i]);
+			lua_newtable(L);
+			lua_pushstring(L, "x");
+			lua_pushnumber(L, triangleCoords[i].x());
+			lua_settable(L, -3);
+			lua_pushstring(L, "y");
+			lua_pushnumber(L, triangleCoords[i].y());
+			lua_settable(L, -3);
+			lua_settable(L, -3);
+		}
+	}
+	else
+	{
+		luaL_checktype(L, 1, LUA_TTABLE);
+		for (int i = 0 ; i < 3 ; i++)
+		{
+			lua_pushstring(L, labels[i]);
+			lua_gettable(L, -2);
+			lua_pushstring(L, "x");
+			lua_gettable(L, -2);
+			triangleCoords[i].rx() = luaL_checknumber(L, -1);
+			lua_pop(L, 1);
+			lua_pushstring(L, "y");
+			lua_gettable(L, -2);
+			triangleCoords[i].ry() = luaL_checknumber(L, -1);
+			lua_pop(L, 2);
+		}
+		c2xf();
+	}
+	return 1;
+}
+
 int XForm::a(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 2)
 	{
-		coords[0].rx() = luaL_checknumber(L, 1);
-		coords[0].ry() = luaL_checknumber(L, 2);
+		triangleCoords[0].rx() = luaL_checknumber(L, 1);
+		triangleCoords[0].ry() = luaL_checknumber(L, 2);
 		c2xf();
 	}
 	else
 	{
 		lua_settop(L, 0);
-		lua_pushnumber(L, coords[0].x());
-		lua_pushnumber(L, coords[0].y());
+		lua_pushnumber(L, triangleCoords[0].x());
+		lua_pushnumber(L, triangleCoords[0].y());
 	}
 	return 2;
 }
 
 int XForm::b(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 2)
 	{
-		coords[1].rx() = luaL_checknumber(L, 1);
-		coords[1].ry() = luaL_checknumber(L, 2);
+		triangleCoords[1].rx() = luaL_checknumber(L, 1);
+		triangleCoords[1].ry() = luaL_checknumber(L, 2);
 		c2xf();
 	}
 	else
 	{
 		lua_settop(L, 0);
-		lua_pushnumber(L, coords[1].x());
-		lua_pushnumber(L, coords[1].y());
+		lua_pushnumber(L, triangleCoords[1].x());
+		lua_pushnumber(L, triangleCoords[1].y());
 	}
 	return 2;
 }
 
 int XForm::c(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 2)
 	{
-		coords[2].rx() = luaL_checknumber(L, 1);
-		coords[2].ry() = luaL_checknumber(L, 2);
+		triangleCoords[2].rx() = luaL_checknumber(L, 1);
+		triangleCoords[2].ry() = luaL_checknumber(L, 2);
 		c2xf();
 	}
 	else
 	{
 		lua_settop(L, 0);
-		lua_pushnumber(L, coords[2].x());
-		lua_pushnumber(L, coords[2].y());
+		lua_pushnumber(L, triangleCoords[2].x());
+		lua_pushnumber(L, triangleCoords[2].y());
 	}
 	return 2;
 }
 
+int XForm::coefs(lua_State* L)
+{
+	get_xform_ptr(L);
+	if (lua_gettop(L) < 1)
+	{
+		lua_newtable(L);
+		lua_pushstring(L, "a");
+		lua_pushnumber(L, xform_ptr->c[0][0]);
+		lua_settable(L, -3);
+		lua_pushstring(L, "b");
+		lua_pushnumber(L, xform_ptr->c[1][0]);
+		lua_settable(L, -3);
+		lua_pushstring(L, "c");
+		lua_pushnumber(L, xform_ptr->c[2][0]);
+		lua_settable(L, -3);
+		lua_pushstring(L, "d");
+		lua_pushnumber(L, xform_ptr->c[0][1]);
+		lua_settable(L, -3);
+		lua_pushstring(L, "e");
+		lua_pushnumber(L, xform_ptr->c[1][1]);
+		lua_settable(L, -3);
+		lua_pushstring(L, "f");
+		lua_pushnumber(L, xform_ptr->c[2][1]);
+		lua_settable(L, -3);
+	}
+	else
+	{
+		luaL_checktype(L, 1, LUA_TTABLE);
+		lua_pushstring(L, "a");
+		lua_gettable(L, -2);
+		xform_ptr->c[0][0] = luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_pushstring(L, "b");
+		lua_gettable(L, -2);
+		xform_ptr->c[1][0] = luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_pushstring(L, "c");
+		lua_gettable(L, -2);
+		xform_ptr->c[2][0] = luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_pushstring(L, "d");
+		lua_gettable(L, -2);
+		xform_ptr->c[0][1] = luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_pushstring(L, "e");
+		lua_gettable(L, -2);
+		xform_ptr->c[1][1] = luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_pushstring(L, "f");
+		lua_gettable(L, -2);
+		xform_ptr->c[2][1] = luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		xf2c();
+	}
+	return 1;
+}
+
 int XForm::xa(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
 	{
 		xform_ptr->c[0][0] = luaL_checknumber(L, 1);
@@ -851,6 +1098,7 @@ int XForm::xa(lua_State* L)
 
 int XForm::xd(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
 	{
 		xform_ptr->c[0][1] = luaL_checknumber(L, 1);
@@ -863,6 +1111,7 @@ int XForm::xd(lua_State* L)
 
 int XForm::xb(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
 	{
 		xform_ptr->c[1][0] = luaL_checknumber(L, 1);
@@ -875,6 +1124,7 @@ int XForm::xb(lua_State* L)
 
 int XForm::xe(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
 	{
 		xform_ptr->c[1][1] = luaL_checknumber(L, 1);
@@ -887,6 +1137,7 @@ int XForm::xe(lua_State* L)
 
 int XForm::xc(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
 	{
 		xform_ptr->c[2][0] = luaL_checknumber(L, 1);
@@ -899,6 +1150,7 @@ int XForm::xc(lua_State* L)
 
 int XForm::xf(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
 	{
 		xform_ptr->c[2][1] = luaL_checknumber(L, 1);
@@ -911,59 +1163,162 @@ int XForm::xf(lua_State* L)
 
 
 // post xform accessors
+int XForm::coordsp(lua_State* L)
+{
+	get_xform_ptr(L);
+	const char* labels[] = { "o", "x", "y" };
+	if (lua_gettop(L) < 1)
+	{
+		lua_newtable(L);
+		for (int i = 0 ; i < 3 ; i++)
+		{
+			lua_pushstring(L, labels[i]);
+			lua_newtable(L);
+			lua_pushstring(L, "x");
+			lua_pushnumber(L, triangleCoordsP[i].x());
+			lua_settable(L, -3);
+			lua_pushstring(L, "y");
+			lua_pushnumber(L, triangleCoordsP[i].y());
+			lua_settable(L, -3);
+			lua_settable(L, -3);
+		}
+	}
+	else
+	{
+		luaL_checktype(L, 1, LUA_TTABLE);
+		for (int i = 0 ; i < 3 ; i++)
+		{
+			lua_pushstring(L, labels[i]);
+			lua_gettable(L, -2);
+			lua_pushstring(L, "x");
+			lua_gettable(L, -2);
+			triangleCoordsP[i].rx() = luaL_checknumber(L, -1);
+			lua_pop(L, 1);
+			lua_pushstring(L, "y");
+			lua_gettable(L, -2);
+			triangleCoordsP[i].ry() = luaL_checknumber(L, -1);
+			lua_pop(L, 2);
+		}
+		c2xfp();
+	}
+	return 1;
+}
+
+
 int XForm::ap(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 2)
 	{
-		coordsp[0].rx() = luaL_checknumber(L, 1);
-		coordsp[0].ry() = luaL_checknumber(L, 2);
+		triangleCoordsP[0].rx() = luaL_checknumber(L, 1);
+		triangleCoordsP[0].ry() = luaL_checknumber(L, 2);
 		c2xfp();
 	}
 	else
 	{
 		lua_settop(L, 0);
-		lua_pushnumber(L, coordsp[0].x());
-		lua_pushnumber(L, coordsp[0].y());
+		lua_pushnumber(L, triangleCoordsP[0].x());
+		lua_pushnumber(L, triangleCoordsP[0].y());
 	}
 	return 2;
 }
 
 int XForm::bp(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 2)
 	{
-		coordsp[1].rx() = luaL_checknumber(L, 1);
-		coordsp[1].ry() = luaL_checknumber(L, 2);
+		triangleCoordsP[1].rx() = luaL_checknumber(L, 1);
+		triangleCoordsP[1].ry() = luaL_checknumber(L, 2);
 		c2xfp();
 	}
 	else
 	{
 		lua_settop(L, 0);
-		lua_pushnumber(L, coordsp[1].x());
-		lua_pushnumber(L, coordsp[1].y());
+		lua_pushnumber(L, triangleCoordsP[1].x());
+		lua_pushnumber(L, triangleCoordsP[1].y());
 	}
 	return 2;
 }
 
 int XForm::cp(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 2)
 	{
-		coordsp[2].rx() = luaL_checknumber(L, 1);
-		coordsp[2].ry() = luaL_checknumber(L, 2);
+		triangleCoordsP[2].rx() = luaL_checknumber(L, 1);
+		triangleCoordsP[2].ry() = luaL_checknumber(L, 2);
 		c2xfp();
 	}
 	else
 	{
 		lua_settop(L, 0);
-		lua_pushnumber(L, coordsp[2].x());
-		lua_pushnumber(L, coordsp[2].y());
+		lua_pushnumber(L, triangleCoordsP[2].x());
+		lua_pushnumber(L, triangleCoordsP[2].y());
 	}
 	return 2;
 }
 
+int XForm::coefsp(lua_State* L)
+{
+	get_xform_ptr(L);
+	if (lua_gettop(L) < 1)
+	{
+		lua_newtable(L);
+		lua_pushstring(L, "a");
+		lua_pushnumber(L, xform_ptr->post[0][0]);
+		lua_settable(L, -3);
+		lua_pushstring(L, "b");
+		lua_pushnumber(L, xform_ptr->post[1][0]);
+		lua_settable(L, -3);
+		lua_pushstring(L, "c");
+		lua_pushnumber(L, xform_ptr->post[2][0]);
+		lua_settable(L, -3);
+		lua_pushstring(L, "d");
+		lua_pushnumber(L, xform_ptr->post[0][1]);
+		lua_settable(L, -3);
+		lua_pushstring(L, "e");
+		lua_pushnumber(L, xform_ptr->post[1][1]);
+		lua_settable(L, -3);
+		lua_pushstring(L, "f");
+		lua_pushnumber(L, xform_ptr->post[2][1]);
+		lua_settable(L, -3);
+	}
+	else
+	{
+		luaL_checktype(L, 1, LUA_TTABLE);
+		lua_pushstring(L, "a");
+		lua_gettable(L, -2);
+		xform_ptr->post[0][0] = luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_pushstring(L, "b");
+		lua_gettable(L, -2);
+		xform_ptr->post[1][0] = luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_pushstring(L, "c");
+		lua_gettable(L, -2);
+		xform_ptr->post[2][0] = luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_pushstring(L, "d");
+		lua_gettable(L, -2);
+		xform_ptr->post[0][1] = luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_pushstring(L, "e");
+		lua_gettable(L, -2);
+		xform_ptr->post[1][1] = luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		lua_pushstring(L, "f");
+		lua_gettable(L, -2);
+		xform_ptr->post[2][1] = luaL_checknumber(L, -1);
+		lua_pop(L, 1);
+		xfp2c();
+	}
+	return 1;
+}
+
 int XForm::xap(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
 	{
 		xform_ptr->post[0][0] = luaL_checknumber(L, 1);
@@ -976,6 +1331,7 @@ int XForm::xap(lua_State* L)
 
 int XForm::xdp(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
 	{
 		xform_ptr->post[0][1] = luaL_checknumber(L, 1);
@@ -988,6 +1344,7 @@ int XForm::xdp(lua_State* L)
 
 int XForm::xbp(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
 	{
 		xform_ptr->post[1][0] = luaL_checknumber(L, 1);
@@ -1000,6 +1357,7 @@ int XForm::xbp(lua_State* L)
 
 int XForm::xep(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
 	{
 		xform_ptr->post[1][1] = luaL_checknumber(L, 1);
@@ -1012,6 +1370,7 @@ int XForm::xep(lua_State* L)
 
 int XForm::xcp(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
 	{
 		xform_ptr->post[2][0] = luaL_checknumber(L, 1);
@@ -1024,6 +1383,7 @@ int XForm::xcp(lua_State* L)
 
 int XForm::xfp(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
 	{
 		xform_ptr->post[2][1] = luaL_checknumber(L, 1);
@@ -1039,31 +1399,30 @@ int XForm::xfp(lua_State* L)
 // c++ interface
 void XForm::xf2c()
 {
-	coords = basisTriangle->getCoords(xform_ptr->c);
+	triangleCoords = basisTriangle->getCoords(xform_ptr->c);
 }
 
 void XForm::c2xf()
 {
-	basisTriangle->applyTransform(coords, xform_ptr->c);
+	basisTriangle->applyTransform(triangleCoords, xform_ptr->c);
 }
 
 void XForm::xfp2c()
 {
-	coordsp = basisTriangle->getCoords(xform_ptr->post);
+	triangleCoordsP = basisTriangle->getCoords(xform_ptr->post);
 }
 
 void XForm::c2xfp()
 {
-	basisTriangle->applyTransform(coordsp, xform_ptr->post);
+	basisTriangle->applyTransform(triangleCoordsP, xform_ptr->post);
 }
 
-void XForm::setContext(LuaThreadAdapter* ctx, int g_idx, int x_idx)
+void XForm::setContext(lua_State* L, Genome* g, int x_idx)
 {
-	LuaType::setContext(ctx);
-
-	idx = x_idx;
-	basisTriangle = m_adapter->basisTriangle();
-	xform_ptr = (m_adapter->genomeVector()->data() + g_idx)->xform + x_idx;
+	m_genome = g;
+	m_gidx   = m_genome->index();
+	m_xfidx  = x_idx;
+	get_xform_ptr(L);
 	xf2c(); // load Ax,Ay, Bx,By, Cx,Cy
 	xfp2c();
 }
@@ -1075,24 +1434,26 @@ flam3_xform* XForm::data()
 
 int XForm::translate(lua_State* L)
 {
+	get_xform_ptr(L);
 	double dx = luaL_checknumber(L, 1);
 	double dy = luaL_checknumber(L, 2);
-	coords.translate(dx, dy);
+	triangleCoords.translate(dx, dy);
 	c2xf();
 	return 0;
 }
 
 int XForm::pos(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 2)
 	{
 		double x = luaL_checknumber(L, 1);
 		double y = luaL_checknumber(L, 2);
-		QPointF f = QPointF(x,y) - coords.boundingRect().center();
-		coords.translate(f.x(), f.y());
+		QPointF f = QPointF(x,y) - triangleCoords.boundingRect().center();
+		triangleCoords.translate(f.x(), f.y());
 		c2xf();
 	}
-	QPointF c = coords.boundingRect().center();
+	QPointF c = triangleCoords.boundingRect().center();
 	lua_settop(L,0);
 	lua_pushnumber(L, c.x());
 	lua_pushnumber(L, c.y());
@@ -1101,8 +1462,9 @@ int XForm::pos(lua_State* L)
 
 int XForm::rotate(lua_State* L)
 {
+	get_xform_ptr(L);
 	double deg = luaL_checknumber(L, 1);
-	QPointF c(coords.boundingRect().center());
+	QPointF c(triangleCoords.boundingRect().center());
 	if (lua_gettop(L) > 1)
 	{
 		double x = luaL_checknumber(L, 2);
@@ -1111,18 +1473,19 @@ int XForm::rotate(lua_State* L)
 	}
 	QMatrix matrix;
 	matrix.translate(c.x(), c.y()).rotate(deg).translate(-c.x(), -c.y());
-	coords = matrix.map(QPolygonF(coords));
+	triangleCoords = matrix.map(QPolygonF(triangleCoords));
 	c2xf();
 	return 0;
 }
 
 int XForm::scale(lua_State* L)
 {
+	get_xform_ptr(L);
 	double dx = luaL_checknumber(L, 1);
 	double dy = dx;
 	if (lua_gettop(L) > 1)
 		dy = luaL_checknumber(L, 2);
-	QPointF c = coords.boundingRect().center();
+	QPointF c = triangleCoords.boundingRect().center();
 	if (lua_gettop(L) > 2)
 	{
 		double x = luaL_checknumber(L, 3);
@@ -1131,16 +1494,17 @@ int XForm::scale(lua_State* L)
 	}
 	QMatrix matrix;
 	matrix.translate(c.x(), c.y()).scale(dx, dy).translate(-c.x(), -c.y());
-	coords = matrix.map(QPolygonF(coords));
+	triangleCoords = matrix.map(QPolygonF(triangleCoords));
 	c2xf();
 	return 0;
 }
 
 int XForm::shear(lua_State* L)
 {
+	get_xform_ptr(L);
 	double dx = luaL_checknumber(L, 1);
 	double dy = luaL_checknumber(L, 2);
-	QPointF c = coords.boundingRect().center();
+	QPointF c = triangleCoords.boundingRect().center();
 	if (lua_gettop(L) > 2)
 	{
 		double x = luaL_checknumber(L, 3);
@@ -1149,7 +1513,7 @@ int XForm::shear(lua_State* L)
 	}
 	QMatrix matrix;
 	matrix.translate(c.x(), c.y()).shear(dx, dy).translate(-c.x(), -c.y());
-	coords = matrix.map(QPolygonF(coords));
+	triangleCoords = matrix.map(QPolygonF(triangleCoords));
 	c2xf();
 	return 0;
 }
@@ -1157,24 +1521,26 @@ int XForm::shear(lua_State* L)
 // post transform 'transforms'
 int XForm::translatep(lua_State* L)
 {
+	get_xform_ptr(L);
 	double dx = luaL_checknumber(L, 1);
 	double dy = luaL_checknumber(L, 2);
-	coordsp.translate(dx, dy);
+	triangleCoordsP.translate(dx, dy);
 	c2xfp();
 	return 0;
 }
 
 int XForm::posp(lua_State* L)
 {
+	get_xform_ptr(L);
 	if (lua_gettop(L) == 2)
 	{
 		double x = luaL_checknumber(L, 1);
 		double y = luaL_checknumber(L, 2);
-		QPointF f = QPointF(x,y) - coordsp.boundingRect().center();
-		coordsp.translate(f.x(), f.y());
+		QPointF f = QPointF(x,y) - triangleCoordsP.boundingRect().center();
+		triangleCoordsP.translate(f.x(), f.y());
 		c2xfp();
 	}
-	QPointF c = coordsp.boundingRect().center();
+	QPointF c = triangleCoordsP.boundingRect().center();
 	lua_settop(L,0);
 	lua_pushnumber(L, c.x());
 	lua_pushnumber(L, c.y());
@@ -1183,8 +1549,9 @@ int XForm::posp(lua_State* L)
 
 int XForm::rotatep(lua_State* L)
 {
+	get_xform_ptr(L);
 	double deg = luaL_checknumber(L, 1);
-	QPointF c(coordsp.boundingRect().center());
+	QPointF c(triangleCoordsP.boundingRect().center());
 	if (lua_gettop(L) > 1)
 	{
 		double x = luaL_checknumber(L, 2);
@@ -1193,18 +1560,19 @@ int XForm::rotatep(lua_State* L)
 	}
 	QMatrix matrix;
 	matrix.translate(c.x(), c.y()).rotate(deg).translate(-c.x(), -c.y());
-	coordsp = matrix.map(QPolygonF(coordsp));
+	triangleCoordsP = matrix.map(QPolygonF(triangleCoordsP));
 	c2xfp();
 	return 0;
 }
 
 int XForm::scalep(lua_State* L)
 {
+	get_xform_ptr(L);
 	double dx = luaL_checknumber(L, 1);
 	double dy = dx;
 	if (lua_gettop(L) > 1)
 		dy = luaL_checknumber(L, 2);
-	QPointF c = coordsp.boundingRect().center();
+	QPointF c = triangleCoordsP.boundingRect().center();
 	if (lua_gettop(L) > 2)
 	{
 		double x = luaL_checknumber(L, 3);
@@ -1213,16 +1581,17 @@ int XForm::scalep(lua_State* L)
 	}
 	QMatrix matrix;
 	matrix.translate(c.x(), c.y()).scale(dx, dy).translate(-c.x(), -c.y());
-	coordsp = matrix.map(QPolygonF(coordsp));
+	triangleCoordsP = matrix.map(QPolygonF(triangleCoordsP));
 	c2xfp();
 	return 0;
 }
 
 int XForm::shearp(lua_State* L)
 {
+	get_xform_ptr(L);
 	double dx = luaL_checknumber(L, 1);
 	double dy = luaL_checknumber(L, 2);
-	QPointF c = coordsp.boundingRect().center();
+	QPointF c = triangleCoordsP.boundingRect().center();
 	if (lua_gettop(L) > 2)
 	{
 		double x = luaL_checknumber(L, 3);
@@ -1231,9 +1600,10 @@ int XForm::shearp(lua_State* L)
 	}
 	QMatrix matrix;
 	matrix.translate(c.x(), c.y()).shear(dx, dy).translate(-c.x(), -c.y());
-	coordsp = matrix.map(QPolygonF(coordsp));
+	triangleCoordsP = matrix.map(QPolygonF(triangleCoordsP));
 	c2xfp();
 	return 0;
 }
 
 }
+

@@ -636,68 +636,29 @@ namespace Util
 		return g;
 	}
 
+	// set reasonable defaults for a new flam3_genome
 	void init_genome(flam3_genome* g)
 	{
-		// Clear and initialize a newly created and unused genome. Copied from
-		// clear_cp() in flam.c in the libflam3 source.
-		//
-		// todo: replace by clear_cp() which is now exported from libflam3-2.8
-		//
-		g->palette_index = flam3_palette_random;
-		flam3_get_palette(flam3_palette_random, g->palette, 0.0);
-		g->num_xforms = 0;
-		g->xform = 0;
-		g->chaos = 0;
-		g->time = 0.0;
-		g->center[0] = 0.0;
-		g->center[1] = 0.0;
-		g->rot_center[0] = 0.0;
-		g->rot_center[1] = 0.0;
-		g->gamma = 4.0;
-		g->vibrancy = 1.0;
-		g->contrast = 1.0;
-		g->brightness = 4.0;
+		clear_cp(g, flam3_defaults_on);
+
+		// set palette to all white and alpha = 1.0
+		for (int i = 0 ; i < 256 ; i++)
+		{
+			flam3_palette_entry* c = g->palette + i;
+			c->index = i;
+			c->color[0] = 1.0;
+			c->color[1] = 1.0;
+			c->color[2] = 1.0;
+			c->color[3] = 1.0;
+		}
+
+		// disable symmetry (flam3.c says 0 means none, but that's not true)
 		g->symmetry = 1;
-		g->hue_rotation = 0.0;
-		g->rotate = 0.0;
-		g->edits = NULL;
-		g->pixels_per_unit = 50;
-		g->final_xform_enable = 0;
-		g->final_xform_index = -1;
-		g->interpolation = flam3_interpolation_linear;
-		g->palette_interpolation = flam3_palette_interpolation_hsv;
-		g->genome_index = 0;
-		memset(g->parent_fname,0,flam3_parent_fn_len);
-		memset(g->flame_name, 0, flam3_name_len+1);
-		g->background[0] = 0.0;
-		g->background[1] = 0.0;
-		g->background[2] = 0.0;
-		g->width = 100;
-		g->height = 100;
-		g->spatial_oversample = 1;
-		g->spatial_filter_radius = 0.5;
-		g->zoom = 0.0;
-		g->sample_density = 1;
-		/* Density estimation stuff defaulting to ON */
-		g->estimator = 9.0;
-		g->estimator_minimum = 0.0;
-		g->estimator_curve = 0.4;
-		g->gam_lin_thresh = 0.01;
-		g->nbatches = 1;
-		g->ntemporal_samples = 60;
-		g->spatial_filter_select = flam3_gaussian_kernel;
 	}
 
-	void add_default_xform(flam3_genome* g)
+	// set reasonable defaults for a new flam3_xform
+	void init_xform(flam3_xform* xform)
 	{
-		flam3_xform* xform;
-		flam3_add_xforms(g, 1, 0, 0);
-
-		if (g->final_xform_enable == 1)
-			xform = g->xform + (g->num_xforms - 2);
-		else
-			xform = g->xform + (g->num_xforms - 1);
-
 		xform->c[0][0] = 1.0;
 		xform->c[0][1] = 0.0;
 		xform->c[1][0] = 0.0;
@@ -717,6 +678,22 @@ namespace Util
 		xform->var[VAR_LINEAR] = 1.0;
 		xform->color = 0.0;
 		xform->density = 0.5;
+	}
+
+	void add_default_xforms(flam3_genome* g, int num)
+	{
+		int new_idx = g->num_xforms;
+		if (g->final_xform_enable == 1)
+			new_idx -= 1;
+
+		flam3_add_xforms(g, num, 0, 0);
+
+		int last_idx = g->num_xforms - 1;
+		if (g->final_xform_enable == 1)
+			last_idx -= 1;
+
+		for (int n = new_idx ; n <= last_idx ; n++)
+			init_xform(g->xform + n);
 	}
 
 #define PI 3.14159265358979323846

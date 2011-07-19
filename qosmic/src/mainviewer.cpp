@@ -373,9 +373,14 @@ void MainViewer::popupMenuTriggeredSlot(QAction* action)
 	}
 }
 
-QString MainViewer::preset()
+QString MainViewer::presetName() const
 {
 	return selected_preset;
+}
+
+flam3_genome MainViewer::preset() const
+{
+	return ViewerPresetsModel::getInstance()->preset(selected_preset);
 }
 
 bool MainViewer::isDockWidget()
@@ -407,7 +412,7 @@ void MainViewer::setRenderStatus(RenderStatus* status)
 	}
 }
 
-bool MainViewer::isPresetSelected()
+bool MainViewer::isPresetSelected() const
 {
 	return selected_preset != nullPresetText;
 }

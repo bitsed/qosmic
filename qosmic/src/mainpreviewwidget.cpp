@@ -190,7 +190,12 @@ bool MainPreviewWidget::isPresetSelected() const
 	return selected_preset != null_preset;
 }
 
-QString MainPreviewWidget::preset() const
+QString MainPreviewWidget::presetName() const
 {
 	return selected_preset;
+}
+
+flam3_genome MainPreviewWidget::preset() const
+{
+	return ViewerPresetsModel::getInstance()->preset(selected_preset);
 }

@@ -21,6 +21,7 @@
 #define DIRECTORYVIEWWIDGET_H
 
 #include <QWidget>
+#include <QStringListModel>
 #include <QFileSystemModel>
 
 #include "ui_directoryviewwidget.h"
@@ -31,27 +32,61 @@ class DirectoryViewWidget : public QWidget, private Ui::DirectoryViewWidget
 {
 	Q_OBJECT
 
-	private:
-		QFileSystemModel* model;
-		FlamFileIconProvider* icon_provider;
-		QString path;
+	public:
+		// these enum values are found by looking it the QFileSystemModel source
+		enum SortType { NAME, SIZE, TYPE, DATE };
+		enum ViewType { SHORT, DETAILED };
 
-	protected:
-		void closeEvent(QCloseEvent*);
-
-	protected slots:
-		void openDirectoryAction(bool);
-		void selectFileAction(const QModelIndex&);
-		void dirLineEditChangedAction();
 
 	public:
 		DirectoryViewWidget(QWidget* parent=0);
 		~DirectoryViewWidget();
 		void setCurrentPath(QString);
 		QString currentPath();
+		SortType sortType() const;
+		Qt::SortOrder sortOrder() const;
+		void setSortOrder(Qt::SortOrder);
+		void setViewType(ViewType);
+		ViewType viewType() const;
+		void fileImageRendered(const QString&);
 
 	signals:
 		void flam3FileSelected(const QString&,bool =false);
+		void luaScriptSelected(const QString&);
+
+	protected:
+		void closeEvent(QCloseEvent*);
+		void showEvent(QShowEvent*);
+		void hideEvent(QHideEvent*);
+		void updateHistEntries(const QString &path);
+		void saveDetailedViewState() const;
+		void restoreDetailedViewState();
+
+	protected slots:
+		void openDirectoryAction(bool);
+		void selectFileAction(const QModelIndex&);
+		void upButtonClicked();
+		void forwardButtonClicked();
+		void backButtonClicked();
+		void historyIndexChanged(const QString&);
+		void configButtonClicked();
+		void configMenuTriggered(QAction*);
+		void showHiddenFiles(bool);
+		void sortBy(SortType);
+		void detailedViewSortTypeChanged(int, Qt::SortOrder);
+		void zoomInButtonClicked();
+		void zoomOutButtonClicked();
+
+	private:
+		QFileSystemModel* model;
+		QStringListModel* comboListModel;
+		FlamFileIconProvider* iconProvider;
+		int currHistEntry;
+		QStringList histEntries;
+		QString path;
+		ViewType view_type;
+		SortType sort_type;
+		Qt::SortOrder sort_order;
 };
 
 #endif
