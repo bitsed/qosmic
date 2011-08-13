@@ -94,6 +94,7 @@ class XForm : public LuaType
 
 
 		void setContext(lua_State*, Genome*, int);
+		void setModified();
 		flam3_xform* get_xform_ptr(lua_State*);
 		flam3_xform* data();
 

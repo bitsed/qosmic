@@ -69,14 +69,12 @@ class GenomeVectorListView : public QListView
 	Q_OBJECT
 
 	QModelIndex dragStartIndex;
-	QModelIndex mousePressIndex;
 
 	public:
 		GenomeVectorListView(QWidget* parent=0);
 
 	signals:
 		void genomesModified();
-		void genomeUpdated(int);
 
 	protected slots:
 		void commitData(QWidget* editor);
@@ -87,7 +85,6 @@ class GenomeVectorListView : public QListView
 		void dropEvent(QDropEvent* event);
 		void dragEnterEvent(QDragEnterEvent* event);
 		void dragMoveEvent(QDragMoveEvent* event);
-
 };
 
 

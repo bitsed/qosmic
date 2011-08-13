@@ -31,11 +31,10 @@ class PostTriangle : public Triangle
 		void resetPosition();
 		int type() const;
 		void basisScaledSlot();
+		void coordsToXForm();
 
 		static const int RTTI = 900422;
 
-	private:
-		void coordsToXForm();
 };
 
 #endif

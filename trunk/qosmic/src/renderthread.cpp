@@ -116,6 +116,7 @@ void RenderThread::run()
 	logInfo("RenderThread::run : starting thread");
 	while (running)
 	{
+		running_mutex.lock();
 		RenderRequest* job;
 		if (preview_request != 0)
 		{
@@ -127,28 +128,32 @@ void RenderThread::run()
 			job = image_request;
 			image_request = 0;
 		}
-		else if (request_queue.isEmpty())
-		{
-			// sleep only after checking for requests
-			current_request = 0;
-			usleep(10000);
-			continue;
-		}
 		else
 		{
 			rqueue_mutex.lock();
-			job = request_queue.dequeue();
-			rqueue_mutex.unlock();
+			if (request_queue.isEmpty())
+			{
+				// sleep only after checking for requests
+				current_request = 0;
+				rqueue_mutex.unlock();
+				running_mutex.unlock();
+				usleep(10000);
+				continue;
+			}
+			else
+			{
+				job = request_queue.dequeue();
+				logFine("RenderThread::run : dequeueing request %#x", (long)job);
+				rqueue_mutex.unlock();
+			}
 		}
 		render_loop_flag = true;
 		current_request = job;
 
-		logFiner(QString("RenderThread::run : rendering request 0x%1").arg((long)job,0,16));
-
 		// make sure there is something to calculate
 		bool no_pos_xf = true;
 		for (flam3_xform* xf = job->genome()->xform ;
-				   xf < job->genome()->xform + job->genome()->num_xforms ; xf++)
+			 xf < job->genome()->xform + job->genome()->num_xforms ; xf++)
 			if (xf->density > 0.0)
 			{
 				no_pos_xf = false;
@@ -157,9 +162,11 @@ void RenderThread::run()
 		if (no_pos_xf)
 		{
 			logWarn(QString("RenderThread::run : no xform in request 0x%1").arg((long)job,0,16));
+			running_mutex.unlock();
 			continue;
 		}
 
+		logFiner(QString("RenderThread::run : rendering request 0x%1").arg((long)job,0,16));
 		rtype = job->name();
 		flame.time = job->time();
 		flame.ngenomes = job->numGenomes();
@@ -209,7 +216,7 @@ void RenderThread::run()
 						genome->estimator_curve =           g->estimator_curve;
 						genome->estimator_minimum =         g->estimator_minimum;
 					}
-		}
+			}
 
 			default:
 				;
@@ -230,7 +237,7 @@ void RenderThread::run()
 		init_status_cb();
 		rendering = true;
 		ptimer.start();
-		flam3_render(&flame, out, 0, channels, alpha_trans, &_stats);
+		int rv = flam3_render(&flame, out, 0, channels, alpha_trans, &_stats);
 		millis = ptimer.elapsed();
 		rendering = false;
 		render_loop_flag = false;
@@ -262,6 +269,7 @@ void RenderThread::run()
 				}
 
 			_stop_current_job = false;
+			running_mutex.unlock();
 			continue;
 		}
 
@@ -270,17 +278,27 @@ void RenderThread::run()
 		{
 			if (buf_size != img_buf.size())
 				img_buf = QImage(buf_size, QImage::Format_RGB32);
-			for (int h = 0 ; h < genomes->height ; h++)
-				for (int w = 0 ; w < genomes->width ; w++, out += channels)
-					img_buf.setPixel(QPoint(w, h), qRgb(out[0], out[1], out[2]));
+			if (rv == 0)
+			{
+				for (int h = 0 ; h < genomes->height ; h++)
+					for (int w = 0 ; w < genomes->width ; w++, out += channels)
+						img_buf.setPixel(QPoint(w, h), qRgb(out[0], out[1], out[2]));
+			}
+			else
+				img_buf.fill(0);
 		}
 		else
 		{
 			if (buf_size != img_buf.size())
 				img_buf = QImage(buf_size, QImage::Format_ARGB32);
-			for (int h = 0 ; h < genomes->height ; h++)
-				for (int w = 0 ; w < genomes->width ; w++, out += channels)
-					img_buf.setPixel(QPoint(w, h), qRgba(out[0], out[1], out[2], out[3]));
+			if (rv == 0)
+			{
+				for (int h = 0 ; h < genomes->height ; h++)
+					for (int w = 0 ; w < genomes->width ; w++, out += channels)
+						img_buf.setPixel(QPoint(w, h), qRgba(out[0], out[1], out[2], out[3]));
+			}
+			else
+				img_buf.fill(0);
 		}
 		delete[] head;
 		for (int n = 0 ; n < flame.ngenomes ; n++)
@@ -316,6 +334,7 @@ void RenderThread::run()
 		event->setRequest(job);
 		emit flameRendered(event);
 		logFiner(QString("RenderThread::run : finished"));
+		running_mutex.unlock();
 	}
 
 	logInfo("RenderThread::run : thread exiting");
@@ -376,11 +395,27 @@ void RenderThread::stopRendering()
 		_stop_current_job = true;
 }
 
+void RenderThread::start()
+{
+	running = true;
+	QThread::start();
+}
+
+void RenderThread::stop()
+{
+	running = false;
+	preview_request = 0;
+	image_request = 0;
+	rqueue_mutex.lock();
+	request_queue.clear();
+	rqueue_mutex.unlock();
+	stopRendering();
+}
+
 double RenderThread::finished()
 {
 	return _percent_finished;
 }
-
 
 void RenderThread::render(RenderRequest* req)
 {
@@ -407,12 +442,29 @@ void RenderThread::render(RenderRequest* req)
 				.arg((long)req,0,16));
 	else
 	{
+		logFine("RenderThread::render : queueing req %#x", (long)req);
 		req->setFinished(false);
 		rqueue_mutex.lock();
 		request_queue.enqueue(req);
 		rqueue_mutex.unlock();
-		logFine(QString("RenderThread::render : queueing req"));
 	}
+}
+
+void RenderThread::cancel(RenderRequest* req)
+{
+	if (req->type() == RenderRequest::Queued)
+	{
+		rqueue_mutex.lock();
+		int count = request_queue.removeAll(req);
+		logFine("RenderThread::cancel : removing %d queued requests", count);
+		rqueue_mutex.unlock();
+	}
+	else if (req->type() == RenderRequest::Preview)
+		preview_request = 0;
+	else if (req->type() == RenderRequest::Image)
+		image_request = 0;
+	else
+		logWarn("RenderThread::cancel : unknown request type %d", (int)req->type());
 }
 
 

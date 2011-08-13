@@ -170,6 +170,7 @@ void FigureEditor::writeSettings()
 	settings.beginGroup("figureeditor");
 	settings.setValue("basis", QVariant::fromValue(transform()));
 	settings.setValue("previewdensity", preview_density);
+	settings.setValue("previewdepth", preview_depth);
 	settings.setValue("previewvisible", preview_visible);
 	settings.setValue("gridvisible", grid_visible);
 	settings.setValue("gridcolor", grid_color.name());
@@ -1504,7 +1505,16 @@ int FigureEditor::previewDensity() const
 void FigureEditor::setPreviewDensity(int value)
 {
 	preview_density = value;
-	updatePreview();
+}
+
+int FigureEditor::previewDepth() const
+{
+	return preview_depth;
+}
+
+void FigureEditor::setPreviewDepth(int value)
+{
+	preview_depth = value;
 }
 
 bool FigureEditor::previewVisible() const
@@ -1909,8 +1919,9 @@ void FigureEditor::setTransformLocation(SceneLocation location)
 	graphicsGuide->update();
 }
 
-void FigureEditor::saveUndoState(UndoState* state)
+void FigureEditor::provideState(UndoState* state)
 {
+	logFine("FigureEditor::provideState : setting state");
 	QTransform itrans(basisTriangle->coordTransform().inverted());
 	if (selectionItem->isVisible())
 		state->SelectionRect = itrans.map(selectionItem->polygon());
@@ -1965,8 +1976,10 @@ void FigureEditor::saveUndoState(UndoState* state)
 	state->MarkPos = itrans.map(coordinateMark->center());
 }
 
-void FigureEditor::restoreUndoState(UndoState* state)
+void FigureEditor::restoreState(UndoState* state)
 {
+	logFine("FigureEditor::restoreState : restoring state");
+	reset();
 	// Rebuild and reset the selection and the mark
 	QTransform basis(basisTriangle->coordTransform());
 

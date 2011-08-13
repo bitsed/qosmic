@@ -54,6 +54,7 @@ void VariationsWidget::addVariationValueSlot()
 {
 	m_variationValueEditor->updateValue(0.0);
 	updateFormData();
+	emit undoStateSignal();
 }
 
 // connected to the doublevalueeditor above the treeview

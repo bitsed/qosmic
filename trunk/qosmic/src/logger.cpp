@@ -31,6 +31,12 @@ namespace Util
 
 Logger* Logger::m_self = 0;// initialize pointer
 
+Logger::Logger()
+{
+	m_stream = &cout;
+	m_level = INFO;
+}
+
 Logger::Logger(QTextStream& out)
 {
 	m_stream = &out;

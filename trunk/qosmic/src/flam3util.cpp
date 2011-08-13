@@ -654,6 +654,8 @@ namespace Util
 
 		// disable symmetry (flam3.c says 0 means none, but that's not true)
 		g->symmetry = 1;
+		g->ntemporal_samples = 1;
+
 	}
 
 	// set reasonable defaults for a new flam3_xform

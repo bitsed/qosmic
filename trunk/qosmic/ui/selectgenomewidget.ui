@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>144</width>
-    <height>340</height>
+    <width>140</width>
+    <height>265</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -30,13 +30,6 @@
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
-       <widget class="QComboBox" name="m_genomeSelector">
-        <property name="toolTip">
-         <string>select genome</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
        <widget class="QFrame" name="frame">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
@@ -179,10 +172,10 @@
         </layout>
        </widget>
       </item>
-      <item row="2" column="0">
+      <item row="1" column="0">
        <widget class="GenomeVectorListView" name="m_genomesListView">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+         <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -201,6 +194,9 @@
         </property>
         <property name="movement">
          <enum>QListView::Snap</enum>
+        </property>
+        <property name="spacing">
+         <number>2</number>
         </property>
        </widget>
       </item>

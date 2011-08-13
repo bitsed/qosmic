@@ -35,6 +35,14 @@ class TriangleCoordsWidget : public QWidget, private Ui::TriangleCoordsWidget
 	public:
 		enum CoordType { Rect, Degree, Radian };
 
+	private:
+		int genome_offset;
+		GenomeVector* genome;
+		Triangle* selectedTriangle;
+		QButtonGroup* coordsButtonGroup;
+		CoordType coords;
+
+	public:
 		TriangleCoordsWidget(GenomeVector*, QWidget* parent=0);
 		void setGenome(int);
 		void updateFormData();
@@ -49,16 +57,13 @@ class TriangleCoordsWidget : public QWidget, private Ui::TriangleCoordsWidget
 		void triangleModifiedSlot(Triangle*);
 
 	protected slots:
-		void fieldEditedAction();
-		void field2EditedAction();
+		void fieldCoordsEditedAction();
+		void fieldVariablesEditedAction();
 		void coordsButtonGroupClickedAction();
 
 	private:
-		int genome_offset;
-		GenomeVector* genome;
-		Triangle* selectedTriangle;
-		QButtonGroup* coordsButtonGroup;
-		CoordType coords;
+		void updateCoordsFormData();
+		void updateVariablesFormData();
 };
 
 #endif

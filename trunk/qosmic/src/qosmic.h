@@ -21,6 +21,7 @@
 #define QOSMIC_H
 
 #include <QString>
+#include <QDir>
 
 #ifndef VERSION
 #define VERSION "unknown"
@@ -42,11 +43,15 @@ static const QString QOSMIC_VERSION( VERSION );
 static const QString QOSMIC_FLAM3DIR( FLAM3DIR );
 static const QString QOSMIC_TRANSDIR( TRANSDIR );
 static const QString QOSMIC_SCRIPTSDIR( SCRIPTSDIR );
-static const QString QOSMIC_TMP_FILE(".qosmic.flam3");
+static const QString QOSMIC_USERDIR( QDir::home().absoluteFilePath(".qosmic") );
+static const QString QOSMIC_AUTOSAVE( QOSMIC_USERDIR + "/autosave.flam3" );
 
-static const QString DEFAULT_FLAME_XML
-= "<flame time=\"0\" palette=\"27\" size=\"1280 960\" center=\"0.0 0.0\" scale=\"100.0\" oversample=\"1\" filter=\"0.0\" quality=\"40\" passes=\"1\" temporal_samples=\"1\" estimator_radius=\"0\" brightness=\"8.0\" gamma=\"4\">\
-   <xform weight=\"1.0\" color=\"1.0\" linear=\"1\" coefs=\"1 0 0 1 0 0\"/>\
-</flame>";
+static const QString DEFAULT_FLAME_XML(
+"<flame time=\"0\" palette=\"27\" size=\"1280 960\" center=\"0.0 0.0\" "
+	"scale=\"100.0\" oversample=\"1\" filter=\"0.0\" quality=\"40\" "
+	"passes=\"1\" temporal_samples=\"1\" estimator_radius=\"0\" "
+	"brightness=\"8.0\" gamma=\"4\">\n"
+	"<xform weight=\"1.0\" color=\"1.0\" linear=\"1\" coefs=\"1 0 0 1 0 0\"/>\n"
+"</flame>");
 
 #endif

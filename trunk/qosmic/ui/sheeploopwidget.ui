@@ -52,6 +52,15 @@
           <property name="toolTip">
            <string>first keyframe</string>
           </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QComboBox::AdjustToContents</enum>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
+          </property>
          </widget>
         </item>
         <item>
@@ -80,6 +89,15 @@
           </property>
           <property name="toolTip">
            <string>last keyframe</string>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QComboBox::AdjustToContents</enum>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -647,7 +665,17 @@ animate - time based interpolation of adjacent genomes</string>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="m_genomeIdxBox"/>
+             <widget class="QComboBox" name="m_genomeIdxBox">
+              <property name="sizeAdjustPolicy">
+               <enum>QComboBox::AdjustToContents</enum>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
+             </widget>
             </item>
             <item>
              <widget class="QLabel" name="label_9">

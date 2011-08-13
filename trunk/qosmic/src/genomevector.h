@@ -25,49 +25,82 @@
 
 #include "flam3util.h"
 #include "undoring.h"
+#include "renderthread.h"
 
-class GenomeVector : public QVector<flam3_genome>
-{
-	protected:
-		int selected_index;
-		QList<UndoRing> undoRings;
-
-	public:
-		void setSelectedIndex(int value);
-		int selectedIndex() const;
-		flam3_genome* selectedGenome();
-		UndoRing* undoRing(int idx=-1);
-
-		void append(const flam3_genome&);
-		void insert(int i, const flam3_genome& g);
-		void remove(int);
-		void clear();
-};
-
-
-class GenomeVectorListModel : public QAbstractListModel
+class GenomeVector : public QAbstractListModel, public QVector<flam3_genome>
 {
 	Q_OBJECT
 
-	GenomeVector* genomes;
-	QList<QVariant> previews;
+	protected:
+		RenderThread* r_thread;
+		int selected_index;
+		int use_previews;
+		bool enable_previews;
+		QSize preview_size;
+		QString preview_preset;
+		QList<UndoRing> undoRings;
+		QList<UndoStateProvider*> providerList;
+		QList<QVariant> previews;
+		QList<RenderRequest*> r_requests;
 
 	public:
-		GenomeVectorListModel(GenomeVector* vector, QObject* parent=0);
-		bool appendRow();
-		bool removeRow(int row);
-		GenomeVector* genomeVector() const;
+		GenomeVector();
+		void setSelected(int value);
+		int selected() const;
+		QModelIndex selectedIndex() const;
+		flam3_genome* selectedGenome();
+		UndoRing* undoRing(int idx=-1);
+		QList<UndoStateProvider*>* undoProviders();
+		void restoreUndoState(int idx, UndoState* state);
+		void addUndoState(int idx=-1);
+		bool undo(int idx=-1);
+		bool redo(int idx=-1);
+		void append(const flam3_genome& genome);
+		void insert(int i, int count, flam3_genome* genomes);
+		void insert(int i, const flam3_genome& genome);
+		bool remove(int i, int count=1);
+		void clear();
+		flam3_genome* data();  // QVector interface
+		int size() const;
 
 		// the QAbstractListModel interface
+		bool appendRow();
+		bool appendRow(const flam3_genome& genome);
+		bool removeRow(int row);
+		bool removeRows(int row, int count);
+		bool insertRow(int row);
+		bool insertRow(int row, const flam3_genome& genome);
+		bool insertRows(int row, int count, flam3_genome* genomes);
+		bool moveRow(int from, int to);
 		int rowCount(const QModelIndex& parent=QModelIndex()) const;
 		QVariant data(const QModelIndex& idx, int role=Qt::DisplayRole) const;
+		QMap<int, QVariant> itemData(const QModelIndex& index) const;
 		bool setData(const QModelIndex& idx, const QVariant& value, int role=Qt::EditRole);
+		bool setData(flam3_genome* genomes, int ncps=1);
 		Qt::ItemFlags flags(const QModelIndex&) const;
 		bool hasIndex(int row, int column, const QModelIndex& parent=QModelIndex()) const;
 		QVariant headerData(int section, Qt::Orientation orientation,
 							int role=Qt::DisplayRole) const;
 		Qt::DropActions supportedDropActions() const;
 
+
+		void usingPreviews(bool);
+		void enablePreviews(bool);
+		void setPreviewSize(const QSize& size);
+		QSize previewSize() const;
+		void setPreviewPreset(const QString &s);
+		QString previewPreset() const;
+		void dataModified(const QList<bool>&);
+
+	public slots:
+		void flameRenderedAction(RenderEvent*);
+		void updateSelectedPreview();
+		void updatePreviews();
+		void updatePreview(int);
+		void clearPreviews();
+
+	private:
+		void setCapacity(int entries);
 };
 
 

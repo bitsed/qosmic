@@ -26,6 +26,7 @@
 
 #include "mainviewer.h"
 #include "viewerpresetsmodel.h"
+#include "mainwindow.h"
 
 //
 // This has gotten wierd and complicated.  The point of the timer
@@ -38,10 +39,13 @@
 // The 'F7' key resizes to the previous 'F8' size.  The 'Esc' key closes the
 // viewer.
 //
-MainViewer::MainViewer ( QWidget* parnt, QString title )
-	: QWidget(parnt), QosmicWidget(this, title)
+MainViewer::MainViewer(QWidget* parent, const QString& title)
+: QWidget(parent), QosmicWidget(this, title)
 {
-	setupUi ( this );
+	setupUi(this);
+
+	m_request.setName("viewer");
+	m_request.setType(RenderRequest::Queued);
 
 	if (isDockWidget())
 	{
@@ -98,6 +102,7 @@ MainViewer::MainViewer ( QWidget* parnt, QString title )
 	QPixmap p(1,1);
 	p.fill(Qt::black);
 	m_pitem = m_scene.addPixmap(p);
+	m_pitem->setAcceptDrops(true);
 	m_graphicsView->setScene(&m_scene);
 	m_scene.installEventFilter(this);
 	m_scene.setBackgroundBrush( Qt::black );
@@ -121,6 +126,7 @@ MainViewer::MainViewer ( QWidget* parnt, QString title )
 	timer->setInterval(1000);
 	timer->setSingleShot(true);
 	connect(timer, SIGNAL(timeout()), this, SLOT(checkResized()));
+	connect(RenderThread::getInstance(), SIGNAL(flameRendered(RenderEvent*)), this, SLOT(requestRenderedAction(RenderEvent*)));
 }
 
 QSize MainViewer::getViewerSize()
@@ -233,6 +239,8 @@ void MainViewer::setPixmap(const QPixmap& p, bool resized)
 	}
 	else
 	{
+		m_titem->setVisible(false);
+		m_ritem->setVisible(false);
 		m_pitem->setPixmap( p );
 		QSize size = p.size();
 		m_graphicsView->setSceneRect(0, 0, size.width(), size.height());
@@ -242,7 +250,15 @@ void MainViewer::setPixmap(const QPixmap& p, bool resized)
 void MainViewer::showEvent(QShowEvent* e)
 {
 	if (!e->spontaneous())
+	{
+		if (m_pix.isNull())
+		{
+			QPixmap p(getViewerSize());
+			p.fill(Qt::black);
+			setPixmap(p);
+		}
 		emit viewerResized( getViewerSize() );
+	}
 }
 
 QPixmap MainViewer::pixmap()
@@ -415,4 +431,70 @@ void MainViewer::setRenderStatus(RenderStatus* status)
 bool MainViewer::isPresetSelected() const
 {
 	return selected_preset != nullPresetText;
+}
+
+void MainViewer::dragEnterEvent(QDragEnterEvent* event)
+{
+	if (event->mimeData()->hasFormat("application/x-mutationpreviewwidget")
+	|| event->mimeData()->hasFormat("application/x-qabstractitemmodeldatalist"))
+		event->acceptProposedAction();
+}
+
+void MainViewer::dropEvent(QDropEvent* event)
+{
+	bool do_render(false);
+
+	if (event->mimeData()->hasFormat("application/x-qabstractitemmodeldatalist"))
+	{
+		int idx = event->mimeData()->data("application/x-qabstractitemmodeldatalist").toInt();
+		GenomeVector* genomes = dynamic_cast<MainWindow*>(getWidget("MainWindow"))->genomeVector();
+		if (idx < genomes->size())
+		{
+			m_request.setName(QString("genome %1").arg(idx + 1));
+			m_request.setGenome(genomes->data() + idx);
+			do_render = true;
+		}
+	}
+	else if (event->mimeData()->hasFormat("application/x-mutationpreviewwidget"))
+	{
+		MutationPreviewWidget* mutation = qobject_cast<MutationPreviewWidget*>(event->source());
+		m_request.setName(mutation->toolTip().left(30));
+		m_request.setGenome(mutation->genome());
+		do_render = true;
+	}
+
+	if (do_render)
+	{
+		m_request.setSize(getViewerSize());
+		if (isPresetSelected())
+			m_request.setImagePresets(preset());
+		else
+			m_request.setImagePresets(*(dynamic_cast<MainWindow*>(getWidget("MainWindow"))->genomeVector()->selectedGenome()));
+		RenderThread::getInstance()->render(&m_request);
+	}
+}
+
+void MainViewer::requestRenderedAction(RenderEvent* event)
+{
+	if (event->request() == &m_request)
+	{
+		setPixmap(QPixmap::fromImage(event->request()->image()));
+		event->accept();
+	}
+}
+
+
+// ----------------------------------------------------------------------------
+
+MainViewerGraphicsView::MainViewerGraphicsView(QWidget* parent)
+: QGraphicsView(parent)
+{
+}
+
+void MainViewerGraphicsView::dragEnterEvent(QDragEnterEvent* /*event*/)
+{
+}
+
+void MainViewerGraphicsView::dropEvent(QDropEvent* /*event*/)
+{
 }

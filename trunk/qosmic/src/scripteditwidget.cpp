@@ -31,13 +31,13 @@ ScriptEditWidget::ScriptEditWidget(MainWindow* m, QWidget* parent)
 
 	QSettings s;
 	s.beginGroup("scripteditwidget");
-	m_scriptEdit->setPlainText(s.value("editortext", "").toString());
+	m_scriptEdit->setPlainText(s.value("editortext", "print('hello world.')").toString());
 	m_scriptEdit->setCurrentFont(s.value("editorfont", m_scriptEdit->currentFont()).value<QFont>());
 	lua_thread.setLuaPaths(s.value("luapaths", lua_thread.luaPaths()).toString());
 
 	m_printOutputEdit->setMinimumHeight(10);
 	QList<int> sizes;
-	sizes << 30 << 4;
+	sizes << 30 << 40;
 	m_splitter->setSizes(sizes);
 	m_splitter->restoreState(s.value("editorsplitters").toByteArray());
 

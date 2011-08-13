@@ -146,11 +146,14 @@ class SheepLoopWidget : public QWidget, public QosmicWidget, private Ui::SheepLo
 		void saveSheepLoop();
 
 	protected:
-		void changeEvent(QEvent *e);
+		void changeEvent(QEvent*);
+		void showEvent(QShowEvent*);
+		void hideEvent(QHideEvent*);
 
 	private slots:
 		void tabWidgetIndexChanged(int);
-		void beginBoxIndexChanged(QString);
+		void beginBoxIndexChanged(int);
+		void endBoxIndexChanged(int);
 		void temporalSamplesUpdated();
 		void addNewMotionElement();
 		void delCurrentMotionElement();

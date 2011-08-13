@@ -46,7 +46,7 @@ typedef QList<Triangle*> TriangleList;
 /**
  * The QGraphicsScene that manages the Triangles.
  */
-class FigureEditor : public QGraphicsScene, public QosmicWidget
+class FigureEditor : public QGraphicsScene, public QosmicWidget, public UndoStateProvider
 {
 	Q_OBJECT
 
@@ -73,6 +73,8 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget
 		int getNumberOfTriangles();
 		void setPreviewDensity(int);
 		int previewDensity() const;
+		void setPreviewDepth(int);
+		int previewDepth() const;
 		void setPreviewVisible(bool);
 		bool previewVisible() const;
 		void setGridVisible(bool);
@@ -100,8 +102,8 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget
 		void setCenteredScaling(SceneLocation);
 		SceneLocation transformLocation();
 		void setTransformLocation(SceneLocation);
-		void saveUndoState(UndoState*);
-		void restoreUndoState(UndoState*);
+		void provideState(UndoState*);
+		void restoreState(UndoState*);
 		EditMode mode() const;
 		QPointF triangleTransformPos(Triangle*);
 		QPointF triangleTransformPos();

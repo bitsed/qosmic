@@ -14,6 +14,10 @@
   <property name="windowTitle">
    <string>Qosmic</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../qosmic.qrc">
+    <normaloff>:/icons/qosmic.xpm</normaloff>:/icons/qosmic.xpm</iconset>
+  </property>
   <property name="documentMode">
    <bool>true</bool>
   </property>
@@ -58,7 +62,7 @@
      <x>0</x>
      <y>0</y>
      <width>270</width>
-     <height>17</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

@@ -44,10 +44,17 @@ class UndoState
 		void clear();
 };
 
+class UndoStateProvider
+{
+	public:
+		virtual void provideState(UndoState*) =0;
+		virtual void restoreState(UndoState*) =0;
+};
+
 class UndoRing
 {
-	int head;
-	int current;
+	qint64 head;
+	qint64 current;
 
 	UndoState ring[UNDORING_SIZE];
 

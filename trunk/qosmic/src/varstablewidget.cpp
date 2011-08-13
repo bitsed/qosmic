@@ -148,6 +148,7 @@ void VarsTableWidget::mousePressEvent(QMouseEvent* e)
 			QModelIndex idx( indexAt(e->pos()) );
 			if (idx.column() == 0)
 			{
+				selectionModel()->clear();
 				model()->setData(idx.sibling(idx.row(), 1), 0);
 				if (idx.parent().isValid())
 					emit valueUpdated(idx.parent().row());
@@ -204,6 +205,7 @@ void VarsTableWidget::mouseReleaseEvent(QMouseEvent* e)
 		e->accept();
 		emit undoStateSignal();
 	}
+	selectionModel()->clear();
 }
 
 int VarsTableWidget::precision()

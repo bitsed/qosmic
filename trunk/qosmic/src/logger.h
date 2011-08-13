@@ -23,6 +23,17 @@
 #include <QMutex>
 #include <QTextStream>
 
+// undef these tokens to avoid conflicts with other
+// environments that might define them (win32).
+#undef CRITICAL
+#undef ERROR
+#undef NONE
+#undef WARN
+#undef INFO
+#undef FINE
+#undef FINER
+#undef FINEST
+
 
 extern QTextStream cout;
 extern QTextStream cerr;
@@ -38,6 +49,7 @@ class Logger
 		QMutex m_mutex;
 
 	protected:
+		Logger();
 		Logger(QTextStream&);
 
 	public:

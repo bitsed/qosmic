@@ -21,7 +21,6 @@
 #include <QApplication>
 #include <QTranslator>
 #include <QFileInfo>
-#include <QDir>
 
 #include "qosmic.h"
 #include "logger.h"
@@ -36,7 +35,7 @@ int main(int argc, char* argv[])
 	QCoreApplication::setApplicationName("qosmic");
 
 	QApplication app(argc, argv);
-	app.setWindowIcon(QIcon(":icons/qosmicicon.xpm"));
+	app.setWindowIcon(QIcon(":icons/qosmic.xpm"));
 
 	// Initialize the logger
 	Logger::getInstance()->setLevel(Logger::levelFor(getenv("log")));
@@ -64,30 +63,36 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	// look for flam3 palettes
-	QString palettes(QOSMIC_FLAM3DIR);
-	if (palettes.size() != 0)
-		palettes += "/flam3-palettes.xml";
-
-	if (QFileInfo(palettes).exists())
-		setenv("flam3_palettes", palettes.toAscii().data(), 0);
-	else if (QFileInfo("./flam3-palettes.xml").exists())
-		setenv("flam3_palettes","./flam3-palettes.xml", 0);
-	else if (QFileInfo("./flam3/flam3-palettes.xml").exists())
-		setenv("flam3_palettes","./flam3/flam3-palettes.xml", 0);
-	else if (!QFileInfo(getenv("flam3_palettes")).exists())
+	if (!QFileInfo(getenv("flam3_palettes")).exists())
 	{
-		cerr << QString(QCoreApplication::translate("CoreApp", "Error: "
-				"No palettes file found in %1\n\n\n"
-				"./flam3-palettes.xml\n"
-				"./flam3/flam3-palettes.xml\n%2\n\n"
-				"The flam3 palettes xml file could not\n"
-				"be found.  You can set this path using\n"
-				"the flam3_palettes environment variable.\n\n"
-				"For example:\n"
-				"flam3_palettes=/some/path-to/flam3-palettes.xml qosmic"))
-				.arg(palettes).arg(getenv("flam3_palettes")) << endl;
-		return 1;
+		// look for flam3 palettes
+		QStringList palettes;
+		palettes << QString(QOSMIC_FLAM3DIR).append("/flam3-palettes.xml")
+				 << "./flam3-palettes.xml"
+				 << "./flam3/flam3-palettes.xml" ;
+
+		bool no_palette(true);
+		foreach (QString palette, palettes)
+			if (QFileInfo(palette).exists())
+			{
+				putenv(QString("flam3_palettes=%1").arg(palette).toAscii().data());
+				no_palette = false;
+				break;
+			}
+
+		if (no_palette)
+		{
+			cerr << QString(QCoreApplication::translate("CoreApp", "Error: "
+														"No palettes file found at:\n"
+														"%1\n%2\n%3\n%4\n\n"
+														"The flam3 palettes xml file could not\n"
+														"be found.  You can set this path using\n"
+														"the flam3_palettes environment variable.\n\n"
+														"For example:\n"
+														"flam3_palettes=/some/path-to/flam3-palettes.xml qosmic"))
+					.arg(palettes[0], palettes[1], palettes[2], getenv("flam3_palettes")) << endl;
+			return 1;
+		}
 	}
 
 	if (argc > 1 &&
@@ -111,7 +116,7 @@ int main(int argc, char* argv[])
 	}
 
 	MainWindow* mw = new MainWindow();
-	QString fname = QDir::home().absoluteFilePath(QOSMIC_TMP_FILE);
+	QString fname(QOSMIC_AUTOSAVE);
 	if (argc > 1)
 	{
 		fname = QString(argv[1]);

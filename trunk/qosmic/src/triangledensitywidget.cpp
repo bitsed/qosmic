@@ -313,7 +313,7 @@ void TriangleDensityWidget::mergeComboBoxChangedAction(int idx)
 
 		logInfo(QString("TriangleDensityWidget::mergeWithGenomeAction : "
 			"merging %1 with %2")
-			.arg(genome->selectedIndex()).arg(idx - 1));
+			.arg(genome->selected()).arg(idx - 1));
 
 		// make more sliders if necessary
 		while (merged_sliders.size() < other_genome.num_xforms)

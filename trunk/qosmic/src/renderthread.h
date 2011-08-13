@@ -27,7 +27,7 @@
 #include <QMutex>
 #include <QQueue>
 
-#include "genomevector.h"
+#include "flam3util.h"
 
 /**
   * Clients submit a RenderRequest to the RenderThread which calls
@@ -201,6 +201,7 @@ class RenderThread : public QThread, public StatusProvider
 		RenderThread();
 
 	public:
+		QMutex running_mutex;
 		bool running; // flag to kill thread
 		static RenderThread* getInstance();
 		~RenderThread();
@@ -213,10 +214,13 @@ class RenderThread : public QThread, public StatusProvider
 		bool earlyClip() const;
 		void setEarlyClip(bool);
 		RenderRequest* current() const;
+		void start();
+		void render(RenderRequest*);
+		void cancel(RenderRequest*);
 
 	public slots:
-		void render(RenderRequest*);
 		void stopRendering();
+		void stop();
 		void killAll();
 
 	signals:

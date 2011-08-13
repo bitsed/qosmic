@@ -30,10 +30,12 @@ AdjustSceneWidget::AdjustSceneWidget(FigureEditor* e, QWidget* parent)
 	m_guideCheckBox->setChecked(editor->guideVisible());
 	m_guideColorButton->setEnabled(editor->guideVisible());
 	m_previewCheckBox->setChecked(editor->previewVisible());
-	m_previewEditor->setEnabled(editor->previewVisible());
-	m_previewEditor->updateValue(editor->previewDensity());
+	m_previewFrame->setEnabled(editor->previewVisible());
+	m_previewDensityEditor->updateValue(editor->previewDensity());
+	m_previewDepthEditor->updateValue(editor->previewDepth());
 
-	connect(m_previewEditor, SIGNAL(valueUpdated()), this, SLOT(previewUpdatedAction()));
+	connect(m_previewDensityEditor, SIGNAL(valueUpdated()), this, SLOT(previewUpdatedAction()));
+	connect(m_previewDepthEditor, SIGNAL(valueUpdated()), this, SLOT(previewUpdatedAction()));
 	connect(m_previewCheckBox, SIGNAL(toggled(bool)), this, SLOT(togglePreviewAction(bool)));
 	connect(m_gridCheckBox, SIGNAL(toggled(bool)), this, SLOT(toggleGridAction(bool)));
 	connect(m_gridColorButton, SIGNAL(pressed()), this, SLOT(gridColorSelectAction()));
@@ -45,13 +47,15 @@ AdjustSceneWidget::AdjustSceneWidget(FigureEditor* e, QWidget* parent)
 
 void AdjustSceneWidget::previewUpdatedAction()
 {
-	editor->setPreviewDensity(m_previewEditor->value());
+	editor->setPreviewDensity(m_previewDensityEditor->value());
+	editor->setPreviewDepth(m_previewDepthEditor->value());
+	editor->updatePreview();
 }
 
 void AdjustSceneWidget::togglePreviewAction(bool checked)
 {
 	editor->setPreviewVisible(checked);
-	m_previewEditor->setEnabled(checked);
+	m_previewFrame->setEnabled(checked);
 }
 
 

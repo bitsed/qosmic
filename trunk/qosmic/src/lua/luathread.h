@@ -36,7 +36,6 @@ class LuaThread : public QThread
 {
 	Q_OBJECT
 
-	MainWindow* mw;
 	LuaThreadAdapter* thread_adapter;
 	QString lua_text;
 	QString lua_error;

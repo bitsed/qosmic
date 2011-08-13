@@ -66,6 +66,7 @@ class EditModeSelectorWidget : public QWidget, private Ui::EditModeSelectorWidge
 		void sceneScaledSlot();
 		void sceneCenteredSlot(int);
 		void sceneConfigSlot();
+		void buttonReleasedSlot();
 
 	protected:
 		void closeEvent(QCloseEvent*);
