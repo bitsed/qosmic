@@ -96,6 +96,7 @@ class Genome : public LuaType
 	int xforms(lua_State*);
 
 	void setContext(lua_State*, int);
+	void setModified();
 	flam3_genome* data();
 
 	static const char className[];

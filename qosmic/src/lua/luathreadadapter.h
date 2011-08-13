@@ -38,6 +38,7 @@ class LuaThreadAdapter : public QObject
 
 	MainWindow* m_win;
 	LuaThread* m_thread;
+	QList<bool> m_modified;
 	QMutex m_mutex;
 
 	public:
@@ -50,6 +51,11 @@ class LuaThreadAdapter : public QObject
 		BasisTriangle* basisTriangle();
 		LuaThread* thread() const;
 		MainWindow* window() const;
+		QList<bool>& modifiedList();
+		void setModified(int, bool =true);
+		void insertModified(int, bool =true);
+		void removeModified(int);
+		void resetModified(bool =false);
 		void renderPreview(int =0);
 		void update(int =0);
 		bool loadFile(const QString&);

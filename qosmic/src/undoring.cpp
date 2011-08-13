@@ -29,7 +29,7 @@ UndoRing::UndoRing()
 UndoRing::UndoRing(const UndoRing& in)
 {
 	logFiner("UndoRing::UndoRing(&copy) : enter");
-	UndoRing();
+	current = head = -1;
 	*this = in;
 }
 
@@ -106,7 +106,7 @@ bool UndoRing::atTail()
 
 int UndoRing::index()
 {
-	return current;
+	return (head - current + 1);
 }
 
 int UndoRing::size()
@@ -115,16 +115,14 @@ int UndoRing::size()
 }
 
 
-UndoState::UndoState()
+UndoState::UndoState() : Genome()
 {
-	Genome.xform = 0;
-	Genome.num_xforms = 0;
 	clear();
 }
 
-UndoState::UndoState(const UndoState& in)
+UndoState::UndoState(const UndoState& in) : Genome()
 {
-	UndoState();
+	clear();
 	*this = in;
 }
 

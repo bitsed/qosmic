@@ -23,14 +23,33 @@
 
 #include <QPixmap>
 #include <QResizeEvent>
+#include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QTimer>
 #include <QMenu>
 
-#include "ui_mainviewer.h"
 #include "qosmicwidget.h"
 #include "renderthread.h"
+#include "mutationwidget.h"
+
+
+// The MainViewerGraphicsView defines the drag/drop methods so that these
+// events are not handled and are forwarded to the MainViewer.
+class MainViewerGraphicsView : public QGraphicsView
+{
+	Q_OBJECT
+
+	public:
+		MainViewerGraphicsView(QWidget* parent=0);
+
+	protected:
+		void dragEnterEvent(QDragEnterEvent*);
+		void dropEvent(QDropEvent*);
+};
+
+
+#include "ui_mainviewer.h"
 
 class MainViewer : public QWidget, public QosmicWidget,
 	private Ui::MainViewer
@@ -47,6 +66,7 @@ class MainViewer : public QWidget, public QosmicWidget,
 	QGraphicsPixmapItem* m_pitem;
 	QTimer* timer;
 	QMenu* popupMenu;
+	RenderRequest m_request;
 	QString selected_preset;
 	QGraphicsTextItem* m_titem;
 	QGraphicsRectItem* m_ritem;
@@ -55,7 +75,7 @@ class MainViewer : public QWidget, public QosmicWidget,
 	bool show_status;
 
 	public:
-		MainViewer(QWidget* parent=0, QString title=QString("MainViewer"));
+		MainViewer(QWidget* parent=0, const QString& title=QString("MainViewer"));
 		~MainViewer();
 		QSize getViewerSize();
 		QPixmap pixmap();
@@ -77,6 +97,7 @@ class MainViewer : public QWidget, public QosmicWidget,
 		void scaleLastAction();
 		void scaleResetAction();
 		void saveImageAction();
+		void requestRenderedAction(RenderEvent*);
 
 	signals:
 		void viewerResized(const QSize&);
@@ -87,6 +108,8 @@ class MainViewer : public QWidget, public QosmicWidget,
 		void showEvent(QShowEvent*);
 		void hideEvent(QHideEvent*);
 		bool eventFilter(QObject*, QEvent*);
+		void dragEnterEvent(QDragEnterEvent*);
+		void dropEvent(QDropEvent*);
 
 	protected slots:
 		void checkResized();

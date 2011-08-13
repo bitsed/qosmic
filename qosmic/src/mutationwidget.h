@@ -82,6 +82,7 @@ class MutationWidget : public QWidget, private Ui::MutationWidget
 
 	protected:
 		void showEvent(QShowEvent*);
+		void cancelRequests();
 		void mutateAB(char);
 		void cross();
 

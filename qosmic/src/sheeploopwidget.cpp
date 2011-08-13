@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <QStandardItemModel>
+#include <QListView>
 
 #include "sheeploopwidget.h"
 #include "mainpreviewwidget.h"
@@ -34,6 +35,8 @@ MotionViewVarItemEditor::MotionViewVarItemEditor(const MotionViewItemDelegate* d
 		items << QString("var: ") + s;
 	foreach (QString s, Util::get_variable_names())
 		items << QString("par: ") + s;
+	items << "xform: a" << "xform: b" << "xform: c" << "xform: d" << "xform: e" << "xform: f"
+		  << "post: a" << "post: b" << "post: c" << "post: d" << "post: e" << "post: f";
 	addItems(items);
 	connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxCurrentIndexChanged(int)));
 }
@@ -175,13 +178,22 @@ SheepLoopWidget::SheepLoopWidget(GenomeVector* gv, QWidget* parent) :
 
 	connect(m_runToolButton, SIGNAL(clicked()), this, SLOT(runSheepButtonAction()));
 	connect(m_saveToolButton, SIGNAL(clicked()), this, SIGNAL(saveSheepLoop()));
-	connect(m_beginBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(beginBoxIndexChanged(QString)));
+	connect(m_beginBox, SIGNAL(currentIndexChanged(int)), this, SLOT(beginBoxIndexChanged(int)));
+	connect(m_endBox, SIGNAL(currentIndexChanged(int)), this, SLOT(endBoxIndexChanged(int)));
 	connect(m_temporalSamplesEditor, SIGNAL(valueUpdated()), this, SLOT(temporalSamplesUpdated()));
 	connect(m_animateButton, SIGNAL(clicked(bool)), this, SLOT(xformAnimateButtonClicked(bool)));
 
 	QStandardItemModel* model = new QStandardItemModel(0, 4);
 	m_motionElementsView->setModel(model);
 	m_motionElementsView->setItemDelegate(new MotionViewItemDelegate(m_motionElementsView));
+
+	m_beginBox->setModel(gv);
+	m_endBox->setModel(gv);
+	m_genomeIdxBox->setModel(gv);
+
+	qobject_cast<QListView*>(m_beginBox->view())->setSpacing(2);
+	qobject_cast<QListView*>(m_endBox->view())->setSpacing(2);
+	qobject_cast<QListView*>(m_genomeIdxBox->view())->setSpacing(2);
 
 	connect(m_addToolButton, SIGNAL(clicked()), this, SLOT(addNewMotionElement()));
 	connect(m_delToolButton, SIGNAL(clicked()), this, SLOT(delCurrentMotionElement()));
@@ -195,9 +207,9 @@ SheepLoopWidget::SheepLoopWidget(GenomeVector* gv, QWidget* parent) :
 
 void SheepLoopWidget::xformIdxBoxIndexChanged(int idx)
 {
-	int genome_idx = m_genomeIdxBox->currentIndex();
+	int genome_idx = qMax(0, m_genomeIdxBox->currentIndex());
 	flam3_genome* genome = genomes->data() + genome_idx;
-	if (!genome || idx >= genome->num_xforms)
+	if (!genome || idx >= genome->num_xforms || genome_idx < 0 || genome_idx >= genomes->size())
 	{
 		logWarn("SheepLoopWidget::xformIdxBoxIndexChanged : no xform %d in genome %d", idx, genome_idx);
 		return;
@@ -270,6 +282,66 @@ void SheepLoopWidget::xformIdxBoxIndexChanged(int idx)
 					model->setItem(n, 0, new QStandardItem(QString("opacity")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->opacity)));
 				}
+				else if (motion->c[0][0] != 0.0)
+				{
+					model->setItem(n, 0, new QStandardItem(QString("xform: a")));
+					model->setItem(n, 1, new QStandardItem(QString::number(motion->c[0][0])));
+				}
+				else if (motion->c[1][0] != 0.0)
+				{
+					model->setItem(n, 0, new QStandardItem(QString("xform: b")));
+					model->setItem(n, 1, new QStandardItem(QString::number(motion->c[1][0])));
+				}
+				else if (motion->c[2][0] != 0.0)
+				{
+					model->setItem(n, 0, new QStandardItem(QString("xform: c")));
+					model->setItem(n, 1, new QStandardItem(QString::number(motion->c[2][0])));
+				}
+				else if (motion->c[0][1] != 0.0)
+				{
+					model->setItem(n, 0, new QStandardItem(QString("xform: d")));
+					model->setItem(n, 1, new QStandardItem(QString::number(motion->c[0][1])));
+				}
+				else if (motion->c[1][1] != 0.0)
+				{
+					model->setItem(n, 0, new QStandardItem(QString("xform: e")));
+					model->setItem(n, 1, new QStandardItem(QString::number(motion->c[1][1])));
+				}
+				else if (motion->c[2][1] != 0.0)
+				{
+					model->setItem(n, 0, new QStandardItem(QString("xform: f")));
+					model->setItem(n, 1, new QStandardItem(QString::number(motion->c[2][1])));
+				}
+				else if (motion->post[0][0] != 0.0)
+				{
+					model->setItem(n, 0, new QStandardItem(QString("post: a")));
+					model->setItem(n, 1, new QStandardItem(QString::number(motion->post[0][0])));
+				}
+				else if (motion->post[1][0] != 0.0)
+				{
+					model->setItem(n, 0, new QStandardItem(QString("post: b")));
+					model->setItem(n, 1, new QStandardItem(QString::number(motion->post[1][0])));
+				}
+				else if (motion->post[2][0] != 0.0)
+				{
+					model->setItem(n, 0, new QStandardItem(QString("post: c")));
+					model->setItem(n, 1, new QStandardItem(QString::number(motion->post[2][0])));
+				}
+				else if (motion->post[0][1] != 0.0)
+				{
+					model->setItem(n, 0, new QStandardItem(QString("post: d")));
+					model->setItem(n, 1, new QStandardItem(QString::number(motion->post[0][1])));
+				}
+				else if (motion->post[1][1] != 0.0)
+				{
+					model->setItem(n, 0, new QStandardItem(QString("post: e")));
+					model->setItem(n, 1, new QStandardItem(QString::number(motion->post[1][1])));
+				}
+				else if (motion->post[2][1] != 0.0)
+				{
+					model->setItem(n, 0, new QStandardItem(QString("post: f")));
+					model->setItem(n, 1, new QStandardItem(QString::number(motion->post[2][1])));
+				}
 			}
 		}
 		if (motion->motion_func == MOTION_SIN)
@@ -325,6 +397,30 @@ void SheepLoopWidget::motionItemChanged(QStandardItem* item)
 				motion->density = value;
 			else if (name == "opacity")
 				motion->opacity = value;
+			else if (name == "xform: a")
+				motion->c[0][0] = value;
+			else if (name == "xform: b")
+				motion->c[1][0] = value;
+			else if (name == "xform: c")
+				motion->c[2][0] = value;
+			else if (name == "xform: d")
+				motion->c[0][1] = value;
+			else if (name == "xform: e")
+				motion->c[1][1] = value;
+			else if (name == "xform: f")
+				motion->c[2][1] = value;
+			else if (name == "post: a")
+				motion->post[0][0] = value;
+			else if (name == "post: b")
+				motion->post[1][0] = value;
+			else if (name == "post: c")
+				motion->post[2][0] = value;
+			else if (name == "post: d")
+				motion->post[0][1] = value;
+			else if (name == "post: e")
+				motion->post[1][1] = value;
+			else if (name == "post: f")
+				motion->post[2][1] = value;
 			else
 				logWarn(QString("SheepLoopWidget::motionItemChanged : unknown element %1").arg(name));
 			motion->motion_func = tmp.motion_func;
@@ -361,6 +457,30 @@ void SheepLoopWidget::motionItemChanged(QStandardItem* item)
 				motion->density = value;
 			else if (name == "opacity")
 				motion->opacity = value;
+			else if (name == "xform: a")
+				motion->c[0][0] = value;
+			else if (name == "xform: b")
+				motion->c[1][0] = value;
+			else if (name == "xform: c")
+				motion->c[2][0] = value;
+			else if (name == "xform: d")
+				motion->c[0][1] = value;
+			else if (name == "xform: e")
+				motion->c[1][1] = value;
+			else if (name == "xform: f")
+				motion->c[2][1] = value;
+			else if (name == "post: a")
+				motion->post[0][0] = value;
+			else if (name == "post: b")
+				motion->post[1][0] = value;
+			else if (name == "post: c")
+				motion->post[2][0] = value;
+			else if (name == "post: d")
+				motion->post[0][1] = value;
+			else if (name == "post: e")
+				motion->post[1][1] = value;
+			else if (name == "post: f")
+				motion->post[2][1] = value;
 			else
 				logWarn(QString("SheepLoopWidget::motionItemChanged : unknown element %1").arg(name));
 			motion->motion_func = tmp.motion_func;
@@ -443,66 +563,54 @@ void SheepLoopWidget::genomeSelectedSlot(int idx)
 
 void SheepLoopWidget::genomesModifiedSlot()
 {
-	int n_genomes = genomes->size();
-	QString b_text = m_beginBox->currentText();
-	QString e_text = m_endBox->currentText();
-	QString g_text = m_genomeIdxBox->currentText();
-
-	m_genomeIdxBox->blockSignals(true);
-	m_genomeIdxBox->clear();
-	for (int n = 1 ; n <= n_genomes ; n++)
-		m_genomeIdxBox->addItem(QString::number(n));
-	int text_idx = m_genomeIdxBox->findText(g_text);
-	if (text_idx != -1)
-		m_genomeIdxBox->setCurrentIndex(text_idx);
-	m_genomeIdxBox->blockSignals(false);
-
-	m_beginBox->clear();
-	for (int n = 1 ; n <= n_genomes ; n++)
-		m_beginBox->addItem(QString::number(n));
-	text_idx = m_beginBox->findText(b_text);
-	if (text_idx != -1)
-		m_beginBox->setCurrentIndex(text_idx);
-
-	m_endBox->clear();
-	for (int n = m_beginBox->currentText().toInt() ; n <= n_genomes ; n++)
-		m_endBox->addItem(QString::number(n));
-	text_idx = m_endBox->findText(e_text);
-	if (text_idx != -1)
-		m_endBox->setCurrentIndex(text_idx);
+	if (m_beginBox->currentIndex() > m_endBox->currentIndex())
+	{
+		m_endBox->blockSignals(true);
+		m_endBox->setCurrentIndex(m_beginBox->currentIndex());
+		m_endBox->blockSignals(false);
+	}
 
 	m_temporalFilterGroupBox->setEnabled(m_temporalSamplesEditor->value() != 1);
-
-	m_xformIdxBox->blockSignals(true);
-	int idx = m_xformIdxBox->currentIndex();
-	m_xformIdxBox->clear();
-	int n_xforms = (genomes->data () + m_genomeIdxBox->currentIndex())->num_xforms;
-	QStringList idxs;
-	for (int i = 1 ; i <= n_xforms ; i++)
-		idxs << QString::number(i);
-	m_xformIdxBox->addItems(idxs);
-	if (idx >= 0 && idx < m_xformIdxBox->count())
+	int g_idx = m_genomeIdxBox->currentIndex();
+	if (genomes->size() > 0 && 0 <= g_idx && g_idx < genomes->size())
 	{
-		m_xformIdxBox->setCurrentIndex(idx);
-		xformIdxBoxIndexChanged(idx);
+		m_xformIdxBox->blockSignals(true);
+		int idx = m_xformIdxBox->currentIndex();
+		m_xformIdxBox->clear();
+		int n_xforms = (genomes->data () + g_idx)->num_xforms;
+		QStringList idxs;
+		for (int i = 1 ; i <= n_xforms ; i++)
+			idxs << QString::number(i);
+		m_xformIdxBox->addItems(idxs);
+		if (idx >= 0 && idx < m_xformIdxBox->count())
+		{
+			m_xformIdxBox->setCurrentIndex(idx);
+			xformIdxBoxIndexChanged(idx);
+		}
+		else
+			xformIdxBoxIndexChanged(0);
+		m_xformIdxBox->blockSignals(false);
 	}
-	else
-		xformIdxBoxIndexChanged(0);
-	m_xformIdxBox->blockSignals(false);
 }
 
-void SheepLoopWidget::beginBoxIndexChanged(QString st)
+void SheepLoopWidget::endBoxIndexChanged(int /*idx*/)
 {
-	int n_genomes = genomes->size();
-	int idx = st.toInt();
-	QString cur_text = m_endBox->currentText();
+	if (m_beginBox->currentIndex() > m_endBox->currentIndex())
+	{
+		m_beginBox->blockSignals(true);
+		m_beginBox->setCurrentIndex(m_endBox->currentIndex());
+		m_beginBox->blockSignals(false);
+	}
+}
 
-	m_endBox->clear();
-	for (int n = idx ; n <= n_genomes ; n++)
-		m_endBox->addItem(QString::number(n));
-	int text_idx = m_endBox->findText(cur_text);
-	if (text_idx != -1)
-		m_endBox->setCurrentIndex(text_idx);
+void SheepLoopWidget::beginBoxIndexChanged(int /*idx*/)
+{
+	if (m_beginBox->currentIndex() > m_endBox->currentIndex())
+	{
+		m_endBox->blockSignals(true);
+		m_endBox->setCurrentIndex(m_beginBox->currentIndex());
+		m_endBox->blockSignals(false);
+	}
 }
 
 void SheepLoopWidget::runSheepButtonAction()
@@ -522,6 +630,9 @@ void SheepLoopWidget::temporalSamplesUpdated()
 
 void SheepLoopWidget::reset()
 {
+	m_beginBox->setCurrentIndex(qMax(0, m_beginBox->currentIndex()));
+	m_endBox->setCurrentIndex(qMax(0, m_endBox->currentIndex()));
+	m_genomeIdxBox->setCurrentIndex(qMax(0, m_genomeIdxBox->currentIndex()));
 	genomesModifiedSlot();
 	running = false;
 	m_runToolButton->setIcon(QIcon(":/icons/silk/bullet_go.xpm"));
@@ -529,12 +640,12 @@ void SheepLoopWidget::reset()
 
 int SheepLoopWidget::beginIdx() const
 {
-	return m_beginBox->currentText().toInt();
+	return m_beginBox->currentIndex() + 1;
 }
 
 int SheepLoopWidget::endIdx() const
 {
-	return m_endBox->currentText().toInt();
+	return m_endBox->currentIndex() + 1;
 }
 
 int SheepLoopWidget::frames() const
@@ -676,22 +787,32 @@ flam3_genome* SheepLoopWidget::createSheepLoop(int& ncp)
 		{
 			flam3_genome* g = genomes->data() + n;
 			if ((interp == flam3_interpolation_smooth) && (n > begin_idx) && (n < num_genomes - 2))
+			{
+				logInfo("SheepLoopWidget::createSheepLoop : time %d using smooth interp", (int)g->time);
 				g->interpolation = flam3_interpolation_smooth;
+			}
 			else
+			{
+				logInfo("SheepLoopWidget::createSheepLoop : time %d using linear interp", (int)g->time);
 				g->interpolation = flam3_interpolation_linear;
+			}
 			g->interpolation_type = interp_type;
-			logInfo(QString("SheepLoopWidget::createSheepLoop : %1 using smooth interp %2").arg(n)
-					.arg(g->interpolation == flam3_interpolation_smooth));
 			g->palette_interpolation = palette_interp;
 			g->palette_mode = palette_mode;
 		}
 		sheep = Util::create_genome_interpolation(genomes->data() + begin_idx, num_genomes, &dncp, stagger);
 	}
 
-	flam3_genome current = dynamic_cast<MainPreviewWidget*>(getWidget("MainPreviewWidget"))->preset();
+	MainPreviewWidget* preview = dynamic_cast<MainPreviewWidget*>(getWidget("MainPreviewWidget"));
+	flam3_genome current = flam3_genome();
+	if (preview->isPresetSelected())
+		current = preview->preset();
+	else
+		current = *(genomes->selectedGenome());
+
 	for (int i = 0 ; i < dncp ; i++)
 	{
-		// adjust the quality settings to match the current genome
+		// adjust the quality settings to match the preview widget settings
 		flam3_genome* genome = sheep + i;
 		genome->ntemporal_samples =         temporal_samples;
 		genome->temporal_filter_type =      temp_filter;
@@ -715,4 +836,16 @@ flam3_genome* SheepLoopWidget::createSheepLoop(int& ncp)
 
 	ncp = dncp;
 	return sheep;
+}
+
+void SheepLoopWidget::showEvent(QShowEvent* e)
+{
+	if (!e->spontaneous())
+		genomes->usingPreviews(true);
+}
+
+void SheepLoopWidget::hideEvent(QHideEvent* e)
+{
+	if (!e->spontaneous())
+		genomes->usingPreviews(false);
 }

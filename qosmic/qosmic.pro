@@ -77,8 +77,10 @@ else {
 
 ################################################################################
 ## Set cflags here if needed.
-#QMAKE_CFLAGS="-march=core2 -O2 -pipe -Wl,-t"
-#QMAKE_CXXFLAGS=$$QMAKE_CFLAGS
+CONFIG(release, debug|release) {
+	QMAKE_CFLAGS="-march=native -O2 -pipe -Wl,-t"
+	QMAKE_CXXFLAGS=$$QMAKE_CFLAGS
+}
 
 
 ################################################################################

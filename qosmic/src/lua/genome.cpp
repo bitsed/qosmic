@@ -119,7 +119,10 @@ flam3_genome* Genome::get_genome_ptr(lua_State* L)
 {\
 	get_genome_ptr(L); \
 	if (lua_gettop(L) == 1)\
+	{\
 		genome_ptr->name = luaL_checkint(L, 1);\
+		setModified();\
+	}\
 	else\
 	{\
 		lua_settop(L, 0);\
@@ -140,7 +143,10 @@ flam3_genome* Genome::get_genome_ptr(lua_State* L)
 {\
 	get_genome_ptr(L); \
 	if (lua_gettop(L) == 1)\
+	{\
 		genome_ptr->name = luaL_checknumber(L, 1);\
+		setModified();\
+	}\
 	else\
 	{\
 		lua_settop(L, 0);\
@@ -228,6 +234,7 @@ int Genome::final_xform_enable(lua_State* L)
 			if (genome_ptr->final_xform_enable == 1)
 				flam3_delete_xform(genome_ptr, genome_ptr->final_xform_index);
 		}
+		setModified();
 	}
 	else
 		lua_pushboolean(L, genome_ptr->final_xform_enable);
@@ -244,6 +251,7 @@ int Genome::center(lua_State* L)
 	{
 		*x = luaL_checknumber(L, 1);
 		*y = luaL_checknumber(L, 2);
+		setModified();
 	}
 	else
 	{
@@ -263,6 +271,7 @@ int Genome::rot_center(lua_State* L)
 	{
 		*x = luaL_checknumber(L, 1);
 		*y = luaL_checknumber(L, 2);
+		setModified();
 	}
 	else
 	{
@@ -284,6 +293,7 @@ int Genome::background(lua_State* L)
 		*r = luaL_checknumber(L, 1);
 		*g = luaL_checknumber(L, 2);
 		*b = luaL_checknumber(L, 3);
+		setModified();
 	}
 	else
 	{
@@ -312,6 +322,7 @@ int Genome::xform(lua_State* L)
 			if (genome_ptr->num_xforms <= idx)
 				Util::add_default_xforms(genome_ptr, 1 + idx - genome_ptr->num_xforms);
 			flam3_copy_xform(genome_ptr->xform + idx, xf);
+			setModified();
 
 			lua_settop(L, 0);
 			luaL_getmetatable(L, XForm::className);
@@ -428,7 +439,7 @@ int Genome::add_xform(lua_State* L)
 		for (int i = last_idx ; i <= dest_idx ; i++)
 			flam3_copy_xform(genome_ptr->xform + i, xf);
 	}
-
+	setModified();
 	lua_settop(L, 0);
 	luaL_getmetatable(L, XForm::className);
 	Lunar<XForm>::new_T(L);
@@ -464,6 +475,7 @@ int Genome::copy_xform(lua_State* L)
 
 	flam3_xform* to = genome_ptr->xform + dest_idx;
 	flam3_copy_xform(to, from);
+	setModified();
 	lua_settop(L, 0);
 	luaL_getmetatable(L, XForm::className);
 	Lunar<XForm>::new_T(L);
@@ -478,7 +490,10 @@ int Genome::del_xform(lua_State* L)
 	if (idx >= genome_ptr->num_xforms || idx < 0)
 		luaL_error(L, "genome has no xform at index %d", idx + 1);
 	else
+	{
 		flam3_delete_xform(genome_ptr, idx);
+		setModified();
+	}
 	return 0;
 }
 
@@ -487,6 +502,7 @@ int Genome::clear_xforms(lua_State* L)
 	get_genome_ptr(L);
 	for (int n = genome_ptr->num_xforms - 1 ; n >= 0 ; n--)
 		flam3_delete_xform(genome_ptr, n);
+	setModified();
 	return 0;
 }
 
@@ -498,6 +514,7 @@ int Genome::load_palette(lua_State* L)
 	if (lua_gettop(L) > 1)
 		hue_rotation = luaL_checknumber(L, 2);
 	flam3_get_palette(idx, genome_ptr->palette, hue_rotation);
+	setModified();
 	return 0;
 }
 
@@ -565,6 +582,7 @@ int Genome::palette(lua_State* L)
 			genome_ptr->palette[i].color[3] = val;
 			lua_pop(L, 1);
 		}
+		setModified();
 	}
 	else
 	{
@@ -585,6 +603,7 @@ int Genome::palette(lua_State* L)
 			genome_ptr->palette[idx].color[1] = g;
 			genome_ptr->palette[idx].color[2] = b;
 			genome_ptr->palette[idx].color[3] = a;
+			setModified();
 		}
 		else
 		{
@@ -643,6 +662,7 @@ int Genome::chaos(lua_State* L)
 				}
 				lua_pop(L, 1);
 			}
+			setModified();
 		}
 		else
 		{
@@ -660,6 +680,7 @@ int Genome::chaos(lua_State* L)
 					lua_pop(L, 1);
 					genome_ptr->chaos[idx][j] = val;
 				}
+				setModified();
 			}
 			else
 			{
@@ -671,6 +692,7 @@ int Genome::chaos(lua_State* L)
 						luaL_error(L, "no index %d,%d in chaos array", idx + 1, rdx + 1);
 					double val = luaL_checknumber(L, 3);
 					genome_ptr->chaos[idx][rdx] = val;
+					setModified();
 				}
 				else
 				{
@@ -708,6 +730,7 @@ int Genome::highlight_power(lua_State* L)
 		double val = luaL_checknumber(L, 1);
 		if (val < 0.0) val = -1.0;
 		genome_ptr->highlight_power = val;
+		setModified();
 	}
 	else
 		lua_pushnumber(L, genome_ptr->highlight_power);
@@ -719,6 +742,12 @@ void Genome::setContext(lua_State* L, int index)
 {
 	m_idx = index;
 	get_genome_ptr(L);
+}
+
+void Genome::setModified()
+{
+	if (m_idx > -1)
+		m_adapter->setModified(m_idx);
 }
 
 flam3_genome* Genome::data()

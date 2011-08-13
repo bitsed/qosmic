@@ -193,6 +193,7 @@ int Frame::load(lua_State* L)
 	const char* fname = luaL_checkstring(L, 1);
 	lua_settop(L, 0);
 	lua_pushboolean(L, m_adapter->loadFile(fname));
+	m_adapter->resetModified(true);
 	return 1;
 }
 
@@ -218,42 +219,78 @@ int Frame::save(lua_State* L)
 
 int Frame::copy_genome(lua_State* L)
 {
-	flam3_genome* g = 0;
-	int from = 0;
 	int to = genome_vec->size();
 	if (lua_isnumber(L, 2))
 		to = luaL_checkint(L, 2) - 1;
 
 	if (to < 0)
-		luaL_error(L, "index out of range: Genome[%d] is null", to);
+		luaL_error(L, "index out of range: Genome[%d] is null", to + 1);
 
-	if (lua_isuserdata(L, 1)) // copy Genome to 'b'
-		g = Lunar<Genome>::check(L, 1)->get_genome_ptr(L);
-
+	if (lua_isuserdata(L, 1))
+	{
+		// copy Genome 'a' to 'b'
+		Lua::Genome* lg = Lunar<Genome>::check(L, 1);
+		flam3_genome* g = lg->get_genome_ptr(L);
+		int from = lg->index();	// a non-attached temporary Lua genome has index < 0
+		flam3_genome* gd = genome_vec->data();
+		if (g != gd + to)
+		{
+			if (to < genome_vec->size())
+			{
+				flam3_copy(gd + to, g); // copy 'from' into 'to'
+				m_adapter->setModified(to);
+			}
+			else
+			{
+				// increase the genome vector size if needed
+				while (genome_vec->size() <= to)
+				{
+					flam3_genome gt = flam3_genome();
+					if (from < 0)
+						flam3_copy(&gt, g);
+					else
+						flam3_copy(&gt, genome_vec->data() + from);
+					genome_vec->append(gt);
+					m_adapter->insertModified(genome_vec->size());
+				}
+			}
+		}
+		else
+			logWarn("Lua::Frame::copy_genome : attempted to copy over same instance");
+	}
 	else
 	{
-		// copy 'a' to 'b'
-		from = luaL_checkint(L, 1) - 1;
+		// copy index 'a' to 'b'
+		int from = luaL_checkint(L, 1) - 1;
 		if (from == to)
 			return 0;
 
 		if (from >= genome_vec->size() || from < 0)
-			luaL_error(L, "index out of range: Genome[%d] is null", from);
+			luaL_error(L, "index out of range: Genome[%d] is null", from + 1);
+
+		flam3_genome* gd = genome_vec->data();
+		if (gd + from != gd + to)
+		{
+			if (to < genome_vec->size())
+			{
+				flam3_copy(gd + to, gd + from); // copy 'from' into 'to'
+				m_adapter->setModified(to);
+			}
+			else
+			{
+				// increase the genome vector size if needed
+				while (genome_vec->size() <= to)
+				{
+					flam3_genome gt = flam3_genome();
+					flam3_copy(&gt, genome_vec->data() + from);
+					genome_vec->append(gt);
+					m_adapter->insertModified(genome_vec->size());
+				}
+			}
+		}
+		else
+			logWarn("Lua::Frame::copy_genome : attempted to copy over same instance");
 	}
-
-	// increase the genome vector size if needed
-	if (genome_vec->size() <= to)
-	{
-		flam3_genome g = flam3_genome();
-		Util::init_genome(&g);
-		while (genome_vec->size() <= to)
-			genome_vec->append(g);
-	}
-
-	if (g == 0) // copy 'a' to 'b'
-		g = genome_vec->data() + from;
-
-	flam3_copy(genome_vec->data() + to, g);
 
 	lua_settop(L, 0);
 	luaL_getmetatable(L, Genome::className);
@@ -268,8 +305,14 @@ int Frame::del_genome(lua_State* L)
 	int idx = qMax(0, luaL_checkint(L, 1) - 1);
 	if (idx >= genome_vec->size())
 		return 0;
-	genome_vec->remove(idx);
-	return 0;
+
+	lua_settop(L, 0);
+	lua_pushboolean(L, genome_vec->remove(idx));
+	m_adapter->removeModified(idx);
+	if (idx == 0 && genome_vec->size() > 0)
+		m_adapter->setModified(idx);
+
+	return 1;
 }
 
 int Frame::add_genome(lua_State* L)
@@ -278,40 +321,56 @@ int Frame::add_genome(lua_State* L)
 	if (nargs > 1)
 	{
 		int num_to_add = qMax(1, luaL_checkint(L, 1));
-		flam3_genome* g = Lunar<Genome>::check(L, 2)->get_genome_ptr(L);
+		Lua::Genome* lg = Lunar<Genome>::check(L, 2);
+		flam3_genome* g = lg->get_genome_ptr(L);
+		int idx = lg->index();
 
-		// increase the genome vector size
-		flam3_genome gt = flam3_genome();
-		Util::init_genome(&gt);
 		for (int n = 0 ; n < num_to_add ; n++)
 		{
+			flam3_genome gt = flam3_genome();
+			if (idx < 0)
+				flam3_copy(&gt, g);
+			else
+				flam3_copy(&gt, genome_vec->data() + idx);
 			genome_vec->append(gt);
-			int idx = genome_vec->size() - 1;
-			flam3_copy(genome_vec->data() + idx, g);
+			m_adapter->insertModified(genome_vec->size());
 		}
-
 	}
 	else
 	{
 		int num_to_add = 1;
 		flam3_genome* ga = 0;
+		int idx = 0;
 		if (nargs > 0)
 		{
 			if (lua_isuserdata(L, 1))
-				ga = Lunar<Genome>::check(L, 1)->get_genome_ptr(L);
+			{
+				Lua::Genome* lg = Lunar<Genome>::check(L, 1);
+				ga  = lg->get_genome_ptr(L);
+				idx = lg->index();
+			}
 			else
 				num_to_add = qMax(1, luaL_checkint(L, 1));
 		}
 
 		// increase the genome vector size
-		flam3_genome g = flam3_genome();
-		Util::init_genome(&g);
 		for (int n = 0 ; n < num_to_add ; n++)
+		{
+			flam3_genome g = flam3_genome();
+			if (ga != 0)
+			{
+				if (idx < 0)
+					flam3_copy(&g, ga); // append the temp genome given by the user
+				else
+					flam3_copy(&g, genome_vec->data() + idx);
+			}
+			else
+				Util::init_genome(&g);
 			genome_vec->append(g);
-
-		if (ga != 0)
-			flam3_copy(genome_vec->data() + genome_vec->size() - 1, ga);
+			m_adapter->insertModified(genome_vec->size());
+		}
 	}
+
 	lua_settop(L, 0);
 	luaL_getmetatable(L, Genome::className);
 	Lunar<Genome>::new_T(L);
@@ -327,26 +386,41 @@ int Frame::genome(lua_State* L)
 		case 2:
 		{
 			int idx = luaL_checkint(L, 1) - 1;
-			flam3_genome* g = Lunar<Genome>::check(L, 2)->get_genome_ptr(L);
+			if (idx < 0)
+				luaL_error(L, "index out of range: Genome[%d] is null", idx + 1);
+			Lua::Genome* lg = Lunar<Genome>::check(L, 2);
+			flam3_genome* g = lg->get_genome_ptr(L);
 			flam3_genome* to = genome_vec->data() + idx;
 			if (to == g)
-				return 1;
+				break;
 
-			// increase the genome vector size if needed
-			if (genome_vec->size() <= idx)
+			if (idx < genome_vec->size())
 			{
-				flam3_genome g = flam3_genome();
-				Util::init_genome(&g);
-				while (genome_vec->size() <= idx)
-					genome_vec->append(g);
+				flam3_copy(to, g);
+				m_adapter->setModified(idx);
 			}
-			flam3_copy(to, g);
+			else
+			{
+				// increase the genome vector size if needed
+				int from = lg->index();
+				while (genome_vec->size() <= idx)
+				{
+					flam3_genome gt = flam3_genome();
+					if (from < 0)
+						flam3_copy(&gt, g);
+					else
+						flam3_copy(&gt, genome_vec->data() + from);
+					genome_vec->append(gt);
+					m_adapter->insertModified(genome_vec->size());
+				}
+			}
+
 			break;
 		}
 		case 1:
 		{
 			int idx = luaL_checkint(L, 1) - 1;
-			if (idx > genome_vec->size() || idx < 0)
+			if (idx >= genome_vec->size() || idx < 0)
 				luaL_error(L, "index out of range: Genome[%d] is null", idx + 1);
 			lua_pop(L, 1);
 			luaL_getmetatable(L, Genome::className);

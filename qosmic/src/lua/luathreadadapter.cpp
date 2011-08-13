@@ -149,3 +149,31 @@ MainWindow* Lua::LuaThreadAdapter::window() const
 {
 	return m_win;
 }
+
+QList<bool>& Lua::LuaThreadAdapter::modifiedList()
+{
+	return m_modified;
+}
+
+void Lua::LuaThreadAdapter::insertModified(int idx, bool flag)
+{
+	m_modified.insert(idx, flag);
+}
+
+void Lua::LuaThreadAdapter::setModified(int idx, bool flag)
+{
+	m_modified.replace(idx, flag);
+}
+
+void Lua::LuaThreadAdapter::removeModified(int idx)
+{
+	m_modified.removeAt(idx);
+}
+
+void Lua::LuaThreadAdapter::resetModified(bool flag)
+{
+	m_modified.clear();
+	for (int i = 0 ; i < genomeVector()->size() ; i++)
+		m_modified.append(flag);
+}
+

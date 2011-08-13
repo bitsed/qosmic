@@ -47,7 +47,8 @@
 #include "sheeploopwidget.h"
 #include "xfedit.h"
 
-class MainWindow : public QMainWindow, private Ui::MainWindow
+class MainWindow
+: public QMainWindow, public UndoStateProvider, public QosmicWidget, private Ui::MainWindow
 {
 	Q_OBJECT
 
@@ -66,6 +67,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		bool eventFilter(QObject*, QEvent*);
 		bool importGenome(const QString&);
 		bool exportGenome(const QString&, int);
+		void provideState(UndoState*);
+		void restoreState(UndoState*);
 
 	public slots:
 		void render();
@@ -125,7 +128,6 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 		void loadGenomeList(flam3_genome*, int);
 		QString strippedName(const QString&);
 		void updateRecentFileActions();
-		void appendFlam3ToGenome(flam3_genome*, int);
 		bool readFlam3File(const QString&, flam3_genome**, int*);
 		bool writeGenomesToFile(const QString&, flam3_genome*, int);
 		void setUndoState(UndoState*);

@@ -93,6 +93,7 @@ void Triangle::resetPosition()
 
 	TriangleCoords tc = basisTriangle->getCoords(m_xform->c);
 	setPoints(tc);
+	adjustSceneRect();
 }
 
 void Triangle::addNode( NodeItem *node )

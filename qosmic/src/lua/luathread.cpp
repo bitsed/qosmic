@@ -30,11 +30,11 @@
 namespace Lua
 {
 LuaThread::LuaThread(MainWindow* m, QObject* parent)
-: QThread(parent), mw(m), lua_error(), lua_paths()
+: QThread(parent), lua_error(), lua_paths()
 {
 	lua_paths.append(QOSMIC_SCRIPTSDIR + "/?.lua");
-	lua_paths.append(";" + QDir::homePath()  + "/.qosmic/scripts/?.lua");
-	thread_adapter = new LuaThreadAdapter(mw, this);
+	lua_paths.append(";" + QOSMIC_USERDIR  + "/scripts/?.lua");
+	thread_adapter = new LuaThreadAdapter(m, this);
 	irandinit(&ctx, 0);
 }
 
@@ -49,9 +49,13 @@ void LuaThread::run()
 	lua_State* L = luaL_newstate();
 	luaL_openlibs(L);
 	lua_load_environment(L);
-	mw->setDialogsEnabled(false);
+	GenomeVector* genomes = thread_adapter->genomeVector();
+	int selected = genomes->selected();
+	thread_adapter->resetModified();
+	thread_adapter->window()->setDialogsEnabled(false);
 	lua_stopluathread_script = false;
 	lua_error.clear();
+
 	int error = luaL_loadstring(L, lua_text.toAscii().constData())
 					|| lua_pcall(L, 0, LUA_MULTRET, 0);
 	if (error)
@@ -73,7 +77,18 @@ void LuaThread::run()
 		lua_error = tr("ok");
 
 	lua_close(L);
-	mw->setDialogsEnabled(true);
+	thread_adapter->window()->setDialogsEnabled(true);
+
+	// signal the genomevector watchers of updates made with Lua calls
+	QList<bool> modified  = thread_adapter->modifiedList();
+	genomes->dataModified(modified);
+	int current = genomes->selected();
+	if ((0 <= current) &&
+	((current < modified.size() && modified.at(current)) || (selected != current)))
+	{
+		logFine("LuaThread::run : rendering preview for %d", current);
+		thread_adapter->renderPreview(current);
+	}
 	emit scriptFinished();
 }
 

@@ -69,7 +69,7 @@ void DoubleValueEditor::keyPressEvent(QKeyEvent* e)
 			break;
 
 		case Qt::Key_Return:
-			emit valueUpdated();
+			QDoubleSpinBox::keyPressEvent(e);
 			emit undoStateSignal();
 			break;
 

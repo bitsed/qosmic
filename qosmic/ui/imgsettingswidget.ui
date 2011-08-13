@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>225</width>
-    <height>334</height>
+    <width>235</width>
+    <height>332</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -535,7 +535,11 @@
            </property>
            <property name="toolTip">
             <string>the genome symmetry group
-1 = no symmetry, 0 = random</string>
+2 or more means rotational
+1 means identity, ie no symmetry
+0 means pick a random symmetry (maybe none)
+-1 means bilateral (reflection)
+-2 or less means rotational and reflective</string>
            </property>
            <property name="text">
             <string>symmetry</string>

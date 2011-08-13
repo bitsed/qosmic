@@ -35,11 +35,6 @@ EditModeSelectorWidget::EditModeSelectorWidget(FigureEditor* e, QWidget* parent)
 
 	connect(&m_buttonGroup, SIGNAL(buttonPressed(int)), this, SLOT(groupButtonPressedSlot(int)));
 
-	m_moveLeftButton->setAutoRepeat(false);
-	m_moveRightButton->setAutoRepeat(false);
-	m_moveUpButton->setAutoRepeat(false);
-	m_moveDownButton->setAutoRepeat(false);
-
 	// restore (Double/Int)ValueEditor settings
 	m_multiplierEditor->restoreSettings();
 	m_rotateEditor->restoreSettings();
@@ -79,11 +74,17 @@ EditModeSelectorWidget::EditModeSelectorWidget(FigureEditor* e, QWidget* parent)
 	connect(m_rotateRightButton, SIGNAL(released()), this, SIGNAL(undoStateSignal()));
 	connect(m_rotateRightButton, SIGNAL(pressed()), this, SLOT(triangleRotateCWAction()));
 
-
 	connect(m_moveLeftButton, SIGNAL(pressed()), this, SLOT(moveTriangleLeftAction()));
+	connect(m_moveLeftButton, SIGNAL(released()), this, SLOT(buttonReleasedSlot()));
+
 	connect(m_moveRightButton, SIGNAL(pressed()), this, SLOT(moveTriangleRightAction()));
+	connect(m_moveRightButton, SIGNAL(released()), this, SLOT(buttonReleasedSlot()));
+
 	connect(m_moveUpButton, SIGNAL(pressed()), this, SLOT(moveTriangleUpAction()));
+	connect(m_moveUpButton, SIGNAL(released()), this, SLOT(buttonReleasedSlot()));
+
 	connect(m_moveDownButton, SIGNAL(pressed()), this, SLOT(moveTriangleDownAction()));
+	connect(m_moveDownButton, SIGNAL(released()), this, SLOT(buttonReleasedSlot()));
 
 	connect(m_sceneAxesSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(sceneAxesSelected(int)));
 	connect(m_selectionItemsSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(selectionItemsChangedAction(int)));
@@ -216,88 +217,56 @@ void EditModeSelectorWidget::triangleSelectedSlot(Triangle* t)
 }
 
 
+// Call this slot when the move buttons are released(), and emit an
+// undo signal when the button is no longer pressed.
+void EditModeSelectorWidget::buttonReleasedSlot()
+{
+	if (QApplication::mouseButtons() == Qt::NoButton)
+		emit undoStateSignal();
+}
+
+
 void EditModeSelectorWidget::moveTriangleLeftAction()
 {
-	// The move buttons have their own "auto-repeat" loops
-	// because setting autoRepeat true for the buttons toggles the
-	// isDown state programatically.
-	while (m_moveLeftButton->isDown())
-	{
-		if (m_xfeditor->hasSelection())
-			m_xfeditor->moveSelectionBy(m_multiplierEditor->value()*(-1.0), 0.0);
-		else if (m_xfeditor->postEnabled())
-			m_xfeditor->moveTriangleBy(m_xfeditor->post(), m_multiplierEditor->value()*(-1.0), 0.0);
-		else
-			m_xfeditor->moveTriangleBy(m_xfeditor->getSelectedTriangle(), m_multiplierEditor->value()*(-1.0), 0.0);
-		QCoreApplication::processEvents();
-		usleep(100000);
-		QCoreApplication::processEvents();
-		usleep(100000);
-		QCoreApplication::processEvents();
-	}
-	emit undoStateSignal();
+	if (m_xfeditor->hasSelection())
+		m_xfeditor->moveSelectionBy(m_multiplierEditor->value()*(-1.0), 0.0);
+	else if (m_xfeditor->postEnabled())
+		m_xfeditor->moveTriangleBy(m_xfeditor->post(), m_multiplierEditor->value()*(-1.0), 0.0);
+	else
+		m_xfeditor->moveTriangleBy(m_xfeditor->getSelectedTriangle(), m_multiplierEditor->value()*(-1.0), 0.0);
 }
 
 
 void EditModeSelectorWidget::moveTriangleRightAction()
 {
-	while (m_moveRightButton->isDown())
-	{
-		if (m_xfeditor->hasSelection())
-			m_xfeditor->moveSelectionBy(m_multiplierEditor->value(),0.0);
-		else if (m_xfeditor->postEnabled())
-			m_xfeditor->moveTriangleBy(m_xfeditor->post(), m_multiplierEditor->value(), 0.0);
-		else
-			m_xfeditor->moveTriangleBy(m_xfeditor->getSelectedTriangle(), m_multiplierEditor->value(),0.0);
-		QCoreApplication::processEvents();
-		usleep(100000);
-		QCoreApplication::processEvents();
-		usleep(100000);
-		QCoreApplication::processEvents();
-	}
-	emit undoStateSignal();
+	if (m_xfeditor->hasSelection())
+		m_xfeditor->moveSelectionBy(m_multiplierEditor->value(),0.0);
+	else if (m_xfeditor->postEnabled())
+		m_xfeditor->moveTriangleBy(m_xfeditor->post(), m_multiplierEditor->value(), 0.0);
+	else
+		m_xfeditor->moveTriangleBy(m_xfeditor->getSelectedTriangle(), m_multiplierEditor->value(),0.0);
 }
-
 
 
 void EditModeSelectorWidget::moveTriangleUpAction()
 {
-	while (m_moveUpButton->isDown())
-	{
-		if (m_xfeditor->hasSelection())
-			m_xfeditor->moveSelectionBy(0.0, m_multiplierEditor->value());
-		else if (m_xfeditor->postEnabled())
-			m_xfeditor->moveTriangleBy(m_xfeditor->post(), 0.0, m_multiplierEditor->value());
-		else
-			m_xfeditor->moveTriangleBy(m_xfeditor->getSelectedTriangle(), 0.0, m_multiplierEditor->value());
-		QCoreApplication::processEvents();
-		usleep(100000);
-		QCoreApplication::processEvents();
-		usleep(100000);
-		QCoreApplication::processEvents();
-	}
-	emit undoStateSignal();
+	if (m_xfeditor->hasSelection())
+		m_xfeditor->moveSelectionBy(0.0, m_multiplierEditor->value());
+	else if (m_xfeditor->postEnabled())
+		m_xfeditor->moveTriangleBy(m_xfeditor->post(), 0.0, m_multiplierEditor->value());
+	else
+		m_xfeditor->moveTriangleBy(m_xfeditor->getSelectedTriangle(), 0.0, m_multiplierEditor->value());
 }
-
 
 
 void EditModeSelectorWidget::moveTriangleDownAction()
 {
-	while (m_moveDownButton->isDown())
-	{
-		if (m_xfeditor->hasSelection())
-			m_xfeditor->moveSelectionBy(0.0, m_multiplierEditor->value()*(-1.0));
-		else if (m_xfeditor->postEnabled())
-			m_xfeditor->moveTriangleBy(m_xfeditor->post(), 0.0, m_multiplierEditor->value()*(-1.0));
-		else
-			m_xfeditor->moveTriangleBy(m_xfeditor->getSelectedTriangle(), 0.0, m_multiplierEditor->value()*(-1.0));
-		QCoreApplication::processEvents();
-		usleep(100000);
-		QCoreApplication::processEvents();
-		usleep(100000);
-		QCoreApplication::processEvents();
-	}
-	emit undoStateSignal();
+	if (m_xfeditor->hasSelection())
+		m_xfeditor->moveSelectionBy(0.0, m_multiplierEditor->value()*(-1.0));
+	else if (m_xfeditor->postEnabled())
+		m_xfeditor->moveTriangleBy(m_xfeditor->post(), 0.0, m_multiplierEditor->value()*(-1.0));
+	else
+		m_xfeditor->moveTriangleBy(m_xfeditor->getSelectedTriangle(), 0.0, m_multiplierEditor->value()*(-1.0));
 }
 
 

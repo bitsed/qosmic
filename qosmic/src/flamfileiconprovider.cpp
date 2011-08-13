@@ -21,13 +21,13 @@
 #include <QDateTime>
 
 #include "flamfileiconprovider.h"
+#include "qosmic.h"
 #include "logger.h"
 
 FlamFileIconProvider::FlamFileIconProvider()
-: QFileIconProvider(), icons_dir(QDir::home()), has_icons(false)
+: QFileIconProvider(), icons_dir(QOSMIC_USERDIR), has_icons(false)
 {
-	QString path(".qosmic/icons");
-	icons_dir = QDir::home();
+	QString path("icons");
 	if (!icons_dir.exists(path))
 		icons_dir.mkpath(path);
 	has_icons = icons_dir.cd(path);

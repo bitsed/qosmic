@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <QSettings>
+#include <QListView>
 
 #include "mutationwidget.h"
 #include "viewerpresetsmodel.h"
@@ -70,6 +71,11 @@ MutationWidget::MutationWidget(GenomeVector* gen,  RenderThread* t, QWidget* par
 		connect(labels[n], SIGNAL(genomeSelected(MutationPreviewWidget*)), this, SLOT(genomeSelectedAction(MutationPreviewWidget*)));
 	}
 
+	aComboBox->setModel(genome);
+	bComboBox->setModel(genome);
+	qobject_cast<QListView*>(aComboBox->view())->setSpacing(2);
+	qobject_cast<QListView*>(bComboBox->view())->setSpacing(2);
+
 	connect(aComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectorAIndexChangedSlot(int)));
 	connect(bComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectorBIndexChangedSlot(int)));
 	connect(labels[0], SIGNAL(genomeDropped(int)), this, SLOT(selectorAIndexChangedSlot(int)));
@@ -120,11 +126,14 @@ void MutationWidget::showConfigDialog()
 		render = true;
 	}
 	if (render)
+	{
+		cancelRequests();
 		foreach (RenderRequest* r, requests)
 		{
 			r->setSize(labels_size);
 			rthread->render(r);
 		}
+	}
 }
 
 void MutationWidget::rotateAMutationsUp()
@@ -148,6 +157,7 @@ void MutationWidget::rotateAMutationsUp()
 	flam3_copy((*e)->genome(), &tmp_genome);
 	(*e)->setPixmap(tmp_pixmap);
 	(*e)->setToolTip(tmp_tip);
+	cancelRequests();
 	cross();
 }
 
@@ -172,6 +182,7 @@ void MutationWidget::rotateAMutationsDown()
 	flam3_copy((*e)->genome(), &tmp_genome);
 	(*e)->setPixmap(tmp_pixmap);
 	(*e)->setToolTip(tmp_tip);
+	cancelRequests();
 	cross();
 }
 
@@ -195,6 +206,7 @@ void MutationWidget::rotateBMutationsUp()
 	flam3_copy((*e)->genome(), &tmp_genome);
 	(*e)->setPixmap(tmp_pixmap);
 	(*e)->setToolTip(tmp_tip);
+	cancelRequests();
 	cross();
 }
 
@@ -218,12 +230,16 @@ void MutationWidget::rotateBMutationsDown()
 	flam3_copy((*e)->genome(), &tmp_genome);
 	(*e)->setPixmap(tmp_pixmap);
 	(*e)->setToolTip(tmp_tip);
+	cancelRequests();
 	cross();
 }
 
 
 void MutationWidget::selectorAIndexChangedSlot(int idx)
 {
+	if (!isVisible())
+		return;
+
 	int idx_a = qMax(0, idx);
 	if (idx_a != aComboBox->currentIndex())
 	{
@@ -242,12 +258,16 @@ void MutationWidget::selectorAIndexChangedSlot(int idx)
 		requests[0]->setGenome(mutations.at(0));
 	}
 
+	cancelRequests();
 	mutateAB('a');
 	cross();
 }
 
 void MutationWidget::selectorBIndexChangedSlot(int idx)
 {
+	if (!isVisible())
+		return;
+
 	int idx_b = qMax(0, idx);
 	if (idx_b != bComboBox->currentIndex())
 	{
@@ -266,6 +286,7 @@ void MutationWidget::selectorBIndexChangedSlot(int idx)
 		requests[8]->setGenome(mutations.at(8));
 	}
 
+	cancelRequests();
 	mutateAB('b');
 	cross();
 }
@@ -294,6 +315,7 @@ void MutationWidget::mutationASelectedAction(MutationPreviewWidget* ptr)
 				mutations.swap(idx, 0);
 				labels[0]->setGenome(ptr->genome());
 			}
+			cancelRequests();
 			mutateAB('a');
 			cross();
 		}
@@ -317,6 +339,7 @@ void MutationWidget::mutationBSelectedAction(MutationPreviewWidget* ptr)
 				mutations.swap(idx, 8);
 				labels[8]->setGenome(ptr->genome());
 			}
+			cancelRequests();
 			mutateAB('b');
 			cross();
 		}
@@ -350,6 +373,17 @@ void MutationWidget::showEvent(QShowEvent* e)
 }
 
 #define genome_ptr (genome->selectedGenome())
+
+void MutationWidget::cancelRequests()
+{
+	rthread->running_mutex.lock();
+	foreach (RenderRequest* req, requests)
+	{
+		if (!req->finished())
+			rthread->cancel(req);
+	}
+	rthread->running_mutex.unlock();
+}
 
 void MutationWidget::mutateAB(char ab='a')
 {
@@ -437,6 +471,7 @@ void MutationWidget::cross()
 
 void MutationWidget::mutate()
 {
+	cancelRequests();
 	mutateAB('a');
 	mutateAB('b');
 	cross();
@@ -448,26 +483,8 @@ void MutationWidget::reset()
 		return;
 
 	logFine("MutationWidget::reset : ");
-	// first sync the comboBoxes to number of genomes
-	int idx_a = aComboBox->currentIndex();
-	int idx_b = bComboBox->currentIndex();
-	aComboBox->blockSignals(true);
-	bComboBox->blockSignals(true);
-	aComboBox->clear();
-	bComboBox->clear();
-	for ( int n = 1 ; n <= genome->size() ; n++ )
-	{
-		QString num(QString::number(n));
-		aComboBox->addItem(num);
-		bComboBox->addItem(num);
-	}
-	aComboBox->setCurrentIndex(qMax(0, idx_a));
-	bComboBox->setCurrentIndex(qMax(0, idx_b));
-	aComboBox->blockSignals(false);
-	bComboBox->blockSignals(false);
-	idx_a = qMax(0, aComboBox->currentIndex());
-	idx_b = qMax(0, bComboBox->currentIndex());
-
+	int idx_a = qMax(0, aComboBox->currentIndex());
+	int idx_b = qMax(0, bComboBox->currentIndex());
 
 	flam3_genome* genome_a = genome->data() + idx_a;
 	flam3_genome* genome_b = genome->data() + idx_b;

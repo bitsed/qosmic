@@ -102,7 +102,7 @@ void IntValueEditor::keyPressEvent(QKeyEvent* e)
 			break;
 
 		case Qt::Key_Return:
-			emit valueUpdated();
+			QSpinBox::keyPressEvent(e);
 			emit undoStateSignal();
 			break;
 

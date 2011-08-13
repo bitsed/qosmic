@@ -45,30 +45,30 @@ TriangleCoordsWidget::TriangleCoordsWidget(GenomeVector* gen, QWidget* parent)
 	m_eLineEdit->restoreSettings();
 	m_fLineEdit->restoreSettings();
 
-	connect(m_AxLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
+	connect(m_AxLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldCoordsEditedAction()));
 	connect(m_AxLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
-	connect(m_AyLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
+	connect(m_AyLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldCoordsEditedAction()));
 	connect(m_AyLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
-	connect(m_BxLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
+	connect(m_BxLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldCoordsEditedAction()));
 	connect(m_BxLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
-	connect(m_ByLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
+	connect(m_ByLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldCoordsEditedAction()));
 	connect(m_ByLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
-	connect(m_CxLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
+	connect(m_CxLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldCoordsEditedAction()));
 	connect(m_CxLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
-	connect(m_CyLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldEditedAction()));
+	connect(m_CyLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldCoordsEditedAction()));
 	connect(m_CyLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
 
-	connect(m_aLineEdit, SIGNAL(valueUpdated()), this, SLOT(field2EditedAction()));
+	connect(m_aLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldVariablesEditedAction()));
 	connect(m_aLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
-	connect(m_bLineEdit, SIGNAL(valueUpdated()), this, SLOT(field2EditedAction()));
+	connect(m_bLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldVariablesEditedAction()));
 	connect(m_bLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
-	connect(m_cLineEdit, SIGNAL(valueUpdated()), this, SLOT(field2EditedAction()));
+	connect(m_cLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldVariablesEditedAction()));
 	connect(m_cLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
-	connect(m_dLineEdit, SIGNAL(valueUpdated()), this, SLOT(field2EditedAction()));
+	connect(m_dLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldVariablesEditedAction()));
 	connect(m_dLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
-	connect(m_eLineEdit, SIGNAL(valueUpdated()), this, SLOT(field2EditedAction()));
+	connect(m_eLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldVariablesEditedAction()));
 	connect(m_eLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
-	connect(m_fLineEdit, SIGNAL(valueUpdated()), this, SLOT(field2EditedAction()));
+	connect(m_fLineEdit, SIGNAL(valueUpdated()), this, SLOT(fieldVariablesEditedAction()));
 	connect(m_fLineEdit, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
 
 	coordsButtonGroup = new QButtonGroup();
@@ -124,32 +124,17 @@ void TriangleCoordsWidget::updateFormData()
 		return;
 
 	logFiner("TriangleCoordsWidget::updateFormData : updating");
-	Triangle* t;
-	QLocale l;
+	updateVariablesFormData();
+	updateCoordsFormData();
+
+}
+
+void TriangleCoordsWidget::updateCoordsFormData()
+{
+	Triangle* t = selectedTriangle;
 	FigureEditor* editor = selectedTriangle->editor();
 	if (editor->postEnabled())
-	{
 		t = editor->post();
-		flam3_xform* xform = t->xform();
-		m_aLineEdit->updateValue(xform->post[0][0]);
-		m_bLineEdit->updateValue(xform->post[1][0]);
-		m_cLineEdit->updateValue(xform->post[2][0]);
-		m_dLineEdit->updateValue(xform->post[0][1]);
-		m_eLineEdit->updateValue(xform->post[1][1]);
-		m_fLineEdit->updateValue(xform->post[2][1]);
-	}
-	else
-	{
-		t = selectedTriangle;
-		flam3_xform* xform = t->xform();
-		m_aLineEdit->updateValue(xform->c[0][0]);
-		m_bLineEdit->updateValue(xform->c[1][0]);
-		m_cLineEdit->updateValue(xform->c[2][0]);
-		m_dLineEdit->updateValue(xform->c[0][1]);
-		m_eLineEdit->updateValue(xform->c[1][1]);
-		m_fLineEdit->updateValue(xform->c[2][1]);
-	}
-
 	TriangleCoords tc = t->getCoords();
 	switch (coords)
 	{
@@ -197,9 +182,37 @@ void TriangleCoordsWidget::updateFormData()
 			m_yColumnLabel->setText("deg");
 		}
 	}
+
 }
 
-void TriangleCoordsWidget::fieldEditedAction()
+void TriangleCoordsWidget::updateVariablesFormData()
+{
+	FigureEditor* editor = selectedTriangle->editor();
+	if (editor->postEnabled())
+	{
+		Triangle* t = editor->post();
+		flam3_xform* xform = t->xform();
+		m_aLineEdit->updateValue(xform->post[0][0]);
+		m_bLineEdit->updateValue(xform->post[1][0]);
+		m_cLineEdit->updateValue(xform->post[2][0]);
+		m_dLineEdit->updateValue(xform->post[0][1]);
+		m_eLineEdit->updateValue(xform->post[1][1]);
+		m_fLineEdit->updateValue(xform->post[2][1]);
+	}
+	else
+	{
+		Triangle* t = selectedTriangle;
+		flam3_xform* xform = t->xform();
+		m_aLineEdit->updateValue(xform->c[0][0]);
+		m_bLineEdit->updateValue(xform->c[1][0]);
+		m_cLineEdit->updateValue(xform->c[2][0]);
+		m_dLineEdit->updateValue(xform->c[0][1]);
+		m_eLineEdit->updateValue(xform->c[1][1]);
+		m_fLineEdit->updateValue(xform->c[2][1]);
+	}
+}
+
+void TriangleCoordsWidget::fieldCoordsEditedAction()
 {
 	logFiner("TriangleCoordsWidget::fieldEditedAction : setting coords");
 	FigureEditor* editor = selectedTriangle->editor();
@@ -259,29 +272,48 @@ void TriangleCoordsWidget::fieldEditedAction()
 	}
 	t->setPoints(c);
 	t->coordsToXForm();
-
+	updateVariablesFormData();
 	editor->blockSignals(true);
 	editor->triangleModifiedAction(selectedTriangle);
 	editor->blockSignals(false);
 	emit dataChanged();
 }
 
-void TriangleCoordsWidget::field2EditedAction()
+void TriangleCoordsWidget::fieldVariablesEditedAction()
 {
-	logFiner("TriangleCoordsWidget::field2EditedAction : setting values");
+	logFiner("TriangleCoordsWidget::fieldVariablesEditedAction : setting values");
 	FigureEditor* editor = selectedTriangle->editor();
-	Triangle* t = editor->postEnabled() ? editor->post() : selectedTriangle ;
+	Triangle* t;
+	TriangleCoords c;
 
-	flam3_xform* xform = t->xform();
-	xform->c[0][0] = m_aLineEdit->value();
-	xform->c[1][0] = m_bLineEdit->value();
-	xform->c[2][0] = m_cLineEdit->value();
-	xform->c[0][1] = m_dLineEdit->value();
-	xform->c[1][1] = m_eLineEdit->value();
-	xform->c[2][1] = m_fLineEdit->value();
+	if (editor->postEnabled())
+	{
+		t = editor->post();
+		flam3_xform* xform = t->xform();
+		xform->post[0][0] = m_aLineEdit->value();
+		xform->post[1][0] = m_bLineEdit->value();
+		xform->post[2][0] = m_cLineEdit->value();
+		xform->post[0][1] = m_dLineEdit->value();
+		xform->post[1][1] = m_eLineEdit->value();
+		xform->post[2][1] = m_fLineEdit->value();
+		c = t->basis()->getCoords(xform->post);
+	}
+	else
+	{
+		t = selectedTriangle;
+		flam3_xform* xform = t->xform();
+		xform->c[0][0] = m_aLineEdit->value();
+		xform->c[1][0] = m_bLineEdit->value();
+		xform->c[2][0] = m_cLineEdit->value();
+		xform->c[0][1] = m_dLineEdit->value();
+		xform->c[1][1] = m_eLineEdit->value();
+		xform->c[2][1] = m_fLineEdit->value();
+		c = t->basis()->getCoords(xform->c);
+	}
 
-	TriangleCoords c = t->basis()->getCoords(xform->c);
 	t->setPoints(c);
+	t->coordsToXForm();
+	updateCoordsFormData();
 	editor->blockSignals(true);
 	editor->triangleModifiedAction(selectedTriangle);
 	editor->blockSignals(false);

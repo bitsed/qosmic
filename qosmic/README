@@ -14,17 +14,19 @@ electricsheep screensaver as described on http://electricsheep.org.
 Building
 
 Before building you will need to satisfy the library dependencies.  Currently,
-version 1.4.8 of the application is compatible with versions of Qt4 >= 4.5 and
-of Lua >= 5.1.  Versions of flam3 >= 2.8 are not compatible with this version
-of the application.  Version 1.4.8 of Qosmic was developed and tested using:
+version 1.5.0 of the application is compatible with Qt 4.6, flam3 3.0.1, and
+Lua 5.1.4.  Versions of flam3 < 3.0.1 are not compatible with this version of
+the application.
 
-Qt-4.6.0     (http://www.trolltech.com/)
-liblua-5.1.4 (http://www.lua.org/)
-flam3-2.7.18 (http://flam3.com/)
+Version 1.5.0 of Qosmic was developed and tested using:
 
-flam3 dependencies:
-libxml2-2.7.3 (http://www.xmlsoft.org/)
-libjpeg-7    (http://www.ijg.org/)
+Qt-4.7.3      (http://www.trolltech.com/)
+Lua-5.1.4     (http://www.lua.org/)
+flam3-3.0.1   (http://flam3.com/)
+libxml2-2.7.8 (http://www.xmlsoft.org/)
+libpng-1.4.8  (http://www.libpng.org/)
+jpeg-8c       (http://www.ijg.org/)
+
 
 1. Download and unpack the source archive, and cd into the source directory.
 2. Edit qosmic.pro to configure the qmake build system to suit your environment.
@@ -57,46 +59,49 @@ image using the left mouse button to set the camera view.  The scale can
 be set using the mouse wheel or by holding control while moving the mouse.
 The right mouse button displays a popup menu where the preview image quality
 can be selected.  The quality settings displayed in the popup menu can be
-changed using the viewer presets widget.
+changed using the viewer presets widget.  The viewer presets widget can be
+accessed by clicking the wrench icon button in the image settings widget.
 
-The main viewer has the same image as the preview widget, but it's updated less
-frequently, and it's usually larger so more detail can be seen.  Updating of the
-main viewer can be disabled by closing it.  The image quality for the main
-viewer can be set by using the mouse button bound to the popup menu here as
-well.
+The main viewer displays the same image as the preview widget, but it's updated
+less frequently, and it's usually larger with higher image quality settings
+showing more detail.  Updating of the main viewer can be disabled by closing it.
+The image quality for the main viewer can be set by using the mouse button bound
+to the popup menu here as well.
 
 The third viewer is the one displayed when using the directory browser to view
-flam3 image (png) files by right clicking on the file.  If you right click on a
-flam3 file the directory browser will try to load a png image having the same
-name as the flam3 file.  The key bindings for this viewer are the same as
-for the main viewer.
+flam3 image (png) files by right clicking on the file.  This only works when
+browsing directories using the 'Short View' mode.  If you right click on a flam3
+file, the directory browser will try to load a png image having the same name as
+the flam3 file.  The key bindings for this viewer are the same as for the main
+viewer.
 
 
 Selection:
 
-There is a selection box in the editor.  By clicking in the editor with the
-control key held and dragging the mouse you can select a subset of triangles.
-When the selection is active all transformations are performed on the selection
-and its triangles.  Hold the control key and single click in the editor without
-moving the mouse to disable the selection.  Holding the control+shifts keys
-while selecting triangles or nodes will add them to the selection.
+There is a selection box in the triangle editor.  By clicking in the editor with
+the control key held and dragging the mouse you can select a subset of
+triangles. When the selection is active all transformations are performed on the
+selection and its triangles.  Hold the control key and single click in the
+editor without moving the mouse to disable the selection.  Holding the
+control+shifts keys while selecting triangles or nodes will add them to the
+selection.
 
 
 Undo/Redo:
 
-There is a fifty level undo feature.  The current state can be added to the list
-of undo states by either clicking undo, or by pressing the control+spacebar.
-When a flam3 file is loaded the list is cleared, and a new state is
-automatically added to the head of the ring.
+There is a fifty level undo feature, and each genome has its own set of undo
+states.  The current state can be added to the list of undo states by either
+clicking undo, or by pressing the control+spacebar keys.  When a flam3 file is
+loaded the list undo states is cleared, and a new state is automatically added.
 
 The figure editor and most of the widgets will also add states to the undo ring
 when you use them with the mouse.  In general, if you can change something by
 clicking and dragging it, then it can be undone.  The undo state is typically
 added when the mouse button is released.  Changes using the mouse wheel
-aren't saved on the undo stack.
+aren't always saved on the undo stack.
 
 An undo state is added at the current undo position, and higher positions are
-forgotten.  This means that if you click undo and hit control+spacebar, then you
+removed.  This means that if you click undo and hit control+spacebar, then you
 will no longer be able to redo to where you were.  There will be two versions of
 the current state available, and you are seeing the most recent state.
 
@@ -131,24 +136,21 @@ Here are some more hints:
 
 - If a png file having the same base name as a flam3 file exists in the same
   directory as the flam3 file, the directory browser will generate an icon
-  preview image and store it in a folder called .icons.  The .icons directory
-  cache is needed since scaling many image files can take a while.
+  preview image and store it in the $HOME/.qosmic/icons cache.  The icons
+  directory cache is needed since scaling many image files can take a while.
 
 - When using the directory browser for the first time to view a directory
   containing flam3 files, the browser tries to find and generate icon sized
-  preview images for each file, so this may take a while if you have many
-  flam3 files.
+  preview images for each file.  This may take a while if you have many flam3
+  files with cooresponding images.
 
-- Using the right mouse button in the directory browser displays the image for
-  a flam3 file if one exists.  The middle mouse button toggles hidden files.
-  The left mouse button loads the selected flam3 file, and holding the control
-  key will append the genomes in selected flam3 file to the current set.
+- When the directory browser is in 'Short View' mode, using the right mouse
+  button in the directory browser displays the image for a flam3 file if one
+  exists.  The middle mouse button toggles hidden files.  Double clicking a file
+  with the left mouse button loads the selected flam3 file, and holding the
+  control key will append the genomes in selected flam3 file to the current set.
   Holding the control key while using the mouse wheel will change the size of
   any flam3 file icons displayed.
-
-- Holding the control key while using the mouse wheel will also change the size
-  of the previews displayed in the genomes widgets.  Holding control+shift will
-  change only the width of the previews.
 
 - Add, duplicate, and remove triangles using the menu shown by holding the right
   mouse button in the editor.  You can select a triangle by positioning the
@@ -165,19 +167,17 @@ Here are some more hints:
 
 - Hold the shift key and use the left mouse button to place the rotate/scale
   axes marker.  The  marker can be enabled in the by selecting 'mark' in the
-  axis selection menu of the 'Edit Triangle' window.
+  axis selection menu located below the triangle editor.
 
-- Closing the preview, viewer, and mutations windows will prevent them from
-  updating.
+- Closing the main preview, viewer, genome selector, and mutations windows will
+  prevent their previews from updating.
 
-- The left mouse button in the mutations window selects a genome and moves it
-  to the first box.
+- The left mouse button in the mutations window selects the 'A' genome shown in
+  the top left box.  The right mouse button in the mutations window selects the
+  'B' genome shown in the top right box.
 
-- The middle mouse button in the mutations window copies the genome from the
-  editor to the first box.
-
-- The right mouse button in the mutations window copies the genome to the
-  editor.
+- The middle mouse button in the mutations window copies the genome to the
+  currently selected genomes list item.
 
 - GIMP gradient files (.ggr) and CPT gradient files (.cpt) can be loaded in the
   palette widget.  Select a directory containing your gradient files using
@@ -185,18 +185,19 @@ Here are some more hints:
   scroll list.
 
 - You can set the genome displayed at start-up by saving to a file called
-  '.qosmic.flam3' in your home directory.
+  '$HOME/.qosmic/autosave.flam3'.  The autosave file is updated when quitting
+  the application.
 
 - Use viewer presets to quickly switch between different image quality settings.
 
 - The maximum size of the preview image when docked can be set by sizing the
   preview when it is not docked.
 
-- Use the selection to simultaneously move and edit multiple triangles.
+- Use the selection to simultaneously move, copy, and edit multiple triangles.
 
-- Use the genomes widget to view the current set and to select the current
-  genome.  There is always at least one genome in the set, and you can add a
-  genome by importing it.
+- Use the genomes widget to view the current set of flam3 images and to select
+  the current genome.  There is always at least one genome in the set, and you
+  can add a genome by importing it.
 
 - The density widget can be used to merge two different genomes in the current
   genome set.  Use the star button in the density widget to apply the density
@@ -288,6 +289,8 @@ Ctrl+Return          - Run the current script
 Thanks to:
 
 - Scott Draves for his flam3 library
+
+- Erik Reckase for his work on the flam3 library
 
 - Mark James for his Silk icon set http://www.famfamfam.com/lab/icons/silk/
 

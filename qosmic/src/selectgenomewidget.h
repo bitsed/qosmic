@@ -25,7 +25,6 @@
 #include "ui_selectgenomewidget.h"
 
 #include "genomevector.h"
-#include "renderthread.h"
 #include "qosmicwidget.h"
 
 class SelectGenomeWidget : public QWidget, public QosmicWidget,
@@ -34,42 +33,28 @@ class SelectGenomeWidget : public QWidget, public QosmicWidget,
 	Q_OBJECT
 
 	public:
-		SelectGenomeWidget(GenomeVector*, RenderThread*, QWidget* parent=0);
+		SelectGenomeWidget(GenomeVector*, QWidget* parent=0);
 		void setSelectedGenome(int);
-		void updateFormData();
 		void reset();
-
-	public slots:
-		void flameRenderedAction(RenderEvent*);
-		void updateSelectedPreview();
-		void updateSelectedPreview(int);
 
 	signals:
 		void genomeSelected(int);
 		void genomesModified();
 
 	protected slots:
-		void selectorIndexChangedSlot(int);
-		void genomeSelectedAction(const QModelIndex& idx);
 		void addButtonPressedSlot();
 		void delButtonPressedSlot();
 		void configButtonPressedSlot();
 		void clearTrianglesButtonPressedSlot();
+		void listViewClickedAction(const QModelIndex& idx);
 		void indexesMovedSlot(const QModelIndexList& idxList);
 
 	protected:
-		void showEvent(QShowEvent* event);
-		void closeEvent(QCloseEvent* event);
-		void clearPreviews();
+		void showEvent(QShowEvent*);
+		void hideEvent(QHideEvent*);
 
 	private:
-		QSize label_size;
-		QString quality_preset;
-		QList<RenderRequest*> r_requests;
-		GenomeVectorListModel* model;
-		RenderThread* r_thread;
-
-
+		GenomeVector* genomes;
 };
 
 

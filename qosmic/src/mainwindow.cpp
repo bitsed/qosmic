@@ -29,7 +29,8 @@
 #include "renderdialog.h"
 #include "renderprogressdialog.h"
 
-MainWindow::MainWindow() : QMainWindow()
+MainWindow::MainWindow()
+: QMainWindow(), QosmicWidget(this, "MainWindow")
 {
 	setupUi(this);
 
@@ -37,7 +38,8 @@ MainWindow::MainWindow() : QMainWindow()
 	lastSelected = 0;
 	m_fileViewer = 0;
 	m_dialogsEnabled = true;
-	genomes.setSelectedIndex(0);
+	genomes.setSelected(0);
+	genomes.undoProviders()->append(this);
 
 	// These are the request instances sent to the renderthread
 	m_preview_request.setGenome(genomes.data());
@@ -52,12 +54,26 @@ MainWindow::MainWindow() : QMainWindow()
 	m_file_request.setName(tr("file.png"));
 	m_file_request.setType(RenderRequest::File);
 
+	// the render thread
+	m_rthread = RenderThread::getInstance();
+	connect(m_rthread, SIGNAL(flameRendered(RenderEvent*)), this, SLOT(flameRenderedSlot(RenderEvent*)));
+	logInfo("MainWindow::MainWindow : starting RenderThread");
+	m_rthread->start();
+
+	// status widget
+	logInfo("MainWindow::MainWindow : creating StatusWidget");
+	m_statusWidget = new StatusWidget(this);
+	connect(m_rthread, SIGNAL(statusUpdated(RenderStatus*)), m_statusWidget, SLOT(setRenderStatus(RenderStatus*)));
+
 	// figure editor
 	logInfo("MainWindow::MainWindow : creating FigureEditor");
 	m_xfeditor = new FigureEditor(&genomes, this);
 	m_xfeditview->setScene(m_xfeditor);
 	// force the containing qgraphicsview to track mouseMoveEvents
 	m_xfeditview->viewport()->setMouseTracking(true);
+	genomes.undoProviders()->append(m_xfeditor);
+
+	// the figureeditor's editmodeselector
 	logInfo("MainWindow::MainWindow : creating EditModeSelectorWidget");
 	m_modeSelectorWidget = new EditModeSelectorWidget(m_xfeditor, this);
 	centralWidget()->layout()->addWidget(m_modeSelectorWidget);
@@ -143,10 +159,7 @@ MainWindow::MainWindow() : QMainWindow()
 	dockActions << dock->toggleViewAction();
 	dock->hide();
 	m_dockWidgets << dock;
-
-	// status widget
-	logInfo("MainWindow::MainWindow : creating StatusWidget");
-	m_statusWidget = new StatusWidget(this);
+	connect(m_rthread, SIGNAL(statusUpdated(RenderStatus*)), m_viewer, SLOT(setRenderStatus(RenderStatus*)));
 
 	// image settings widget
 	logInfo("MainWindow::MainWindow : creating ImageSettingsWidget");
@@ -163,20 +176,6 @@ MainWindow::MainWindow() : QMainWindow()
 	connect(m_imageSettingsWidget, SIGNAL(symmetryAdded()), this, SLOT(scriptFinishedSlot()));
 	connect(m_imageSettingsWidget, SIGNAL(presetSelected()), this, SLOT(presetSelectedSlot()));
 	lastDock = dock;
-
-	// sheep-loop widget
-	logInfo("MainWindow::MainWindow : creating SheepLoopWidget");
-	dock = new QDockWidget(tr("Sheep Loops"), this);
-	dock->setObjectName(dock->windowTitle());
-	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-	m_sheepLoopWidget = new SheepLoopWidget(&genomes, dock);
-	dock->setWidget(m_sheepLoopWidget);
-	addDockWidget(Qt::TopDockWidgetArea, dock);
-	dockActions << dock->toggleViewAction();
-	dock->hide();
-	m_dockWidgets << dock;
-	connect(m_sheepLoopWidget, SIGNAL(runSheepLoop(bool)), this, SLOT(runSheepLoop(bool)));
-	connect(m_sheepLoopWidget, SIGNAL(saveSheepLoop()), this, SLOT(saveSheepLoop()));
 
 	// camera settings widget
 	logInfo("MainWindow::MainWindow : creating CameraSettingsWidget");
@@ -248,19 +247,6 @@ MainWindow::MainWindow() : QMainWindow()
 	connect(m_colorBalanceWidget, SIGNAL(paletteChanged()), this, SLOT(paletteHueChangedAction()));
 	lastDock = dock;
 
-	// the render thread
-	logInfo("MainWindow::MainWindow : creating RenderThread");
-	m_rthread = RenderThread::getInstance();
-	connect(m_rthread, SIGNAL(statusUpdated(RenderStatus*)),
-			m_statusWidget, SLOT(setRenderStatus(RenderStatus*)));
-	connect(m_rthread, SIGNAL(statusUpdated(RenderStatus*)),
-			m_viewer, SLOT(setRenderStatus(RenderStatus*)));
-	connect(m_rthread, SIGNAL(flameRendered(RenderEvent*)),
-			this, SLOT(flameRenderedSlot(RenderEvent*)));
-	connect(m_rthread, SIGNAL(flameRenderingKilled()),
-			m_sheepLoopWidget, SLOT(reset()));
-	m_rthread->start();
-
 	// variations widget
 	logInfo("MainWindow::MainWindow : creating VariationsWidget");
 	dock = new QDockWidget(tr("Variations"), this);
@@ -302,7 +288,7 @@ MainWindow::MainWindow() : QMainWindow()
 	dock = new QDockWidget(tr("Genomes"), this);
 	dock->setObjectName(dock->windowTitle());
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-	m_genomeSelectWidget = new SelectGenomeWidget(&genomes, m_rthread, dock);
+	m_genomeSelectWidget = new SelectGenomeWidget(&genomes, dock);
 	dock->setWidget(m_genomeSelectWidget);
 	addDockWidget(Qt::LeftDockWidgetArea, dock);
 	dockActions << dock->toggleViewAction();
@@ -310,8 +296,6 @@ MainWindow::MainWindow() : QMainWindow()
 	m_dockWidgets << dock;
 	connect(m_genomeSelectWidget, SIGNAL(genomeSelected(int)), this, SLOT(genomeSelectedSlot(int)));
 	connect(m_genomeSelectWidget, SIGNAL(genomesModified()), this, SLOT(genomesModifiedSlot()));
-	connect(m_genomeSelectWidget, SIGNAL(genomeSelected(int)), m_sheepLoopWidget, SLOT(genomeSelectedSlot(int)));
-	connect(m_genomeSelectWidget, SIGNAL(genomesModified()), m_sheepLoopWidget, SLOT(genomesModifiedSlot()));
 	lastDock = dock;
 
 	// palettes
@@ -321,7 +305,7 @@ MainWindow::MainWindow() : QMainWindow()
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	m_paletteEditor = new PaletteEditor(dock);
 	dock->setWidget(m_paletteEditor);
-	splitDockWidget(lastDock, dock, Qt::Vertical);
+	tabifyDockWidget(lastDock, dock);
 	dockActions << dock->toggleViewAction();
 	dock->hide();
 	m_dockWidgets << dock;
@@ -336,13 +320,12 @@ MainWindow::MainWindow() : QMainWindow()
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	m_mutations = new MutationWidget(&genomes, m_rthread, dock);
 	dock->setWidget(m_mutations);
-	tabifyDockWidget(lastDock, dock);
+	addDockWidget(Qt::LeftDockWidgetArea, dock);
 	dockActions << dock->toggleViewAction();
 	dock->hide();
 	m_dockWidgets << dock;
 	connect(m_mutations, SIGNAL(genomeSelected(flam3_genome*)), this, SLOT(mutationSelectedSlot(flam3_genome*)));
 	connect(m_genomeSelectWidget, SIGNAL(genomesModified()), m_mutations, SLOT(reset()));
-	lastDock = dock;
 
 	// directory view widget
 	logInfo("MainWindow::MainWindow : creating DirectoryViewWidget");
@@ -358,6 +341,23 @@ MainWindow::MainWindow() : QMainWindow()
 	connect(m_directoryViewWidget, SIGNAL(flam3FileSelected(const QString&,bool)),
 			this, SLOT(flam3FileSelectedAction(const QString&,bool)));
 
+	// sheep-loop widget
+	logInfo("MainWindow::MainWindow : creating SheepLoopWidget");
+	dock = new QDockWidget(tr("Sheep Loops"), this);
+	dock->setObjectName(dock->windowTitle());
+	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+	m_sheepLoopWidget = new SheepLoopWidget(&genomes, dock);
+	dock->setWidget(m_sheepLoopWidget);
+	addDockWidget(Qt::TopDockWidgetArea, dock);
+	dockActions << dock->toggleViewAction();
+	dock->hide();
+	m_dockWidgets << dock;
+	connect(m_sheepLoopWidget, SIGNAL(runSheepLoop(bool)), this, SLOT(runSheepLoop(bool)));
+	connect(m_sheepLoopWidget, SIGNAL(saveSheepLoop()), this, SLOT(saveSheepLoop()));
+	connect(m_rthread, SIGNAL(flameRenderingKilled()), m_sheepLoopWidget, SLOT(reset()));
+	connect(m_genomeSelectWidget, SIGNAL(genomeSelected(int)), m_sheepLoopWidget, SLOT(genomeSelectedSlot(int)));
+	connect(m_genomeSelectWidget, SIGNAL(genomesModified()), m_sheepLoopWidget, SLOT(genomesModifiedSlot()));
+
 	// script editing widget
 	logInfo("MainWindow::MainWindow : creating ScriptEditorWidget");
 	dock = new QDockWidget(tr("Edit Script"), this);
@@ -369,7 +369,8 @@ MainWindow::MainWindow() : QMainWindow()
 	dockActions << dock->toggleViewAction();
 	dock->hide();
 	m_dockWidgets << dock;
-	connect(m_directoryViewWidget, SIGNAL(luaScriptSelected(const QString&)), m_scriptEditWidget, SLOT(loadScript(const QString&)));
+	connect(m_directoryViewWidget, SIGNAL(luaScriptSelected(const QString&)),
+			m_scriptEditWidget, SLOT(loadScript(const QString&)));
 
 	createActions();
 	createToolBars();
@@ -502,7 +503,7 @@ void MainWindow::updateStatus(double posX, double posY)
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-	QString name(QDir::home().absoluteFilePath(QOSMIC_TMP_FILE));
+	QString name(QOSMIC_AUTOSAVE);
 	QFile file(name);
 	if (file.exists() && file.open(QIODevice::ReadWrite))
 	{
@@ -531,7 +532,7 @@ void MainWindow::showEvent(QShowEvent* event)
 		logInfo("MainWindow::showEvent : initializing");
 		readSettings();
 
-		QFile file(QDir::home().absoluteFilePath(".qosmic.lua"));
+		QFile file(QOSMIC_USERDIR + "/init.lua");
 		if (file.open(QIODevice::ReadOnly))
 		{
 			logInfo("MainWindow::showEvent : reading lua config");
@@ -762,7 +763,7 @@ void MainWindow::exportAction()
 	QString fileName(curFile);
 	if (!fileName.isEmpty())
 		fileName.replace(QRegExp("\\.flam[3e]?$"),
-			QString("_%1.flam3").arg(genomes.selectedIndex()));
+			QString("_%1.flam3").arg(genomes.selected()));
 
 	QFileDialog dialog(this, tr("Save the current genome"), lastDir,
 			tr("flam3 xml (*.flam *.flam3 *.flame);;All files (*)"));
@@ -773,7 +774,7 @@ void MainWindow::exportAction()
 	{
 		fileName = dialog.selectedFiles().first();
 		lastDir = QFileInfo(fileName).dir().canonicalPath();
-		if (!exportGenome(fileName, genomes.selectedIndex()))
+		if (!exportGenome(fileName, genomes.selected()))
 			QMessageBox::warning(this, tr("Error"),
 				tr("Cannot write file to %1").arg(fileName));
 	}
@@ -1057,11 +1058,6 @@ void MainWindow::createToolBars()
 	action->setStatusTip(tr("Image Quality"));
 	widgetsToolBar->addAction(action);
 
-	action = qobject_cast<QDockWidget*>(m_sheepLoopWidget->parentWidget())->toggleViewAction();
-	action->setIcon(QIcon(":icons/silk/film.xpm"));
-	action->setStatusTip(tr("Sheep Loop"));
-	widgetsToolBar->addAction(action);
-
 	action = qobject_cast<QDockWidget*>(m_cameraSettingsWidget->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/camera.xpm"));
 	action->setStatusTip(tr("Camera"));
@@ -1107,6 +1103,11 @@ void MainWindow::createToolBars()
 	action->setStatusTip(tr("Triangle Coordinates"));
 	widgetsToolBar->addAction(action);
 
+	action = qobject_cast<QDockWidget*>(m_sheepLoopWidget->parentWidget())->toggleViewAction();
+	action->setIcon(QIcon(":icons/silk/film.xpm"));
+	action->setStatusTip(tr("Sheep Loop"));
+	widgetsToolBar->addAction(action);
+
 	action = qobject_cast<QDockWidget*>(m_scriptEditWidget->parentWidget())->toggleViewAction();
 	action->setIcon(QIcon(":icons/silk/script.xpm"));
 	action->setStatusTip(tr("Script Editor"));
@@ -1122,7 +1123,6 @@ void MainWindow::createToolBars()
 	editToolBar->addSeparator();
 	editToolBar->addAction(randomAct);
 	editToolBar->addAction(killAct);
-
 }
 
 
@@ -1144,19 +1144,24 @@ void MainWindow::readSettings()
 	if (!restoreGeometry(settings.value("geometry").toByteArray()))
 	{
 		logInfo("MainWindow::readSettings : restoring main window to default geometry");
-		resize(800, 710);
+		resize(920, 760);
 		const QRect p( QApplication::desktop()->availableGeometry(this) );
 		move(p.center() + QPoint(-400, -350));
 		qobject_cast<QDockWidget*>(m_viewer->parentWidget())->setFloating(true);
+		qobject_cast<QDockWidget*>(m_mutations->parentWidget())->setFloating(true);
+		qobject_cast<QDockWidget*>(m_scriptEditWidget->parentWidget())->setFloating(true);
 		m_viewer->parentWidget()->resize(400, 340);
 		m_viewer->parentWidget()->move(pos() + QPoint(200, 150));
+		m_mutations->parentWidget()->move(pos() + QPoint(20, 60));
+		m_scriptEditWidget->parentWidget()->resize(500, 420);
+		m_scriptEditWidget->parentWidget()->move(pos() + QPoint(20, 60));
 	}
 	else
 	{
 		logInfo("MainWindow::readSettings : restored main window geometry");
 	}
 
-	if (!restoreState(settings.value("state", QByteArray()).toByteArray()))
+	if (!QMainWindow::restoreState(settings.value("state", QByteArray()).toByteArray()))
 	{
 		logInfo("MainWindow::readSettings : restoring main window to default state");
 		// trick the layout into thinking the previewWidget has something to display
@@ -1165,6 +1170,7 @@ void MainWindow::readSettings()
 		m_previewWidget->setPixmap(pix);
 		qobject_cast<QDockWidget*>(m_previewWidget->parentWidget())->show();
 		qobject_cast<QDockWidget*>(m_selectTriangleWidget->parentWidget())->show();
+		qobject_cast<QDockWidget*>(m_colorSettingsWidget->parentWidget())->show();
 	}
 	else
 	{
@@ -1190,9 +1196,7 @@ void MainWindow::writeSettings()
 
 void MainWindow::loadGenomeList(flam3_genome* gen, int ncps)
 {
-	genomes.clear();
-	appendFlam3ToGenome(gen, ncps);
-	m_genomeSelectWidget->setSelectedGenome(0); // sets the selectedGenome
+	genomes.setData(gen, ncps);
 }
 
 void MainWindow::setFlameXML(const QString& s)
@@ -1206,7 +1210,6 @@ void MainWindow::setFlameXML(const QString& s)
 	logInfo(QString("MainWindow::setFlameXML : found %1 genome").arg(ncps));
 	loadGenomeList(in, ncps);
 	reset();
-	m_previewWidget->parentWidget()->show();
 	render();
 }
 
@@ -1305,25 +1308,12 @@ bool MainWindow::importGenome(const QString& fname)
 	if (readFlam3File(fname, &in, &ncps))
 	{
 		logInfo(QString("MainWindow::importGenome : found %1 genomes").arg(ncps));
-		appendFlam3ToGenome(in, ncps);
+		genomes.insertRows(genomes.size(), ncps, in);
 		reset();
-		m_genomeSelectWidget->reset();
 		emit mainWindowChanged();
 		return true;
 	}
 	return false;
-}
-
-void MainWindow::appendFlam3ToGenome(flam3_genome* gen, int ncps)
-{
-	// copy the genomes into the currint list
-	for (int n = 0 ; n < ncps ; n++, gen++)
-	{
-		gen->symmetry = 1; // clear genome symmetry flag
-		gen->ntemporal_samples = 1;  // temporal_samples is only for animations
-
-		genomes.append(*gen);
-	}
 }
 
 bool MainWindow::exportGenome(const QString& fname, int index)
@@ -1369,6 +1359,16 @@ bool MainWindow::readFlam3File(const QString& fname, flam3_genome** in, int* ncp
 				tr("Couldn't parse file %1\n").arg(fname));
 		return false;
 	}
+
+	// sanitize the genomes to avoid strange behavior and problems with libflam3
+	for (int n = 0 ; n < *ncps ; n++)
+	{
+		flam3_genome* g = *in + n;
+		g->symmetry = 1;           // clear genome symmetry flag
+		g->ntemporal_samples = 1;  // temporal_samples is only for animations
+		g->interpolation = flam3_interpolation_linear; // animation interp
+	}
+
 	return true;
 }
 
@@ -1554,34 +1554,18 @@ void MainWindow::flam3FileSelectedAction(const QString& name, bool append)
 void MainWindow::mutationSelectedSlot(flam3_genome* newg)
 {
 	flam3_genome* g = genomes.selectedGenome();
-	if (g->num_xforms != newg->num_xforms)
-		flam3_add_xforms(g, newg->num_xforms - g->num_xforms, 0, 0);
-	for (int n = 0 ; n < newg->num_xforms ; n++)
-		flam3_copy_xform(g->xform + n, newg->xform + n);
-	memcpy(g->palette, newg->palette, sizeof(flam3_palette));
-	g->pixels_per_unit = newg->pixels_per_unit;
-	if (g->width != newg->width)
-		// "autoscale" the image to maintain image width with camera frame
-		g->pixels_per_unit *= (double)(g->width) / (newg->width);
-	g->center[0] = newg->center[0];
-	g->center[1] = newg->center[1];
-	g->rot_center[0] = newg->rot_center[0];
-	g->rot_center[1] = newg->rot_center[1];
-	g->rotate = newg->rotate;
-	g->final_xform_index = newg->final_xform_index;
-	g->final_xform_enable = newg->final_xform_enable;
-	m_paletteEditor->setPalette(genomes.selectedGenome()->palette);
-	m_cameraSettingsWidget->reset();
-	m_imageSettingsWidget->reset();
-	m_xfeditor->reset();
+	flam3_copy(g, newg);
+	reset();
 	render();
 	addUndoState();
 }
 
 void MainWindow::reset()
 {
-	logFine("MainWindow::reset : resetting figure editor");
+	logFine("MainWindow::reset : resetting genome selector");
+	m_genomeSelectWidget->reset();
 	// the colorsettings and variations are updated when a triangle is selected
+	logFine("MainWindow::reset : resetting figure editor");
 	m_xfeditor->reset();
 	logFine("MainWindow::reset : resetting palettes");
 	m_paletteEditor->setPalette(genomes.selectedGenome()->palette);
@@ -1599,17 +1583,10 @@ void MainWindow::scriptFinishedSlot()
 {
 	// make sure there is something to reset, scripts can do wacky things
 	if (genomes.size() < 1)
-	{
-		flam3_genome gen = flam3_genome();
-		Util::init_genome(&gen);
-		genomes.append(gen);
-	}
-	reset();
-	// reset the last selected genome
-	m_genomeSelectWidget->setSelectedGenome(genomes.selectedIndex());
-	addUndoState();
+		newFile();
+	else
+		reset();
 }
-
 
 
 GenomeVector* MainWindow::genomeVector()
@@ -1636,7 +1613,7 @@ void MainWindow::setDialogsEnabled(bool value)
 void MainWindow::genomesModifiedSlot()
 {
 	logFine("MainWindow::genomesModifiedSlot : enter");
-	genomeSelectedSlot(genomes.selectedIndex());
+	genomeSelectedSlot(genomes.selected());
 }
 
 void MainWindow::genomeSelectedSlot(int /*idx*/)
@@ -1699,41 +1676,56 @@ void MainWindow::kill()
 	 m_rthread->killAll();
 }
 
+void MainWindow::provideState(UndoState*)
+{
+}
+
+void MainWindow::restoreState(UndoState*)
+{
+	logFine("MainWindow::restoreState : resetting widgets");
+	m_paletteEditor->setPalette(genomes.selectedGenome()->palette);
+	m_colorBalanceWidget->reset();
+	m_imageSettingsWidget->reset();
+	m_sheepLoopWidget->reset();
+	m_cameraSettingsWidget->reset();
+	m_modeSelectorWidget->reset();
+	render();
+	genomes.updateSelectedPreview();
+}
+
 void MainWindow::undo()
 {
-	if (genomes.undoRing()->atTail())
-		statusBar()->showMessage(tr("last undo"), 1000);
+	QString message;
+	if (genomes.undo())
+	{
+		UndoRing* ring = genomes.undoRing();
+		message = tr("undo %1/%2").arg(ring->index()).arg(ring->size());
+	}
 	else
-		setUndoState(genomes.undoRing()->prev());
+		message = tr("last undo");
+
+	statusBar()->showMessage(message, 1000);
 }
 
 void MainWindow::redo()
 {
-	if (genomes.undoRing()->atHead())
-		statusBar()->showMessage(tr("last redo"), 1000);
+	QString message;
+	if (genomes.redo())
+	{
+		UndoRing* ring = genomes.undoRing();
+		message = tr("redo %1/%2").arg(ring->index()).arg(ring->size());
+	}
 	else
-		setUndoState(genomes.undoRing()->next());
-}
+		message = tr("last redo");
 
-void MainWindow::setUndoState(UndoState* state)
-{
-	flam3_genome* old = &(state->Genome);
-	flam3_genome* g = genomes.selectedGenome();
-	flam3_copy(g, old);
-	reset();
-	m_xfeditor->restoreUndoState(state);
-	m_modeSelectorWidget->reset();
-	render();
-	m_genomeSelectWidget->updateSelectedPreview();
+	statusBar()->showMessage(message, 1000);
 }
 
 void MainWindow::addUndoState()
 {
 	logFine(QString("MainWindow::addUndoState : adding"));
-	UndoState* state = genomes.undoRing()->advance();
-	flam3_copy(&(state->Genome), genomes.selectedGenome());
-	m_xfeditor->saveUndoState(state);
-	m_genomeSelectWidget->updateSelectedPreview();
+	genomes.addUndoState();
+	genomes.updateSelectedPreview();
 }
 
 void MainWindow::runSheepLoop(bool flag)

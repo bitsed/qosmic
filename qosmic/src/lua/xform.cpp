@@ -134,7 +134,10 @@ XForm::~XForm()
 {\
 	get_xform_ptr(L); \
 	if (lua_gettop(L) == 1)\
+	{\
 		xform_ptr->name = luaL_checkint(L, 1);\
+		setModified();\
+	}\
 	else\
 	{\
 		lua_settop(L, 0);\
@@ -155,7 +158,10 @@ XForm::~XForm()
 {\
 	get_xform_ptr(L); \
 	if (lua_gettop(L) == 1)\
+	{\
 		xform_ptr->name = luaL_checknumber(L, 1);\
+		setModified();\
+	}\
 	else\
 	{\
 		lua_settop(L, 0);\
@@ -187,7 +193,10 @@ int XForm::color(lua_State* L)
 {
 	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
+	{
 		xform_ptr->color = luaL_checknumber(L, 1);
+		setModified();
+	}
 	else
 	{
 		lua_settop(L, 0);
@@ -200,7 +209,10 @@ int XForm::opacity(lua_State* L)
 {
 	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
+	{
 		xform_ptr->opacity = qBound(0.0, luaL_checknumber(L, 1), 1.0);
+		setModified();
+	}
 	else
 	{
 		lua_settop(L, 0);
@@ -213,7 +225,10 @@ int XForm::animate(lua_State* L)
 {
 	get_xform_ptr(L);
 	if (lua_gettop(L) == 1)
+	{
 		xform_ptr->animate = qMax(0.0, luaL_checknumber(L, 1));
+		setModified();
+	}
 	else
 	{
 		lua_settop(L, 0);
@@ -311,6 +326,7 @@ int XForm::var(lua_State* L)
 			get_variables_from_table(L, i);
 			lua_pop(L, 2);
 		}
+		setModified();
 	}
 	else
 	{
@@ -334,6 +350,7 @@ int XForm::var(lua_State* L)
 		{
 			// grab the variation value
 			xform_ptr->var[var_num] = luaL_checknumber(L, 2);
+			setModified();
 			if (args == 3)
 			{
 				if (!lua_istable(L, 3))
@@ -968,6 +985,7 @@ int XForm::coords(lua_State* L)
 			lua_pop(L, 2);
 		}
 		c2xf();
+		setModified();
 	}
 	return 1;
 }
@@ -980,6 +998,7 @@ int XForm::a(lua_State* L)
 		triangleCoords[0].rx() = luaL_checknumber(L, 1);
 		triangleCoords[0].ry() = luaL_checknumber(L, 2);
 		c2xf();
+		setModified();
 	}
 	else
 	{
@@ -998,6 +1017,7 @@ int XForm::b(lua_State* L)
 		triangleCoords[1].rx() = luaL_checknumber(L, 1);
 		triangleCoords[1].ry() = luaL_checknumber(L, 2);
 		c2xf();
+		setModified();
 	}
 	else
 	{
@@ -1016,6 +1036,7 @@ int XForm::c(lua_State* L)
 		triangleCoords[2].rx() = luaL_checknumber(L, 1);
 		triangleCoords[2].ry() = luaL_checknumber(L, 2);
 		c2xf();
+		setModified();
 	}
 	else
 	{
@@ -1079,6 +1100,7 @@ int XForm::coefs(lua_State* L)
 		xform_ptr->c[2][1] = luaL_checknumber(L, -1);
 		lua_pop(L, 1);
 		xf2c();
+		setModified();
 	}
 	return 1;
 }
@@ -1090,6 +1112,7 @@ int XForm::xa(lua_State* L)
 	{
 		xform_ptr->c[0][0] = luaL_checknumber(L, 1);
 		xf2c();
+		setModified();
 	}
 	lua_settop(L, 0);
 	lua_pushnumber(L, xform_ptr->c[0][0]);
@@ -1103,6 +1126,7 @@ int XForm::xd(lua_State* L)
 	{
 		xform_ptr->c[0][1] = luaL_checknumber(L, 1);
 		xf2c();
+		setModified();
 	}
 	lua_settop(L, 0);
 	lua_pushnumber(L, xform_ptr->c[0][1]);
@@ -1116,6 +1140,7 @@ int XForm::xb(lua_State* L)
 	{
 		xform_ptr->c[1][0] = luaL_checknumber(L, 1);
 		xf2c();
+		setModified();
 	}
 	lua_settop(L, 0);
 	lua_pushnumber(L, xform_ptr->c[1][0]);
@@ -1129,6 +1154,7 @@ int XForm::xe(lua_State* L)
 	{
 		xform_ptr->c[1][1] = luaL_checknumber(L, 1);
 		xf2c();
+		setModified();
 	}
 	lua_settop(L, 0);
 	lua_pushnumber(L, xform_ptr->c[1][1]);
@@ -1142,6 +1168,7 @@ int XForm::xc(lua_State* L)
 	{
 		xform_ptr->c[2][0] = luaL_checknumber(L, 1);
 		xf2c();
+		setModified();
 	}
 	lua_settop(L, 0);
 	lua_pushnumber(L, xform_ptr->c[2][0]);
@@ -1155,6 +1182,7 @@ int XForm::xf(lua_State* L)
 	{
 		xform_ptr->c[2][1] = luaL_checknumber(L, 1);
 		xf2c();
+		setModified();
 	}
 	lua_settop(L, 0);
 	lua_pushnumber(L, xform_ptr->c[2][1]);
@@ -1200,6 +1228,7 @@ int XForm::coordsp(lua_State* L)
 			lua_pop(L, 2);
 		}
 		c2xfp();
+		setModified();
 	}
 	return 1;
 }
@@ -1213,6 +1242,7 @@ int XForm::ap(lua_State* L)
 		triangleCoordsP[0].rx() = luaL_checknumber(L, 1);
 		triangleCoordsP[0].ry() = luaL_checknumber(L, 2);
 		c2xfp();
+		setModified();
 	}
 	else
 	{
@@ -1231,6 +1261,7 @@ int XForm::bp(lua_State* L)
 		triangleCoordsP[1].rx() = luaL_checknumber(L, 1);
 		triangleCoordsP[1].ry() = luaL_checknumber(L, 2);
 		c2xfp();
+		setModified();
 	}
 	else
 	{
@@ -1249,6 +1280,7 @@ int XForm::cp(lua_State* L)
 		triangleCoordsP[2].rx() = luaL_checknumber(L, 1);
 		triangleCoordsP[2].ry() = luaL_checknumber(L, 2);
 		c2xfp();
+		setModified();
 	}
 	else
 	{
@@ -1312,6 +1344,7 @@ int XForm::coefsp(lua_State* L)
 		xform_ptr->post[2][1] = luaL_checknumber(L, -1);
 		lua_pop(L, 1);
 		xfp2c();
+		setModified();
 	}
 	return 1;
 }
@@ -1323,6 +1356,7 @@ int XForm::xap(lua_State* L)
 	{
 		xform_ptr->post[0][0] = luaL_checknumber(L, 1);
 		xfp2c();
+		setModified();
 	}
 	lua_settop(L, 0);
 	lua_pushnumber(L, xform_ptr->post[0][0]);
@@ -1336,6 +1370,7 @@ int XForm::xdp(lua_State* L)
 	{
 		xform_ptr->post[0][1] = luaL_checknumber(L, 1);
 		xfp2c();
+		setModified();
 	}
 	lua_settop(L, 0);
 	lua_pushnumber(L, xform_ptr->post[0][1]);
@@ -1349,6 +1384,7 @@ int XForm::xbp(lua_State* L)
 	{
 		xform_ptr->post[1][0] = luaL_checknumber(L, 1);
 		xfp2c();
+		setModified();
 	}
 	lua_settop(L, 0);
 	lua_pushnumber(L, xform_ptr->post[1][0]);
@@ -1362,6 +1398,7 @@ int XForm::xep(lua_State* L)
 	{
 		xform_ptr->post[1][1] = luaL_checknumber(L, 1);
 		xfp2c();
+		setModified();
 	}
 	lua_settop(L, 0);
 	lua_pushnumber(L, xform_ptr->post[1][1]);
@@ -1375,6 +1412,7 @@ int XForm::xcp(lua_State* L)
 	{
 		xform_ptr->post[2][0] = luaL_checknumber(L, 1);
 		xfp2c();
+		setModified();
 	}
 	lua_settop(L, 0);
 	lua_pushnumber(L, xform_ptr->post[2][0]);
@@ -1388,6 +1426,7 @@ int XForm::xfp(lua_State* L)
 	{
 		xform_ptr->post[2][1] = luaL_checknumber(L, 1);
 		xfp2c();
+		setModified();
 	}
 	lua_settop(L, 0);
 	lua_pushnumber(L, xform_ptr->post[2][1]);
@@ -1427,6 +1466,12 @@ void XForm::setContext(lua_State* L, Genome* g, int x_idx)
 	xfp2c();
 }
 
+void XForm::setModified()
+{
+	if (m_gidx > -1) // XForm associated with some Genome
+		m_adapter->setModified(m_gidx);
+}
+
 flam3_xform* XForm::data()
 {
 	return xform_ptr;
@@ -1439,6 +1484,7 @@ int XForm::translate(lua_State* L)
 	double dy = luaL_checknumber(L, 2);
 	triangleCoords.translate(dx, dy);
 	c2xf();
+	setModified();
 	return 0;
 }
 
@@ -1452,6 +1498,7 @@ int XForm::pos(lua_State* L)
 		QPointF f = QPointF(x,y) - triangleCoords.boundingRect().center();
 		triangleCoords.translate(f.x(), f.y());
 		c2xf();
+		setModified();
 	}
 	QPointF c = triangleCoords.boundingRect().center();
 	lua_settop(L,0);
@@ -1470,6 +1517,7 @@ int XForm::rotate(lua_State* L)
 		double x = luaL_checknumber(L, 2);
 		double y = luaL_checknumber(L, 3);
 		c = QPointF(x, y);
+		setModified();
 	}
 	QMatrix matrix;
 	matrix.translate(c.x(), c.y()).rotate(deg).translate(-c.x(), -c.y());
@@ -1491,6 +1539,7 @@ int XForm::scale(lua_State* L)
 		double x = luaL_checknumber(L, 3);
 		double y = luaL_checknumber(L, 4);
 		c = QPointF(x, y);
+		setModified();
 	}
 	QMatrix matrix;
 	matrix.translate(c.x(), c.y()).scale(dx, dy).translate(-c.x(), -c.y());
@@ -1510,6 +1559,7 @@ int XForm::shear(lua_State* L)
 		double x = luaL_checknumber(L, 3);
 		double y = luaL_checknumber(L, 4);
 		c = QPointF(x, y);
+		setModified();
 	}
 	QMatrix matrix;
 	matrix.translate(c.x(), c.y()).shear(dx, dy).translate(-c.x(), -c.y());
@@ -1526,6 +1576,7 @@ int XForm::translatep(lua_State* L)
 	double dy = luaL_checknumber(L, 2);
 	triangleCoordsP.translate(dx, dy);
 	c2xfp();
+	setModified();
 	return 0;
 }
 
@@ -1539,6 +1590,7 @@ int XForm::posp(lua_State* L)
 		QPointF f = QPointF(x,y) - triangleCoordsP.boundingRect().center();
 		triangleCoordsP.translate(f.x(), f.y());
 		c2xfp();
+		setModified();
 	}
 	QPointF c = triangleCoordsP.boundingRect().center();
 	lua_settop(L,0);
@@ -1557,6 +1609,7 @@ int XForm::rotatep(lua_State* L)
 		double x = luaL_checknumber(L, 2);
 		double y = luaL_checknumber(L, 3);
 		c = QPointF(x, y);
+		setModified();
 	}
 	QMatrix matrix;
 	matrix.translate(c.x(), c.y()).rotate(deg).translate(-c.x(), -c.y());
@@ -1578,6 +1631,7 @@ int XForm::scalep(lua_State* L)
 		double x = luaL_checknumber(L, 3);
 		double y = luaL_checknumber(L, 4);
 		c = QPointF(x, y);
+		setModified();
 	}
 	QMatrix matrix;
 	matrix.translate(c.x(), c.y()).scale(dx, dy).translate(-c.x(), -c.y());
@@ -1597,6 +1651,7 @@ int XForm::shearp(lua_State* L)
 		double x = luaL_checknumber(L, 3);
 		double y = luaL_checknumber(L, 4);
 		c = QPointF(x, y);
+		setModified();
 	}
 	QMatrix matrix;
 	matrix.translate(c.x(), c.y()).shear(dx, dy).translate(-c.x(), -c.y());
