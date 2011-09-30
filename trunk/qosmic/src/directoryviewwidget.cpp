@@ -111,7 +111,7 @@ void DirectoryViewWidget::selectFileAction(const QModelIndex& idx)
 			if (QApplication::keyboardModifiers() & Qt::ControlModifier)
 			{
 				logInfo("DirectoryViewWidget::selectFileAction : file appended");
-				emit flam3FileSelected(info.absoluteFilePath(), true);
+				emit flam3FileAppended(info.absoluteFilePath());
 			}
 			else
 			{
@@ -304,13 +304,17 @@ void DirectoryViewWidget::configButtonClicked()
 	QAction* nameaction = sortmenu->addAction("By Name");
 	QAction* dateaction = sortmenu->addAction("By Date");
 	QAction* sizeaction = sortmenu->addAction("By Size");
+	QAction* typeaction = sortmenu->addAction("By Type");
 	nameaction->setCheckable(true);
 	dateaction->setCheckable(true);
 	sizeaction->setCheckable(true);
+	typeaction->setCheckable(true);
 	if (sort_type == NAME)
 		nameaction->setChecked(true);
 	else if (sort_type == DATE)
 		dateaction->setChecked(true);
+	else if (sort_type == TYPE)
+		typeaction->setChecked(true);
 	else
 		sizeaction->setChecked(true);
 
@@ -368,6 +372,8 @@ void DirectoryViewWidget::configMenuTriggered(QAction* action)
 			type = DATE;
 		else if (action->text() == "By Size")
 			type = SIZE;
+		else if (action->text() == "By Type")
+			type = TYPE;
 		else
 			type = NAME;
 		sortBy(type);
@@ -395,6 +401,8 @@ void DirectoryViewWidget::sortBy(SortType type)
 			header = "Date Modified";
 		else if (sort_type == SIZE)
 			header = "Size";
+		else if (sort_type == TYPE)
+			header = "Type";
 		else
 			header = "Name";
 		QAbstractItemModel* h_model = m_treeView->header()->model();
@@ -468,6 +476,8 @@ void DirectoryViewWidget::detailedViewSortTypeChanged(int section, Qt::SortOrder
 		sort_type = DATE;
 	else if (type == "Size")
 		sort_type = SIZE;
+	else if (type == "Type")
+		sort_type = TYPE;
 	else
 		sort_type = NAME;
 }

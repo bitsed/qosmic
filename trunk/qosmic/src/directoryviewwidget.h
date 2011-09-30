@@ -51,7 +51,8 @@ class DirectoryViewWidget : public QWidget, private Ui::DirectoryViewWidget
 		void fileImageRendered(const QString&);
 
 	signals:
-		void flam3FileSelected(const QString&,bool =false);
+		void flam3FileSelected(const QString&);
+		void flam3FileAppended(const QString&);
 		void luaScriptSelected(const QString&);
 
 	protected:

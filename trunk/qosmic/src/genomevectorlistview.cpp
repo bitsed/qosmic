@@ -17,7 +17,10 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include <QUrl>
+
 #include "genomevectorlistview.h"
+#include "flam3filestream.h"
 #include "mutationwidget.h"
 #include "logger.h"
 
@@ -33,6 +36,14 @@ void GenomeVectorListView::mousePressEvent(QMouseEvent* event)
 	// save the currentIndex so it can be restored after a startDrag event
 	QListView::mousePressEvent(event);
 	dragStartIndex = indexAt(event->pos());
+}
+
+void GenomeVectorListView::rowsInserted(const QModelIndex& /*parent*/, int start, int /*end*/)
+{
+	GenomeVector* genomes = qobject_cast<GenomeVector*>(model());
+	genomes->setSelected(start);
+	setCurrentIndex(genomes->selectedIndex());
+	emit genomesModified();
 }
 
 void GenomeVectorListView::startDrag(Qt::DropActions supportedActions)
@@ -51,11 +62,30 @@ void GenomeVectorListView::dropEvent(QDropEvent* event)
 	if ((event->source() == this && (event->possibleActions() & Qt::MoveAction)))
 	{
 		QListView::dropEvent(event);
-		event->acceptProposedAction();
+
 		// Process the data from the event.
-		QModelIndexList idxlist;
-		idxlist << indexAt(event->pos()) << dragStartIndex;
-		emit indexesMoved(idxlist);
+		QModelIndexList idxList;
+		idxList << indexAt(event->pos()) << dragStartIndex;
+
+		GenomeVector* genomes = qobject_cast<GenomeVector*>(model());
+		int drop_row = idxList.at(0).row();
+		int drag_row = idxList.at(1).row();
+		int selected = genomes->selected();
+		genomes->moveRow(drag_row, drop_row);
+
+		// reselect the currently selected index
+		int select_next = selected;
+		if (drag_row == selected)
+			select_next = drop_row;
+		else if ((drag_row < selected) && (selected <= drop_row))
+			select_next = selected - 1;
+		else if (drag_row > selected && selected >= drop_row)
+			select_next = selected + 1;
+
+		genomes->setSelected(select_next);
+		Flam3FileStream::autoSave(genomes);
+		event->acceptProposedAction();
+		emit indexesMoved(idxList);
 	}
 	else
 	{
@@ -86,11 +116,24 @@ void GenomeVectorListView::dropEvent(QDropEvent* event)
 				flam3_copy(&tmp, mutation);
 				tmp.time = time;
 				genomes->appendRow(tmp);
-				selectionModel()->select(genomes->selectedIndex(), QItemSelectionModel::ClearAndSelect);
 			}
+			Flam3FileStream::autoSave(genomes);
 			event->acceptProposedAction();
 		}
-
+		else if (event->mimeData()->hasFormat("text/uri-list"))
+		{
+			QUrl url = event->mimeData()->urls().first();
+			QString path = url.path();
+			if (url.isValid() && path.contains(QRegExp("\\.flam[3e]?$")))
+			{
+				GenomeVector* genomes = qobject_cast<GenomeVector*>(model());
+				QFile file(path);
+				Flam3FileStream s(&file);
+				s >> genomes;
+				Flam3FileStream::autoSave(genomes);
+				event->acceptProposedAction();
+			}
+		}
 	}
 }
 
@@ -98,11 +141,18 @@ void GenomeVectorListView::dragEnterEvent(QDragEnterEvent* event)
 {
 	if ((event->source() == this && (event->possibleActions() & Qt::MoveAction)))
 		QListView::dragEnterEvent(event);
-	else
+	else if (event->mimeData()->hasFormat("application/x-mutationpreviewwidget"))
+		event->acceptProposedAction();
+	else if (event->mimeData()->hasFormat("text/uri-list"))
 	{
-		if (event->mimeData()->hasFormat("application/x-mutationpreviewwidget"))
+		QUrl url = event->mimeData()->urls().first();
+		QString path = url.path();
+		if (url.isValid() && path.contains(QRegExp("\\.flam[3e]?$")))
 			event->acceptProposedAction();
 	}
+	else
+		logWarn(QString("GenomeVectorListView::dragEnterEvent : unknown mimeData %1")
+				.arg(event->mimeData()->formats().join(", ")));
 }
 
 void GenomeVectorListView::dragMoveEvent(QDragMoveEvent* event)
@@ -111,10 +161,12 @@ void GenomeVectorListView::dragMoveEvent(QDragMoveEvent* event)
 		QListView::dragMoveEvent(event);
 	else
 	{
-		if (event->mimeData()->hasFormat("application/x-mutationpreviewwidget"))
+		if (event->mimeData()->hasFormat("application/x-mutationpreviewwidget")
+		 || event->mimeData()->hasFormat("text/uri-list"))
 		{
-			selectionModel()->select(indexAt(event->pos()), QItemSelectionModel::ClearAndSelect);
+			QListView::dragMoveEvent(event);
 			event->acceptProposedAction();
+			viewport()->update(); // needed to draw the drop indicator
 		}
 	}
 }
@@ -126,6 +178,7 @@ void GenomeVectorListView::commitData(QWidget* editor)
 	for (int n = 0 ; n < m->rowCount() ; n++ )
 		update(m->index(n));
 }
+
 
 //-------------------------------------------------------------------------------------------
 

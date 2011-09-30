@@ -195,7 +195,7 @@ void FigureEditor::enableFinalXform(bool enable)
 			flam3_add_xforms(genome_ptr, 1, 0, 1);
 			reset();
 			selectTriangle(trianglesList.last());
-			emit triangleModifiedSignal(selectedTriangle);
+			emit triangleListChangedSignal();
 			emit undoStateSignal();
 		}
 	}
@@ -209,7 +209,7 @@ void FigureEditor::enableFinalXform(bool enable)
 			flam3_delete_xform(genome_ptr, genome_ptr->final_xform_index);
 			reset();
 			selectTriangle(trianglesList.last());
-			emit triangleModifiedSignal(selectedTriangle);
+			emit triangleListChangedSignal();
 			emit undoStateSignal();
 		}
 	}
@@ -229,7 +229,7 @@ void FigureEditor::addTriangleAction()
 		selectTriangle(trianglesList.size() - 2);
 	else
 		selectTriangle(trianglesList.last());
-	emit triangleModifiedSignal(selectedTriangle);
+	emit triangleListChangedSignal();
 	emit undoStateSignal();
 }
 
@@ -275,7 +275,7 @@ void FigureEditor::cutTriangleAction()
 		flam3_delete_xform(genome_ptr, idx);
 	}
 	reset();
-	emit triangleModifiedSignal(selectedTriangle);
+	emit triangleListChangedSignal();
 	emit undoStateSignal();
 }
 
@@ -330,7 +330,7 @@ void FigureEditor::pasteTriangleAction()
 		memcpy(genome_ptr->xform + n, xformClip.data(), sizeof(flam3_xform) * size);
 		reset();
 		selectTriangle(n + size - 1);
-		emit triangleModifiedSignal(selectedTriangle);
+		emit triangleListChangedSignal();
 		emit undoStateSignal();
 	}
 }
@@ -343,7 +343,7 @@ void FigureEditor::removeTriangleAction()
 		"Removing triangle %1").arg(idx));
 	flam3_delete_xform(genome_ptr, idx);
 	reset();
-	emit triangleModifiedSignal(selectedTriangle);
+	emit triangleListChangedSignal();
 	emit undoStateSignal();
 }
 

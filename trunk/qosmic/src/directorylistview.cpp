@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <QFileSystemModel>
+#include <QUrl>
 
 #include "directorylistview.h"
 #include "logger.h"
@@ -76,7 +77,30 @@ void DirectoryListView::mousePressEvent(QMouseEvent* event)
 		fsm->setFilter( fsm->filter() ^ QDir::Hidden );
 	}
 	else
+	{
 		QListView::mousePressEvent(event);
+		dragStartIndex = indexAt(event->pos());
+	}
+}
+
+void DirectoryListView::startDrag(Qt::DropActions supportedActions)
+{
+	if (dragStartIndex.isValid())
+	{
+		QFileSystemModel* m = qobject_cast<QFileSystemModel*>(model());
+		QFileInfo file( m->fileInfo(dragStartIndex) );
+		if (file.isFile())
+		{
+			QDrag* drag = new QDrag(this);
+			QMimeData* mimeData = new QMimeData;
+			QList<QUrl> urlList;
+			urlList.append(QUrl::fromLocalFile(file.absoluteFilePath()));
+			mimeData->setUrls(urlList);
+			drag->setMimeData(mimeData);
+			drag->setPixmap(m->fileIcon(dragStartIndex).pixmap(iconSize()));
+			drag->exec(supportedActions);
+		}
+	}
 }
 
 void DirectoryListView::wheelEvent(QWheelEvent* e)

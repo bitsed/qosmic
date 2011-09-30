@@ -72,7 +72,7 @@ else {
 ################################################################################
 ## Build style flags.  Adding debug enables more verbose logging.
 # CONFIG += release warn_off
-#CONFIG += debug warn_on
+CONFIG += debug warn_on
 
 
 ################################################################################
@@ -250,7 +250,8 @@ HEADERS += \
  src/chaoswidget.h \
  src/transformablegraphicsitem.h \
  src/transformablegraphicsguide.h \
- src/sheeploopwidget.h
+ src/sheeploopwidget.h \
+ src/flam3filestream.h
 
 SOURCES += \
  src/qosmic.cpp \
@@ -315,7 +316,8 @@ SOURCES += \
  src/chaoswidget.cpp \
  src/transformablegraphicsitem.cpp \
  src/transformablegraphicsguide.cpp \
- src/sheeploopwidget.cpp
+ src/sheeploopwidget.cpp \
+ src/flam3filestream.cpp
 
 
 TRANSLATIONS = ts/qosmic_fr.ts

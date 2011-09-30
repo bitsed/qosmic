@@ -31,6 +31,9 @@ class GenomeVector : public QAbstractListModel, public QVector<flam3_genome>
 {
 	Q_OBJECT
 
+	public:
+		enum AutoSave { NeverSave = 0, SaveOnExit = 1, AlwaysSave = 2 };
+
 	protected:
 		RenderThread* r_thread;
 		int selected_index;
@@ -42,6 +45,8 @@ class GenomeVector : public QAbstractListModel, public QVector<flam3_genome>
 		QList<UndoStateProvider*> providerList;
 		QList<QVariant> previews;
 		QList<RenderRequest*> r_requests;
+		QPixmap clock_preview;
+		AutoSave auto_save;
 
 	public:
 		GenomeVector();
@@ -59,9 +64,12 @@ class GenomeVector : public QAbstractListModel, public QVector<flam3_genome>
 		void insert(int i, int count, flam3_genome* genomes);
 		void insert(int i, const flam3_genome& genome);
 		bool remove(int i, int count=1);
+		void removeAll();
 		void clear();
 		flam3_genome* data();  // QVector interface
 		int size() const;
+		AutoSave autoSave() const;
+		void setAutoSave(AutoSave);
 
 		// the QAbstractListModel interface
 		bool appendRow();
@@ -98,9 +106,11 @@ class GenomeVector : public QAbstractListModel, public QVector<flam3_genome>
 		void updatePreviews();
 		void updatePreview(int);
 		void clearPreviews();
+		void clearPreview(int);
 
 	private:
 		void setCapacity(int entries);
+		void createClockPreview();
 };
 
 

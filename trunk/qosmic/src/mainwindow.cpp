@@ -28,6 +28,7 @@
 #include "mainwindow.h"
 #include "renderdialog.h"
 #include "renderprogressdialog.h"
+#include "flam3filestream.h"
 
 MainWindow::MainWindow()
 : QMainWindow(), QosmicWidget(this, "MainWindow")
@@ -77,7 +78,8 @@ MainWindow::MainWindow()
 	logInfo("MainWindow::MainWindow : creating EditModeSelectorWidget");
 	m_modeSelectorWidget = new EditModeSelectorWidget(m_xfeditor, this);
 	centralWidget()->layout()->addWidget(m_modeSelectorWidget);
-	connect(m_xfeditor, SIGNAL(triangleModifiedSignal(Triangle*)), this, SLOT(triangleModifiedSlot(Triangle*)));
+	connect(m_xfeditor, SIGNAL(triangleModifiedSignal(Triangle*)), this, SLOT(render()));
+	connect(m_xfeditor, SIGNAL(triangleListChangedSignal()), this, SLOT(render()));
 	connect(m_xfeditor, SIGNAL(triangleSelectedSignal(Triangle*)), this, SLOT(triangleSelectedSlot(Triangle*)));
 	connect(m_xfeditor, SIGNAL(coordinateChangeSignal(double,double)), this, SLOT(updateStatus(double,double)));
 	connect(m_xfeditor, SIGNAL(undoStateSignal()), this, SLOT(addUndoState()));
@@ -338,8 +340,10 @@ MainWindow::MainWindow()
 	dockActions << dock->toggleViewAction();
 	dock->hide();
 	m_dockWidgets << dock;
-	connect(m_directoryViewWidget, SIGNAL(flam3FileSelected(const QString&,bool)),
-			this, SLOT(flam3FileSelectedAction(const QString&,bool)));
+	connect(m_directoryViewWidget, SIGNAL(flam3FileSelected(const QString&)),
+			this, SLOT(flam3FileSelectAction(const QString&)));
+	connect(m_directoryViewWidget, SIGNAL(flam3FileAppended(const QString&)),
+			this, SLOT(flam3FileAppendAction(const QString&)));
 
 	// sheep-loop widget
 	logInfo("MainWindow::MainWindow : creating SheepLoopWidget");
@@ -357,6 +361,7 @@ MainWindow::MainWindow()
 	connect(m_rthread, SIGNAL(flameRenderingKilled()), m_sheepLoopWidget, SLOT(reset()));
 	connect(m_genomeSelectWidget, SIGNAL(genomeSelected(int)), m_sheepLoopWidget, SLOT(genomeSelectedSlot(int)));
 	connect(m_genomeSelectWidget, SIGNAL(genomesModified()), m_sheepLoopWidget, SLOT(genomesModifiedSlot()));
+	connect(m_xfeditor, SIGNAL(triangleListChangedSignal()), m_sheepLoopWidget, SLOT(genomesModifiedSlot()));
 
 	// script editing widget
 	logInfo("MainWindow::MainWindow : creating ScriptEditorWidget");
@@ -403,14 +408,6 @@ void MainWindow::triangleSelectedSlot(Triangle* t)
 		coordsLabel.setText(msg);
 	}
 }
-
-
-
-void MainWindow::triangleModifiedSlot(Triangle* /*t*/)
-{
-	render();
-}
-
 
 void MainWindow::showMainViewer(QString filename)
 {
@@ -501,16 +498,11 @@ void MainWindow::updateStatus(double posX, double posY)
 			.arg(tx, 0, 'f', 4).arg(separator).arg(ty, 0, 'f', 4));
 }
 
+
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-	QString name(QOSMIC_AUTOSAVE);
-	QFile file(name);
-	if (file.exists() && file.open(QIODevice::ReadWrite))
-	{
-		logInfo("MainWindow::closeEvent : saving current genome");
-		file.close();
-		saveFile(name);
-	}
+	logInfo("MainWindow::closeEvent : saving current genome");
+	Flam3FileStream::autoSave(&genomes, GenomeVector::SaveOnExit | GenomeVector::AlwaysSave);
 	m_rthread->stopRendering();
 	m_rthread->running = false;
 
@@ -1194,24 +1186,20 @@ void MainWindow::writeSettings()
 }
 
 
-void MainWindow::loadGenomeList(flam3_genome* gen, int ncps)
-{
-	genomes.setData(gen, ncps);
-}
-
 void MainWindow::setFlameXML(const QString& s)
 {
 	int ncps = 0;
 	flam3_genome* in;
-	 if (s.isEmpty())
-		 in = Util::read_xml_string(DEFAULT_FLAME_XML, &ncps);
-	 else
-		 in = Util::read_xml_string(s, &ncps);
+	if (s.isEmpty())
+		in = Util::read_xml_string(DEFAULT_FLAME_XML, &ncps);
+	else
+		in = Util::read_xml_string(s, &ncps);
 	logInfo(QString("MainWindow::setFlameXML : found %1 genome").arg(ncps));
-	loadGenomeList(in, ncps);
+	genomes.setData(in, ncps);
 	reset();
 	render();
 }
+
 
 void MainWindow::openRecentFile()
 {
@@ -1227,14 +1215,56 @@ void MainWindow::openRecentFile()
 bool MainWindow::loadFile(const QString& fname)
 {
 	logInfo(QString("MainWindow::loadFile : opening %1").arg(fname));
-	int ncps = 0;
-	flam3_genome* in;
-	if (readFlam3File(fname, &in, &ncps))
+	QFile file(fname);
+	Flam3FileStream s(&file);
+	if (s.read(&genomes))
 	{
-		logInfo(QString("MainWindow::loadFile : found %1 genomes").arg(ncps));
-		loadGenomeList(in, ncps);
+		logInfo("MainWindow::loadFile : found %d genomes", genomes.size());
 		setCurrentFile(fname);
 		reset();
+		emit mainWindowChanged();
+		return true;
+	}
+
+	if (m_dialogsEnabled)
+		QMessageBox::warning(this, tr("Application error"),
+		tr("Couldn't open file %1\n").arg(fname));
+
+	return false;
+}
+
+
+bool MainWindow::saveFile(const QString& fname)
+{
+	QFile file(fname);
+	Flam3FileStream s(&file);
+	if (s.write(&genomes))
+	{
+		setCurrentFile(fname);
+		statusBar()->showMessage(tr("File saved"), 2000);
+		return true;
+	}
+
+	if (m_dialogsEnabled)
+		QMessageBox::warning(this, tr("Application error"),
+		tr("Couldn't save file %1\n").arg(fname));
+
+	return false;
+}
+
+
+bool MainWindow::importGenome(const QString& fname)
+{
+	logInfo(QString("MainWindow::importGenome : opening %1").arg(fname));
+	int ncps(0);
+	flam3_genome* in;
+	QFile file(fname);
+	Flam3FileStream s(&file);
+	if (s.read(&in, &ncps))
+	{
+		logInfo(QString("MainWindow::importGenome : found %1 genomes").arg(ncps));
+		genomes.insertRows(genomes.size(), ncps, in);
+		Flam3FileStream::autoSave(&genomes);
 		emit mainWindowChanged();
 		return true;
 	}
@@ -1242,11 +1272,13 @@ bool MainWindow::loadFile(const QString& fname)
 }
 
 
-bool MainWindow::saveFile(const QString &fname)
+bool MainWindow::exportGenome(const QString& fname, int index)
 {
-	if (writeGenomesToFile(fname, genomes.data(), genomes.size()))
+	QFile file(fname);
+	Flam3FileStream s(&file);
+	logInfo(QString("MainWindow::exportGenome : saving to '%1'").arg(fname));
+	if (s.write(genomes.data() + index, 1))
 	{
-		setCurrentFile(fname);
 		statusBar()->showMessage(tr("File saved"), 2000);
 		return true;
 	}
@@ -1254,135 +1286,16 @@ bool MainWindow::saveFile(const QString &fname)
 }
 
 
-bool MainWindow::writeGenomesToFile(const QString& fname, flam3_genome* genomes, int ngenomes)
-{
-	if (ngenomes < 1)
-	{
-		logWarn("MainWindow::writeGenomeToFile : cannot write < 1 genome");
-		return false;
-	}
-	QFile file(fname);
-	if (!file.open(QIODevice::WriteOnly))
-	{
-		if (m_dialogsEnabled)
-			QMessageBox::warning(this, tr("Application error"), tr("Cannot write file %1\n").arg(fname));
-		return false;
-	}
-	logInfo(QString("MainWindow::writeGenomeToFile : writing %1 genomes to '%2'").arg(ngenomes).arg(fname));
-	FILE* fd = fdopen(file.handle(), "w"); // check for error again?
-	if (ngenomes > 1)
-	{
-		char attrs[] = "";
-		fprintf(fd, "<qstack>\n");
-		for (int i = 0 ; i < ngenomes ; i++)
-		{
-			flam3_genome* g = genomes + i;
-			int n = g->symmetry;
-			g->symmetry = 0;
-			Util::write_to_file(fd, g, attrs, 0);
-			g->symmetry = n;
-		}
-		fprintf(fd, "</qstack>\n");
-	}
-	else
-	{
-		// always clear the genome symmetry since the parser modifies the
-		// genome when reading this tag.
-		char attrs[] = "";
-		int n = genomes[0].symmetry;
-		genomes[0].symmetry = 0;
-		Util::write_to_file(fd, genomes, attrs, 0);
-		genomes[0].symmetry = n;
-	}
-
-	int rv = fclose(fd);
-	file.close();
-	return rv == 0;
-}
-
-bool MainWindow::importGenome(const QString& fname)
-{
-	logInfo(QString("MainWindow::importGenome : opening %1").arg(fname));
-	int ncps = 0;
-	flam3_genome* in;
-	if (readFlam3File(fname, &in, &ncps))
-	{
-		logInfo(QString("MainWindow::importGenome : found %1 genomes").arg(ncps));
-		genomes.insertRows(genomes.size(), ncps, in);
-		reset();
-		emit mainWindowChanged();
-		return true;
-	}
-	return false;
-}
-
-bool MainWindow::exportGenome(const QString& fname, int index)
-{
-	QFile file(fname);
-	char attrs[] = "";
-	logInfo(QString("MainWindow::exportGenome : saving to '%1'").arg(fname));
-	if (!file.open(QIODevice::WriteOnly))
-		return false;
-
-	FILE* fd = fdopen(file.handle(), "w"); // check for error again?
-	// always clear the genome symmetry since the parser modifies the
-	// genome when reading this tag.
-	int n = genomes[index].symmetry;
-	genomes[index].symmetry = 0;
-	Util::write_to_file(fd, genomes.data() + index, attrs, 0);
-	genomes[index].symmetry = n;
-	fclose(fd);
-	file.close();
-	statusBar()->showMessage(tr("File saved"), 2000);
-	return true;
-}
-
-bool MainWindow::readFlam3File(const QString& fname, flam3_genome** in, int* ncps)
-{
-	QFile file(fname);
-	if (!file.open(QIODevice::ReadOnly))
-	{
-		if (m_dialogsEnabled)
-			QMessageBox::warning(this, tr("Application error"),
-				tr("Cannot open file %1\n").arg(fname));
-		return false;
-	}
-	FILE* fd = fdopen(file.handle(), "r");
-	// 'in' points to a static defined in flam3.c
-	*in = Util::read_from_file(fd, fname.toAscii().data(), 1, ncps);
-	fclose(fd);
-	file.close();
-	if (*ncps < 1)
-	{
-		if (m_dialogsEnabled)
-			QMessageBox::warning(this, tr("Application error"),
-				tr("Couldn't parse file %1\n").arg(fname));
-		return false;
-	}
-
-	// sanitize the genomes to avoid strange behavior and problems with libflam3
-	for (int n = 0 ; n < *ncps ; n++)
-	{
-		flam3_genome* g = *in + n;
-		g->symmetry = 1;           // clear genome symmetry flag
-		g->ntemporal_samples = 1;  // temporal_samples is only for animations
-		g->interpolation = flam3_interpolation_linear; // animation interp
-	}
-
-	return true;
-}
-
-void MainWindow::setCurrentFile(const QString &fileName)
+void MainWindow::setCurrentFile(const QString& fileName)
 {
 	curFile = fileName;
-
 	QString shownName;
 	if (curFile.isEmpty())
 		shownName = "untitled.flam3";
 	else
 	{
 		shownName = strippedName(curFile);
-		if (shownName != ".qosmic.flam3")
+		if (shownName != "autosave.flam3")
 		{
 			QSettings settings;
 			QStringList files = settings.value("mainwindow/recentfiles").toStringList();
@@ -1399,7 +1312,7 @@ void MainWindow::setCurrentFile(const QString &fileName)
 }
 
 
-QString MainWindow::strippedName(const QString &fullFileName)
+QString MainWindow::strippedName(const QString& fullFileName)
 {
 	return QFileInfo(fullFileName).fileName();
 }
@@ -1538,16 +1451,15 @@ void MainWindow::randomizeGenomeAction()
 }
 
 
-void MainWindow::flam3FileSelectedAction(const QString& name, bool append)
+void MainWindow::flam3FileSelectAction(const QString& name)
 {
-	bool rv(false);
+	if (loadFile(name))
+		render();
+}
 
-	if (append)
-		rv = importGenome(name);
-	else
-		rv = loadFile(name);
-
-	if (rv)
+void MainWindow::flam3FileAppendAction(const QString& name)
+{
+	if (importGenome(name))
 		render();
 }
 
@@ -1726,6 +1638,7 @@ void MainWindow::addUndoState()
 	logFine(QString("MainWindow::addUndoState : adding"));
 	genomes.addUndoState();
 	genomes.updateSelectedPreview();
+	Flam3FileStream::autoSave(&genomes);
 }
 
 void MainWindow::runSheepLoop(bool flag)
@@ -1793,7 +1706,9 @@ void MainWindow::saveSheepLoop()
 		{
 			QString fileName(dialog.selectedFiles().first());
 			lastDir = QFileInfo(fileName).dir().canonicalPath();
-			if (writeGenomesToFile(fileName, sheep, dncp))
+			QFile file(fileName);
+			Flam3FileStream s(&file);
+			if (s.write(sheep, dncp))
 				statusBar()->showMessage(tr("File saved"), 2000);
 		}
 	}

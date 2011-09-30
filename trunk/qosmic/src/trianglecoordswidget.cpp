@@ -97,6 +97,12 @@ TriangleCoordsWidget::TriangleCoordsWidget(GenomeVector* gen, QWidget* parent)
 		this, SLOT(coordsButtonGroupClickedAction()));
 }
 
+void TriangleCoordsWidget::showEvent(QShowEvent* e)
+{
+	if (!e->spontaneous())
+		updateFormData();
+}
+
 void TriangleCoordsWidget::coordsButtonGroupClickedAction()
 {
 	QSettings settings;
@@ -120,7 +126,7 @@ void TriangleCoordsWidget::setGenome(int n)
 
 void TriangleCoordsWidget::updateFormData()
 {
-	if (isHidden())
+	if (!isVisible())
 		return;
 
 	logFiner("TriangleCoordsWidget::updateFormData : updating");

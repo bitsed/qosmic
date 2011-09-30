@@ -31,9 +31,10 @@ GenomeVector::GenomeVector()
 	s.beginGroup("genomevector");
 	preview_size   = s.value("previewsize", QSize(72, 56)).toSize();
 	preview_preset = s.value("previewpreset", ViewerPresetsModel::getInstance()->presetNames().first()).toString();
+	auto_save = (AutoSave)s.value("autosave", SaveOnExit).toInt();
 	enable_previews = true;
 	use_previews = 0;
-
+	createClockPreview();
 	r_thread = RenderThread::getInstance();
 	connect(r_thread, SIGNAL(flameRendered(RenderEvent*)), this, SLOT(flameRenderedAction(RenderEvent*)));
 }
@@ -173,6 +174,7 @@ bool GenomeVector::insertRow(int row)
 		gen.vibrancy   = current->vibrancy;
 		insert(row, gen);
 		endInsertRows();
+		clearPreview(row);
 		updatePreview(row);
 		return true;
 	}
@@ -186,6 +188,7 @@ bool GenomeVector::insertRow(int row, const flam3_genome& genome)
 		beginInsertRows(QModelIndex(), row, row);
 		insert(row, genome);
 		endInsertRows();
+		clearPreview(row);
 		updatePreview(row);
 		return true;
 	}
@@ -194,14 +197,17 @@ bool GenomeVector::insertRow(int row, const flam3_genome& genome)
 
 bool GenomeVector::insertRows(int row, int count, flam3_genome* genomes)
 {
-	if (0 <= row && row <= size())
+	if (0 <= row && row <= size() && count > 0)
 	{
 		int last = row + count;
-		beginInsertRows(QModelIndex(), row, last);
+		beginInsertRows(QModelIndex(), row, last - 1);
 		insert(row, count, genomes);
 		endInsertRows();
 		for (int n = row ; n < last ; n++)
+		{
+			clearPreview(n);
 			updatePreview(n);
+		}
 		return true;
 	}
 	return false;
@@ -237,6 +243,7 @@ bool GenomeVector::removeRow(int row)
 {
 	beginRemoveRows(QModelIndex(), row, row);
 	bool rv = remove(row);
+	previews.removeAt(row);
 	endRemoveRows();
 	return rv;
 }
@@ -249,6 +256,7 @@ bool GenomeVector::removeRows(int row, int count)
 		logFine("GenomeVector::removeRows : clearing genomes [%d, %d]", row, last_row);
 		beginRemoveRows(QModelIndex(), row, last_row);
 		bool rv = remove(row, count);
+		previews.removeAt(row);
 		endRemoveRows();
 		return rv;
 	}
@@ -301,10 +309,16 @@ bool GenomeVector::moveRow(int from, int to)
 	return false;
 }
 
+void GenomeVector::removeAll()
+{
+	logFine("GenomeVector::removeAll : removing %d genomes", size());
+	removeRows(0, qMax(1, size()));
+}
+
 void GenomeVector::clear()
 {
-	logFine("GenomeVector::clear : clearing %d genomes", size());
-	removeRows(0, qMax(1, size()));
+	logFine("GenomeVector::clear : removing %d genomes", size());
+	remove(0, size());
 }
 
 int GenomeVector::size() const
@@ -554,9 +568,9 @@ void GenomeVector::flameRenderedAction(RenderEvent* e)
 	}
 }
 
-void GenomeVector::clearPreviews()
+void GenomeVector::createClockPreview()
 {
-	logFine("GenomeVector::clearPreviews : ");
+	logFine("GenomeVector::createClockPreview : enter");
 	QImage img(preview_size, QImage::Format_RGB32);
 	QPainter p(&img);
 	QRect bounds(QPoint(0,0), preview_size);
@@ -567,18 +581,27 @@ void GenomeVector::clearPreviews()
 	p.setPen(Qt::gray);
 	p.setBrush(QBrush(Qt::gray, Qt::NoBrush));
 	p.drawRect(bounds.adjusted(0, 0, -1, -1));
-	QPixmap clock(QPixmap::fromImage(img));
+	clock_preview = QPixmap::fromImage(img);
+}
+
+void GenomeVector::clearPreviews()
+{
 	for (int n = 0 ; n < rowCount() ; n++)
-	{
-		QModelIndex model_idx = index(n);
-		setData(model_idx, clock, Qt::DecorationRole);
-	}
+		clearPreview(n);
+}
+
+void GenomeVector::clearPreview(int n)
+{
+	QModelIndex model_idx = index(n);
+	if (model_idx.isValid())
+		setData(model_idx, clock_preview, Qt::DecorationRole);
 }
 
 void GenomeVector::setPreviewSize(const QSize& size)
 {
 	preview_size = size;
 	QSettings().setValue("genomevector/previewsize", size);
+	createClockPreview();
 	foreach (RenderRequest* r, r_requests)
 		r->setSize(size);
 }
@@ -600,6 +623,17 @@ void GenomeVector::setPreviewPreset(const QString& s)
 QString GenomeVector::previewPreset() const
 {
 	return preview_preset;
+}
+
+GenomeVector::AutoSave GenomeVector::autoSave() const
+{
+	return auto_save;
+}
+
+void GenomeVector::setAutoSave(GenomeVector::AutoSave as)
+{
+	auto_save = as;
+	QSettings().setValue("genomevector/autosave", (int)as);
 }
 
 void GenomeVector::usingPreviews(bool flag)

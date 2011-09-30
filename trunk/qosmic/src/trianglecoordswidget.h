@@ -61,6 +61,9 @@ class TriangleCoordsWidget : public QWidget, private Ui::TriangleCoordsWidget
 		void fieldVariablesEditedAction();
 		void coordsButtonGroupClickedAction();
 
+	protected:
+		void showEvent(QShowEvent*);
+
 	private:
 		void updateCoordsFormData();
 		void updateVariablesFormData();

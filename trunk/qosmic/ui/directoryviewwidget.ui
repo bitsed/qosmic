@@ -48,10 +48,38 @@
     </widget>
    </item>
    <item row="3" column="0" colspan="9">
-    <widget class="DirectoryListView" name="m_dirListView"/>
+    <widget class="DirectoryListView" name="m_dirListView">
+     <property name="acceptDrops">
+      <bool>true</bool>
+     </property>
+     <property name="dragEnabled">
+      <bool>true</bool>
+     </property>
+     <property name="dragDropMode">
+      <enum>QAbstractItemView::DragDrop</enum>
+     </property>
+     <property name="defaultDropAction">
+      <enum>Qt::CopyAction</enum>
+     </property>
+     <property name="layoutMode">
+      <enum>QListView::Batched</enum>
+     </property>
+    </widget>
    </item>
    <item row="2" column="0" colspan="9">
     <widget class="QTreeView" name="m_treeView">
+     <property name="acceptDrops">
+      <bool>true</bool>
+     </property>
+     <property name="dragEnabled">
+      <bool>true</bool>
+     </property>
+     <property name="dragDropMode">
+      <enum>QAbstractItemView::DragDrop</enum>
+     </property>
+     <property name="defaultDropAction">
+      <enum>Qt::CopyAction</enum>
+     </property>
      <property name="rootIsDecorated">
       <bool>false</bool>
      </property>

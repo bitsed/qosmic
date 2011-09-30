@@ -125,6 +125,7 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget, public UndoStat
 		void coordinateChangeSignal(double, double);
 		void triangleSelectedSignal(Triangle*);
 		void triangleModifiedSignal(Triangle*);
+		void triangleListChangedSignal();
 		void undoStateSignal();
 		void editModeChangedSignal(FigureEditor::EditMode);
 

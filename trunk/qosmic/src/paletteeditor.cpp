@@ -510,6 +510,7 @@ bool PaletteEditor::loadUGRGradients(QFileInfo& file)
 				pa[pidx].color[0] = (double)r/255.;
 				pa[pidx].color[1] = (double)g/255.;
 				pa[pidx].color[2] = (double)b/255.;
+				pa[pidx].color[3] = 1.;
 				pidx++;
 			}
 
