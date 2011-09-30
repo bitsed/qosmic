@@ -17,11 +17,15 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include <QMessageBox>
 #include <QPainter>
 #include <QSettings>
+#include <QFile>
 
+#include "qosmic.h"
 #include "selectgenomewidget.h"
 #include "viewerpresetsmodel.h"
+#include "flam3filestream.h"
 #include "logger.h"
 
 SelectGenomeWidget::SelectGenomeWidget(GenomeVector* g, QWidget* parent)
@@ -38,7 +42,6 @@ SelectGenomeWidget::SelectGenomeWidget(GenomeVector* g, QWidget* parent)
 	m_genomesListView->setGridSize(genomes->previewSize() + QSize(4,4));
 
 	connect(m_genomesListView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(listViewClickedAction(const QModelIndex&)));
-	connect(m_genomesListView, SIGNAL(indexesMoved(const QModelIndexList&)), this, SLOT(indexesMovedSlot(const QModelIndexList&)));
 	connect(m_genomesListView, SIGNAL(genomesModified()), this, SIGNAL(genomesModified()));
 }
 
@@ -86,8 +89,7 @@ void SelectGenomeWidget::addButtonPressedSlot()
 	{
 		lastIdx += 1;
 		(genomes->data() + lastIdx)->time = ltime + 1.0;
-		genomes->setSelected(lastIdx);
-		emit genomesModified();
+		Flam3FileStream::autoSave(genomes);
 	}
 }
 
@@ -100,7 +102,10 @@ void SelectGenomeWidget::delButtonPressedSlot()
 	{
 		int idx = genomes->selected();
 		if (genomes->removeRow(idx))
+		{
 			emit genomesModified();
+			Flam3FileStream::autoSave(genomes);
+		}
 	}
 }
 
@@ -109,12 +114,27 @@ void SelectGenomeWidget::configButtonPressedSlot()
 	SelectGenomeConfigDialog d(this);
 	QSize l_size(genomes->previewSize());
 	QString l_preset(genomes->previewPreset());
+	GenomeVector::AutoSave l_save(genomes->autoSave());
 	d.setPreviewSize(l_size);
 	d.setPreset(l_preset);
+	d.setAutoSave(l_save);
 	d.move(QCursor::pos());
 	d.exec();
 	QSize s = d.previewSize();
 	QString p = d.preset();
+	GenomeVector::AutoSave a = d.autoSave();
+	if (a != l_save)
+	{
+		genomes->setAutoSave(a);
+		if (a == GenomeVector::NeverSave)
+		{
+			QFile asFile(QOSMIC_AUTOSAVE);
+			if (asFile.exists() && !asFile.remove())
+				QMessageBox::warning(this, "Error",
+				QString("Couldn't remove %1: %2")
+				.arg(asFile.fileName()).arg(asFile.errorString()));
+		}
+	}
 	bool render = false;
 	if (s != l_size)
 	{
@@ -145,31 +165,11 @@ void SelectGenomeWidget::clearTrianglesButtonPressedSlot()
 
 		UndoState* state = genomes->undoRing(idx)->advance();
 		flam3_copy(&(state->Genome), g);
-
 		genomes->updatePreview(idx);
-
+		Flam3FileStream::autoSave(genomes);
 		emit genomesModified();
 	}
 }
-
-void SelectGenomeWidget::indexesMovedSlot(const QModelIndexList& idxList)
-{
-	int drop_row = idxList[0].row();
-	int drag_row = idxList[1].row();
-	int selected = genomes->selected();
-	genomes->moveRow(drag_row, drop_row);
-
-	// reselect the currently selected index
-	blockSignals(true);
-	if (drag_row == selected)
-		setSelectedGenome(drop_row);
-	else if ((drag_row < selected) && (selected <= drop_row))
-		setSelectedGenome(selected - 1);
-	else if (drag_row > selected && selected >= drop_row)
-		setSelectedGenome(selected + 1);
-	blockSignals(false);
-}
-
 
 //-------------------------------------------------------------------------------------------
 
@@ -198,6 +198,16 @@ QString SelectGenomeConfigDialog::preset() const
 void SelectGenomeConfigDialog::setPreset(const QString& s)
 {
 	qualityComboBox->setCurrentIndex(qualityComboBox->findText(s));
+}
+
+GenomeVector::AutoSave SelectGenomeConfigDialog::autoSave() const
+{
+	return (GenomeVector::AutoSave)asComboBox->currentIndex();
+}
+
+void SelectGenomeConfigDialog::setAutoSave(const GenomeVector::AutoSave s)
+{
+	asComboBox->setCurrentIndex(s);
 }
 
 void SelectGenomeWidget::showEvent(QShowEvent* e)

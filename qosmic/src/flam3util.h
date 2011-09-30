@@ -27,7 +27,6 @@
 #undef VERSION
 extern "C" {
 #include "flam3.h"
-#include "filters.h"
 }
 
 

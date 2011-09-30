@@ -47,7 +47,6 @@ class SelectGenomeWidget : public QWidget, public QosmicWidget,
 		void configButtonPressedSlot();
 		void clearTrianglesButtonPressedSlot();
 		void listViewClickedAction(const QModelIndex& idx);
-		void indexesMovedSlot(const QModelIndexList& idxList);
 
 	protected:
 		void showEvent(QShowEvent*);
@@ -70,6 +69,8 @@ class SelectGenomeConfigDialog : public QDialog, private Ui::SelectGenomeConfigD
 		QSize previewSize() const;
 		void setPreset(const QString &s);
 		QString preset() const;
+		void setAutoSave(const GenomeVector::AutoSave);
+		GenomeVector::AutoSave autoSave() const;
 };
 
 #endif

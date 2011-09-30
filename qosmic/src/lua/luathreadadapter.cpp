@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "luathreadadapter.h"
+#include "flam3filestream.h"
 #include "mainwindow.h"
 #include "logger.h"
 
@@ -32,8 +33,6 @@ Lua::LuaThreadAdapter::LuaThreadAdapter(MainWindow* mw, LuaThread* t, QObject* p
 			this, SLOT(mainWindowChangedSlot()), Qt::QueuedConnection);
 	connect(m_win->renderThread(), SIGNAL(flameRendered(RenderEvent*)),
 			this, SLOT(flameRenderedSlot(RenderEvent*)), Qt::QueuedConnection);
-	connect(this, SIGNAL(loadFileSignal(const QString&)),
-			m_win, SLOT(loadFile(const QString&)), Qt::QueuedConnection);
 	connect(m_thread, SIGNAL(scriptStopped()),
 			this, SLOT(mainWindowChangedSlot()), Qt::QueuedConnection);
 	connect(this, SIGNAL(updateSignal()), m_win->xformEditor(),
@@ -44,8 +43,6 @@ Lua::LuaThreadAdapter::LuaThreadAdapter(MainWindow* mw, LuaThread* t, QObject* p
 Lua::LuaThreadAdapter::~LuaThreadAdapter()
 {
 	logFine("Lua::LuaThreadAdapter::LuaThreadAdapter : dest");
-	disconnect(this, SIGNAL(loadFileSignal(const QString&)),
-			   m_win, SLOT(loadFile(const QString&)));
 	disconnect(m_win->renderThread(), SIGNAL(flameRendered(RenderEvent*)),
 			   this, SLOT(flameRenderedSlot(RenderEvent*)));
 	disconnect(m_win, SIGNAL(mainWindowChanged()),
@@ -84,14 +81,25 @@ void Lua::LuaThreadAdapter::update(int idx)
 bool Lua::LuaThreadAdapter::loadFile(const QString& name)
 {
 	logFine("Lua::LuaThreadAdapter::loadFile");
-	emit loadFileSignal(name);
-	waitForEvent();
-	return true;
+	QFile file(name);
+	Flam3FileStream s(&file);
+	int ncps(0);
+	flam3_genome* in;
+	if (s.read(&in, &ncps))
+	{
+		GenomeVector* genomes = genomeVector();
+		genomes->clear();
+		genomes->insert(0, ncps, in);
+		return true;
+	}
+	return false;
 }
 
 bool Lua::LuaThreadAdapter::saveFile(const QString& name)
 {
-	return m_win->saveFile(name);
+	QFile file(name);
+	Flam3FileStream s(&file);
+	return s.write(genomeVector());
 }
 
 bool Lua::LuaThreadAdapter::saveImage(const QString& name, int idx)
@@ -100,11 +108,6 @@ bool Lua::LuaThreadAdapter::saveImage(const QString& name, int idx)
 	bool n = m_win->saveImage(name, idx);
 	waitForEvent();
 	return n;
-}
-
-bool Lua::LuaThreadAdapter::save()
-{
-	return m_win->save();
 }
 
 void Lua::LuaThreadAdapter::flameRenderedSlot(RenderEvent* /*e*/)

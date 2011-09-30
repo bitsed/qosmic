@@ -76,7 +76,6 @@ class MainWindow
 		void renderViewer();
 		void flameRenderedSlot(RenderEvent* e);
 		void triangleSelectedSlot(Triangle*);
-		void triangleModifiedSlot(Triangle*);
 		void updateStatus(double, double);
 		bool loadFile(const QString& filename);
 		bool saveFile(const QString& fileName);
@@ -84,7 +83,8 @@ class MainWindow
 		void paletteHueChangedAction();
 		void randomizeGenomeAction();
 		void mutationSelectedSlot(flam3_genome*);
-		void flam3FileSelectedAction(const QString&, bool =false);
+		void flam3FileSelectAction(const QString&);
+		void flam3FileAppendAction(const QString&);
 		bool saveImage(const QString& =QString(), int =-1);
 		bool save();
 		void open();
@@ -125,11 +125,8 @@ class MainWindow
 		void createStatusBar();
 		void readSettings();
 		void writeSettings();
-		void loadGenomeList(flam3_genome*, int);
 		QString strippedName(const QString&);
 		void updateRecentFileActions();
-		bool readFlam3File(const QString&, flam3_genome**, int*);
-		bool writeGenomesToFile(const QString&, flam3_genome*, int);
 		void setUndoState(UndoState*);
 
 	protected:

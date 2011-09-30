@@ -30,6 +30,8 @@ class DirectoryListView : public QListView
 {
 	Q_OBJECT
 
+	QModelIndex dragStartIndex;
+
 	public:
 		DirectoryListView(QWidget* parent=0);
 		~DirectoryListView();
@@ -38,6 +40,7 @@ class DirectoryListView : public QListView
 		void viewerResizedAction(const QSize&);
 
 	protected:
+		void startDrag(Qt::DropActions);
 		void mousePressEvent(QMouseEvent*);
 		void wheelEvent(QWheelEvent*);
 		void hideEvent(QHideEvent*);

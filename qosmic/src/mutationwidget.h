@@ -38,9 +38,15 @@ class MutationPreviewWidget : public QLabel
 	Q_OBJECT
 
 	public:
+
+		enum Edge { NONE, LEFT, RIGHT };
+
 		MutationPreviewWidget(QWidget* parent=0);
-		MutationPreviewWidget(flam3_genome*, QWidget* parent=0);
 		void setGenome(flam3_genome*);
+		void setFrameColor(const QColor&);
+		QColor frameColor() const;
+		void setFrameEdge(Edge);
+		Edge frameEdge() const;
 		flam3_genome* genome();
 
 
@@ -57,10 +63,13 @@ class MutationPreviewWidget : public QLabel
 		void mousePressEvent(QMouseEvent*);
 		void mouseMoveEvent(QMouseEvent*);
 		void mouseReleaseEvent(QMouseEvent*);
+		void paintEvent(QPaintEvent*);
 
 	private:
 		flam3_genome* g;
 		QPoint dragStartPosition;
+		QColor frame_color;
+		Edge frame_edge;
 
 };
 

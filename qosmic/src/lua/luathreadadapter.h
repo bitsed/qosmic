@@ -61,7 +61,6 @@ class LuaThreadAdapter : public QObject
 		bool loadFile(const QString&);
 		bool saveFile(const QString&);
 		bool saveImage(const QString&, int =0);
-		bool save();
 
 	public slots:
 		void flameRenderedSlot(RenderEvent* e);

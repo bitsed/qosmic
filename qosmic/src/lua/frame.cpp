@@ -190,30 +190,29 @@ int Frame::load(lua_State* L)
 		luaL_error(L, "load requires one string argument", "");
 		lua_pushboolean(L, false);
 	}
-	const char* fname = luaL_checkstring(L, 1);
-	lua_settop(L, 0);
-	lua_pushboolean(L, m_adapter->loadFile(fname));
-	m_adapter->resetModified(true);
+	else
+	{
+		const char* fname = luaL_checkstring(L, 1);
+		lua_settop(L, 0);
+		lua_pushboolean(L, m_adapter->loadFile(fname));
+		m_adapter->resetModified(true);
+	}
 	return 1;
 }
 
 int Frame::save(lua_State* L)
 {
 	int args = lua_gettop(L);
-	const char* fname;
-	if (args > 1)
+	if (args != 1)
 	{
-		luaL_error(L, "save requires at most one string argument", "");
+		luaL_error(L, "save requires one string argument", "");
 		lua_pushboolean(L, false);
 	}
-	if (args == 1)
+	else
 	{
-		fname = luaL_checkstring(L, 1);
+		const char* fname = luaL_checkstring(L, 1);
 		lua_pushboolean(L, m_adapter->saveFile(QString(fname)));
 	}
-	else
-		lua_pushboolean(L, m_adapter->save());
-
 	return 1;
 }
 

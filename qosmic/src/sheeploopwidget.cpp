@@ -563,6 +563,9 @@ void SheepLoopWidget::genomeSelectedSlot(int idx)
 
 void SheepLoopWidget::genomesModifiedSlot()
 {
+	if (!isVisible())
+		return;
+
 	if (m_beginBox->currentIndex() > m_endBox->currentIndex())
 	{
 		m_endBox->blockSignals(true);
@@ -841,7 +844,10 @@ flam3_genome* SheepLoopWidget::createSheepLoop(int& ncp)
 void SheepLoopWidget::showEvent(QShowEvent* e)
 {
 	if (!e->spontaneous())
+	{
 		genomes->usingPreviews(true);
+		genomesModifiedSlot();
+	}
 }
 
 void SheepLoopWidget::hideEvent(QHideEvent* e)
