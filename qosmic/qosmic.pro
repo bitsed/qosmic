@@ -251,7 +251,8 @@ HEADERS += \
  src/transformablegraphicsitem.h \
  src/transformablegraphicsguide.h \
  src/sheeploopwidget.h \
- src/flam3filestream.h
+ src/flam3filestream.h \
+ src/checkersbrush.h
 
 SOURCES += \
  src/qosmic.cpp \
@@ -317,7 +318,8 @@ SOURCES += \
  src/transformablegraphicsitem.cpp \
  src/transformablegraphicsguide.cpp \
  src/sheeploopwidget.cpp \
- src/flam3filestream.cpp
+ src/flam3filestream.cpp \
+ src/checkersbrush.cpp
 
 
 TRANSLATIONS = ts/qosmic_fr.ts

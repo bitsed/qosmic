@@ -26,6 +26,7 @@
 
 #include "colorlabel.h"
 #include "colordialog.h"
+#include "checkersbrush.h"
 
 ColorLabel::ColorLabel(QWidget* parent)
 	: QLabel(parent), lastcolor(Qt::black)
@@ -39,6 +40,7 @@ void ColorLabel::mousePressEvent(QMouseEvent* /*e*/)
 	{
 		ColorDialog d(this);
 		d.setSelectedColor(lastcolor);
+		d.setAlphaEnabled(false);
 		connect(&d, SIGNAL(colorSelected(QColor)),
 				 this, SIGNAL(colorSelected(QColor)));
 		if (d.exec() == QDialog::Accepted)
@@ -64,6 +66,8 @@ void ColorLabel::setColor(QColor c)
 	QSize s = maximumSize();
 	QImage label(s.width(), s.height(), QImage::Format_RGB32);
 	QPainter p(&label);
+	if (c.alpha() < 255)
+		p.fillRect(label.rect(), CheckersBrush(15));
 	p.fillRect(label.rect(), QBrush(c));
 	setPixmap(QPixmap::fromImage( label ));
 	lastcolor = c;

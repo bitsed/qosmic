@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>292</width>
+    <width>294</width>
     <height>330</height>
    </rect>
   </property>
@@ -401,15 +401,15 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>IntValueEditor</class>
+   <extends>QSpinBox</extends>
+   <header>intvalueeditor.h</header>
+  </customwidget>
+  <customwidget>
    <class>GradientStopsEditor</class>
    <extends>QWidget</extends>
    <header>gradientstopseditor.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>IntValueEditor</class>
-   <extends>QSpinBox</extends>
-   <header>intvalueeditor.h</header>
   </customwidget>
  </customwidgets>
  <resources>

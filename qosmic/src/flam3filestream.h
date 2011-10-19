@@ -17,58 +17,29 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef COLORDIALOG_H
-#define COLORDIALOG_H
+#ifndef FLAM3FILESTREAM_H
+#define FLAM3FILESTREAM_H
 
-#include "colorselector.h"
+#include <QFile>
 
-class HueSatSelector : public ColorSelector
+#include "genomevector.h"
+
+class Flam3FileStream
 {
-	int value;
+	QFile* m_file;
 
 	public:
-		HueSatSelector(QWidget* parent=0);
-		void setSelectedIndex(QColor);
-		void repaintLabel();
+		Flam3FileStream(QFile*);
+		bool read(GenomeVector*);
+		bool read(flam3_genome**, int*);
+		bool write(GenomeVector*);
+		bool write(flam3_genome*, int);
+		void setFile(QFile*);
+		QFile* file() const;
+		Flam3FileStream& operator>>(GenomeVector*);
+		Flam3FileStream& operator<<(GenomeVector*);
+
+		static void autoSave(GenomeVector*, int =GenomeVector::AlwaysSave);
 };
 
-class ValSelector : public ColorSelector
-{
-	public:
-		ValSelector(QWidget* parent=0);
-		void setSelectedIndex(QColor);
-		void repaintLabel();
-};
-
-
-
-#include "ui_colordialog.h"
-
-
-class ColorDialog : public QDialog, private Ui::ColorDialog
-{
-	Q_OBJECT
-
-	public:
-		ColorDialog(QWidget* parent=0);
-		~ColorDialog();
-		QColor getSelectedColor();
-		void setSelectedColor(QColor);
-		void setAlphaEnabled(bool);
-
-	private slots:
-		void indexSelected(QPoint);
-		void rgbSpinValueChanged();
-		void hsvSpinValueChanged();
-
-	signals:
-		void colorSelected(QColor);
-
-	private:
-		QColor selectedColor;
-
-};
-
-
-
-#endif
+#endif // FLAM3FILESTREAM_H

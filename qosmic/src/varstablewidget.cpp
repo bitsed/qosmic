@@ -181,10 +181,7 @@ void VarsTableWidget::mouseMoveEvent(QMouseEvent* e)
 			nstep *= -1.0;
 
 		double inc_value = item_data + nstep;
-		if (inc_value == 0.0)
-			model()->setData(start_item, 0);
-		else
-			model()->setData(start_item, QLocale().toString(inc_value, 'f', vars_precision));
+		model()->setData(start_item, QLocale().toString(inc_value, 'f', vars_precision));
 
 		if (start_item.parent().isValid())
 			emit valueUpdated(start_item.parent().row());
@@ -205,7 +202,7 @@ void VarsTableWidget::mouseReleaseEvent(QMouseEvent* e)
 		e->accept();
 		emit undoStateSignal();
 	}
-	selectionModel()->clear();
+	QTreeView::mouseReleaseEvent(e);
 }
 
 int VarsTableWidget::precision()
@@ -227,20 +224,21 @@ void VarsTableWidget::commitData(QWidget* editor)
 	QModelIndex idx(currentIndex());
 	if (idx.column() == 1)
 	{
-		bool ok;
-		double current_value(idx.data().toDouble());
-		double editor_value(qobject_cast<QLineEdit*>(editor)->text().toDouble(&ok));
-		if (ok && current_value != editor_value)
+		QLineEdit* lineEdit = qobject_cast<QLineEdit*>(editor);
+		if (lineEdit)
 		{
-			if (editor_value == 0.0)
-				model()->setData(idx, editor_value);
-			else
+			bool ok;
+			double current_value(idx.data().toDouble());
+			double editor_value( lineEdit->text().toDouble(&ok) );
+			if (ok && current_value != editor_value)
+			{
 				model()->setData(idx, QLocale().toString(editor_value, 'f', vars_precision));
 
-			if (idx.parent().isValid())
-				emit valueUpdated(idx.parent().row());
-			else
-				emit valueUpdated(idx.row());
+				if (idx.parent().isValid())
+					emit valueUpdated(idx.parent().row());
+				else
+					emit valueUpdated(idx.row());
+			}
 		}
 	}
 }
@@ -520,20 +518,14 @@ VarsTableItem* VarsTableModel::getItem(const QModelIndex& index) const
 void VarsTableModel::updateVarsTableItem(VarsTableItem* item, double value)
 {
 	QLocale l;
-	if (value == 0.0)
-		item->setData(1, 0);
-	else
-		item->setData(1, l.toString(value, 'f', decimals));
+	item->setData(1, l.toString(value, 'f', decimals));
 	int children = item->childCount();
 	if (children > 0)
 		for (int n = 0 ; n < children ; n++)
 		{
 			VarsTableItem* child = item->child(n);
 			double value = Util::get_xform_variable(xform, child->data(0).toString());
-			if (value == 0.0)
-				child->setData(1, 0);
-			else
-				child->setData(1, l.toString(value, 'f', decimals));
+			child->setData(1, l.toString(value, 'f', decimals));
 		}
 }
 

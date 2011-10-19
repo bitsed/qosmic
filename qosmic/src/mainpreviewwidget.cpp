@@ -19,9 +19,11 @@
  ***************************************************************************/
 #include <QDockWidget>
 #include <QSettings>
+#include <QPainter>
 
 #include "mainpreviewwidget.h"
 #include "viewerpresetswidget.h"
+#include "checkersbrush.h"
 #include "logger.h"
 
 MainPreviewWidget::MainPreviewWidget(GenomeVector* g, QWidget* p)
@@ -57,7 +59,16 @@ void MainPreviewWidget::closeEvent(QCloseEvent* e)
 
 void MainPreviewWidget::setPixmap(const QPixmap& p)
 {
-	m_previewLabel->setPixmap(p);
+	if (RenderThread::getInstance()->format() != RenderThread::RGB32)
+	{
+		QImage img(p.size(), QImage::Format_RGB32);
+		QPainter pa(&img);
+		pa.fillRect(img.rect(), CheckersBrush(16));
+		pa.drawPixmap(0, 0, p);
+		m_previewLabel->setPixmap(QPixmap::fromImage(img));
+	}
+	else
+		m_previewLabel->setPixmap(p);
 }
 
 void MainPreviewWidget::resizeEvent(QResizeEvent* e)

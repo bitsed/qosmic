@@ -23,7 +23,7 @@
 #include "logger.h"
 
 ColorBalanceWidget::ColorBalanceWidget(GenomeVector* g, QWidget* parent)
-	: QWidget(parent), genome(g)
+: QWidget(parent), genome(g)
 {
 	setupUi(this);
 
@@ -51,15 +51,16 @@ void ColorBalanceWidget::reset()
 	palette.clear();
 	for (int n = 0 ; n < 256 ; n++ )
 	{
-		double rc, gc, bc;
+		double rc, gc, bc, ac;
 		rc = genome_ptr->palette[n].color[0];
 		gc = genome_ptr->palette[n].color[1];
 		bc = genome_ptr->palette[n].color[2];
+		ac = genome_ptr->palette[n].color[3];
 		if (rc < 0.0 || rc > 1.0 ||
 			bc < 0.0 || bc > 1.0 ||
 			gc < 0.0 || gc > 1.0)
 			return;
-		palette << QColor::fromRgbF(rc ,gc, bc);
+		palette << QColor::fromRgbF(rc ,gc, bc, ac);
 	}
 	updateFormData();
 }
@@ -125,8 +126,9 @@ void ColorBalanceWidget::hueEditedAction()
 		hue = hue >= 1.0 ? hue - 1.0 : hue ;
 		c.setHsvF( hue , saturation, value );
 		c.getRgbF( &genome_ptr->palette[n].color[0],
-					&genome_ptr->palette[n].color[1],
-					&genome_ptr->palette[n].color[2] );
+			&genome_ptr->palette[n].color[1],
+			&genome_ptr->palette[n].color[2],
+			&genome_ptr->palette[n].color[3]);
 		n++;
 	}
 	genome_ptr->hue_rotation = 0.0;

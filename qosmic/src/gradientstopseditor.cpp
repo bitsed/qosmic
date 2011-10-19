@@ -25,6 +25,12 @@
 #include "colordialog.h"
 #include "logger.h"
 
+
+bool GradientStop::lessThanGradientStopComparison(const GradientStop& s1, const GradientStop& s2)
+{
+	return s1.first < s2.first;
+}
+
 GradientStopsEditor::GradientStopsEditor(QWidget* parent)
 : QWidget(parent)
 {
@@ -72,7 +78,7 @@ void GradientStopsEditor::selectStopColor()
 
 void GradientStopsEditor::stopColorSelected(QColor c)
 {
-	QGradientStop* data = stops.data();
+	GradientStop* data = stops.data();
 	data[selected_idx.first()].second = c;
 	emit stopsChanged();
 	update();
@@ -87,10 +93,13 @@ void GradientStopsEditor::addStop()
 	QImage palette(w, h, QImage::Format_RGB32);
 	QPainter painter(&palette);
 	QLinearGradient grad(0, h, w, h);
-	grad.setStops(stops);
+	QGradientStops s( stops.size() );
+	foreach ( GradientStop stop, stops)
+		s.append(QGradientStop(stop.first, stop.second));
+	grad.setStops(s);
 	painter.fillRect(rect(), QBrush(grad));
 	QColor color( palette.pixel(moving_start.x(), 1) );
-	stops << QGradientStop(pos, color);
+	stops << GradientStop(pos, color);
 	selected_idx.clear();
 	selected_idx << stops.size() - 1;
 	update();
@@ -132,13 +141,14 @@ void GradientStopsEditor::mousePressEvent(QMouseEvent* event)
 		case Qt::LeftButton:
 		{
 			qreal pos( (qreal)event->x() / size().width() );
-			foreach (QGradientStop stop, stops)
+			for (int n = 0 ; n < stops.size() ; n++)
 			{
+				GradientStop stop = stops.at(n);
 				if (qAbs( pos - stop.first ) < 0.01)
 				{
 					logFine(QString("GradientStopsEditor::mousePressEvent : found stop %1 at %2").arg(stop.first).arg(pos));
 					moving_start = event->pos();
-					moving_idx = stops.indexOf(stop);
+					moving_idx = n;
 					if (! (event->modifiers() & Qt::ShiftModifier) )
 						selected_idx.clear();
 					if (! selected_idx.contains(moving_idx))
@@ -160,7 +170,7 @@ void GradientStopsEditor::mouseMoveEvent(QMouseEvent* event)
 	{
 		if (moving_idx != -1)
 		{
-			QGradientStop* data = stops.data();
+			GradientStop* data = stops.data();
 			if (selected_idx.size() > 1)
 			{
 				bool changed(false);
@@ -197,6 +207,7 @@ void GradientStopsEditor::mouseMoveEvent(QMouseEvent* event)
 	}
 }
 
+
 void GradientStopsEditor::mouseReleaseEvent(QMouseEvent* event)
 {
 	if (event->button() == Qt::LeftButton)
@@ -217,7 +228,7 @@ void GradientStopsEditor::paintEvent(QPaintEvent*)
 
 	for (int n = 0 ; n < stops.size() ; n++)
 	{
-		QGradientStop stop( stops.at(n) );
+		GradientStop stop( stops.at(n) );
 		painter.setBrush(QBrush(stop.second));
 		qreal x( qBound(0.0, stop.first * w, w - 1.0) );
 		if (selected_idx.contains(n))
@@ -266,7 +277,7 @@ void GradientStopsEditor::paintEvent(QPaintEvent*)
 	}
 }
 
-void GradientStopsEditor::setStops(const QGradientStops& s)
+void GradientStopsEditor::setStops(const GradientStops& s)
 {
 	if (s.size() < 2)
 	{
@@ -278,7 +289,7 @@ void GradientStopsEditor::setStops(const QGradientStops& s)
 	update();
 }
 
-QGradientStops& GradientStopsEditor::getStops()
+GradientStops& GradientStopsEditor::getStops()
 {
 	return stops;
 }
@@ -308,6 +319,6 @@ void GradientStopsEditor::resetStops()
 {
 	selected_idx.erase(selected_idx.begin()++, selected_idx.end());
 	stops.clear();
-	stops << QGradientStop(0.0, Qt::black) << QGradientStop(1.0, Qt::white);
+	stops << GradientStop(0.0, Qt::black) << GradientStop(1.0, Qt::white);
 	update();
 }

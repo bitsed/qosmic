@@ -27,7 +27,8 @@
 #include "flam3util.h"
 #include "logger.h"
 
-PaletteEditor::PaletteEditor ( QWidget* parent ) : QWidget(parent)
+PaletteEditor::PaletteEditor ( QWidget* parent )
+: QWidget(parent), checkers(15)
 {
 	setupUi ( this );
 	loadPalette(0);
@@ -52,13 +53,13 @@ PaletteEditor::PaletteEditor ( QWidget* parent ) : QWidget(parent)
 	int nstops( settings.beginReadArray("gradient") );
 	if (nstops > 1)
 	{
-		QGradientStops stops;
+		GradientStops stops;
 		for (int n = 0 ; n < nstops ; n++)
 		{
 			settings.setArrayIndex(n);
 			double pos( settings.value("pos").toDouble() );
 			QColor color( settings.value("color").value<QColor>()) ;
-			stops << QGradientStop( pos, color );
+			stops.append(GradientStop( pos, color ));
 		}
 		settings.endArray();
 		p_stops = stops;
@@ -89,7 +90,7 @@ void PaletteEditor::closeEvent(QCloseEvent* event)
 	settings.setValue("lastdirectory", m_lastBrowseDir);
 
 	// save the gradient to the settings
-	QGradientStops stops( m_gradientStops->getStops() );
+	GradientStops stops( m_gradientStops->getStops() );
 	settings.beginWriteArray("gradient");
 	for (int n = 0 ; n < stops.size() ; n++)
 	{
@@ -110,11 +111,6 @@ void PaletteEditor::showEvent(QShowEvent* /*event*/)
 void PaletteEditor::resetGradientAction()
 {
 	m_gradientStops->setStops(p_stops);
-}
-
-bool lessThanGradientStop(const QGradientStop& s1, const QGradientStop& s2)
-{
-	return s1.first < s2.first;
 }
 
 void PaletteEditor::saveGradientAction()
@@ -147,8 +143,8 @@ void PaletteEditor::saveGradientAction()
 	os << "# COLOR_MODEL = RGB" << endl
 		<< scientific << qSetRealNumberPrecision(6) << qSetFieldWidth(4);
 	p_stops = m_gradientStops->getStops();
-	qStableSort(p_stops.begin(), p_stops.end(), lessThanGradientStop);
-	QGradientStops::const_iterator i = p_stops.constBegin();
+	qStableSort(p_stops.begin(), p_stops.end(), GradientStop::lessThanGradientStopComparison);
+	GradientStops::const_iterator i = p_stops.constBegin();
 	os << left << (*i).first
 		<< right
 		<< (*i).second.red()
@@ -186,31 +182,193 @@ void PaletteEditor::saveGradientAction()
 
 void PaletteEditor::stopsChangedAction()
 {
+	static const int GradientBufferLastIdx = GradientBufferSize - 1;
+	static const qreal dx  = 1.0 / GradientBufferSize;
 	QSize s( m_gradientLabel->maximumSize() );
-	QRect r( QRect(QPoint(0,0), s) );
-	QImage palette(s.width(), s.height(), QImage::Format_RGB32);
-	QPainter painter(&palette);
-	QLinearGradient gradient(0, s.height(), s.width(), s.height());
-	gradient.setStops(m_gradientStops->getStops());
-
-	// update the gradient label
-	painter.fillRect(r, QBrush(gradient));
-	m_gradientLabel->setPixmap(QPixmap::fromImage(palette));
+	QRect r( QPoint(0, 0), QSize(s.width(), (s.height() / 2.0 ) ) );
+	QImage palette_image(s, QImage::Format_RGB32);
+	QPainter painter(&palette_image);
+	GradientStops stops(m_gradientStops->getStops());
+	qStableSort(stops.begin(), stops.end(), GradientStop::lessThanGradientStopComparison);
 
 	// now apply the ends and update the palette
-	QGradientStops ends( m_gradientEnds->getStops() );
-	gradient.setStart( qRound( ends.at(0).first * s.width()), s.height() );
-	gradient.setFinalStop(  qRound( ends.at(1).first * s.width()), s.height() );
-	gradient.setSpread( (QGradient::Spread)m_gradientSpreadGroup->checkedId() );
-	painter.fillRect(r, QBrush(gradient));
-	for (int n = 0 ; n < 256 ; n++)
+	GradientStops ends( m_gradientEnds->getStops() );
+	QGradient::Spread spread((QGradient::Spread)m_gradientSpreadGroup->checkedId());
+
+	GradientStop n_stop(stops.first());
+	QRgb ccolor = n_stop.second.rgba();
+	for (int n = 0, fpos = n_stop.first * GradientBufferSize  ; n < fpos ; n++)
+		m_gradient[qMin(n, GradientBufferLastIdx)] = ccolor;
+
+	int last_stop_idx = stops.size() - 1;
+	for (int begin_idx = 0; begin_idx < last_stop_idx ; begin_idx++)
 	{
-		QColor color( palette.pixel(n, 1) );
-		p[n].index    = n;
-		p[n].color[0] = color.redF();
-		p[n].color[1] = color.greenF();
-		p[n].color[2] = color.blueF();
+		GradientStop a = stops.at(begin_idx);
+		GradientStop b = stops.at(begin_idx + 1);
+		QColor ac = a.second;
+		QColor bc = b.second;
+		qreal d = ( b.first - a.first );
+		qreal rdx, gdx, bdx, adx;
+		if (b.colorspace == 0)
+		{
+			rdx = ( (bc.red()   - ac.red() )   / d ) * dx;
+			gdx = ( (bc.green() - ac.green() ) / d ) * dx;
+			bdx = ( (bc.blue()  - ac.blue() )  / d ) * dx;
+			adx = ( (bc.alpha() - ac.alpha() ) / d ) * dx;
+		}
+		else
+		{
+			rdx = ( (bc.hue()        - ac.hue() )        / d ) * dx;
+			gdx = ( (bc.saturation() - ac.saturation() ) / d ) * dx;
+			bdx = ( (bc.value()      - ac.value() )      / d ) * dx;
+			adx = ( (bc.alpha()      - ac.alpha() )      / d ) * dx;
+
+			if (b.colorspace == 1)
+			{
+				if (rdx == 0.0)
+					rdx = 180.0 / d * dx;
+				else if (rdx < 0)
+					rdx *= -1;
+			}
+			else
+			{
+				if (rdx == 0.0)
+					rdx = -180.0 / d * dx;
+				else if (rdx > 0)
+					rdx *= -1;
+			}
+		}
+		int n  = a.first * GradientBufferSize ;
+		int nb = (int)(b.first * GradientBufferSize );
+		for (int i = 0 ; n < nb ; i++, n++)
+		{
+			if (b.colorspace == 0)
+			{
+				m_gradient[n] = qRgba(
+						qBound(0, (int)( ac.red()   + rdx * i + 0.5 ), 255),
+						qBound(0, (int)( ac.green() + gdx * i + 0.5 ), 255),
+						qBound(0, (int)( ac.blue()  + bdx * i + 0.5 ), 255),
+						qBound(0, (int)( ac.alpha() + adx * i + 0.5 ), 255));
+			}
+			else
+			{
+				int h = (int)( ac.hue() + rdx * i + 0.5 );
+				if (h < 0)
+					h += 360;
+				m_gradient[n] = QColor::fromHsv(h % 360,
+						qBound(0, (int)( ac.saturation() + gdx * i + 0.5 ), 255),
+						qBound(0, (int)( ac.value()  + bdx * i + 0.5 ), 255),
+						qBound(0, (int)( ac.alpha() + adx * i + 0.5 ), 255)).rgba();
+			}
+		}
 	}
+
+	n_stop = stops.last();
+	ccolor = n_stop.second.rgba();
+	for (int n = n_stop.first * GradientBufferSize ; n < GradientBufferSize ; n++)
+		m_gradient[n] = ccolor;
+
+	qreal start(ends.at(0).first);
+	qreal end(ends.at(1).first);
+	int begin_idx = start * 256 ;
+	int end_idx   = end   * 256 ;
+	int ibuf_size = end_idx - begin_idx;
+	flam3_palette_entry* ibuf = new flam3_palette_entry[ibuf_size]();
+
+	// a very acute filter
+	qreal c2 = 0.01;
+	qreal c3 = 1.0;
+	qreal c4 = 0.01;
+	qreal norm = c2 + c3 + c4;
+	qreal k = 0.0;
+	qreal skip( (GradientBufferSize / 256.0) / qMax(1.0/GradientBufferSize , end - start) );
+	for (int n = 0 ; n < ibuf_size ; n++, k += skip)
+	{
+		int j = k;
+		QRgb a2( m_gradient[qBound(0, j + 0, GradientBufferLastIdx)] );
+		QRgb a3( m_gradient[qMin(j + 1, GradientBufferLastIdx)] );
+		QRgb a4( m_gradient[qMin(j + 2, GradientBufferLastIdx)] );
+
+		ibuf[n].color[0] = (qRed(a2)*c2   + qRed(a3)*c3   + qRed(a4)*c4 )   / (norm * 255.);
+		ibuf[n].color[1] = (qGreen(a2)*c2 + qGreen(a3)*c3 + qGreen(a4)*c4 ) / (norm * 255.);
+		ibuf[n].color[2] = (qBlue(a2)*c2  + qBlue(a3)*c3  + qBlue(a4)*c4 )  / (norm * 255.);
+		ibuf[n].color[3] = (qAlpha(a2)*c2 + qAlpha(a3)*c3 + qAlpha(a4)*c4 ) / (norm * 255.);
+	}
+
+	// update the gradient editor label
+	painter.fillRect(QRect(QPoint(0,0), s), checkers);
+	if (ibuf_size == 256)
+	{
+		for (int n = 0, h = s.height() ; n < 256 ; n++)
+		{
+			painter.setPen(QColor::fromRgbF(ibuf[n].color[0], ibuf[n].color[1], ibuf[n].color[2], ibuf[n].color[3]));
+			painter.drawLine(n, 0, n, h);
+		}
+	}
+	else
+	{
+		for (int n = 0, h = s.height(), j = 0 ; n < 256 ; n++, j += 4)
+		{
+			QRgb a2( m_gradient[qBound(0, j + 0, GradientBufferLastIdx)] );
+			QRgb a3( m_gradient[qMin(j + 1, GradientBufferLastIdx)] );
+			QRgb a4( m_gradient[qMin(j + 2, GradientBufferLastIdx)] );
+			QRgb r((qRed(a2)*c2   + qRed(a3)*c3   + qRed(a4)*c4 )   / norm );
+			QRgb g((qGreen(a2)*c2 + qGreen(a3)*c3 + qGreen(a4)*c4 ) / norm );
+			QRgb b((qBlue(a2)*c2  + qBlue(a3)*c3  + qBlue(a4)*c4 )  / norm );
+			QRgb a((qAlpha(a2)*c2 + qAlpha(a3)*c3 + qAlpha(a4)*c4 ) / norm );
+			QColor c(r, g, b, a);
+			painter.setPen(c);
+			painter.drawLine(n, 0, n, h);
+		}
+	}
+	m_gradientLabel->setPixmap(QPixmap::fromImage(palette_image));
+
+	// Rescale the gradient colors into the palette with a simple filter
+	if (spread == QGradient::PadSpread)
+	{
+		QRgb fc(m_gradient[0]);
+		flam3_palette_entry e = { 0., { qRed(fc)/255., qGreen(fc)/255., qBlue(fc)/255., qAlpha(fc)/255. }};
+		for (int n = 0 ; n < begin_idx ; n++)
+			p[n] = e;
+
+		for (int n = begin_idx, j = 0 ; n < end_idx ; n++, j++)
+			p[n] = ibuf[j];
+
+		fc = m_gradient[GradientBufferLastIdx];
+		e = (flam3_palette_entry){ 1., { qRed(fc)/255., qGreen(fc)/ 255., qBlue(fc)/255., qAlpha(fc)/255. }};
+		for (int n = end_idx ; n < 256 ; n++)
+			p[n] = e;
+	}
+	else if (spread == QGradient::RepeatSpread)
+	{
+		for (int n = begin_idx, j = 0 ; n < 256 ; n++, j++)
+			p[n] = ibuf[j % ibuf_size];
+		for (int n = begin_idx - 1, j = ibuf_size * 4096 - 1 ; n >= 0 ; n--, j--)
+			p[n] = ibuf[j % ibuf_size];
+	}
+	else if (spread == QGradient::ReflectSpread)
+	{
+		for (int n = begin_idx, j = 0, h = 4096*ibuf_size -1 ; n < begin_idx + ibuf_size ; n++, j++, h--)
+		{
+			for (int k = n, q = n + ibuf_size ; k < 256 ; k += 2*ibuf_size, q += 2*ibuf_size )
+			{
+				p[k] = ibuf[j % ibuf_size];
+				if (q < 256)
+					p[q] = ibuf[h % ibuf_size];
+			}
+		}
+		for (int n = begin_idx - 1, j = ibuf_size * 4096 - 1, h = 0 ; n >= begin_idx - ibuf_size ; n--, j--, h++)
+		{
+			for (int k = n, q = n - ibuf_size ; k >= 0 ; k -= 2*ibuf_size, q -= 2*ibuf_size )
+			{
+				p[k] = ibuf[h % ibuf_size];
+				if (q >= 0)
+					p[q] = ibuf[j % ibuf_size];
+			}
+		}
+	}
+	delete[] ibuf;
+
 	setPaletteView();
 	emit paletteChanged();
 }
@@ -220,14 +378,14 @@ void PaletteEditor::createRandomGradientAction()
 	int nstops = m_randomGradientSpinBox->value();
 	while (nstops < 2)
 		nstops = flam3_random01() * 128;
-	QGradientStops stops;
+	GradientStops stops;
 	for (int n = 0 ; n < nstops ; n++)
 	{
 		qreal idx = flam3_random01();
 		int r = flam3_random01() * 255;
 		int g = flam3_random01() * 255;
 		int b = flam3_random01() * 255;
-		QGradientStop s(idx, QColor(r, g, b));
+		GradientStop s(idx, QColor(r, g, b));
 		stops << s;
 	}
 	m_gradientStops->setStops(stops);
@@ -243,12 +401,13 @@ void PaletteEditor::setPaletteView()
 	QSize s = m_paletteLabel->maximumSize();
 	QImage palette(s.width(), s.height(), QImage::Format_RGB32);
 	QPainter painter(&palette);
+	painter.fillRect(palette.rect(), checkers);
 	int rvalue = m_rotateSlider->value() ;
 	int n = 0;
 	for (int i = (255 - rvalue) % 255 ; n < 256 ; i = (i + 1) % 256, n++)
 	{
-		painter.setPen(QColor::fromRgbF(p[i].color[0], p[i].color[1], p[i].color[2]));
-		painter.drawLine(n, 0, n, s.height());
+		painter.setPen(QColor::fromRgbF(p[i].color[0], p[i].color[1], p[i].color[2], p[i].color[3]));
+		painter.drawLine(n, 0, n, s.height() - 1);
 	}
 	m_paletteLabel->setPixmap(QPixmap::fromImage(palette));
 }
@@ -262,7 +421,7 @@ void PaletteEditor::buildPaletteSelector()
 	built = true;
 	logInfo("PaletteEditor::buildPaletteSelector : generating palettes");
 	QSize s = m_palettesView->iconSize();
-	for (int n = 0 ; n < npalettes ; n++)
+	for (int n = 0 ; n < PaletteCount ; n++)
 	{
 		flam3_palette p;
 		flam3_get_palette(n, p, 0.0);
@@ -278,7 +437,7 @@ void PaletteEditor::buildPaletteSelector()
 	if (!m_lastBrowseDir.isEmpty())
 	{
 		// restore p_stops for the initial call to resetGradientAction
-		QGradientStops tmp(p_stops);
+		GradientStops tmp(p_stops);
 		openGradientAction(true);
 		p_stops = tmp;
 	}
@@ -338,8 +497,7 @@ void PaletteEditor::selectGradientAction(const QModelIndex& idx)
 	{
 		if (hasUGR)
 		{
-			logFine(QString("PaletteEditor::selectGradientAction : UGR %1")
-								.arg(idx.row()));
+			logFine("PaletteEditor::selectGradientAction : UGR %d", idx.row());
 			setPalette(ugrList[idx.row()].pa);
 			emit paletteChanged();
 			emit undoStateSignal();
@@ -347,8 +505,7 @@ void PaletteEditor::selectGradientAction(const QModelIndex& idx)
 		else
 		{
 			QFileInfo file = m_browseFileList.at(idx.row());
-			logFine(QString("PaletteEditor::selectGradientAction : selecting %1")
-								.arg(idx.row()));
+			logFine("PaletteEditor::selectGradientAction : selecting %d", idx.row());
 			if ((file.suffix() == "ggr" && loadGIMPGradient(file, p))
 			||  (file.suffix() == "cpt" && loadCPTGradient(file, p)))
 			{
@@ -403,8 +560,7 @@ void PaletteEditor::openGradientAction(bool noprompt)
 			{
 				for (int n = 0 ; n < 256 ; n++)
 				{
-					painter.setPen(QColor::fromRgbF(
-								t.pa[n].color[0], t.pa[n].color[1], t.pa[n].color[2]));
+					painter.setPen(QColor::fromRgbF(t.pa[n].color[0], t.pa[n].color[1], t.pa[n].color[2]));
 					painter.drawLine(n, 0, n, s.height());
 				}
 				m_browsePalettes.addGradient(QPixmap::fromImage(palette));
@@ -437,9 +593,10 @@ void PaletteEditor::openGradientAction(bool noprompt)
 				QSize s = m_browseView->iconSize();
 				QImage palette(s.width(), s.height(), QImage::Format_RGB32);
 				QPainter painter(&palette);
+				painter.fillRect(0, 0, s.width(), s.height(), checkers);
 				for (int n = 0 ; n < 256 ; n++)
 				{
-					painter.setPen(QColor::fromRgbF(pa[n].color[0], pa[n].color[1], pa[n].color[2]));
+					painter.setPen(QColor::fromRgbF(pa[n].color[0], pa[n].color[1], pa[n].color[2], pa[n].color[3]));
 					painter.drawLine(n, 0, n, s.height());
 				}
 				m_browsePalettes.addGradient(QPixmap::fromImage(palette));
@@ -475,8 +632,7 @@ void PaletteEditor::openGradientAction(bool noprompt)
 
 bool PaletteEditor::loadUGRGradients(QFileInfo& file)
 {
-	logInfo(QString("PaletteEditor::loadUGRGradients : opening %1")
-			.arg(file.fileName()));
+	logInfo(QString("PaletteEditor::loadUGRGradients : opening %1").arg(file.fileName()));
 	QFile data(file.absoluteFilePath());
 	if (!data.open(QFile::ReadOnly))
 		return false;
@@ -559,78 +715,184 @@ bool PaletteEditor::loadGIMPGradient(QFileInfo& file, flam3_palette pa)
 			>> blending >> coloring ;
 
 		if (blending != 0)
-			logWarn(QString("PaletteEditor::loadGIMPGradient : unsupported blending mode %1 on line %2").arg(blending).arg(n+1));
-		if (coloring != 0)
-			logWarn(QString("PaletteEditor::loadGIMPGradient : unsupported coloring mode %1 on line %2").arg(coloring).arg(n+1));
+			logWarn(QString("PaletteEditor::loadGIMPGradient : %1 has unsupported "
+			"blending mode %2 on line %3").arg(file.fileName()).arg(blending).arg(n+1));
+		if (coloring < 0 || coloring > 2)
+		{
+			logWarn(QString("PaletteEditor::loadGIMPGradient : %1 has unsupported "
+			"coloring mode %2 on line %3").arg(file.fileName()).arg(coloring).arg(n+1));
+			coloring = 0;
+		}
 
 		qreal leftc_idx( leftc );
-		QColor leftc_color( QColor::fromRgbF(leftr, leftg, leftb) );
+		QColor leftc_color( QColor::fromRgbF(leftr, leftg, leftb, lefta) );
+		if (coloring > 0)
+		{
+			// convert to hsv color space
+			leftr = leftc_color.hueF();
+			leftg = leftc_color.saturationF();
+			leftb = leftc_color.valueF();
+
+			QColor c(QColor::fromRgbF(rightr, rightg, rightb, righta));
+			rightr = c.hueF();
+			rightg = c.saturationF();
+			rightb = c.valueF();
+
+		}
+
 		if (leftc_idx == rightc_idx_last)
 		{
 			if (leftc_color == rightc_color_last)
 				p_stops.pop_back();
 			else
 			{
-				logWarn(QString("PaletteEditor::loadGIMPGradient : unmatched left/right color entries on lines %1 - %2").arg(n).arg(n+1));
+				logWarn(QString("PaletteEditor::loadGIMPGradient : %1 has unmatched "
+				"left/right color entries on lines %2 - %3").arg(file.fileName()).arg(n).arg(n+1));
 				leftc_idx += 0.00001;
 			}
 		}
 		else if (rightc_idx_last != -1)
 		{
-			logError(QString("PaletteEditor::loadGIMPGradient : unmatched left/right index entries on lines %1 - %2").arg(n).arg(n+1));
+			logError(QString("PaletteEditor::loadGIMPGradient : %1 has unmatched "
+			"left/right index entries on lines %2 - %3").arg(file.fileName()).arg(n).arg(n+1));
 			leftc_idx += 0.00001;
 		}
-		p_stops << QGradientStop(leftc_idx, leftc_color);
+		p_stops << GradientStop(leftc_idx, leftc_color, coloring);
 		int pstart = (int)(leftc * 256.);
 		int pmid   = (int)(midc  * 256.);
 		int pend   = (int)(rightc * 256.);
 		buckets = pmid - pstart;
-		double rdx = (rightr - leftr)/2.; double rinc = rdx / buckets;
-		double gdx = (rightg - leftg)/2.; double ginc = gdx / buckets;
-		double bdx = (rightb - leftb)/2.; double binc = bdx / buckets;
+
+		double rdx = (rightr - leftr)/2.;
+		double gdx = (rightg - leftg)/2.;
+		double bdx = (rightb - leftb)/2.;
+		double adx = (righta - lefta)/2.;
+
+		// rotate a full 360 degrees in hsv colorspace
+		if (coloring == 1 && rdx == 0.)
+			rdx = 0.5;
+		else if (coloring == 2 && rdx == 0.)
+			rdx = -0.5;
+
+		double rinc = rdx / buckets;
+		double ginc = gdx / buckets;
+		double binc = bdx / buckets;
+		double ainc = adx / buckets;
+
 		for (int j = pstart ; j < pmid ; j++)
 		{
-			pa[j].color[0] = leftr;
-			pa[j].color[1] = leftg;
-			pa[j].color[2] = leftb;
+			if (coloring == 0)
+			{
+				pa[j].color[0] = qBound(0., leftr, 1.0);
+				pa[j].color[1] = qBound(0., leftg, 1.0);
+				pa[j].color[2] = qBound(0., leftb, 1.0);
+				pa[j].color[3] = qBound(0., lefta, 1.0);
+			}
+			else
+			{
+				if (leftr >= 1.0)
+					leftr -= 1.0;
+				else if (leftr < 0)
+					leftr += 1.0;
+				QColor hsv(QColor::fromHsvF(
+					qBound(0., leftr, 1.0),
+					qBound(0., leftg, 1.0),
+					qBound(0., leftb, 1.0),
+					qBound(0., lefta, 1.0)));
+				pa[j].color[0] = hsv.redF();
+				pa[j].color[1] = hsv.greenF();
+				pa[j].color[2] = hsv.blueF();
+				pa[j].color[3] = hsv.alphaF();
+			}
 			leftr += rinc;
 			leftg += ginc;
 			leftb += binc;
+			lefta += ainc;
 		}
 		qreal midc_idx( midc );
-		QColor midc_color( QColor::fromRgbF(
-			leftc_color.redF() + rdx,
-			leftc_color.greenF() + gdx,
-			leftc_color.blueF() + bdx) );
+		QColor midc_color;
+		if (coloring == 0)
+			midc_color = QColor::fromRgbF(
+			qBound(0., leftc_color.redF() + rdx, 1.0),
+			qBound(0., leftc_color.greenF() + gdx, 1.0),
+			qBound(0., leftc_color.blueF() + bdx, 1.0),
+			qBound(0., leftc_color.alphaF() + adx, 1.0) );
+		else
+		{
+			double h = leftc_color.hueF() + rdx;
+			if (h >= 1.0)
+				h -= 1.0;
+			else if (h < 0)
+				h += 1.0;
+			midc_color = QColor::fromHsvF(
+			qBound(0., h , 1.0),
+			qBound(0., leftc_color.saturationF() + gdx, 1.0),
+			qBound(0., leftc_color.valueF() + bdx, 1.0),
+			qBound(0., leftc_color.alphaF() + adx, 1.0) );
+		}
+
 		if (midc_idx == leftc_idx)
 		{
-			logWarn(QString("PaletteEditor::loadGIMPGradient : right adjusting midc entry on line %1").arg(n+1));
+			logWarn(QString("PaletteEditor::loadGIMPGradient : %1 has right "
+			"adjusting midc entry on line %2").arg(file.fileName()).arg(n+1));
 			midc_idx += 0.00001;
 		}
-		p_stops << QGradientStop(midc_idx, midc_color);
+		p_stops << GradientStop(midc_idx, midc_color, coloring);
 		buckets = pend - pmid;
 		rinc = rdx / buckets;
 		ginc = gdx / buckets;
 		binc = bdx / buckets;
+		ainc = adx / buckets;
 		for (int j = pmid ; j < pend ; j++)
 		{
-			pa[j].color[0] = leftr;
-			pa[j].color[1] = leftg;
-			pa[j].color[2] = leftb;
+			if (coloring == 0)
+			{
+				pa[j].color[0] = qBound(0., leftr, 1.0);
+				pa[j].color[1] = qBound(0., leftg, 1.0);
+				pa[j].color[2] = qBound(0., leftb, 1.0);
+				pa[j].color[3] = qBound(0., lefta, 1.0);
+			}
+			else
+			{
+				if (leftr >= 1.0)
+					leftr -= 1.0;
+				else if (leftr < 0)
+					leftr += 1.0;
+
+				QColor hsv(QColor::fromHsvF(
+					qBound(0., leftr, 1.0),
+					qBound(0., leftg, 1.0),
+					qBound(0., leftb, 1.0),
+					qBound(0., lefta, 1.0)));
+				pa[j].color[0] = hsv.redF();
+				pa[j].color[1] = hsv.greenF();
+				pa[j].color[2] = hsv.blueF();
+				pa[j].color[3] = hsv.alphaF();
+			}
 			leftr += rinc;
 			leftg += ginc;
 			leftb += binc;
+			lefta += ainc;
 		}
 		rightc_idx_last = rightc;
-		rightc_color_last = QColor::fromRgbF(rightr, rightg, rightb);
+
+		if (coloring == 0)
+			rightc_color_last = QColor::fromRgbF(rightr, rightg, rightb, righta);
+		else
+			rightc_color_last = QColor::fromHsvF(rightr, rightg, rightb, righta);
+
 		if (rightc_idx_last == midc_idx)
 		{
-			logWarn(QString("PaletteEditor::loadGIMPGradient : left adjusting midc entry on line %1").arg(n+1));
+			logWarn(QString("PaletteEditor::loadGIMPGradient : %1 has left "
+			"adjusting midc entry on line %1").arg(file.fileName()).arg(n+1));
 			midc_idx -= 0.000001;
 			p_stops.pop_back();
-			p_stops << QGradientStop(midc_idx, midc_color);
+			GradientStop astop(midc_idx, midc_color, coloring);
+			p_stops<<astop;
+			logInfo("stop.coloring %d", astop.colorspace);
+
 		}
-		p_stops << QGradientStop(rightc_idx_last, rightc_color_last);
+		p_stops << GradientStop(rightc_idx_last, rightc_color_last, coloring);
 	}
 	return true;
 }
@@ -639,8 +901,7 @@ bool PaletteEditor::loadGIMPGradient(QFileInfo& file, flam3_palette pa)
 // is not very robust.  cpt files with problems/typos will break it!
 bool PaletteEditor::loadCPTGradient(QFileInfo& file, flam3_palette pa)
 {
-	logFinest(QString("PaletteEditor::loadCPTGradient : parsing %1")
-			.arg(file.fileName()));
+	logFinest(QString("PaletteEditor::loadCPTGradient : parsing %1").arg(file.fileName()));
 	QFile data(file.absoluteFilePath());
 	if (!data.open(QFile::ReadOnly))
 		return false;
@@ -691,8 +952,7 @@ bool PaletteEditor::loadCPTGradient(QFileInfo& file, flam3_palette pa)
 	}
 	// end position is in the last entry
 	double idx_end = z1 + offset;
-	logFinest(QString("PaletteEditor::loadCPTGradient : idx range %1 %2")
-			.arg(idx_start).arg(idx_end));
+	logFinest("PaletteEditor::loadCPTGradient : idx range %d %d", idx_start, idx_end);
 	// now go back and try again
 	is.seek(start_pos);
 	z1 = idx_start;
@@ -719,11 +979,12 @@ bool PaletteEditor::loadCPTGradient(QFileInfo& file, flam3_palette pa)
 				p_stops.pop_back();
 			else
 			{
-				logWarn(QString("PaletteEditor::loadCPTGradient : right adjusting z0 entry at pos %1").arg(is.pos()));
+				logWarn("PaletteEditor::loadCPTGradient : %s has right adjusting "
+				"z0 entry at pos %d", file.fileName().toAscii().constData(), is.pos());
 				z0_idx += 0.0001;
 			}
 		}
-		p_stops << QGradientStop(z0_idx,  z0_color);
+		p_stops << GradientStop(z0_idx,  z0_color);
 		z0r /= part; z0g /= part ; z0b /= part ;
 		double pdx = pend - pstart ;
 		double rdx = (z1r / part - z0r) / pdx ;
@@ -740,6 +1001,7 @@ bool PaletteEditor::loadCPTGradient(QFileInfo& file, flam3_palette pa)
 			pa[j].color[0] = qBound(0., z0r, 1.) ;
 			pa[j].color[1] = qBound(0., z0g, 1.) ;
 			pa[j].color[2] = qBound(0., z0b, 1.) ;
+			pa[j].color[3] = 1. ;
 			logFinest(QString("PaletteEditor::loadCPTGradient : p[%1] \t %2 %3 %4")
 				.arg(j).arg(p[j].color[0]).arg(p[j].color[1]).arg(p[j].color[2]));
 			z0r += rdx ;
@@ -748,7 +1010,7 @@ bool PaletteEditor::loadCPTGradient(QFileInfo& file, flam3_palette pa)
 		}
 		z1_idx_last = (qreal)z1 / idx_end;
 		z1_color_last = QColor::fromRgb(z1r, z1g, z1b);
-		p_stops << QGradientStop(z1_idx_last,  z1_color_last);
+		p_stops << GradientStop(z1_idx_last,  z1_color_last);
 		if (j >= 255) break;
 	}
 	return true;
