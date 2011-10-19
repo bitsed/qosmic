@@ -17,58 +17,19 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef COLORDIALOG_H
-#define COLORDIALOG_H
 
-#include "colorselector.h"
+#include <QImage>
+#include <QPainter>
 
-class HueSatSelector : public ColorSelector
+#include "checkersbrush.h"
+
+
+CheckersBrush::CheckersBrush(int d) : QBrush()
 {
-	int value;
-
-	public:
-		HueSatSelector(QWidget* parent=0);
-		void setSelectedIndex(QColor);
-		void repaintLabel();
-};
-
-class ValSelector : public ColorSelector
-{
-	public:
-		ValSelector(QWidget* parent=0);
-		void setSelectedIndex(QColor);
-		void repaintLabel();
-};
-
-
-
-#include "ui_colordialog.h"
-
-
-class ColorDialog : public QDialog, private Ui::ColorDialog
-{
-	Q_OBJECT
-
-	public:
-		ColorDialog(QWidget* parent=0);
-		~ColorDialog();
-		QColor getSelectedColor();
-		void setSelectedColor(QColor);
-		void setAlphaEnabled(bool);
-
-	private slots:
-		void indexSelected(QPoint);
-		void rgbSpinValueChanged();
-		void hsvSpinValueChanged();
-
-	signals:
-		void colorSelected(QColor);
-
-	private:
-		QColor selectedColor;
-
-};
-
-
-
-#endif
+	QImage img(d, d, QImage::Format_RGB32);
+	QPainter p(&img);
+	p.fillRect(0, 0, d, d, Qt::white);
+	p.fillRect(0, 0, d/2, d/2, Qt::black);
+	p.fillRect(d/2, d/2, d, d, Qt::black);
+	setTexture(QPixmap::fromImage(img));
+}

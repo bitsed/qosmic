@@ -34,6 +34,15 @@ ColorDialog::ColorDialog(QWidget* parent) : QDialog(parent)
 			this, SLOT(indexSelected(QPoint)));
 	connect(m_okButton, SIGNAL(pressed()), this, SLOT(accept()));
 	connect(m_cancelButton, SIGNAL(pressed()), this, SLOT(reject()));
+
+	connect(m_rSpinBox, SIGNAL(valueChanged(int)), this, SLOT(rgbSpinValueChanged()));
+	connect(m_gSpinBox, SIGNAL(valueChanged(int)), this, SLOT(rgbSpinValueChanged()));
+	connect(m_bSpinBox, SIGNAL(valueChanged(int)), this, SLOT(rgbSpinValueChanged()));
+	connect(m_aSpinBox, SIGNAL(valueChanged(int)), this, SLOT(rgbSpinValueChanged()));
+
+	connect(m_hSpinBox, SIGNAL(valueChanged(int)), this, SLOT(hsvSpinValueChanged()));
+	connect(m_sSpinBox, SIGNAL(valueChanged(int)), this, SLOT(hsvSpinValueChanged()));
+	connect(m_vSpinBox, SIGNAL(valueChanged(int)), this, SLOT(hsvSpinValueChanged()));
 }
 
 
@@ -49,7 +58,7 @@ void ColorDialog::indexSelected(QPoint /*p*/)
 	int h = qBound(0, hs_pos.x(), 359);
 	int s = qBound(0, hs_pos.y(), 255);
 	int v = qBound(0, v_pos.y(), 255);
-	setSelectedColor(QColor::fromHsv(h, s, v));
+	setSelectedColor(QColor::fromHsv(h, s, v, m_aSpinBox->value()));
 	emit colorSelected(selectedColor);
 }
 
@@ -67,18 +76,50 @@ void ColorDialog::setSelectedColor(QColor c)
 	m_vLabel->setSelectedIndex(c);
 	m_hsLabel->setSelectedIndex(c);
 
+	m_rSpinBox->blockSignals(true);
+	m_gSpinBox->blockSignals(true);
+	m_bSpinBox->blockSignals(true);
+	m_aSpinBox->blockSignals(true);
+	m_hSpinBox->blockSignals(true);
+	m_sSpinBox->blockSignals(true);
+	m_vSpinBox->blockSignals(true);
+
 	m_rSpinBox->setValue(selectedColor.red());
 	m_gSpinBox->setValue(selectedColor.green());
 	m_bSpinBox->setValue(selectedColor.blue());
+	m_aSpinBox->setValue(selectedColor.alpha());
 
 	m_hSpinBox->setValue(selectedColor.hue());
 	m_sSpinBox->setValue(selectedColor.saturation());
 	m_vSpinBox->setValue(selectedColor.value());
+
+	m_rSpinBox->blockSignals(false);
+	m_gSpinBox->blockSignals(false);
+	m_bSpinBox->blockSignals(false);
+	m_aSpinBox->blockSignals(false);
+	m_hSpinBox->blockSignals(false);
+	m_sSpinBox->blockSignals(false);
+	m_vSpinBox->blockSignals(false);
+
+}
+
+void ColorDialog::setAlphaEnabled(bool flag)
+{
+	label_7->setEnabled(flag);
+	m_aSpinBox->setEnabled(flag);
 }
 
 
+void ColorDialog::rgbSpinValueChanged()
+{
+	setSelectedColor(QColor(m_rSpinBox->value(), m_gSpinBox->value(), m_bSpinBox->value(), m_aSpinBox->value()));
+}
 
 
+void ColorDialog::hsvSpinValueChanged()
+{
+	setSelectedColor(QColor::fromHsv(m_hSpinBox->value(), m_sSpinBox->value(), m_vSpinBox->value(), m_aSpinBox->value()));
+}
 
 
 ValSelector::ValSelector(QWidget* parent)
@@ -141,5 +182,4 @@ void HueSatSelector::repaintLabel()
 		qBound(0, last_pos.y(), 255) - 5, 10, 10);
 	setPixmap(QPixmap::fromImage( label ));
 }
-
 

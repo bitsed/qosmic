@@ -30,7 +30,9 @@
 
 #include "ui_paletteeditor.h"
 #include "gradientlistmodel.h"
+#include "checkersbrush.h"
 #include "flam3util.h"
+
 
 class PaletteEditor : public QWidget, private Ui::PaletteEditor
 {
@@ -50,15 +52,19 @@ class PaletteEditor : public QWidget, private Ui::PaletteEditor
 		};
 
 
-		static const int npalettes = 701;
+		static const int PaletteCount          = 701;
+		static const int GradientBufferSize    = 1024;
+
 		flam3_palette p;
-		QGradientStops p_stops;
+		GradientStops p_stops;
 		GradientListModel m_flamPalettes;
 		GradientListModel m_browsePalettes;
 		QFileInfoList m_browseFileList;
 		QString m_lastBrowseDir;
 		QList<flam3_palette_t> ugrList;
 		QButtonGroup* m_gradientSpreadGroup;
+		CheckersBrush checkers;
+		QRgb m_gradient[GradientBufferSize];
 		bool hasUGR;
 
 	public:

@@ -17,58 +17,16 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef COLORDIALOG_H
-#define COLORDIALOG_H
 
-#include "colorselector.h"
+#ifndef CHECKERSBRUSH_H
+#define CHECKERSBRUSH_H
 
-class HueSatSelector : public ColorSelector
-{
-	int value;
+#include <QBrush>
 
-	public:
-		HueSatSelector(QWidget* parent=0);
-		void setSelectedIndex(QColor);
-		void repaintLabel();
-};
-
-class ValSelector : public ColorSelector
+class CheckersBrush : public QBrush
 {
 	public:
-		ValSelector(QWidget* parent=0);
-		void setSelectedIndex(QColor);
-		void repaintLabel();
+		explicit CheckersBrush(int);
 };
 
-
-
-#include "ui_colordialog.h"
-
-
-class ColorDialog : public QDialog, private Ui::ColorDialog
-{
-	Q_OBJECT
-
-	public:
-		ColorDialog(QWidget* parent=0);
-		~ColorDialog();
-		QColor getSelectedColor();
-		void setSelectedColor(QColor);
-		void setAlphaEnabled(bool);
-
-	private slots:
-		void indexSelected(QPoint);
-		void rgbSpinValueChanged();
-		void hsvSpinValueChanged();
-
-	signals:
-		void colorSelected(QColor);
-
-	private:
-		QColor selectedColor;
-
-};
-
-
-
-#endif
+#endif // CHECKERSBRUSH_H

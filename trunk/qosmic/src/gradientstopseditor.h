@@ -22,7 +22,31 @@
 
 #include <QMenu>
 #include <QWidget>
+#include <QGradientStop>
 #include <QLinearGradient>
+
+class GradientStop
+{
+	public:
+		enum { RGB = 0, HSV = 1, HSVR = 2 } ColorSpace;
+		double first;
+		QColor second;
+		int colorspace;
+		int blending;
+
+		GradientStop() : colorspace(0), blending(0) {}
+//		GradientStop(GradientStop& stop)
+//		: QGradientStop(stop.first, stop.second), colorspace(stop.colorspace), blending(stop.blending) {}
+//		GradientStop(const QPair<double,QColor> stop)
+//		: QGradientStop(stop), colorspace(0), blending(0) {}
+		GradientStop(double pos, QColor color, int space=0, int blend=0)
+		: first(pos), second(color), colorspace(space), blending(blend) {}
+
+		int getColorSpace() { return colorspace ; }
+		static bool lessThanGradientStopComparison(const GradientStop& s1, const GradientStop& s2);
+};
+
+typedef QVector<GradientStop> GradientStops;
 
 class GradientStopsEditor : public QWidget
 {
@@ -30,8 +54,8 @@ class GradientStopsEditor : public QWidget
 
 	public:
 		GradientStopsEditor(QWidget* parent=0);
-		QGradientStops& getStops();
-		void setStops(const QGradientStops&);
+		GradientStops& getStops();
+		void setStops(const GradientStops&);
 		void setArrowDirection(Qt::ArrowType);
 		Qt::ArrowType arrowDirection() const;
 		void setMenuEnabled(bool);
@@ -64,7 +88,7 @@ class GradientStopsEditor : public QWidget
 		QList<int> selected_idx;
 		QPoint moving_start;
 		QPoint moving_global;
-		QGradientStops stops;
+		GradientStops stops;
 		QLinearGradient gradient;
 		Qt::ArrowType arrow_type;
 };

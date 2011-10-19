@@ -22,6 +22,7 @@
 #include <QPainter>
 
 #include "genomecolorselector.h"
+#include "checkersbrush.h"
 #include "logger.h"
 
 GenomeColorSelector::GenomeColorSelector(QWidget* parent, GenomeVector* g)
@@ -91,12 +92,11 @@ void GenomeColorSelector::repaintLabel()
 {
 	if (genome_ptr)
 	{
-		QSize s = maximumSize();
-		int width  = s.width();
-		int height = s.height();
-		QImage palette(width, height, QImage::Format_RGB32);
+		QSize s(maximumSize());
+		int width(s.width());
+		QImage palette(s, QImage::Format_RGB32);
 		QPainter p(&palette);
-
+		p.fillRect(palette.rect(), CheckersBrush(16));
 		if (show_histogram)
 		{
 			// draw the genome color histogram over the palette
@@ -106,13 +106,15 @@ void GenomeColorSelector::repaintLabel()
 				logWarn(QString("GenomeColorSelector::repaintLabel : couldn't get flam3 color histogram"));
 
 			QColor c;
-			double rc, gc, bc;
+			double rc, gc, bc, ac;
 			int chist_scale = ( width / 4 ) * width;
 			for (int i = 0 ; i < 256 ; i++)
 			{
-				rc = genome_ptr->palette[i].color[0];
-				gc = genome_ptr->palette[i].color[1];
-				bc = genome_ptr->palette[i].color[2];
+				double* color = genome_ptr->palette[i].color;
+				rc = color[0];
+				gc = color[1];
+				bc = color[2];
+				ac = color[3];
 				if (rc < 0.0 || rc > 1.0 ||
 					bc < 0.0 || bc > 1.0 ||
 					gc < 0.0 || gc > 1.0)
@@ -126,7 +128,7 @@ void GenomeColorSelector::repaintLabel()
 				}
 				else
 				{
-					c = QColor::fromRgbF(rc, gc, bc);
+					c = QColor::fromRgbF(rc, gc, bc, ac);
 					p.setPen(c);
 					p.drawLine(0, 255 - i, width, 255 - i);
 					p.setPen(c.darker(300));
@@ -140,12 +142,14 @@ void GenomeColorSelector::repaintLabel()
 		{
 			// just draw the genome color palette on the label
 			QColor c;
-			double rc, gc, bc;
+			double rc, gc, bc, ac;
 			for (int i = 0 ; i < 256 ; i++)
 			{
-				rc = genome_ptr->palette[i].color[0];
-				gc = genome_ptr->palette[i].color[1];
-				bc = genome_ptr->palette[i].color[2];
+				double* color = genome_ptr->palette[i].color;
+				rc = color[0];
+				gc = color[1];
+				bc = color[2];
+				ac = color[3];
 				if (rc < 0.0 || rc > 1.0 ||
 					bc < 0.0 || bc > 1.0 ||
 					gc < 0.0 || gc > 1.0)
@@ -159,7 +163,7 @@ void GenomeColorSelector::repaintLabel()
 				}
 				else
 				{
-					c = QColor::fromRgbF(rc, gc, bc);
+					c = QColor::fromRgbF(rc, gc, bc, ac);
 					p.setPen(c);
 					p.drawLine(0, 255 - i, width, 255 - i);
 				}

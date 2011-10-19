@@ -222,7 +222,17 @@ void MainViewer::setPixmap(QPixmap& p, bool resized)
 // or the pixmap.  scale the viewer by default
 void MainViewer::setPixmap(const QPixmap& p, bool resized)
 {
-	m_pix = p;
+	if (RenderThread::getInstance()->format() != RenderThread::RGB32)
+	{
+		QImage img(p.size(), QImage::Format_RGB32);
+		QPainter pa(&img);
+		pa.fillRect(img.rect(), CheckersBrush(16));
+		pa.drawPixmap(0, 0, p);
+		m_pix = QPixmap::fromImage(img);
+	}
+	else
+		m_pix = p;
+
 	m_orig_size = m_pix.size();
 	m_scaled_size = getViewerSize();
 	last_M = m_scaled_size;
@@ -231,7 +241,7 @@ void MainViewer::setPixmap(const QPixmap& p, bool resized)
 	{
 		if (resized)
 		{
-			m_pitem->setPixmap( p );
+			m_pitem->setPixmap( m_pix );
 			rescaleViewer();
 		}
 		else
@@ -241,8 +251,8 @@ void MainViewer::setPixmap(const QPixmap& p, bool resized)
 	{
 		m_titem->setVisible(false);
 		m_ritem->setVisible(false);
-		m_pitem->setPixmap( p );
-		QSize size = p.size();
+		m_pitem->setPixmap( m_pix );
+		QSize size( m_pix.size() );
 		m_graphicsView->setSceneRect(0, 0, size.width(), size.height());
 	}
 }
