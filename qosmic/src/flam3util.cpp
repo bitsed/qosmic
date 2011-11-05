@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2007 - 2011 by David Bitseff                            *
- *   dbitsef@zipcon.net                                                    *
+ *   Copyright (C) 2007, 2008, 2009, 2011 by David Bitseff                 *
+ *   bitsed@gmail.com                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,6 +20,7 @@
 #include <QMap>
 #include <QHash>
 #include <cmath>
+#include <ctime>
 #include <clocale>
 
 #include "logger.h"
@@ -698,21 +699,19 @@ namespace Util
 			init_xform(g->xform + n);
 	}
 
-#define PI 3.14159265358979323846
-
 	void rectToPolar(double x, double y, double* r, double* p)
 	{
 		*r = sqrt(pow(x, 2.) + pow(y, 2.));
 		if (x >= 0. && y >= 0.) *p = atan( y / x );
-		else if (x < 0. && y >= 0.) *p = PI - atan( y / ((-1.)*x) );
-		else if (x < 0. && y < 0.) *p = PI + atan( y / x );
-		else *p = 2.*PI - atan( ((-1.)*y) / x );
+		else if (x < 0. && y >= 0.) *p = M_PI - atan( y / ((-1.)*x) );
+		else if (x < 0. && y < 0.) *p = M_PI + atan( y / x );
+		else *p = 2.*M_PI - atan( ((-1.)*y) / x );
 	}
 
 	void rectToPolarDeg(double x, double y, double* r, double* d)
 	{
 		rectToPolar(x, y, r, d);
-		*d = *d * 180. / PI;
+		*d = *d * 180. / M_PI;
 	}
 
 	void polarToRect(double r, double p, double* x, double* y)
@@ -723,7 +722,7 @@ namespace Util
 
 	void polarDegToRect(double r, double p, double* x, double* y)
 	{
-		polarToRect( r, p * PI / 180., x, y);
+		polarToRect( r, p * M_PI / 180., x, y);
 	}
 
 	randctx* get_isaac_randctx()

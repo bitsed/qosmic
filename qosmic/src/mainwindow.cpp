@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2007 - 2011 by David Bitseff                            *
- *   dbitsef@zipcon.net                                                    *
+ *   Copyright (C) 2007, 2008, 2009, 2011 by David Bitseff                 *
+ *   bitsed@gmail.com                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -776,7 +776,7 @@ void MainWindow::about()
 {
 	static const char* msg =
 	"<p><b>Qosmic version %1</b></p>"
-	"<p>Copyright (c) 2007 - 2011 David Bitseff</p>"
+	"<p>Copyright (C) 2007, 2008, 2009, 2011 by David Bitseff<br>"
 	"<p>Use and redistribute under the terms of the<br>"
 	"<a href=\"http://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU General Public License Version 2</a></p>"
 	"<p>Thanks to:<br>"
@@ -784,7 +784,7 @@ void MainWindow::about()
 	"- Erik Reckase for his work on the flam3 library<br>"
 	"- Mark James for his <a href=\"http://www.famfamfam.com/lab/icons/silk/\">Silk</a> icon set<br>"
 	"- Mark Townsend for the <a href=\"www.apophysis.org\">Apophysis</a> editor"
-	"<p>This version was compiled against Qt " QT_VERSION_STR "</p>";
+	"<p>This version was compiled with Qt " QT_VERSION_STR "</p>";
 	QMessageBox::about(this, tr("About Qosmic"), QString::fromLatin1(msg).arg(QOSMIC_VERSION));
 }
 
@@ -1166,10 +1166,10 @@ void MainWindow::readSettings()
 	}
 	else
 	{
-		logInfo(QString("MainWindow::readSettings : restored main window state"));
+		logInfo("MainWindow::readSettings : restored main window state");
 	}
 
-	logInfo(QString("MainWindow::readSettings : finished"));
+	logInfo("MainWindow::readSettings : finished");
 }
 
 
@@ -1194,7 +1194,11 @@ void MainWindow::setFlameXML(const QString& s)
 		in = Util::read_xml_string(DEFAULT_FLAME_XML, &ncps);
 	else
 		in = Util::read_xml_string(s, &ncps);
-	logInfo(QString("MainWindow::setFlameXML : found %1 genome").arg(ncps));
+	logInfo("MainWindow::setFlameXML : found %d genome", ncps);
+	// Clear the symmetry flag before setting genomes since symmetry is applied
+	// when the file is read.
+	for (int n = 0 ; n < ncps ; n++)
+		in[n].symmetry = 1;
 	genomes.setData(in, ncps);
 	reset();
 	render();

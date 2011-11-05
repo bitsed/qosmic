@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2007 - 2011 by David Bitseff                            *
- *   dbitsef@zipcon.net                                                    *
+ *   Copyright (C) 2007, 2008, 2009, 2011 by David Bitseff                 *
+ *   bitsed@gmail.com                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -77,7 +77,10 @@ int Frame::get_genome(lua_State* L)
 		flam3_genome g = flam3_genome();
 		Util::init_genome(&g);
 		for (int n = 0 ; n < idx - lsize + 1 ; n++)
+		{
 			genome_vec->append(g);
+			m_adapter->insertModified(genome_vec->size());
+		}
 	}
 	luaL_getmetatable(L, Genome::className);
 	Lunar<Genome>::new_T(L);

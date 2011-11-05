@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2007 - 2011 by David Bitseff                            *
- *   dbitsef@zipcon.net                                                    *
+ *   Copyright (C) 2007, 2008, 2009, 2011 by David Bitseff                 *
+ *   bitsed@gmail.com                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -963,9 +963,9 @@ void FigureEditor::wheelEvent(QGraphicsSceneWheelEvent* e)
 				{
 					// rotate
 					if (e->modifiers() & Qt::ShiftModifier)
-						rad = (double)e->delta() / (128.*3.141592654);
+						rad = (double)e->delta() / (128.*M_PI);
 					else
-						rad = (double)e->delta() / (16.*3.141592654);
+						rad = (double)e->delta() / (16.*M_PI);
 					rotateTriangle(t, rad, cpos);
 				}
 				e->accept();
@@ -1011,9 +1011,9 @@ void FigureEditor::wheelEvent(QGraphicsSceneWheelEvent* e)
 				{
 					// rotate
 					if (e->modifiers() & Qt::ShiftModifier)
-						rad = (double)e->delta() / (128.*3.141592654);
+						rad = (double)e->delta() / (128.*M_PI);
 					else
-						rad = (double)e->delta() / (16.*3.141592654);
+						rad = (double)e->delta() / (16.*M_PI);
 					rotateSelection(rad, cpos);
 				}
 				e->accept();

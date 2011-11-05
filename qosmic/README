@@ -13,14 +13,14 @@ electricsheep screensaver as described on http://electricsheep.org.
 
 Building
 
-Before building you will need to satisfy the library dependencies.  Currently,
-version 1.5.0 of the application is compatible with Qt 4.6, flam3 3.0.1, and
-Lua 5.1.4.  Versions of flam3 < 3.0.1 are not compatible with this version of
-the application.
+Before building you will need to satisfy the library dependencies. Version 1.5.0
+of the application is compatible with Qt 4.6, flam3 3.0.1, and Lua 5.1.4.
+Versions of flam3 < 3.0.1 are not compatible with this version of the
+application.
 
 Version 1.5.0 of Qosmic was developed and tested using:
 
-Qt-4.7.3      (http://www.trolltech.com/)
+Qt-4.7.3      (http://qt.nokia.com/)
 Lua-5.1.4     (http://www.lua.org/)
 flam3-3.0.1   (http://flam3.com/)
 libxml2-2.7.8 (http://www.xmlsoft.org/)
@@ -28,24 +28,25 @@ libpng-1.4.8  (http://www.libpng.org/)
 jpeg-8c       (http://www.ijg.org/)
 
 
-1. Download and unpack the source archive, and cd into the source directory.
-2. Edit qosmic.pro to configure the qmake build system to suit your environment.
-3. Run the ./build.sh script
-4. Run ./qosmic when the build finishes.
+1. Install the dependencies listed above.
+2. Download and unpack the source archive, and cd into the source directory.
+3. Edit qosmic.pro to configure the qmake build system to suit your environment.
+4. Run qmake
+5. Run make
+6. Run ./qosmic when the build finishes.
 
 ================================================================================
 
 Using the Editor
 
-The best way to begin is by playing with it.  The interface is heavily mouse
-driven, and it relies on the mouse wheel for many controls.  If you've used
-Apophysis, then some things about the editor should seem familiar.  The main
-components consist of the triangle editor, the dock widgets, and the viewers.
-The triangle editor allows you to select and manipulate an xform element within
-a genome.  The dock widgets contain control elements which can adjust some
-property of the current genome.  Some control elements are bound to properties
-of the currently selected triangle.  The viewers display the current flam3
-image.
+The interface is heavily mouse driven relying on either a click and drag motion
+or the mouse wheel for many controls.  If you've used Apophysis, then some
+things about the editor should seem familiar.  The main components consist of
+the triangle editor, the dock widgets, and the viewers.  The triangle editor
+allows you to select and manipulate an xform element within a genome.  The dock
+widgets contain controls elements that will adjust some property of the current
+genome or the currently selected triangle.  The viewers display the current
+flam3 image.
 
 
 Viewers:
@@ -56,7 +57,7 @@ The preview widget is updated with a new image every time a setting is changed.
 It's generally smaller than the main viewer.  This widget also has control
 elements bound to the mouse wheel and buttons.  You may drag the preview
 image using the left mouse button to set the camera view.  The scale can
-be set using the mouse wheel or by holding control while moving the mouse.
+be set using the mouse wheel or by holding control with a click and drag motion.
 The right mouse button displays a popup menu where the preview image quality
 can be selected.  The quality settings displayed in the popup menu can be
 changed using the viewer presets widget.  The viewer presets widget can be
@@ -112,6 +113,8 @@ Here are some more hints:
 - Use lower quality settings until you get the image you want, then render your
   final image using higher quality settings if necessary.
 
+- Use viewer presets to quickly switch between different image quality settings.
+
 - Use scale and quality instead of zoom to gain more control over image quality
   and rendering times.  Zoom changes both of these values at the same time.
   The flam3 developers suggest leaving zoom at zero since the electricsheep
@@ -134,6 +137,13 @@ Here are some more hints:
 - The '\' key will globally disable automatic preview and viewer image updating
   when changing a spinbox value using the mouse wheel.
 
+- The maximum size of the preview image when docked can be set by sizing the
+  preview when it is not docked.
+
+- Use the genome selector to view the current set of flam3 images and to select
+  the current genome.  There is always at least one genome in the set, and you
+  can add a genome by importing it.
+
 - If a png file having the same base name as a flam3 file exists in the same
   directory as the flam3 file, the directory browser will generate an icon
   preview image and store it in the $HOME/.qosmic/icons cache.  The icons
@@ -142,7 +152,7 @@ Here are some more hints:
 - When using the directory browser for the first time to view a directory
   containing flam3 files, the browser tries to find and generate icon sized
   preview images for each file.  This may take a while if you have many flam3
-  files with cooresponding images.
+  files with corresponding images.
 
 - When the directory browser is in 'Short View' mode, using the right mouse
   button in the directory browser displays the image for a flam3 file if one
@@ -179,30 +189,30 @@ Here are some more hints:
 - The middle mouse button in the mutations window copies the genome to the
   currently selected genomes list item.
 
+- There is drag and drop enabled for a few of the widgets.  You can drag and
+  drop items between the mutations widget and the genome selector.  You can drag
+  files from the directory browser into the genome selector.  You can also drag
+  items into the main viewer from the mutations and the genome selector widgets.
+
 - GIMP gradient files (.ggr) and CPT gradient files (.cpt) can be loaded in the
   palette widget.  Select a directory containing your gradient files using
   the tool button in the browse tab.  Then select a gradient from the gradients
   scroll list.
 
-- You can set the genome displayed at start-up by saving to a file called
-  '$HOME/.qosmic/autosave.flam3'.  The autosave file is updated when quitting
-  the application.
-
-- Use viewer presets to quickly switch between different image quality settings.
-
-- The maximum size of the preview image when docked can be set by sizing the
-  preview when it is not docked.
+- You can set the genome displayed at start-up by using the autosave feature.
+  The autosave can be configured by clicking the wrench icon on the select
+  genome widget.  When enabled, this feature will save the current set of
+  genomes to a file called '$HOME/.qosmic/autosave.flam3'.  The autosave file
+  can be updated when quitting the application or whenever an undo state is
+  created.
 
 - Use the selection to simultaneously move, copy, and edit multiple triangles.
-
-- Use the genomes widget to view the current set of flam3 images and to select
-  the current genome.  There is always at least one genome in the set, and you
-  can add a genome by importing it.
 
 - The density widget can be used to merge two different genomes in the current
   genome set.  Use the star button in the density widget to apply the density
   settings of the second genome.  Triangles is the second genome having a
   density of zero are not included when density settings are applied.
+
 ================================================================================
 
 Keys

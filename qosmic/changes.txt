@@ -1,3 +1,21 @@
+Version 1.5.0
+
+- Compatibility updates for flam3-3.0.1.
+- Enhanced directory browsing widget.
+- Added move, rotate, scale, and flip modes to the triangle editor.
+- Added xform previews and rendering enhancements to the triangle editor.
+- Added a genome palette histogram to the xform color selector.
+- Enhanced flam3 types in Lua scripts.
+- Alpha channel and HSV colorspace support for ggr gradients.
+- Enhanced mutations editor.
+- Enhanced genome selector.
+- New sheep loop animation widget.
+- Added a configuration dialog for the autosave feature.
+- Enhanced tree view in the variations widget.
+- Added a message output pane to the Lua script editor.
+- Fixed a bug when modifying coefs in the coordinates widget.
+- Added drag+drop support to mutations, directory browser, and genome selector.
+
 
 Version 1.4.8
 

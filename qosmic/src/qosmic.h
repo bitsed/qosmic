@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2007 - 2011 by David Bitseff                            *
- *   dbitsef@zipcon.net                                                    *
+ *   Copyright (C) 2007, 2008, 2009, 2011 by David Bitseff                 *
+ *   bitsed@gmail.com                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -50,7 +50,7 @@ static const QString DEFAULT_FLAME_XML(
 "<flame time=\"0\" palette=\"27\" size=\"1280 960\" center=\"0.0 0.0\" "
 	"scale=\"100.0\" oversample=\"1\" filter=\"0.0\" quality=\"40\" "
 	"passes=\"1\" temporal_samples=\"1\" estimator_radius=\"0\" "
-	"brightness=\"8.0\" gamma=\"4\">\n"
+	"brightness=\"8.0\" gamma=\"4\" interpolation_type=\"linear\">\n"
 	"<xform weight=\"1.0\" color=\"1.0\" linear=\"1\" coefs=\"1 0 0 1 0 0\"/>\n"
 "</flame>");
 
