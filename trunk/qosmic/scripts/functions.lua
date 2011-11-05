@@ -70,20 +70,20 @@ function rotate_xf_test(xf)
 	end
 end
 
-function spread_colors(genome)
+function spread_colors(g)
 -- Spreads the color parameters evenly over all
 -- xforms in genome
-	local num_xf = genome:num_xforms()
+	local num_xf = g:num_xforms()
 	for i = 1, num_xf do
-		genome:get_xform(i):color(i / num_xf);
+		g:get_xform(i):color(i / num_xf);
 	end
 end
 
 function spread_density(g)
 -- Spreads the xform density parameters evenly over 1.0
-	local num_xf = genome:num_xforms()
+	local num_xf = g:num_xforms()
 	for i = 1, num_xf do
-		genome:get_xform(i):density(1.0 / num_xf);
+		g:get_xform(i):density(1.0 / num_xf);
 	end
 end
 
@@ -94,3 +94,4 @@ function bw_palette(g)
 		g:palette(i, v,v,v)
 	end
 end
+

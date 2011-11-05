@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2007 - 2011 by David Bitseff                            *
- *   dbitsef@zipcon.net                                                    *
+ *   Copyright (C) 2007, 2008, 2009, 2011 by David Bitseff                 *
+ *   bitsed@gmail.com                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -884,13 +884,11 @@ bool PaletteEditor::loadGIMPGradient(QFileInfo& file, flam3_palette pa)
 		if (rightc_idx_last == midc_idx)
 		{
 			logWarn(QString("PaletteEditor::loadGIMPGradient : %1 has left "
-			"adjusting midc entry on line %1").arg(file.fileName()).arg(n+1));
+			"adjusting midc entry on line %2").arg(file.fileName()).arg(n+1));
 			midc_idx -= 0.000001;
 			p_stops.pop_back();
 			GradientStop astop(midc_idx, midc_color, coloring);
 			p_stops<<astop;
-			logInfo("stop.coloring %d", astop.colorspace);
-
 		}
 		p_stops << GradientStop(rightc_idx_last, rightc_color_last, coloring);
 	}
@@ -962,7 +960,7 @@ bool PaletteEditor::loadCPTGradient(QFileInfo& file, flam3_palette pa)
 	qreal z1_idx_last(-1.0);
 	QColor z1_color_last;
 	p_stops.clear();
-	while (z1 < (idx_end - offset))
+	while ((z1 < (idx_end - offset)) && is.pos() > 0)
 	{
 		is >> z0 >> z0r >> z0g >> z0b >> z1 >> z1r >> z1g >> z1b;
 		is.readLine();

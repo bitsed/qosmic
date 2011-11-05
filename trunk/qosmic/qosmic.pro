@@ -51,8 +51,8 @@ link_pkgconfig {
 	message("Config using pkg-config version "$$system(pkg-config --version))
 	PKGCONFIG = flam3 lua
 
-	## The directory that contains flam3-palettes.xml must be set here.  If your
-	## system has pkg-config this should find the palettes.
+	## The directory that contains flam3-palettes.xml must be set here.  If
+	## your system has pkg-config, this should find the flam3 palettes.
 	PALETTESDIR = $$system(pkg-config --variable=datarootdir flam3)/flam3
 }
 else {
@@ -61,42 +61,43 @@ else {
 	## The PALETTESDIR must be set to the directory containing the
 	## flam3-palettes.xml file installed by the flam3 package.
 
-	## Point to the dir containing the compiled flam3-2.8 if it's not installed
+	## Point to the dir containing the compiled flam3-3.0 if it's not installed
 	FLAM3_SRC_DIR = $$system(readlink -e ../flam3-3.0)
 	PALETTESDIR = $$FLAM3_SRC_DIR
 	INCLUDEPATH += $$FLAM3_SRC_DIR /usr/include/libxml2
-	LIBS += -L$$FLAM3_SRC_DIR/.libs -L/usr/lib/libxml2 -lflam3 -lm -ljpeg -lxml2 -llua
+	LIBS += -L$$FLAM3_SRC_DIR/.libs
+	LIBS += -L/usr/lib/libxml2 -lflam3 -lm -ljpeg -lxml2 -llua
 }
 
 
 ################################################################################
 ## Build style flags.  Adding debug enables more verbose logging.
-# CONFIG += release warn_off
-CONFIG += debug warn_on
+#CONFIG += release warn_off
+#CONFIG += debug warn_on
 
 
 ################################################################################
 ## Set cflags here if needed.
-CONFIG(release, debug|release) {
-	QMAKE_CFLAGS="-march=native -O2 -pipe -Wl,-t"
-	QMAKE_CXXFLAGS=$$QMAKE_CFLAGS
-}
+#CONFIG(release, debug|release) {
+#	QMAKE_CFLAGS="-march=native -O2 -pipe -Wl,-t"
+#	QMAKE_CXXFLAGS=$$QMAKE_CFLAGS
+#}
 
 
 ################################################################################
 ## qosmic app version
-VERSION = 1.5.0_alpha2
+VERSION = 1.5.0
 
 ################################################################################
 ## Check for correct package versions
-system( test $$QT_MINOR_VERSION -lt 5 ) {
+system( test $$QT_MINOR_VERSION -lt 6 ) {
 	error("Using Qt $$[QT_VERSION]. " \
-	"Qosmic $$VERSION requires at least version 4.5 of Qt to build.")
+	"Qosmic $$VERSION requires at least version 4.6 of Qt to build.")
 }
 
 link_pkgconfig {
-	! system(pkg-config --atleast-version 2.8 flam3) {
-		error("Qosmic $$VERSION requires at least version 2.8 of flam3 to build.")
+	! system(pkg-config --atleast-version 3.0.1 flam3) {
+		error("Qosmic $$VERSION requires at least version 3.0.1 of flam3 to build.")
 	}
 }
 
