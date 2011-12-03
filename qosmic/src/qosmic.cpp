@@ -42,12 +42,10 @@ int main(int argc, char* argv[])
 	logInfo(QString("main() : Qosmic (version %1)").arg(QOSMIC_VERSION));
 
 	// Load translations if necessary
-	QString locale = QLocale::system().name();
 	QTranslator translator;
-	if (locale.contains(QRegExp("^en|C|POSIX")))
-		logInfo("main() : using default locale");
-	else
 	{
+		QString locale = QLocale::system().name();
+		logInfo("main() : system locale is %s", locale.toAscii().constData());
 		QString qmDir(QOSMIC_TRANSDIR);
 		QString qmFile(QString("qosmic_") + locale);
 

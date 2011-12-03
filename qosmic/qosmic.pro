@@ -12,7 +12,8 @@ SHARED = $$PREFIX/share
 
 ################################################################################
 ## The translations files are installed in $$SHARED/translations
-TRANSDIR = $$SHARED/translations
+#TRANSDIR = $$SHARED/translations
+TRANSDIR = /home/bitsed/Projects/qosmic/ts
 
 
 ################################################################################
@@ -323,7 +324,8 @@ SOURCES += \
  src/checkersbrush.cpp
 
 
-TRANSLATIONS = ts/qosmic_fr.ts
+TRANSLATIONS = ts/qosmic_fr.ts \
+ ts/qosmic_cs.ts
 
 MOC_DIR = .moc
 OBJECTS_DIR = .obj
