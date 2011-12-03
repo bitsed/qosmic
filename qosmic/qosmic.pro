@@ -12,8 +12,7 @@ SHARED = $$PREFIX/share
 
 ################################################################################
 ## The translations files are installed in $$SHARED/translations
-#TRANSDIR = $$SHARED/translations
-TRANSDIR = /home/bitsed/Projects/qosmic/ts
+TRANSDIR = $$SHARED/translations
 
 
 ################################################################################
