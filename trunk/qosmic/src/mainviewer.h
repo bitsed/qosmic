@@ -71,7 +71,13 @@ class MainViewer : public QWidget, public QosmicWidget,
 	QGraphicsTextItem* m_titem;
 	QGraphicsRectItem* m_ritem;
 	QAction* status_action;
+	QAction* fullscreen_action;
+	QList<QAction*> preset_actions;
 	QString nullPresetText;
+	QRect normal_rect; // the non-fullscreen geometry
+	Qt::WindowFlags normal_flags;
+	QMargins normal_margins;
+
 	bool show_status;
 
 	public:
@@ -98,6 +104,8 @@ class MainViewer : public QWidget, public QosmicWidget,
 		void scaleResetAction();
 		void saveImageAction();
 		void requestRenderedAction(RenderEvent*);
+		void fullScreenAction(bool);
+		void statusAction(bool);
 
 	signals:
 		void viewerResized(const QSize&);
@@ -110,6 +118,7 @@ class MainViewer : public QWidget, public QosmicWidget,
 		bool eventFilter(QObject*, QEvent*);
 		void dragEnterEvent(QDragEnterEvent*);
 		void dropEvent(QDropEvent*);
+		void buildPopupMenu();
 
 	protected slots:
 		void checkResized();

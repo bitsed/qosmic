@@ -47,6 +47,10 @@ MainViewer::MainViewer(QWidget* parent, const QString& title)
 	m_request.setName("viewer");
 	m_request.setType(RenderRequest::Queued);
 
+	fullscreen_action = new QAction(tr("fullscreen"), this);
+	fullscreen_action->setCheckable(true);
+	fullscreen_action->setChecked(false);
+
 	if (isDockWidget())
 	{
 		// popupMenu for the dockable viewer has image preset/quality options
@@ -59,9 +63,13 @@ MainViewer::MainViewer(QWidget* parent, const QString& title)
 		connect(popupMenu, SIGNAL(triggered(QAction*)),
 				this, SLOT(popupMenuTriggeredSlot(QAction*)));
 
+		fullscreen_action->setShortcut(Qt::Key_Escape);
+
 		status_action = new QAction(tr("show status"), this);
 		status_action->setCheckable(true);
 		status_action->setChecked(show_status);
+		connect(status_action, SIGNAL(triggered(bool)), this, SLOT(statusAction(bool)));
+
 		nullPresetText = tr("genome quality");
 	}
 	else
@@ -97,7 +105,12 @@ MainViewer::MainViewer(QWidget* parent, const QString& title)
 		a->setShortcut( Qt::Key_F9 );
 		addAction(a);
 		connect(a, SIGNAL(triggered(bool)), this, SLOT(saveImageAction()));
+
+		fullscreen_action->setShortcut( Qt::Key_F10 );
+		popupMenu->addAction(fullscreen_action);
 	}
+	addAction(fullscreen_action);
+	connect(fullscreen_action, SIGNAL(triggered(bool)), this, SLOT(fullScreenAction(bool)));
 
 	QPixmap p(1,1);
 	p.fill(Qt::black);
@@ -335,6 +348,50 @@ void MainViewer::hideEvent(QHideEvent* e)
 		emit viewerHidden();
 }
 
+// build a popup menu containing the current set of presets with the last
+// selected preset checked
+void MainViewer::buildPopupMenu()
+{
+	// only build this menu for docked widgets
+	if (isDockWidget())
+	{
+		popupMenu->clear();
+		preset_actions.clear();
+
+		QStringList presets = ViewerPresetsModel::getInstance()->presetNames();
+		foreach (QString s, presets)
+		{
+			QAction* a = popupMenu->addAction(s);
+			preset_actions.append(a);
+			if (selected_preset == s)
+			{
+				a->setCheckable(true);
+				a->setChecked(true);
+				popupMenu->setActiveAction(a);
+			}
+		}
+		popupMenu->addSeparator();
+
+		// Add the action to select the same image rendering settings
+		// as used by the mainpreviewwidget.
+		QAction* a = popupMenu->addAction(nullPresetText);
+		preset_actions.append(a);
+		if (!isPresetSelected())
+		{
+			a->setCheckable(true);
+			a->setChecked(true);
+			popupMenu->setActiveAction(a);
+		}
+
+		popupMenu->addAction(status_action);
+		popupMenu->addAction(fullscreen_action);
+		popupMenu->addSeparator();
+		a = popupMenu->addAction("save image");
+		a->setCheckable(false);
+		connect(a, SIGNAL(triggered(bool)), this, SLOT(saveImageAction()));
+	}
+}
+
 // This handles displaying the popup menu when MainViewer is installed
 // as an eventFilter for the QGraphicsScene
 bool MainViewer::eventFilter(QObject* obj, QEvent* event)
@@ -344,36 +401,7 @@ bool MainViewer::eventFilter(QObject* obj, QEvent* event)
 		QGraphicsSceneMouseEvent* mouseEvent = static_cast<QGraphicsSceneMouseEvent*>(event);
 		if (mouseEvent->button() == Qt::RightButton)
 		{
-			if (isDockWidget())
-			{
-				popupMenu->clear();
-
-				QStringList presets = ViewerPresetsModel::getInstance()->presetNames();
-				foreach (QString s, presets)
-				{
-					QAction* a = popupMenu->addAction(s);
-					if (selected_preset == s)
-					{
-						a->setCheckable(true);
-						a->setChecked(true);
-						popupMenu->setActiveAction(a);
-					}
-				}
-				popupMenu->addSeparator();
-
-				// Add the action to select the same image rendering settings
-				// as used by the mainpreviewwidget.
-				QAction* a = popupMenu->addAction(nullPresetText);
-				if (!isPresetSelected())
-				{
-					a->setCheckable(true);
-					a->setChecked(true);
-					popupMenu->setActiveAction(a);
-				}
-
-				popupMenu->addAction(status_action);
-				status_action->setChecked(show_status);
-			}
+			buildPopupMenu();
 			popupMenu->popup(mouseEvent->screenPos());
 		}
 		return false;
@@ -383,20 +411,69 @@ bool MainViewer::eventFilter(QObject* obj, QEvent* event)
 	return QObject::eventFilter(obj, event);
 }
 
+// Called when an item in the popup is triggered.  This method only
+// handles preset actions.
 void MainViewer::popupMenuTriggeredSlot(QAction* action)
 {
-	QSettings settings;
-	if (action == status_action)
+	if (preset_actions.contains(action))
 	{
-		show_status = action->isChecked();
-		settings.setValue("mainviewer/showstatus", show_status);
+		selected_preset = action->text();
+		QSettings().setValue("mainviewer/preset", selected_preset);
+		emit viewerResized( getViewerSize() );
+	}
+}
+
+void MainViewer::fullScreenAction(bool checked)
+{
+	QWidget* parent = parentWidget();
+
+	if (isDockWidget())
+	{
+		QPixmap p(1,1);
+		p.fill(Qt::black);
+		if (checked)
+		{
+			normal_rect = QRect(parent->pos(), parent->size());
+			normal_flags = windowFlags();
+			normal_margins = layout()->contentsMargins();
+			setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+			layout()->setContentsMargins(0, 0, 0, 0);
+			showFullScreen();
+			m_pitem->setPixmap(p);
+			show();
+		}
+		else
+		{
+			QDockWidget* dockParent = qobject_cast<QDockWidget*>(parent);
+			setWindowFlags(normal_flags);
+			layout()->setContentsMargins(normal_margins);
+			dockParent->setWidget(this);
+			parent->resize(normal_rect.size());
+			parent->move(normal_rect.topLeft());
+			m_pitem->setPixmap(p);
+			show();
+		}
 	}
 	else
 	{
-		selected_preset = action->text();
-		settings.setValue("mainviewer/preset", selected_preset);
-		emit viewerResized( getViewerSize() );
+		if (checked)
+		{
+			showFullScreen();
+			normal_margins = layout()->contentsMargins();
+			layout()->setContentsMargins(0, 0, 0, 0);
+		}
+		else
+		{
+			showNormal();
+			layout()->setContentsMargins(normal_margins);
+		}
 	}
+}
+
+void MainViewer::statusAction(bool checked)
+{
+	show_status = checked;
+	QSettings().setValue("mainviewer/showstatus", checked);
 }
 
 QString MainViewer::presetName() const
