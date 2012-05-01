@@ -1359,6 +1359,9 @@ void MainWindow::mainViewerResizedAction(const QSize& s)
 	{
 		logFine(QString("MainWindow::mainViewerResizedAction : new size %1,%2")
 				.arg(s.width()).arg(s.height()));
+		m_rthread->cancel(&m_viewer_request);
+		if (m_rthread->current() == &m_viewer_request)
+			m_rthread->stopRendering();
 		renderViewer();
 	}
 }
