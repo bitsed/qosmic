@@ -634,7 +634,6 @@ void SheepLoopWidget::reset()
 	m_beginBox->setCurrentIndex(qMax(0, m_beginBox->currentIndex()));
 	m_endBox->setCurrentIndex(qMax(0, m_endBox->currentIndex()));
 	m_genomeIdxBox->setCurrentIndex(qMax(0, m_genomeIdxBox->currentIndex()));
-	genomesModifiedSlot();
 	running = false;
 	m_runToolButton->setIcon(QIcon(":/icons/silk/bullet_go.xpm"));
 }
