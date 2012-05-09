@@ -406,9 +406,7 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 		// event is synchronous, and the actions/slots are connected with type
 		// Qt::DirectConnection.
 		moving = 0;
-		menu_visible = true;
-		popupMenu->exec(e->screenPos());
-		menu_visible = false;
+		execPopupMenu(e->screenPos());
 		moving_start = QPointF(0.0, 0.0);
 	}
 	else if (e->button() == Qt::MidButton)
@@ -1182,7 +1180,6 @@ void FigureEditor::selectTriangle(Triangle* t)
 	brush.setMatrix(basisTriangle->coordTransform());
 	selectedTriangle->setBrush(brush);
 	selectedTriangle->moveToFront();
-	triangleMenu->setActiveAction(triangleMenu->actions().value(selectedTriangleIndex()));
 	box_center = selectedTriangle->polygon().boundingRect().center();
 	// the guide decorator is applied to the selected triangle in editPostTriangle()
 	editPostTriangle(post);
@@ -1235,6 +1232,49 @@ void FigureEditor::updatePreview()
 	}
 }
 
+QAction* FigureEditor::execPopupMenu(const QPoint& p)
+{
+	// setup the triangle popup menu
+	triangleMenu->clear();
+	for (int n = 0 ; n < genome_ptr->num_xforms ; n++)
+	{
+		Triangle* t = trianglesList.at(n);
+		QSize pix_size(64, 64); // the icon size
+		QPolygonF poly = t->getCoords();
+		QRectF prect = poly.boundingRect();
+		QPointF pcenter = prect.center();
+		qreal min_side = qMax(prect.width(), prect.height());
+		qreal scale = pix_size.width() / min_side;
+		QTransform ts(QTransform().scale(scale, scale));
+		QTransform tf(ts.m11(), ts.m12(), ts.m13(),
+		ts.m21(), -ts.m22(), ts.m23(),
+		ts.m31(), ts.m32(), ts.m33());
+		poly.translate(-pcenter.x(), -pcenter.y());
+		poly = tf.map(poly);
+		poly.translate(pix_size.width() / 2, pix_size.height() / 2);
+
+		QPixmap pix(pix_size);
+		QPainter p(&pix);
+		p.fillRect(QRect(QPoint(0, 0), pix_size), bgColor());
+		const QPen pen(Util::get_xform_color(genome_ptr, t->xform()), 0, Qt::DashLine);
+		p.setPen(pen);
+		p.setBrush(QBrush(pen.color(), Qt::SolidPattern));
+		p.drawPolygon(poly);
+
+		QString action_name = QString("%1").arg(n+1);
+		QAction* a = triangleMenu->addAction(action_name);
+		a->setObjectName(action_name);
+		a->setCheckable(false);
+		a->setIconVisibleInMenu(true);
+		a->setIcon(QIcon(pix));
+	}
+	triangleMenu->setActiveAction(triangleMenu->actions().value(selectedTriangleIndex()));
+	menu_visible = true;
+	QAction* a = popupMenu->exec(p);
+	menu_visible = false;
+	return a;
+}
+
 void FigureEditor::reset()
 {
 	logFine("FigureEditor::reset : entered");
@@ -1269,10 +1309,6 @@ void FigureEditor::reset()
 			Triangle* t = new Triangle(this, genome_ptr->xform + n, basisTriangle, n);
 			trianglesList << t;
 			addItem(t);
-			QString action_name = QString("%1").arg(n+1);
-			QAction* a = triangleMenu->addAction(action_name);
-			a->setObjectName(action_name);
-			a->setCheckable(false);
 		}
 	else if (dn < 0)
 	{
@@ -1283,7 +1319,6 @@ void FigureEditor::reset()
 			Triangle* t = trianglesList.takeLast();
 			removeItem(t);
 			delete t;
-			triangleMenu->removeAction(triangleMenu->actions().last());
 		}
 	}
 

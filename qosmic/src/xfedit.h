@@ -119,6 +119,7 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget, public UndoStat
 		void rotateSelection(double, QPointF);
 		void scaleTriangle(Triangle*, double, double, QPointF);
 		void scaleSelection(double, double, QPointF);
+		QAction* execPopupMenu(const QPoint&);
 
 	signals:
 		void coordinateChangeSignal(double, double);
