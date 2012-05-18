@@ -36,10 +36,9 @@ class QosmicWidget
 	public:
 		QosmicWidget(QosmicWidget*, QString);
 		virtual ~QosmicWidget();
-		virtual QosmicWidget* getWidget(const QString&) const;
-		virtual void setWidget(const QString&, QosmicWidget*);
+		template <typename T> T* getWidget() const;
+		void setWidget(const QString&, QosmicWidget*);
 		QString qosmicWidgetName();
-
 };
 
 

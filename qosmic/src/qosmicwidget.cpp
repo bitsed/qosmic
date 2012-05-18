@@ -37,14 +37,6 @@ QosmicWidget::QosmicWidget(QosmicWidget* parent, QString name)
 }
 
 
-QosmicWidget* QosmicWidget::getWidget(const QString& name) const
-{
-	QosmicWidget* w =  widgets[name];
-	if (!w)
-		logError(QString("QosmicWidget::getWidget : invalid name '%1'").arg(name));
-	return w;
-}
-
 void QosmicWidget::setWidget(const QString& name, QosmicWidget* widget)
 {
 	if (widgets.contains(name))

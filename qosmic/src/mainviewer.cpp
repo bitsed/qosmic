@@ -533,7 +533,7 @@ void MainViewer::dropEvent(QDropEvent* event)
 	if (event->mimeData()->hasFormat("application/x-qabstractitemmodeldatalist"))
 	{
 		int idx = event->mimeData()->data("application/x-qabstractitemmodeldatalist").toInt();
-		GenomeVector* genomes = dynamic_cast<MainWindow*>(getWidget("MainWindow"))->genomeVector();
+		GenomeVector* genomes = getWidget<MainWindow>()->genomeVector();
 		if (idx < genomes->size())
 		{
 			m_request.setName(QString("genome %1").arg(idx + 1));
@@ -555,7 +555,7 @@ void MainViewer::dropEvent(QDropEvent* event)
 		if (isPresetSelected())
 			m_request.setImagePresets(preset());
 		else
-			m_request.setImagePresets(*(dynamic_cast<MainWindow*>(getWidget("MainWindow"))->genomeVector()->selectedGenome()));
+			m_request.setImagePresets(*(getWidget<MainWindow>()->genomeVector()->selectedGenome()));
 		RenderThread::getInstance()->render(&m_request);
 	}
 }

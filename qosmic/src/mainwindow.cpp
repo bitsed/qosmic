@@ -1720,3 +1720,8 @@ void MainWindow::saveSheepLoop()
 		}
 	}
 }
+
+template <> MainWindow* QosmicWidget::getWidget<MainWindow>() const
+{
+	return dynamic_cast<MainWindow*>(widgets["MainWindow"]);
+}

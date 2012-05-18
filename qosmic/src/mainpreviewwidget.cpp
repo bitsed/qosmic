@@ -208,3 +208,8 @@ flam3_genome MainPreviewWidget::preset() const
 {
 	return ViewerPresetsModel::getInstance()->preset(selected_preset);
 }
+
+template <> MainPreviewWidget* QosmicWidget::getWidget<MainPreviewWidget>() const
+{
+	return dynamic_cast<MainPreviewWidget*>(widgets["MainPreviewWidget"]);
+}

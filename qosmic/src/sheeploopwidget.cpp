@@ -803,7 +803,7 @@ flam3_genome* SheepLoopWidget::createSheepLoop(int& ncp)
 		sheep = Util::create_genome_interpolation(genomes->data() + begin_idx, num_genomes, &dncp, stagger);
 	}
 
-	MainPreviewWidget* preview = dynamic_cast<MainPreviewWidget*>(getWidget("MainPreviewWidget"));
+	MainPreviewWidget* preview = getWidget<MainPreviewWidget>();
 	flam3_genome current = flam3_genome();
 	if (preview->isPresetSelected())
 		current = preview->preset();
