@@ -230,6 +230,11 @@ MainWindow::MainWindow()
 			m_xfeditor, SLOT(colorChangedAction(double)));
 	connect(m_colorSettingsWidget, SIGNAL(undoStateSignal()),
 			this, SLOT(addUndoState()));
+	connect(m_selectTriangleWidget, SIGNAL(dataChanged()),
+			m_colorSettingsWidget, SLOT(reset()));
+	connect(m_triangleDensityWidget, SIGNAL(dataChanged()),
+			m_colorSettingsWidget, SLOT(reset()));
+
 	lastDock = dock;
 
 	// color balance widget

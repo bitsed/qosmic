@@ -35,7 +35,6 @@ class ColorSettingsWidget : public QWidget, private Ui::ColorSettingsWidget
 		ColorSettingsWidget(GenomeVector*, QWidget* parent=0);
 		void updateFormData();
 		void updateColorLabel();
-		void reset();
 
 	signals:
 		void dataChanged();
@@ -45,6 +44,7 @@ class ColorSettingsWidget : public QWidget, private Ui::ColorSettingsWidget
 
 	public slots:
 		void triangleSelectedSlot(Triangle*);
+		void reset();
 
 	protected slots:
 		void fieldEditedAction();
