@@ -24,6 +24,7 @@ AdjustSceneWidget::AdjustSceneWidget(FigureEditor* e, QWidget* parent)
 {
 	setupUi(this);
 
+	m_labelsCheckBox->setChecked(editor->labelsVisible());
 	m_gridCheckBox->setChecked(editor->gridVisible());
 	m_guideCheckBox->setChecked(editor->guideVisible());
 	m_guideColorButton->setEnabled(editor->guideVisible());
@@ -36,10 +37,16 @@ AdjustSceneWidget::AdjustSceneWidget(FigureEditor* e, QWidget* parent)
 	connect(m_previewDepthEditor, SIGNAL(valueUpdated()), this, SLOT(previewUpdatedAction()));
 	connect(m_previewCheckBox, SIGNAL(toggled(bool)), this, SLOT(togglePreviewAction(bool)));
 	connect(m_gridCheckBox, SIGNAL(toggled(bool)), this, SLOT(toggleGridAction(bool)));
+	connect(m_labelsCheckBox, SIGNAL(toggled(bool)), this, SLOT(toggleLabelsAction(bool)));
 	connect(m_gridColorButton, SIGNAL(pressed()), this, SLOT(gridColorSelectAction()));
 	connect(m_guideCheckBox, SIGNAL(toggled(bool)), this, SLOT(toggleGuideAction(bool)));
 	connect(m_guideColorButton, SIGNAL(pressed()), this, SLOT(guideColorSelectAction()));
 	connect(m_bgColorButton, SIGNAL(pressed()), this, SLOT(bgColorSelectAction()));
+}
+
+void AdjustSceneWidget::toggleLabelsAction(bool checked)
+{
+	editor->setLabelsVisible(checked);
 }
 
 

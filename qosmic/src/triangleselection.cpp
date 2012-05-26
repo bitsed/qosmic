@@ -238,8 +238,11 @@ bool TriangleSelection::contains(QGraphicsItem* item) const
 		case PostTriangle::RTTI:
 			return m_triangles.contains(dynamic_cast<Triangle*>(item));
 		default:
-			logWarn(QString("TriangleSelection::contains : unsupported type %1")
-			.arg(item->type()));
+			if (item->parentItem() && item->parentItem()->type() == Triangle::RTTI)
+				return m_triangles.contains(dynamic_cast<Triangle*>(item->parentItem()));
+			else
+				logWarn(QString("TriangleSelection::contains : unsupported type %1")
+					.arg(item->type()));
 	}
 	return false;
 }

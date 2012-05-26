@@ -15,7 +15,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
-#include <QGraphicsTextItem>
+#include <QGraphicsSimpleTextItem>
 #include <QGraphicsView>
 #include <QScrollBar>
 #include <QSettings>
@@ -80,6 +80,7 @@ FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
 	preview_density = settings.value("previewdensity", 10).toInt();
 	preview_depth = settings.value("previewdepth", 1).toInt();
 	preview_visible = settings.value("previewvisible", false).toBool();
+	labels_visible = settings.value("labelsvisible", true).toBool();
 	grid_visible = settings.value("gridvisible", true).toBool();
 	grid_color = QColor(settings.value("gridcolor", "#999999").toString());
 	guide_visible = settings.value("guidevisible", true).toBool();
@@ -171,6 +172,7 @@ void FigureEditor::writeSettings()
 	settings.setValue("previewdensity", preview_density);
 	settings.setValue("previewdepth", preview_depth);
 	settings.setValue("previewvisible", preview_visible);
+	settings.setValue("labelsvisible", labels_visible);
 	settings.setValue("gridvisible", grid_visible);
 	settings.setValue("gridcolor", grid_color.name());
 	settings.setValue("guidevisible", guide_visible);
@@ -456,6 +458,12 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 			if ( item->type() == Triangle::RTTI )
 			{
 				Triangle* t = dynamic_cast<Triangle*>(item);
+				moving = t;
+				selectTriangle(t);
+			}
+			else if (item->parentItem()	&& item->parentItem()->type() == Triangle::RTTI)
+			{
+				Triangle* t = dynamic_cast<Triangle*>(item->parentItem());
 				moving = t;
 				selectTriangle(t);
 			}
@@ -1307,6 +1315,7 @@ void FigureEditor::reset()
 		for (int n = num_triangles ; n < dn + num_triangles ; n++)
 		{
 			Triangle* t = new Triangle(this, genome_ptr->xform + n, basisTriangle, n);
+			t->setLabelVisible(labels_visible);
 			trianglesList << t;
 			addItem(t);
 		}
@@ -1562,6 +1571,17 @@ void FigureEditor::setPreviewVisible(bool value)
 	if(!value) update(); // call update() when !value to hide the preview
 }
 
+bool FigureEditor::labelsVisible() const
+{
+	return labels_visible;
+}
+
+void FigureEditor::setLabelsVisible(bool value)
+{
+	labels_visible = value;
+	foreach (Triangle* t, trianglesList)
+		t->setLabelVisible(labels_visible);
+}
 
 QColor FigureEditor::gridColor() const
 {

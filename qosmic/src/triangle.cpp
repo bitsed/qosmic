@@ -27,10 +27,16 @@ uint Triangle::zpos = 0;
 
 Triangle::Triangle( FigureEditor* c, flam3_xform* x, BasisTriangle* b, int idx)
 : canvas(c), m_xform(x), basisTriangle(b), m_index(idx), cList(), nList(),
-  m_edgeLine(0.,0.,0.,0.), m_edgeType(NoEdge)
+m_edgeLine(0.,0.,0.,0.), m_edgeType(NoEdge),
+m_idxLabel(QString::number(idx + 1), this)
 {
 	logFinest("Triangle::Triangle : enter");
 	setTransform(QTransform(basisTriangle->coordTransform()));
+
+	QFont f(m_idxLabel.font());
+	f.setBold(true);
+	m_idxLabel.setFont(f);
+
 	NodeItem *el;
 	el = new NodeItem( canvas, this, NODE_O, "O" );
 	addNode(el);
@@ -91,7 +97,6 @@ void Triangle::resetPosition()
 
 	TriangleCoords tc = basisTriangle->getCoords(m_xform->c);
 	setPoints(tc);
-	adjustSceneRect();
 }
 
 void Triangle::addNode( NodeItem *node )
@@ -157,6 +162,7 @@ void Triangle::setPoints(TriangleCoords& points)
 		n++;
 	}
 	QGraphicsPolygonItem::setPolygon(cList);
+	adjustSceneRect();
 }
 
 void Triangle::moveToFront()
@@ -180,7 +186,6 @@ void Triangle::show()
 	TriangleNodesIterator it( nList );
 	while ( it.hasNext() )
 		it.next()->show();
-
 }
 
 void Triangle::setVisible(bool flag)
@@ -380,6 +385,8 @@ void Triangle::setNodeColor(const QColor& c, const QColor& s)
 	TriangleNodesIterator it( nList );
 	while ( it.hasNext() )
 		it.next()->setPen(QPen(c), QPen(s));
+	m_idxLabel.setPen(Qt::NoPen);
+	m_idxLabel.setBrush(QBrush(s));
 }
 
 FigureEditor* Triangle::editor() const
@@ -398,6 +405,41 @@ void Triangle::adjustSceneRect()
 
 		if (m_guide)
 			m_guide->update();
+
+		if (m_idxLabel.isVisible())
+		{
+			QFontMetrics fm(m_idxLabel.font());
+			QSizeF fsz(mapFromScene(QRectF(fm.boundingRect(m_idxLabel.text()))).boundingRect().size());
+			qreal fw = fsz.width() / 2.0;
+			qreal fh = fsz.height() / 2.0;
+			QPointF a(polygon().at(0));
+			QPointF b(polygon().at(1));
+			QPointF c(polygon().at(2));
+
+			// find the intersection of two right triangles
+			qreal b_ax = (b.x() - a.x());
+			qreal c_ax = (c.x() - a.x());
+			qreal dx = mapFromScene(QPointF(0.0001, 0.0)).x();
+			if (qAbs(b_ax) < dx) b_ax = dx;
+			if (qAbs(c_ax) < dx) c_ax = dx;
+			qreal mab = (b.y() - a.y())/b_ax;
+			qreal mac = (c.y() - a.y())/c_ax;
+			qreal abx = a.x() + b_ax / 2;
+			qreal aby = mab*( abx - a.x()) + a.y();
+			QPointF d(abx, aby);
+			qreal acx = a.x() + c_ax / 2;
+			qreal acy = mac* (acx - a.x()) + a.y();
+			QPointF e(acx, acy);
+			QLineF dc(d, c);
+			QLineF eb(e, b);
+			QPointF k;
+			QLineF::IntersectType t = dc.intersect(eb, &k);
+			if (t != QLineF::BoundedIntersection)
+				logWarn(QString("Triangle::adjustSceneRect : IntersectType %1").arg(t));
+			logFine(QString("Triangle::adjustSceneRect : k = (%1, %2)").arg(k.x()).arg(k.y()));
+			m_idxLabel.setTransform(transform().inverted());
+			m_idxLabel.setPos(k + QPointF(-fw, fh));
+		}
 	}
 }
 
@@ -516,6 +558,18 @@ void Triangle::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
 Triangle::EdgeType Triangle::getEdgeType()
 {
 	return m_edgeType;
+}
+
+bool Triangle::labelVisible() const
+{
+	return m_idxLabel.isVisible();
+}
+
+void Triangle::setLabelVisible(bool visible)
+{
+	m_idxLabel.setVisible(visible);
+	if (visible)
+		adjustSceneRect();
 }
 
 

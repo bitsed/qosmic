@@ -86,6 +86,8 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget, public UndoStat
 		bool guideVisible() const;
 		QColor guideColor() const;
 		void setGuideColor(QColor);
+		bool labelsVisible() const;
+		void setLabelsVisible(bool);
 		void scaleBasis(double dx, double dy);
 		bool hasSelection() const;
 		TriangleSelection* selection() const;
@@ -195,6 +197,7 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget, public UndoStat
 		QAction* flipVAction;
 		QAction* rescaleAction;
 		bool grid_visible;
+		bool labels_visible;
 		QColor grid_color;
 		QColor bg_color;
 		bool guide_visible;

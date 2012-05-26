@@ -30,6 +30,7 @@ class AdjustSceneWidget : public QDialog, private Ui::AdjustSceneWidget
 		AdjustSceneWidget(FigureEditor*, QWidget* parent=0);
 
 	protected slots:
+		void toggleLabelsAction(bool);
 		void toggleGridAction(bool);
 		void gridColorSelectAction();
 		void toggleGuideAction(bool);

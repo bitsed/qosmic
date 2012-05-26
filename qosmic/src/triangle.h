@@ -52,6 +52,7 @@ class Triangle : public QGraphicsPolygonItem, public TransformableGraphicsItem
 		double m_rotated;
 		QLineF m_edgeLine;
 		EdgeType m_edgeType;
+		QGraphicsSimpleTextItem m_idxLabel;
 
 	public:
 		Triangle( FigureEditor*, flam3_xform*, BasisTriangle*, int idx );
@@ -87,6 +88,8 @@ class Triangle : public QGraphicsPolygonItem, public TransformableGraphicsItem
 		int index() const;
 		NodeItem* getNode(int) const;
 		EdgeType getEdgeType();
+		bool labelVisible() const;
+		void setLabelVisible(bool);
 		void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget =0);
 		QPointF circumCenter();
 
