@@ -15,6 +15,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
+#include <QApplication>
 #include <QGraphicsSimpleTextItem>
 #include <QGraphicsView>
 #include <QScrollBar>
@@ -35,7 +36,7 @@ FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
 	selectedTriangle(0), postTriangle(0),
 	centered_scaling(None), transform_location(Origin), editMode(Move),
 	move_edge_mode(false), has_selection(false), is_selecting(false),
-	editing_post(false), menu_visible(false)
+	editing_post(false), menu_visible(false), move_border_size(10)
 {
 	QMatrix b(100.0, 0.0, 0.0, -100.0, 0.0, 0.0);
 	basisTriangle = new BasisTriangle(b);
@@ -621,9 +622,9 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 		{
 			if ( editMode == Move )
 			{
-				QPointF p( selectedTriangle->mapFromScene( dx, dy ) );
-				moveSelectionBy(p.x(), p.y());
-				view->setCursor(Qt::SizeAllCursor);
+				QPointF pt( selectedTriangle->mapFromScene( dx, dy ) );
+				QPointF p( selectionItem->mapFromItem(selectedTriangle, pt) );
+				scenePos = moveAnItem(selectionItem, e, p.x(), p.y());
 			}
 			else if ( editMode == Rotate )
 			{
@@ -787,16 +788,8 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 					view->setCursor(Qt::ArrowCursor);
 			}
 			else // Move mode
-			{
-				if (node)
-					node->moveBy(dx, dy);
-				else
-					t->moveBy(dx, dy);
-				triangleModifiedAction(selectedTriangle);
-				view->setCursor(Qt::SizeAllCursor);
-			}
+				scenePos = moveAnItem(moving, e, dx, dy);
 		}
-
 		moving_start = scenePos;
 		update();
 	}
@@ -929,6 +922,138 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 	QGraphicsScene::mouseMoveEvent(e);
 }
 
+
+QPointF FigureEditor::moveAnItem(QGraphicsItem* item, QGraphicsSceneMouseEvent* e, int dx, int dy)
+{
+	QGraphicsView* v = views().first();
+	const QRect vr(v->viewport()->rect().adjusted(
+		 move_border_size,
+		 move_border_size,
+		-move_border_size,
+		-move_border_size));
+
+	if (moveScrollMutex.tryLock())
+	{
+		v->setCursor(Qt::SizeAllCursor);
+		m_vrect = v->mapToScene(vr).boundingRect();
+		if (!m_vrect.contains(e->scenePos()))
+		{
+			// otherwise scroll the qgraphicsview
+			QScrollBar* hbar = v->horizontalScrollBar();
+			QScrollBar* vbar = v->verticalScrollBar();
+
+			m_scenePos = e->scenePos();
+			m_lastScenePos = e->lastScenePos();
+
+			int dn = 0, dx, dy;
+			if (m_scenePos.x() < m_vrect.left())
+				dn = qAbs(m_scenePos.x() - m_vrect.left());
+
+			if (m_scenePos.x() > m_vrect.right())
+				dn = qAbs(m_scenePos.x() - m_vrect.right());
+
+			if (m_scenePos.y() < m_vrect.top())
+				dn = qAbs(m_scenePos.y() - m_vrect.top());
+
+			if (m_scenePos.y() > m_vrect.bottom())
+				dn = qAbs(m_scenePos.y() - m_vrect.bottom());
+
+			while (QApplication::mouseButtons() & Qt::LeftButton)
+			{
+				if (m_vrect.contains(m_scenePos))
+					break;
+
+				double dxx = 0;
+				double dyy = 0;
+				int dt = 0;
+				dx = dy = 0;
+
+				if (QApplication::keyboardModifiers() & Qt::ControlModifier)
+					dt = dn;
+				else if (QApplication::keyboardModifiers() & Qt::ShiftModifier)
+					dt = 1;
+				else
+					dt = 2;
+
+				if (m_scenePos.x() >= m_vrect.right())
+				{
+					dx = dt;
+					if (m_scenePos.y() < m_vrect.bottom()
+					&& m_scenePos.y() > m_vrect.top())
+						dyy = m_scenePos.y() - m_lastScenePos.y();
+				}
+				if (m_scenePos.y() >= m_vrect.bottom())
+				{
+					dy = dt;
+					if (m_scenePos.x() < m_vrect.right()
+						&& m_scenePos.x() > m_vrect.left())
+						dxx = m_scenePos.x() - m_lastScenePos.x();
+				}
+				if (m_scenePos.y() <= m_vrect.top())
+				{
+					dy = -dt;
+					if (m_scenePos.x() < m_vrect.right()
+						&& m_scenePos.x() > m_vrect.left())
+					dxx = m_scenePos.x() - m_lastScenePos.x();
+				}
+				if (m_scenePos.x() <= m_vrect.left())
+				{
+					dx = -dt;
+					if (m_scenePos.y() < m_vrect.bottom()
+						&& m_scenePos.y() > m_vrect.top())
+					dyy = m_scenePos.y() - m_lastScenePos.y();
+				}
+
+				moveItemBy(item, dx + dxx, dy + dyy);
+				hbar->setValue(hbar->value() + dx);
+				vbar->setValue(vbar->value() + dy);
+				m_scenePos = m_lastScenePos;
+				QCoreApplication::processEvents();
+			}
+		}
+		else
+		{
+			moveItemBy(item, dx, dy);
+			m_scenePos = e->scenePos();
+		}
+		moveScrollMutex.unlock();
+	}
+	else
+	{
+		m_scenePos = e->scenePos();
+		m_lastScenePos = e->lastScenePos();
+		m_vrect = v->mapToScene(vr).boundingRect();
+	}
+	return m_scenePos;
+}
+
+void FigureEditor::moveItemBy(QGraphicsItem* item, int dx, int dy)
+{
+	if (item->type() == Triangle::RTTI)
+	{
+		dynamic_cast<Triangle*>(item)->moveBy(dx, dy); // need a virtual moveBy()
+		triangleModifiedAction(selectedTriangle);
+	}
+	else if (item->type() == NodeItem::RTTI)
+	{
+		dynamic_cast<NodeItem*>(item)->moveBy(dx, dy);
+		triangleModifiedAction(selectedTriangle);
+	}
+	else if (item->type() == TriangleSelection::RTTI)
+	{
+		TriangleSelection* selectionItem = dynamic_cast<TriangleSelection*>(item);
+		selectionItem->moveBy(dx, dy);
+		if (selectionItem->hasItems())
+		{
+			if (selectionItem->containsAnyOf(selectedTriangle))
+				triangleModifiedAction(selectedTriangle);
+			else
+				emit triangleModifiedSignal(selectionItem->first());
+		}
+	}
+	else
+		logWarn(QString("FigureEditor::moveAnItem : unknown item type %1").arg(item->type()));
+}
 
 void FigureEditor::wheelEvent(QGraphicsSceneWheelEvent* e)
 {
@@ -1484,6 +1609,16 @@ void FigureEditor::drawBackground(QPainter* p, const QRectF& r)
 				p->drawPoint(selectedTriangle->mapToScene(result[i], -(result[i+1])));
 		}
 	}
+
+	QGraphicsView* v = views().first();
+	QRectF vrect(v->mapToScene(v->viewport()->rect().adjusted(
+		 move_border_size,
+		 move_border_size,
+		-move_border_size,
+		-move_border_size
+		)).boundingRect());
+	p->setPen(selectedTriangle->pen());
+	p->drawRect(vrect);
 }
 
 void FigureEditor::colorChangedAction(double /*idx*/)

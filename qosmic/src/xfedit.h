@@ -26,6 +26,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QKeyEvent>
+#include <QMutex>
 
 #include "qosmicwidget.h"
 #include "genomevector.h"
@@ -159,6 +160,8 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget, public UndoStat
 		void enableFinalXform(bool);
 
 	protected:
+		QPointF moveAnItem(QGraphicsItem*, QGraphicsSceneMouseEvent*, int dx, int dy);
+		void moveItemBy(QGraphicsItem *item, int dx, int dy);
 		void mousePressEvent(QGraphicsSceneMouseEvent*);
 		void mouseReleaseEvent(QGraphicsSceneMouseEvent*);
 		void mouseMoveEvent(QGraphicsSceneMouseEvent*);
@@ -210,6 +213,9 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget, public UndoStat
 		SceneLocation transform_location;
 		QVector<flam3_xform> xformClip;
 		QVector<QVector<double>*> xformPreview;
+		QMutex moveScrollMutex;
+		QPointF m_scenePos, m_lastScenePos;
+		QRectF m_vrect;
 		EditMode editMode;
 		bool move_edge_mode;
 		bool has_selection;
@@ -218,6 +224,7 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget, public UndoStat
 		bool wheel_moved;
 		bool menu_visible;
 		bool preview_visible;
+		int move_border_size;
 		int preview_density;
 		int preview_depth;
 };
