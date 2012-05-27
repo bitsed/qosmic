@@ -165,6 +165,7 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget, public UndoStat
 		void wheelEvent(QGraphicsSceneWheelEvent* wheelEvent);
 		void drawBackground(QPainter*, const QRectF&);
 		Triangle* getCurrentOrSelected();
+		void findViewCenter();
 		void adjustSceneRect();
 		void createXformPreview();
 

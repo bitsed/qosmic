@@ -1368,8 +1368,8 @@ void FigureEditor::reset()
 	// recenter the scene on the current center point in the view
 	QPointF view_center( view->mapToScene(view->frameRect()).boundingRect().center() );
 	transform().inverted().map(view_center.x(), view_center.y(), &scene_start.rx(), &scene_start.ry());
-
 	adjustSceneRect();
+
 	logFiner(QString("FigureEditor::reset : sceneRect %1,%2")
 			.arg(sceneRect().width())
 			.arg(sceneRect().height()));
@@ -1381,14 +1381,8 @@ void FigureEditor::reset()
 			.arg(view->maximumViewportSize().height()));
 }
 
-void FigureEditor::adjustSceneRect()
+void FigureEditor::findViewCenter()
 {
-	// Adjust the sceneRect so it covers just more than the items.  This
-	// helps reposition the sceneview and adjusts the scrollbars.  It also
-	// helps avoid some "jumpiness" that sometimes happens when moving
-	// a graphicsitem outside of the sceneRect.
-	setSceneRect(itemsSceneBounds().adjusted(-200.,-200.,200.,200.));
-
 	// recenter the view if necessary
 	if (centered_scaling != None)
 	{
@@ -1429,6 +1423,15 @@ void FigureEditor::adjustSceneRect()
 		view->centerOn(moving_start);
 	else
 		view->centerOn(basisTriangle->mapToScene(scene_start));
+}
+
+void FigureEditor::adjustSceneRect()
+{
+	// Adjust the sceneRect so it covers just more than the items.  This
+	// helps reposition the sceneview and adjusts the scrollbars.  It also
+	// helps avoid some "jumpiness" that sometimes happens when moving
+	// a graphicsitem outside of the sceneRect.
+	setSceneRect(itemsSceneBounds().adjusted(-200.,-200.,200.,200.));
 
 	if (infoItem->isVisible())
 	{
@@ -1689,6 +1692,7 @@ void FigureEditor::autoScale()
 	}
 	view->ensureVisible(itemsSceneBounds(), 0, 0);
 	adjustSceneRect();
+	findViewCenter();
 }
 
 void FigureEditor::selectNextTriangle()
@@ -1752,6 +1756,7 @@ void FigureEditor::scaleBasis(double dx, double dy)
 
 	// adjust scene rect and repaint
 	adjustSceneRect();
+	findViewCenter();
 	update();
 }
 
