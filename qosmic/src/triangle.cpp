@@ -40,11 +40,11 @@ m_idxLabel(QString::number(idx + 1), this)
 
 	NodeItem *el;
 	el = new NodeItem( canvas, this, NODE_O, "O" );
-	addNode(el);
+	nList.append(el);
 	el = new NodeItem( canvas, this, NODE_X, "X" );
-	addNode(el);
+	nList.append(el);
 	el = new NodeItem( canvas, this, NODE_Y, "Y" );
-	addNode(el);
+	nList.append(el);
 	TriangleCoords tc = basisTriangle->getCoords(m_xform->c);
 	setPoints(tc);
 	moveToFront();
@@ -98,14 +98,6 @@ void Triangle::resetPosition()
 
 	TriangleCoords tc = basisTriangle->getCoords(m_xform->c);
 	setPoints(tc);
-}
-
-void Triangle::addNode( NodeItem *node )
-{
-	node->setTriangle(this);
-	node->setParentItem(this);
-	canvas->addItem(node);
-	nList.append( node );
 }
 
 TriangleNodes& Triangle::getNodes()

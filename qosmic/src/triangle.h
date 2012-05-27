@@ -96,7 +96,6 @@ class Triangle : public QGraphicsPolygonItem, public TransformableGraphicsItem
 	protected:
 		void findEdge(const QPointF&);
 		void clearFoundEdge();
-		void addNode( NodeItem* );
 		void hoverEnterEvent(QGraphicsSceneHoverEvent*);
 		void hoverMoveEvent(QGraphicsSceneHoverEvent*);
 		void hoverLeaveEvent(QGraphicsSceneHoverEvent*);

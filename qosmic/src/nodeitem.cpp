@@ -21,7 +21,7 @@
 
 
 NodeItem::NodeItem( QGraphicsScene* c, Triangle* t, int id, const char* n )
-	: QGraphicsEllipseItem(t), canvas(c), edges(t), m_name(n), m_index(id)
+	: QGraphicsEllipseItem(0, c), canvas(c), edges(t), m_name(n), m_index(id)
 {
 	setRect(-4., -4., 8., 8.);
 	setZValue( 0 );
