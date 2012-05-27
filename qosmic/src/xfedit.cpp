@@ -456,36 +456,40 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 			logFine(QString("FigureEditor::mousePressEvent : rtti %1")
 					.arg(item->type()));
 
-			if ( item->type() == Triangle::RTTI )
+			switch (item->type())
 			{
-				Triangle* t = dynamic_cast<Triangle*>(item);
-				moving = t;
-				selectTriangle(t);
-			}
-			else if (item->parentItem()	&& item->parentItem()->type() == Triangle::RTTI)
-			{
-				Triangle* t = dynamic_cast<Triangle*>(item->parentItem());
-				moving = t;
-				selectTriangle(t);
-			}
-			else if ( item->type() == PostTriangle::RTTI )
-			{
-				PostTriangle* t = dynamic_cast<PostTriangle*>(item);
-				moving = t;
-			}
-			else if ( item->type() == NodeItem::RTTI )
-			{
-				NodeItem* node = dynamic_cast<NodeItem*>(item);
-				Triangle* t = node->triangle();
-				node->setZValue(t->nextZPos());
-				moving = node;
-				if (t->type() == Triangle::RTTI)
-					selectTriangle(t);
-			}
-			else if ( item->type() == GraphicsGuideScaleButton::RTTI )
-			{
-				GraphicsGuideScaleButton* b = dynamic_cast<GraphicsGuideScaleButton*>(item);
-				moving = b;
+				case Triangle::RTTI:
+					selectTriangle(dynamic_cast<Triangle*>(item));
+
+				case PostTriangle::RTTI:
+				{
+					moving = dynamic_cast<Triangle*>(item);
+					break;
+				}
+
+				case NodeItem::RTTI:
+				{
+					NodeItem* node = dynamic_cast<NodeItem*>(item);
+					Triangle* t = node->triangle();
+					node->setZValue(t->nextZPos());
+					moving = node;
+					if (t->type() == Triangle::RTTI)
+						selectTriangle(t);
+					break;
+				}
+
+				case GraphicsGuideScaleButton::RTTI:
+				{
+					GraphicsGuideScaleButton* b = dynamic_cast<GraphicsGuideScaleButton*>(item);
+					moving = b;
+				}
+
+				case TriangleSelection::RTTI:
+					break;
+
+				default:
+					logWarn(QString("FigureEditor::mousePressEvent : unknown type %1")
+						.arg(item->type()));
 			}
 
 			// holding control+shift will activate and add an item to the selection
@@ -496,7 +500,7 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 					&& item->type() == NodeItem::RTTI)
 					item = dynamic_cast<NodeItem*>(item)->triangle();
 
-				if (!selectionItem->contains(item)
+				if (!(item == selectionItem || selectionItem->contains(item))
 					&& (item->type() == selectionItem->selectedType()
 						|| ( item->type() == PostTriangle::RTTI
 							&& selectionItem->selectedType() == Triangle::RTTI) ) )
@@ -1029,30 +1033,37 @@ QPointF FigureEditor::moveAnItem(QGraphicsItem* item, QGraphicsSceneMouseEvent* 
 
 void FigureEditor::moveItemBy(QGraphicsItem* item, int dx, int dy)
 {
-	if (item->type() == Triangle::RTTI)
+	switch (item->type())
 	{
-		dynamic_cast<Triangle*>(item)->moveBy(dx, dy); // need a virtual moveBy()
-		triangleModifiedAction(selectedTriangle);
-	}
-	else if (item->type() == NodeItem::RTTI)
-	{
-		dynamic_cast<NodeItem*>(item)->moveBy(dx, dy);
-		triangleModifiedAction(selectedTriangle);
-	}
-	else if (item->type() == TriangleSelection::RTTI)
-	{
-		TriangleSelection* selectionItem = dynamic_cast<TriangleSelection*>(item);
-		selectionItem->moveBy(dx, dy);
-		if (selectionItem->hasItems())
+		case PostTriangle::RTTI:
+		case Triangle::RTTI:
 		{
-			if (selectionItem->containsAnyOf(selectedTriangle))
-				triangleModifiedAction(selectedTriangle);
-			else
-				emit triangleModifiedSignal(selectionItem->first());
+			dynamic_cast<Triangle*>(item)->moveBy(dx, dy); // need a virtual moveBy()
+			triangleModifiedAction(selectedTriangle);
+			break;
 		}
+		case NodeItem::RTTI:
+		{
+			dynamic_cast<NodeItem*>(item)->moveBy(dx, dy);
+			triangleModifiedAction(selectedTriangle);
+			break;
+		}
+		case TriangleSelection::RTTI:
+		{
+			TriangleSelection* selectionItem = dynamic_cast<TriangleSelection*>(item);
+			selectionItem->moveBy(dx, dy);
+			if (selectionItem->hasItems())
+			{
+				if (selectionItem->containsAnyOf(selectedTriangle))
+					triangleModifiedAction(selectedTriangle);
+				else
+					emit triangleModifiedSignal(selectionItem->first());
+			}
+			break;
+		}
+		default:
+			logWarn(QString("FigureEditor::moveItemBy : unknown item type %1").arg(item->type()));
 	}
-	else
-		logWarn(QString("FigureEditor::moveAnItem : unknown item type %1").arg(item->type()));
 }
 
 void FigureEditor::wheelEvent(QGraphicsSceneWheelEvent* e)

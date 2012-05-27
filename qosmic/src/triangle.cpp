@@ -36,6 +36,7 @@ m_idxLabel(QString::number(idx + 1), this)
 	QFont f(m_idxLabel.font());
 	f.setBold(true);
 	m_idxLabel.setFont(f);
+	m_idxLabel.setFlag(QGraphicsItem::ItemStacksBehindParent);
 
 	NodeItem *el;
 	el = new NodeItem( canvas, this, NODE_O, "O" );
