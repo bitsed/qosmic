@@ -27,7 +27,7 @@
 class GraphicsGuideScaleButton : public QGraphicsRectItem
 {
 	public:
-		static const int RTTI = 148198;
+		enum { Type = UserType + 7 };
 
 		enum Location { TopRight, TopLeft, BottomRight, BottomLeft };
 

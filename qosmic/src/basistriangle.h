@@ -37,7 +37,7 @@ class BasisTriangle : public QGraphicsPolygonItem
 
 	public:
 		QPointF A, B, C;
-		static const int RTTI = 349493;
+		enum { Type = UserType + 1 };
 
 		BasisTriangle(QMatrix, QPolygonF p=QPolygonF());
 		~BasisTriangle();

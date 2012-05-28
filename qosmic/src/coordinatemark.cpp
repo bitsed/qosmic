@@ -39,8 +39,8 @@ CoordinateMark::CoordinateMark(QGraphicsItem* parent)
 }
 
 void CoordinateMark::paint(QPainter* painter,
-						    const QStyleOptionGraphicsItem* /*option*/,
-							QWidget* /*widget*/)
+	const QStyleOptionGraphicsItem* /*option*/,
+	QWidget* /*widget*/)
 {
 	painter->setPen(pen());
 	painter->drawPath(m_path);
@@ -48,7 +48,7 @@ void CoordinateMark::paint(QPainter* painter,
 
 int CoordinateMark::type() const
 {
-	return RTTI;
+	return Type;
 }
 
 QPointF CoordinateMark::center() const

@@ -53,7 +53,7 @@ class NodeItem : public QGraphicsEllipseItem
 		void hoverLeaveEvent(QGraphicsSceneHoverEvent*);
 
 	public:
-		static const int RTTI = 349497;
+		enum { Type = UserType + 3 };
 };
 
 

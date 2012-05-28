@@ -31,7 +31,7 @@ class PostTriangle : public Triangle
 		void basisScaledSlot();
 		void coordsToXForm();
 
-		static const int RTTI = 900422;
+		enum { Type = UserType + 4 };
 
 };
 

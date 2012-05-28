@@ -103,7 +103,7 @@ FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
 	selectionItem->setPen(QPen(QBrush(Qt::gray), 1, Qt::DashLine));
 	selectionItem->setZValue(-1);
 	selectionItem->setVisible(false);
-	selectionItem->setSelectedType(settings.value("selectiontype", Triangle::RTTI).toInt());
+	selectionItem->setSelectedType(settings.value("selectiontype", Triangle::Type).toInt());
 	addItem(selectionItem);
 
 	// The single GrahicsGuide instance passed around to all TransformableGraphicsItems
@@ -241,7 +241,7 @@ void FigureEditor::cutTriangleAction()
 	if (has_selection && selectionItem->hasItems())
 	{
 		TriangleList triangles;
-		if (selectionItem->selectedType() == NodeItem::RTTI)
+		if (selectionItem->selectedType() == NodeItem::Type)
 		{
 			foreach (NodeItem* node, selectionItem->nodes())
 				triangles << node->triangle();
@@ -254,7 +254,7 @@ void FigureEditor::cutTriangleAction()
 		QList<int> idxs;
 		foreach (Triangle* t, triangles)
 		{
-			if (t->type() == PostTriangle::RTTI)
+			if (t->type() == PostTriangle::Type)
 			{
 				if (!triangles.contains(selectedTriangle))
 					t = selectedTriangle;
@@ -286,7 +286,7 @@ void FigureEditor::copyTriangleAction()
 	if (has_selection && selectionItem->hasItems())
 	{
 		TriangleList triangles;
-		if (selectionItem->selectedType() == NodeItem::RTTI)
+		if (selectionItem->selectedType() == NodeItem::Type)
 		{
 			foreach (NodeItem* node, selectionItem->nodes())
 				triangles << node->triangle();
@@ -297,7 +297,7 @@ void FigureEditor::copyTriangleAction()
 		xformClip.clear();
 		foreach (Triangle* t, triangles)
 		{
-			if (t->type() == PostTriangle::RTTI)
+			if (t->type() == PostTriangle::Type)
 			{
 				if (!triangles.contains(selectedTriangle))
 					xformClip << *(selectedTriangle->xform());
@@ -357,12 +357,12 @@ Triangle* FigureEditor::getCurrentOrSelected()
 	{
 		switch (item->type())
 		{
-			case Triangle::RTTI:
+			case Triangle::Type:
 				t = dynamic_cast<Triangle*>(item);
 				break;
-			case NodeItem::RTTI:
+			case NodeItem::Type:
 				t = dynamic_cast<NodeItem*>(item)->triangle();
-				if (t->type() != PostTriangle::RTTI)
+				if (t->type() != PostTriangle::Type)
 					break;
 			default:
 				t = selectedTriangle;
@@ -381,8 +381,8 @@ void FigureEditor::resetTriangleCoordsAction()
 	{
 		switch (item->type())
 		{
-			case Triangle::RTTI:
-			case PostTriangle::RTTI:
+			case Triangle::Type:
+			case PostTriangle::Type:
 				t = dynamic_cast<Triangle*>(item);
 				break;
 			default:
@@ -458,33 +458,33 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 
 			switch (item->type())
 			{
-				case Triangle::RTTI:
+				case Triangle::Type:
 					selectTriangle(dynamic_cast<Triangle*>(item));
 
-				case PostTriangle::RTTI:
+				case PostTriangle::Type:
 				{
 					moving = dynamic_cast<Triangle*>(item);
 					break;
 				}
 
-				case NodeItem::RTTI:
+				case NodeItem::Type:
 				{
 					NodeItem* node = dynamic_cast<NodeItem*>(item);
 					Triangle* t = node->triangle();
 					node->setZValue(t->nextZPos());
 					moving = node;
-					if (t->type() == Triangle::RTTI)
+					if (t->type() == Triangle::Type)
 						selectTriangle(t);
 					break;
 				}
 
-				case GraphicsGuideScaleButton::RTTI:
+				case GraphicsGuideScaleButton::Type:
 				{
 					GraphicsGuideScaleButton* b = dynamic_cast<GraphicsGuideScaleButton*>(item);
 					moving = b;
 				}
 
-				case TriangleSelection::RTTI:
+				case TriangleSelection::Type:
 					break;
 
 				default:
@@ -496,14 +496,14 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 			if (e->modifiers() & (Qt::ControlModifier | Qt::ShiftModifier))
 			{
 				// select the triangle for a node if selecting triangles
-				if (selectionItem->selectedType() == Triangle::RTTI
-					&& item->type() == NodeItem::RTTI)
+				if (selectionItem->selectedType() == Triangle::Type
+					&& item->type() == NodeItem::Type)
 					item = dynamic_cast<NodeItem*>(item)->triangle();
 
 				if (!(item == selectionItem || selectionItem->contains(item))
 					&& (item->type() == selectionItem->selectedType()
-						|| ( item->type() == PostTriangle::RTTI
-							&& selectionItem->selectedType() == Triangle::RTTI) ) )
+						|| ( item->type() == PostTriangle::Type
+							&& selectionItem->selectedType() == Triangle::Type) ) )
 				{
 					selectionItem->addItem(item);
 					QPolygonF poly;
@@ -518,9 +518,9 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 			}
 
 			// if the selection is active, then only ever select it
-			if (hasSelection() && (item->type() != GraphicsGuideScaleButton::RTTI))
+			if (hasSelection() && (item->type() != GraphicsGuideScaleButton::Type))
 			{
-				if (item->type() != TriangleSelection::RTTI)
+				if (item->type() != TriangleSelection::Type)
 				{
 					if (selectionItem->contains(item))
 						item = selectionItem;
@@ -622,7 +622,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 		infoItem->hide();
 		lastt = 0;
 
-		if ( moving->type() == TriangleSelection::RTTI )
+		if ( moving->type() == TriangleSelection::Type )
 		{
 			if ( editMode == Move )
 			{
@@ -667,14 +667,14 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 				}
 			}
 		}
-		else if ( moving->type() == GraphicsGuideScaleButton::RTTI )
+		else if ( moving->type() == GraphicsGuideScaleButton::Type )
 		{
 			QGraphicsItem* parent( moving->parentItem() );
 			QGraphicsItem* t = dynamic_cast<QGraphicsItem*>( parent->parentItem() );
 			QRectF mrect( moving->mapRectToScene(moving->boundingRect()) );
 			QPointF bpos( mrect.center() );
 			QPointF tpos;
-			if (t->type() == TriangleSelection::RTTI)
+			if (t->type() == TriangleSelection::Type)
 				tpos = selectionTransformPos();
 			else
 				tpos = triangleTransformPos();
@@ -697,18 +697,18 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 					sy = 1.0;
 				if ((sx != 1.0) || (sy != 1.0))
 				{
-					if (t->type() == TriangleSelection::RTTI)
+					if (t->type() == TriangleSelection::Type)
 						scaleSelection(qMin(sx, 1.15), qMin(sy, 1.15), tpos);
 					else
 						scaleTriangle(dynamic_cast<Triangle*>(t), qMin(sx, 1.15), qMin(sy, 1.15), tpos);
 				}
 			}
 		}
-		else //  moving->type() == Triangle::RTTI || moving->type() == PostTriangle::RTTI || moving->type() == NoteItem::RTTI
+		else //  moving->type() == Triangle::Type || PostTriangle::Type || NoteItem::Type
 		{
 			Triangle* t = 0;
 			NodeItem* node = 0;
-			if (moving->type() == NodeItem::RTTI)
+			if (moving->type() == NodeItem::Type)
 			{
 				node = dynamic_cast<NodeItem*>(moving);
 				t = node->triangle();
@@ -875,11 +875,11 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 	{
 		switch (item->type())
 		{
-			case NodeItem::RTTI:
+			case NodeItem::Type:
 				item = dynamic_cast<NodeItem*>(item)->triangle();
 
-			case Triangle::RTTI:
-				if (item->type() != PostTriangle::RTTI)
+			case Triangle::Type:
+				if (item->type() != PostTriangle::Type)
 				{
 					// show the xform's infoItem for this triangle
 					Triangle* t = dynamic_cast<Triangle*>(item);
@@ -898,7 +898,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 					}
 					break;
 				}
-			case PostTriangle::RTTI:
+			case PostTriangle::Type:
 			{
 				Triangle* t = selectedTriangle;
 				int tidx = trianglesList.indexOf(t);
@@ -1035,20 +1035,20 @@ void FigureEditor::moveItemBy(QGraphicsItem* item, int dx, int dy)
 {
 	switch (item->type())
 	{
-		case PostTriangle::RTTI:
-		case Triangle::RTTI:
+		case PostTriangle::Type:
+		case Triangle::Type:
 		{
 			dynamic_cast<Triangle*>(item)->moveBy(dx, dy); // need a virtual moveBy()
 			triangleModifiedAction(selectedTriangle);
 			break;
 		}
-		case NodeItem::RTTI:
+		case NodeItem::Type:
 		{
 			dynamic_cast<NodeItem*>(item)->moveBy(dx, dy);
 			triangleModifiedAction(selectedTriangle);
 			break;
 		}
-		case TriangleSelection::RTTI:
+		case TriangleSelection::Type:
 		{
 			TriangleSelection* selectionItem = dynamic_cast<TriangleSelection*>(item);
 			selectionItem->moveBy(dx, dy);
@@ -1074,12 +1074,12 @@ void FigureEditor::wheelEvent(QGraphicsSceneWheelEvent* e)
 	{
 		switch (item->type())
 		{
-			case Triangle::RTTI:
-			case PostTriangle::RTTI:
+			case Triangle::Type:
+			case PostTriangle::Type:
 			{
 				double rad;
 				Triangle* t;
-				if (item->type() == Triangle::RTTI)
+				if (item->type() == Triangle::Type)
 					t = dynamic_cast<Triangle*>(item);
 				else
 					t = dynamic_cast<PostTriangle*>(item);
@@ -1112,7 +1112,7 @@ void FigureEditor::wheelEvent(QGraphicsSceneWheelEvent* e)
 				e->accept();
 				break;
 			}
-			case BasisTriangle::RTTI:
+			case BasisTriangle::Type:
 			{
 				double rad;
 				if (e->delta() > 0)
@@ -1129,7 +1129,7 @@ void FigureEditor::wheelEvent(QGraphicsSceneWheelEvent* e)
 				e->accept();
 				break;
 			}
-			case TriangleSelection::RTTI:
+			case TriangleSelection::Type:
 			{
 				double rad;
 				QPointF cpos = selectionItem->mapFromScene(p);
@@ -1205,7 +1205,7 @@ void FigureEditor::triangleModifiedAction(Triangle* t)
 {
 	logFinest(QString("FigureEditor::triangleModifiedAction : t=0x%1")
 			.arg((long)t, 0, 16));
-	if (t->type() == PostTriangle::RTTI)
+	if (t->type() == PostTriangle::Type)
 		t = selectedTriangle;
 	selectTriangle(t);
 	updatePreview();
@@ -1970,7 +1970,7 @@ void FigureEditor::moveTriangleBy(Triangle* t, double dx, double dy)
 {
 	QPointF p(t->mapToScene(dx, dy));
 	t->moveBy(p.x(), p.y());
-	if (t->type() == PostTriangle::RTTI)
+	if (t->type() == PostTriangle::Type)
 		triangleModifiedAction(selectedTriangle);
 	else
 		triangleModifiedAction(t);
@@ -2133,23 +2133,23 @@ void FigureEditor::provideState(UndoState* state)
 
 	switch (selectionItem->selectedType())
 	{
-		case NodeItem::RTTI:
+		case NodeItem::Type:
 			foreach (NodeItem* node, selectionItem->nodes())
 			{
 				if (node->id() == Triangle::NODE_O)
-					if (node->triangle()->type() == PostTriangle::RTTI)
+					if (node->triangle()->type() == PostTriangle::Type)
 						state->NodesO.append(-1);
 					else
 						state->NodesO.append(node->triangle()->index());
 
 				else if (node->id() == Triangle::NODE_X)
-					if (node->triangle()->type() == PostTriangle::RTTI)
+					if (node->triangle()->type() == PostTriangle::Type)
 						state->NodesX.append(-1);
 					else
 						state->NodesX.append(node->triangle()->index());
 
 				else if (node->id() == Triangle::NODE_Y)
-					if (node->triangle()->type() == PostTriangle::RTTI)
+					if (node->triangle()->type() == PostTriangle::Type)
 						state->NodesY.append(-1);
 					else
 						state->NodesY.append(node->triangle()->index());
@@ -2159,9 +2159,9 @@ void FigureEditor::provideState(UndoState* state)
 			}
 			break;
 
-		case Triangle::RTTI:
+		case Triangle::Type:
 			foreach (Triangle* triangle, selectionItem->triangles())
-				if (triangle->type() == PostTriangle::RTTI)
+				if (triangle->type() == PostTriangle::Type)
 					state->Triangles.append(-1);
 				else
 					state->Triangles.append(triangle->index());
@@ -2189,7 +2189,7 @@ void FigureEditor::restoreState(UndoState* state)
 		selectionItem->setSelectedType(state->SelectedType);
 		switch (state->SelectedType)
 		{
-			case NodeItem::RTTI:
+			case NodeItem::Type:
 				foreach (int n, state->NodesO)
 					if (n != -1)
 						selectionItem->addItem(trianglesList[n]->getNode(Triangle::NODE_O));
@@ -2212,7 +2212,7 @@ void FigureEditor::restoreState(UndoState* state)
 							selectionItem->addItem(post()->getNode(Triangle::NODE_Y));
 				break;
 
-			case Triangle::RTTI:
+			case Triangle::Type:
 				foreach (int n, state->Triangles)
 					if (n != -1)
 						selectionItem->addItem(trianglesList[n]);

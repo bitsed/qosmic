@@ -34,7 +34,7 @@ GraphicsGuideScaleButton::GraphicsGuideScaleButton(QGraphicsItem* parent) :
 
 int GraphicsGuideScaleButton::type() const
 {
-	return RTTI;
+	return Type;
 }
 
 void GraphicsGuideScaleButton::hoverEnterEvent(QGraphicsSceneHoverEvent*)

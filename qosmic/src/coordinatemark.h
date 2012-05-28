@@ -28,7 +28,7 @@ class CoordinateMark : public QGraphicsPolygonItem
 	QPainterPath m_path;
 
 	public:
-		static const int RTTI = 887872;
+		enum { Type = UserType + 6 };
 
 		CoordinateMark(QGraphicsItem* parent =0);
 		int type() const;

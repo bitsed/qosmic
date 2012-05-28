@@ -94,7 +94,7 @@ void NodeItem::moveBy(double dx, double dy)
 
 int NodeItem::type() const
 {
-	return RTTI;
+	return Type;
 }
 
 QString NodeItem::name() const

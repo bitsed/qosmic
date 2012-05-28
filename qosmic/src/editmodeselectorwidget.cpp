@@ -46,7 +46,7 @@ EditModeSelectorWidget::EditModeSelectorWidget(FigureEditor* e, QWidget* parent)
 
 	// set the dropdown menu index for the triangle selection type
 	int selection_type = m_xfeditor->selection()->selectedType();
-	if (selection_type == Triangle::RTTI)
+	if (selection_type == Triangle::Type)
 		m_selectionItemsSelector->setCurrentIndex(0);
 	else
 		m_selectionItemsSelector->setCurrentIndex(1);
@@ -293,9 +293,9 @@ void EditModeSelectorWidget::selectionItemsChangedAction(int idx)
 {
 	TriangleSelection* selection = m_xfeditor->selection();
 	if (idx == 0)
-		selection->setSelectedType(Triangle::RTTI);
+		selection->setSelectedType(Triangle::Type);
 	else
-		selection->setSelectedType(NodeItem::RTTI);
+		selection->setSelectedType(NodeItem::Type);
 
 	if (selection->isVisible())
 	{

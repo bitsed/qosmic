@@ -49,7 +49,7 @@ void PostTriangle::coordsToXForm()
 
 int PostTriangle::type() const
 {
-    return RTTI;
+    return Type;
 }
 
 void PostTriangle::basisScaledSlot()

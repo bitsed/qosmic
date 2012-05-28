@@ -58,7 +58,7 @@ void BasisTriangle::setCoordTransform(QMatrix t)
 
 int BasisTriangle::type() const
 {
-	return RTTI;
+	return Type;
 }
 
 

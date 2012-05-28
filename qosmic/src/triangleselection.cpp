@@ -21,7 +21,7 @@
 
 TriangleSelection::TriangleSelection(FigureEditor* f, BasisTriangle* b)
 	: QGraphicsPolygonItem(QPolygonF(QRectF(0.,0.,1.,1.))),
-		m_editor(f), m_basis(b), m_selectType(Triangle::RTTI)
+		m_editor(f), m_basis(b), m_selectType(Triangle::Type)
 {
 }
 
@@ -31,7 +31,7 @@ TriangleSelection::~TriangleSelection()
 
 int TriangleSelection::type() const
 {
-	return RTTI;
+	return Type;
 }
 
 void TriangleSelection::moveBy( double dx, double dy )
@@ -132,27 +132,27 @@ void TriangleSelection::selectCoveredItems()
 {
 	switch (m_selectType)
 	{
-		case Triangle::RTTI:
+		case Triangle::Type:
 		{
 			QList<QGraphicsItem*> collisions = collidingItems();
 			m_triangles.clear();
 			foreach (QGraphicsItem* item, collisions)
 			switch (item->type())
 			{
-				case Triangle::RTTI:
-				case PostTriangle::RTTI:
+				case Triangle::Type:
+				case PostTriangle::Type:
 				m_triangles.append(dynamic_cast<Triangle*>(item));
 			}
 			break;
 		}
-		case NodeItem::RTTI:
+		case NodeItem::Type:
 		{
 			QList<QGraphicsItem*> collisions = collidingItems();
 			m_nodes.clear();
 			foreach (QGraphicsItem* item, collisions)
 			switch (item->type())
 			{
-				case NodeItem::RTTI:
+				case NodeItem::Type:
 				m_nodes.append(dynamic_cast<NodeItem*>(item));
 			}
 			break;
@@ -202,8 +202,8 @@ void TriangleSelection::setSelectedType(int rtti)
 {
 	switch (rtti)
 	{
-		case Triangle::RTTI:
-		case NodeItem::RTTI:
+		case Triangle::Type:
+		case NodeItem::Type:
 			m_selectType = rtti;
 			break;
 		default:
@@ -215,11 +215,11 @@ void TriangleSelection::addItem(QGraphicsItem* item)
 {
 	switch (item->type())
 	{
-		case NodeItem::RTTI:
+		case NodeItem::Type:
 			m_nodes.append(dynamic_cast<NodeItem*>(item));
 			break;
-		case Triangle::RTTI:
-		case PostTriangle::RTTI:
+		case Triangle::Type:
+		case PostTriangle::Type:
 			m_triangles.append(dynamic_cast<Triangle*>(item));
 			break;
 		default:
@@ -232,10 +232,10 @@ bool TriangleSelection::contains(QGraphicsItem* item) const
 {
 	switch (item->type())
 	{
-		case NodeItem::RTTI:
+		case NodeItem::Type:
 			return m_nodes.contains(dynamic_cast<NodeItem*>(item));
-		case Triangle::RTTI:
-		case PostTriangle::RTTI:
+		case Triangle::Type:
+		case PostTriangle::Type:
 			return m_triangles.contains(dynamic_cast<Triangle*>(item));
 		default:
 			logWarn(QString("TriangleSelection::contains : unsupported type %1")

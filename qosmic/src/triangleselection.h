@@ -61,7 +61,7 @@ class TriangleSelection : public QGraphicsPolygonItem, public TransformableGraph
 		bool containsAnyOf(Triangle*) const;
 		void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget =0);
 
-		static const int RTTI = 2020202;
+		enum { Type = UserType + 5 };
 };
 
 

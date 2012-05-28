@@ -112,7 +112,7 @@ TriangleCoords Triangle::getCoords()
 
 int Triangle::type() const
 {
-	return RTTI;
+	return Type;
 }
 
 flam3_xform* Triangle::xform()
@@ -528,7 +528,7 @@ void Triangle::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
 {
 	QGraphicsPolygonItem::paint(painter, option, widget);
 	if (!canvas->hasSelection()
-		&& (canvas->getSelectedTriangle() == this || type() == PostTriangle::RTTI))
+		&& (canvas->getSelectedTriangle() == this || type() == PostTriangle::Type))
 	{
 		if (!m_edgeLine.isNull())
 		{

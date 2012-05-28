@@ -32,7 +32,8 @@ typedef QListIterator<NodeItem*>   TriangleNodesIterator;
 class Triangle : public QGraphicsPolygonItem, public TransformableGraphicsItem
 {
 	public:
-		static const int RTTI = 349495;
+		enum { Type = UserType + 2 };
+
 		static const int NODE_O = 0;
 		static const int NODE_X = 1;
 		static const int NODE_Y = 2;
