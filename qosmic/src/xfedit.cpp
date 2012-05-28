@@ -929,8 +929,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 
 QPointF FigureEditor::moveAnItem(QGraphicsItem* item, QGraphicsSceneMouseEvent* e, int dx, int dy)
 {
-	QGraphicsView* v = views().first();
-	const QRect vr(v->viewport()->rect().adjusted(
+	const QRect vr(view->viewport()->rect().adjusted(
 		 move_border_size,
 		 move_border_size,
 		-move_border_size,
@@ -938,13 +937,13 @@ QPointF FigureEditor::moveAnItem(QGraphicsItem* item, QGraphicsSceneMouseEvent* 
 
 	if (moveScrollMutex.tryLock())
 	{
-		v->setCursor(Qt::SizeAllCursor);
-		m_vrect = v->mapToScene(vr).boundingRect();
+		view->setCursor(Qt::SizeAllCursor);
+		m_vrect = view->mapToScene(vr).boundingRect();
 		if (!m_vrect.contains(e->scenePos()))
 		{
 			// otherwise scroll the qgraphicsview
-			QScrollBar* hbar = v->horizontalScrollBar();
-			QScrollBar* vbar = v->verticalScrollBar();
+			QScrollBar* hbar = view->horizontalScrollBar();
+			QScrollBar* vbar = view->verticalScrollBar();
 
 			m_scenePos = e->scenePos();
 			m_lastScenePos = e->lastScenePos();
@@ -1026,7 +1025,7 @@ QPointF FigureEditor::moveAnItem(QGraphicsItem* item, QGraphicsSceneMouseEvent* 
 	{
 		m_scenePos = e->scenePos();
 		m_lastScenePos = e->lastScenePos();
-		m_vrect = v->mapToScene(vr).boundingRect();
+		m_vrect = view->mapToScene(vr).boundingRect();
 	}
 	return m_scenePos;
 }
@@ -1620,16 +1619,6 @@ void FigureEditor::drawBackground(QPainter* p, const QRectF& r)
 				p->drawPoint(selectedTriangle->mapToScene(result[i], -(result[i+1])));
 		}
 	}
-
-	QGraphicsView* v = views().first();
-	QRectF vrect(v->mapToScene(v->viewport()->rect().adjusted(
-		 move_border_size,
-		 move_border_size,
-		-move_border_size,
-		-move_border_size
-		)).boundingRect());
-	p->setPen(selectedTriangle->pen());
-	p->drawRect(vrect);
 }
 
 void FigureEditor::colorChangedAction(double /*idx*/)
