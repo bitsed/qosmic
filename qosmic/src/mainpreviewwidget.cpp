@@ -169,9 +169,9 @@ void MainPreviewWidget::mouseMoveEvent(QMouseEvent* e)
 		else
 		{
 			dx *= ((double)g->width / m_previewLabel->size().width()
-										/ qMax(1.0,g->pixels_per_unit));
+				/ qMax(1.0,g->pixels_per_unit));
 			dy *= ((double)g->height / m_previewLabel->size().height()
-										/ qMax(1.0,g->pixels_per_unit));
+				/ qMax(1.0,g->pixels_per_unit * 2.0));
 			g->center[0] += dx ;
 			g->center[1] += dy ;
 		}
