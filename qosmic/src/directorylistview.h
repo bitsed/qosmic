@@ -41,7 +41,6 @@ class DirectoryListView : public QListView
 		void startDrag(Qt::DropActions);
 		void mousePressEvent(QMouseEvent*);
 		void wheelEvent(QWheelEvent*);
-		void hideEvent(QHideEvent*);
 
 	private:
 		MainViewer* viewer;

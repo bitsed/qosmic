@@ -119,12 +119,6 @@ void DirectoryListView::wheelEvent(QWheelEvent* e)
 		QListView::wheelEvent(e);
 }
 
-void DirectoryListView::hideEvent(QHideEvent* e)
-{
-	if (viewer)
-		viewer->hide();
-	QListView::hideEvent(e);
-}
 
 void DirectoryListView::viewerResizedAction(const QSize& /*s*/)
 {
