@@ -61,8 +61,8 @@ else {
 	## The PALETTESDIR must be set to the directory containing the
 	## flam3-palettes.xml file installed by the flam3 package.
 
-	## Point to the dir containing the compiled flam3-3.0 if it's not installed
-	FLAM3_SRC_DIR = $$system(readlink -e ../flam3-3.0)
+	## Point to the dir containing flam3-3.1.1 if it's not installed
+	FLAM3_SRC_DIR = $$system(readlink -e ../flam3-3.1.1)
 	PALETTESDIR = $$FLAM3_SRC_DIR
 	INCLUDEPATH += $$FLAM3_SRC_DIR /usr/include/libxml2
 	LIBS += -L$$FLAM3_SRC_DIR/.libs
@@ -90,7 +90,7 @@ VERSION = 1.6.0
 
 ################################################################################
 ## Check for correct package versions
-system( test $$QT_MINOR_VERSION -ge 5 && $$QT_MAJOR_VERSION -ge 5 ) {
+system(test $$QT_MAJOR_VERSION -lt 5 -o $$QT_MINOR_VERSION -lt 5) {
 	error("Using Qt $$[QT_VERSION]. " \
 	"Qosmic $$VERSION requires at least version 5.5 of Qt to build.")
 }
@@ -143,9 +143,9 @@ install_desktop {
    INSTALLS += desktop
 }
 
-message(Generating Makefile for Qosmic version $$VERSION)
+message(Generating Makefile for Qosmic $$VERSION)
 message(Qt version : $$[QT_VERSION])
-message(Location of flam3-palettes.xml : $$PALETTESDIR)
+message(Location of flam3-palettes.xml : $$PALETTESDIR/flam3-palettes.xml)
 ! link_pkgconfig {
 	message(Include header paths : $$INCLUDEPATH)
 	message(Include libraries : $$LIBS)
