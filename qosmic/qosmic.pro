@@ -86,18 +86,18 @@ else {
 
 ################################################################################
 ## qosmic app version
-VERSION = 1.5.0
+VERSION = 1.6.0
 
 ################################################################################
 ## Check for correct package versions
-system( test $$QT_MINOR_VERSION -lt 6 ) {
+system( test $$QT_MINOR_VERSION -ge 5 && $$QT_MAJOR_VERSION -ge 5 ) {
 	error("Using Qt $$[QT_VERSION]. " \
-	"Qosmic $$VERSION requires at least version 4.6 of Qt to build.")
+	"Qosmic $$VERSION requires at least version 5.5 of Qt to build.")
 }
 
 link_pkgconfig {
-	! system(pkg-config --atleast-version 3.0.1 flam3) {
-		error("Qosmic $$VERSION requires at least version 3.0.1 of flam3 to build.")
+	! system(pkg-config --atleast-version 3.1.1 flam3) {
+		error("Qosmic $$VERSION requires at least version 3.1.1 of flam3 to build.")
 	}
 }
 
@@ -112,7 +112,8 @@ DEFINES += VERSION='\'"$$VERSION"\''
 DEFINES += FLAM3DIR='\'"$$PALETTESDIR"\''
 DEFINES += TRANSDIR='\'"$$TRANSDIR"\''
 DEFINES += SCRIPTSDIR='\'"$$SCRIPTSDIR"\''
-CONFIG += qt thread uitools
+CONFIG += qt thread
+QT += widgets
 RESOURCES = qosmic.qrc
 INCLUDEPATH += src
 DESTDIR = .

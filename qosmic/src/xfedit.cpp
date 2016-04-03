@@ -33,7 +33,8 @@
  */
 FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
 	: QGraphicsScene(parent), QosmicWidget(this, "FigureEditor"),
-	moving(0), genomes(g), selectedTriangle(0), postTriangle(0),
+	moving(0), genomes(g), view(dynamic_cast<QGraphicsView*>(parent)),
+	selectedTriangle(0), postTriangle(0),
 	centered_scaling(None), transform_location(Origin), editMode(Move),
 	move_edge_mode(false), has_selection(false), is_selecting(false),
 	editing_post(false), menu_visible(false)
@@ -350,7 +351,7 @@ void FigureEditor::removeTriangleAction()
 Triangle* FigureEditor::getCurrentOrSelected()
 {
 	Triangle* t;
-	QGraphicsItem* item = itemAt(moving_start);
+	QGraphicsItem* item = itemAt(moving_start, QTransform());
 	if (menu_visible && item)
 	{
 		switch (item->type())
@@ -374,7 +375,7 @@ Triangle* FigureEditor::getCurrentOrSelected()
 void FigureEditor::resetTriangleCoordsAction()
 {
 	Triangle* t = selectedTriangle;
-	QGraphicsItem* item = itemAt(moving_start);
+	QGraphicsItem* item = itemAt(moving_start, QTransform());
 	if (hasFocus() && menu_visible && item)
 	{
 		switch (item->type())
@@ -442,7 +443,7 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 	}
 	else // LeftButton, possibly with control+shift modifiers
 	{
-		QGraphicsItem* item = itemAt(moving_start);
+		QGraphicsItem* item = itemAt(moving_start, QTransform());
 		if (item == infoItem) // skip the infoItem if possible
 		{
 			QList<QGraphicsItem*> list = items(moving_start);
@@ -587,7 +588,7 @@ void FigureEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e)
 		}
 		update();
 	}
-	views().first()->setCursor(Qt::ArrowCursor);
+	view->setCursor(Qt::ArrowCursor);
 	moving_start = QPointF(0.0,0.0);
 	QGraphicsScene::mouseReleaseEvent(e);
 }
@@ -605,7 +606,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 
 	qreal dx( scenePos.x() - moving_start.x() );
 	qreal dy( scenePos.y() - moving_start.y() );
-	QGraphicsItem* item = itemAt(scenePos);
+	QGraphicsItem* item = itemAt(scenePos, QTransform());
 
 	if ( moving )
 	{
@@ -618,7 +619,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 			{
 				QPointF p( selectedTriangle->mapFromScene( dx, dy ) );
 				moveSelectionBy(p.x(), p.y());
-				views().first()->setCursor(Qt::SizeAllCursor);
+				view->setCursor(Qt::SizeAllCursor);
 			}
 			else if ( editMode == Rotate )
 			{
@@ -775,11 +776,11 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 				qreal dx = dz.x();
 				qreal dy = dz.y();
 				if (qAbs(dx) > qAbs(dy))
-					views().first()->setCursor(Qt::SplitHCursor);
+					view->setCursor(Qt::SplitHCursor);
 				else if (qAbs(dx) < qAbs(dy))
-					views().first()->setCursor(Qt::SplitVCursor);
+					view->setCursor(Qt::SplitVCursor);
 				else
-					views().first()->setCursor(Qt::ArrowCursor);
+					view->setCursor(Qt::ArrowCursor);
 			}
 			else // Move mode
 			{
@@ -788,7 +789,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 				else
 					t->moveBy(dx, dy);
 				triangleModifiedAction(selectedTriangle);
-				views().first()->setCursor(Qt::SizeAllCursor);
+				view->setCursor(Qt::SizeAllCursor);
 			}
 		}
 
@@ -825,8 +826,8 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 		else
 		{
 			// otherwise scroll the qgraphicsview
-			QScrollBar* hbar = views().first()->horizontalScrollBar();
-			QScrollBar* vbar = views().first()->verticalScrollBar();
+			QScrollBar* hbar = view->horizontalScrollBar();
+			QScrollBar* vbar = view->verticalScrollBar();
 			dx = (screenPos.x() - e->lastScreenPos().x());
 			dy = (screenPos.y() - e->lastScreenPos().y());
 			hbar->setValue(hbar->value() - dx);
@@ -854,8 +855,8 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 		else
 		{
 			// otherwise scroll the qgraphicsview
-			QScrollBar* hbar = views().first()->horizontalScrollBar();
-			QScrollBar* vbar = views().first()->verticalScrollBar();
+			QScrollBar* hbar = view->horizontalScrollBar();
+			QScrollBar* vbar = view->verticalScrollBar();
 			dx = (screenPos.x() - e->lastScreenPos().x());
 			dy = (screenPos.y() - e->lastScreenPos().y());
 			hbar->setValue(hbar->value() - dx);
@@ -885,10 +886,10 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 					{
 						infoItem->setText(getInfoLabel(t));
 						QPoint pt = QPoint(5,
-								views().first()->maximumViewportSize().height()
+								view->maximumViewportSize().height()
 								+ 10 - (int)infoItem->boundingRect().height());
 								// 10 units of fudge
-						infoItem->setPos(views().first()->mapToScene(pt));
+						infoItem->setPos(view->mapToScene(pt));
 						infoItem->setBrush(QBrush(t->pen().color()));
 						infoItem->setZValue(selectedTriangle->zValue());
 						infoItem->show();
@@ -902,10 +903,10 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 				int tidx = trianglesList.indexOf(t);
 				infoItem->setText(tr("post transform: %1\n").arg(tidx + 1));
 				QPoint pt = QPoint(5,
-						views().first()->maximumViewportSize().height()
+						view->maximumViewportSize().height()
 						+ 10 - (int)infoItem->boundingRect().height());
 						// 10 units of fudge
-				infoItem->setPos(views().first()->mapToScene(pt));
+				infoItem->setPos(view->mapToScene(pt));
 				infoItem->setBrush(QBrush(t->pen().color()));
 				infoItem->setZValue(selectedTriangle->zValue());
 				infoItem->show();
@@ -928,7 +929,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 void FigureEditor::wheelEvent(QGraphicsSceneWheelEvent* e)
 {
 	QPointF p = e->scenePos();
-	QGraphicsItem* item = itemAt(p);
+	QGraphicsItem* item = itemAt(p, QTransform());
 	if (item)
 	{
 		switch (item->type())
@@ -1303,7 +1304,7 @@ void FigureEditor::reset()
 
 	// align the basis triangle and labels
 	const QBrush b(grid_color);
-	const QPen pen(grid_color);
+	const QPen pen(grid_color, 0);
 	bLabelA->setBrush(b);
 	bLabelA->setPos(basisTriangle->mapToScene(basisTriangle->A) + QPointF(-8.0,0.0));
 	bLabelB->setBrush(b);
@@ -1312,7 +1313,7 @@ void FigureEditor::reset()
 	bLabelC->setPos(basisTriangle->mapToScene(basisTriangle->C) + QPointF(-8.0,-16.0));
 	basisTriangle->setPen(pen);
 	coordinateMark->setPen(pen);
-	selectionItem->setPen(QPen(b,1,Qt::DashLine));
+	selectionItem->setPen(QPen(b, 0, Qt::DashLine));
 
 	selectedTriangle = 0;
 	editing_post = hasPost; // there's a side-effect here that selectTriangle
@@ -1323,7 +1324,6 @@ void FigureEditor::reset()
 		selectTriangle(trianglesList.last());
 
 	// recenter the scene on the current center point in the view
-	QGraphicsView* view( views().first() );
 	QPointF view_center( view->mapToScene(view->frameRect()).boundingRect().center() );
 	transform().inverted().map(view_center.x(), view_center.y(), &scene_start.rx(), &scene_start.ry());
 
@@ -1335,8 +1335,8 @@ void FigureEditor::reset()
 			.arg(itemsBoundingRect().size().width())
 			.arg(itemsBoundingRect().size().height()));
 	logFiner(QString("FigureEditor::reset : viewport %1,%2")
-			.arg(views().first()->maximumViewportSize().width())
-			.arg(views().first()->maximumViewportSize().height()));
+			.arg(view->maximumViewportSize().width())
+			.arg(view->maximumViewportSize().height()));
 }
 
 void FigureEditor::adjustSceneRect()
@@ -1381,21 +1381,21 @@ void FigureEditor::adjustSceneRect()
 			default:
 				break;
 		}
-		views().first()->centerOn(basisTriangle->mapToScene(pos));
+		view->centerOn(basisTriangle->mapToScene(pos));
 	}
 	else if (!moving_start.isNull())
-		views().first()->centerOn(moving_start);
+		view->centerOn(moving_start);
 	else
-		views().first()->centerOn(basisTriangle->mapToScene(scene_start));
+		view->centerOn(basisTriangle->mapToScene(scene_start));
 
 	if (infoItem->isVisible())
 	{
 		// put the infoItem back
 		QPoint pt = QPoint(5,
-			views().first()->maximumViewportSize().height()
+			view->maximumViewportSize().height()
 			+ 10 - (int)infoItem->boundingRect().height());
 			// 10 units of fudge
-			infoItem->setPos(views().first()->mapToScene(pt));
+			infoItem->setPos(view->mapToScene(pt));
 	}
 }
 
@@ -1586,8 +1586,7 @@ void FigureEditor::selectTriangle(int idx)
 	{
 		Triangle* t = trianglesList.at(idx);
 		selectTriangle(t);
-		QList<QGraphicsView*> viewList = views();
-		viewList.first()->ensureVisible(t->sceneBoundingRect());
+		view->ensureVisible(t->sceneBoundingRect());
 	}
 }
 
@@ -1624,7 +1623,7 @@ void FigureEditor::autoScale()
 {
 	QSizeF padding(100.0, 100.0);
 	QSizeF s_size(itemsSceneBounds().size() + padding);
-	QSize v_size(views().first()->maximumViewportSize());
+	QSize v_size(view->maximumViewportSize());
 	double dz = qMin(v_size.width() / s_size.width(),
 		v_size.height() / s_size.height());
 	while (dz < 0.99 || dz > 1.01)
@@ -1635,7 +1634,7 @@ void FigureEditor::autoScale()
 		dz = qMin(v_size.width() / s_size.width(),
 				v_size.height() / s_size.height());
 	}
-	views().first()->ensureVisible(itemsSceneBounds(), 0, 0);
+	view->ensureVisible(itemsSceneBounds(), 0, 0);
 	adjustSceneRect();
 }
 
@@ -1666,7 +1665,6 @@ void FigureEditor::scaleBasis(double dx, double dy)
 	transform().inverted().map(moving_start.x(), moving_start.y(), &cursor_start.rx(), &cursor_start.ry());
 
 	// recenter the scene on the current center point in the view
-	QGraphicsView* view( views().first() );
 	QPointF view_center( view->mapToScene(view->frameRect()).boundingRect().center() );
 	transform().inverted().map(view_center.x(), view_center.y(), &scene_start.rx(), &scene_start.ry());
 
@@ -1684,14 +1682,9 @@ void FigureEditor::scaleBasis(double dx, double dy)
 	// scale the selection
 	if (has_selection)
 	{
-		QTransform trans = selectionItem->transform();
-		QPointF cpos(selectionItem->pos());
-		selectionItem->translate(cpos.x(), cpos.y());
-		selectionItem->QGraphicsPolygonItem::scale(dx, dy);
-		selectionItem->translate(-cpos.x(), -cpos.y());
-		QPolygonF pa = selectionItem->mapToScene(selectionItem->polygon());
-		selectionItem->setTransform(trans);
-		selectionItem->setPolygon(pa);
+		QTransform trans(selectionItem->transform());
+		trans.scale(dx, dy);
+		selectionItem->setPolygon(trans.map(selectionItem->polygon()));
 	}
 
 	// put back the mark

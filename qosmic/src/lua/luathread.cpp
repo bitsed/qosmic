@@ -56,7 +56,7 @@ void LuaThread::run()
 	lua_stopluathread_script = false;
 	lua_error.clear();
 
-	int error = luaL_loadstring(L, lua_text.toAscii().constData())
+	int error = luaL_loadstring(L, lua_text.toLatin1().constData())
 					|| lua_pcall(L, 0, LUA_MULTRET, 0);
 	if (error)
 	{
@@ -482,7 +482,7 @@ void LuaThread::lua_load_environment(lua_State* L)
 		path.append(";" + lua_paths);
 		lua_pop(L, 1);
 		lua_pushstring(L, "path");
-		lua_pushstring(L, path.toAscii().data());
+		lua_pushstring(L, path.toLatin1().data());
 		lua_settable(L, -3);
 		lua_pop(L, 1);
 	}

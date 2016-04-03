@@ -20,6 +20,7 @@
 #ifndef QOSMIC_XFEDIT_H
 #define QOSMIC_XFEDIT_H
 
+#include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsEllipseItem>
@@ -177,6 +178,7 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget, public UndoStat
 		QGraphicsSimpleTextItem* infoItem;
 		TriangleList trianglesList;
 		GenomeVector* genomes;
+		QGraphicsView* view;
 		BasisTriangle* basisTriangle;
 		QGraphicsSimpleTextItem* bLabelA;
 		QGraphicsSimpleTextItem* bLabelB;

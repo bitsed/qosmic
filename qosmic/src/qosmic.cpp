@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
 	QTranslator translator;
 	{
 		QString locale = QLocale::system().name();
-		logInfo("main() : system locale is %s", locale.toAscii().constData());
+		logInfo("main() : system locale is %s", locale.toLatin1().constData());
 		QString qmDir(QOSMIC_TRANSDIR);
 		QString qmFile(QString("qosmic_") + locale);
 
@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 		foreach (QString palette, palettes)
 			if (QFileInfo(palette).exists())
 			{
-				putenv(QString("flam3_palettes=%1").arg(palette).toAscii().data());
+				putenv(QString("flam3_palettes=%1").arg(palette).toLatin1().data());
 				no_palette = false;
 				break;
 			}

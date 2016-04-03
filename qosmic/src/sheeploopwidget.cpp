@@ -352,8 +352,8 @@ void SheepLoopWidget::xformIdxBoxIndexChanged(int idx)
 			model->setItem(n, 2, new QStandardItem("triangle"));
 		model->setItem(n, 3, new QStandardItem(QString::number(motion->motion_freq)));
 	}
-	m_motionElementsView->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
-	m_motionElementsView->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+	m_motionElementsView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+	m_motionElementsView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 void SheepLoopWidget::motionItemChanged(QStandardItem* item)

@@ -65,7 +65,7 @@ bool Flam3FileStream::read(flam3_genome** in, int* ncps)
 
 	FILE* fd = fdopen(m_file->handle(), "r");
 	// 'in' points to a static defined in flam3.c
-	*in = Util::read_from_file(fd, m_file->fileName().toAscii().data(), 1, ncps);
+	*in = Util::read_from_file(fd, m_file->fileName().toLatin1().data(), 1, ncps);
 	fclose(fd);
 	m_file->close();
 	if (*ncps < 1)

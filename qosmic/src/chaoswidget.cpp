@@ -34,7 +34,7 @@ ChaosWidget::ChaosWidget(GenomeVector* g, QWidget* parent)
 
 	m_chaosTable->setModel(model);
 	m_chaosTable->restoreSettings();
-	m_chaosTable->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+	m_chaosTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	connect(m_chaosTable, SIGNAL(valueUpdated(int)), this, SLOT(chaosEditedSlot(int)));
 	connect(m_chaosTable, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
 	connect(m_chaosTable, SIGNAL(precisionChanged()), this, SLOT(updateFormData()));
@@ -126,7 +126,7 @@ ChaosTableView::ChaosTableView(QWidget* parent)
 	setSelectionBehavior(QAbstractItemView::SelectItems);
 	setAutoScroll(false);
 	horizontalHeader()->setStretchLastSection(true);
-	horizontalHeader()->setMovable(false);
+	horizontalHeader()->setSectionsMovable(false);
 }
 
 void ChaosTableView::restoreSettings()
@@ -188,7 +188,7 @@ void ChaosTableView::mousePressEvent(QMouseEvent* e)
 			if (idx.column() == 0)
 			{
 				start_item = idx;
-				last_pos = e->posF();
+				last_pos = e->localPos();
 				start_value = start_item.data().toDouble();
 				e->accept();
 			}
@@ -224,7 +224,7 @@ void ChaosTableView::mouseMoveEvent(QMouseEvent* e)
 			nstep *= 10.0;
 
 		double dy = e->y() - last_pos.y();
-		last_pos = e->posF();
+		last_pos = e->localPos();
 		if (dy == 0.0) return;
 		if (dy > 0)
 			nstep *= -1.0;

@@ -127,7 +127,7 @@ void DoubleValueEditor::mousePressEvent(QMouseEvent* e)
 {
 	if (e->button() == Qt::LeftButton)
 	{
-		start_pos = last_pos = e->posF();
+		start_pos = last_pos = e->localPos();
 		start_value = value();
 		last_press = e;
 	}
@@ -140,7 +140,7 @@ void DoubleValueEditor::mouseMoveEvent(QMouseEvent* e)
 	{
 		double dy = e->y() - last_pos.y();
 		double step = default_step = singleStep();
-		last_pos = e->posF();
+		last_pos = e->localPos();
 		last_press = 0;
 
 		if (e->modifiers() & Qt::ShiftModifier)
@@ -168,7 +168,7 @@ void DoubleValueEditor::mouseReleaseEvent(QMouseEvent* e)
 {
 	if (e->button() == Qt::LeftButton)
 	{
-		if (last_press && start_pos == e->posF())
+		if (last_press && start_pos == e->localPos())
 		{
 			QDoubleSpinBox::mousePressEvent(last_press);
 			QDoubleSpinBox::mouseReleaseEvent(e);

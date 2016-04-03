@@ -278,7 +278,7 @@ int XForm::var(lua_State* L)
 				if (error)
 				{
 					QString s("couldn't build metatables for var.variables: %1");
-					luaL_error(L, "%s", s.arg(lua_tostring(L, -1)).toAscii().constData());
+					luaL_error(L, "%s", s.arg(lua_tostring(L, -1)).toLatin1().constData());
 				}
 
 				lua_getglobal(L, "_xform_var_variables_metatable");
@@ -300,7 +300,7 @@ int XForm::var(lua_State* L)
 			if (error)
 			{
 				QString s("couldn't build metatables for var: %1");
-				luaL_error(L, "%s", s.arg(lua_tostring(L, -1)).toAscii().constData());
+				luaL_error(L, "%s", s.arg(lua_tostring(L, -1)).toLatin1().constData());
 			}
 			lua_getglobal(L, "_xform_var_metatable");
 		}

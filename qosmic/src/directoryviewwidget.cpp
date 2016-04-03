@@ -482,9 +482,8 @@ void DirectoryViewWidget::detailedViewSortTypeChanged(int section, Qt::SortOrder
 		sort_type = NAME;
 }
 
-void DirectoryViewWidget::fileImageRendered(const QString& path)
+void DirectoryViewWidget::fileImageRendered(const QString& /*path*/)
 {
-	logInfo(QString("DirectoryViewWidget::imageFileRendered : setting icon for %1").arg(path));
 	model->setIconProvider( model->iconProvider() );
 }
 

@@ -68,7 +68,7 @@ MainWindow::MainWindow()
 
 	// figure editor
 	logInfo("MainWindow::MainWindow : creating FigureEditor");
-	m_xfeditor = new FigureEditor(&genomes, this);
+	m_xfeditor = new FigureEditor(&genomes, m_xfeditview);
 	m_xfeditview->setScene(m_xfeditor);
 	// force the containing qgraphicsview to track mouseMoveEvents
 	m_xfeditview->viewport()->setMouseTracking(true);

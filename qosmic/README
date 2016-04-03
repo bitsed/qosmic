@@ -13,24 +13,24 @@ electricsheep screensaver as described on http://electricsheep.org.
 
 Building
 
-Before building you will need to satisfy the library dependencies. Version 1.5.0
-of the application is compatible with Qt 4.6, flam3 3.0.1, and Lua 5.1.4.
-Versions of flam3 < 3.0.1 are not compatible with this version of the
+Before building you will need to install the prerequisite libraries.  Version
+1.6.0 of the application is compatible with Qt 5.5, flam3 3.1.1, and Lua 5.2.4.
+Versions of flam3 < 3.1.1 are not compatible with this version of the
 application.
 
-Version 1.5.0 of Qosmic was developed and tested using:
+Version 1.6.0 of Qosmic was developed and tested using:
 
-Qt-4.7.3      (http://qt.nokia.com/)
-Lua-5.1.4     (http://www.lua.org/)
-flam3-3.0.1   (http://flam3.com/)
-libxml2-2.7.8 (http://www.xmlsoft.org/)
-libpng-1.4.8  (http://www.libpng.org/)
-jpeg-8c       (http://www.ijg.org/)
+Qt-5.5.1            (http://www.qt.io/)
+Lua-5.2.4           (http://www.lua.org/)
+flam3-3.1.1         (http://flam3.com/)
+libxml2-2.9.3       (http://www.xmlsoft.org/)
+libpng-1.6.19       (http://www.libpng.org/)
+libjpeg-turbo-1.4.2 (http://libjpeg-turbo.virtualgl.org/)
 
 
-1. Install the dependencies listed above.
+1. Install prerequisite libraries listed above.
 2. Download and unpack the source archive, and cd into the source directory.
-3. Edit qosmic.pro to configure the qmake build system to suit your environment.
+3. Edit qosmic.pro to select qmake options appropriate for your system.
 4. Run qmake
 5. Run make
 6. Run ./qosmic when the build finishes.
@@ -307,7 +307,7 @@ Thanks to:
 - The Apophysis developers for their interface design
 
 
-This program is licensed under the GNU GPL Version 2.  See the COPYING file
+This program is licensed under the GNU GPL Version 3.  See the COPYING file
 for details.  Questions, concerns, suggestions, bug reports, and patches
 can be sent to bitsed(at)gmail.com.
 ================================================================================

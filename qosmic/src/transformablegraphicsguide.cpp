@@ -73,7 +73,7 @@ TransformableGraphicsGuide::TransformableGraphicsGuide(FigureEditor* fe, QGraphi
 	bottomLeftRect.location  = GraphicsGuideScaleButton::BottomLeft;
 	bottomRightRect.location = GraphicsGuideScaleButton::BottomRight;
 
-	QPen pen( editor->guideColor() );
+	QPen pen(editor->guideColor(), 0);
 	topRightRect.setPen(pen);
 	topLeftRect.setPen(pen);
 	bottomRightRect.setPen(pen);
@@ -161,7 +161,7 @@ void TransformableGraphicsGuide::update()
 			r.moveCenter(cen);
 			outerRect = r;
 			QRectF l = parentItem()->mapRectFromScene(QRectF(QPointF(0.0, 0.0), QSizeF(10, 10)));
-			QPen pen( editor->guideColor() );
+			QPen pen(editor->guideColor(), 0);
 
 			l.moveBottomLeft(r.topRight());
 			topRightRect.setPen(pen);
@@ -259,7 +259,7 @@ void TransformableGraphicsGuide::setVisible(bool flag)
 
 void TransformableGraphicsGuide::paint(QPainter* p, const QStyleOptionGraphicsItem* /*option*/, QWidget* /*widget*/)
 {
-	QPen pen( editor->guideColor() );
+	QPen pen(editor->guideColor(), 0);
 	pen.setStyle(Qt::SolidLine);
 	p->save();
 	p->setPen(pen);

@@ -36,7 +36,7 @@ VarsTableWidget::VarsTableWidget(QWidget* parent)
 	setSelectionBehavior(QAbstractItemView::SelectItems);
 	setAutoScroll(false);
 	header()->setStretchLastSection(true);
-	header()->setMovable(false);
+	header()->setSectionsMovable(false);
 }
 
 void VarsTableWidget::dataChanged(const QModelIndex& top, const QModelIndex& bottom)
@@ -135,7 +135,7 @@ void VarsTableWidget::mousePressEvent(QMouseEvent* e)
 			if (idx.column() == 1)
 			{
 				start_item = idx;
-				last_pos = e->posF();
+				last_pos = e->localPos();
 				start_value = start_item.data().toDouble();
 				e->accept();
 			}
@@ -175,7 +175,7 @@ void VarsTableWidget::mouseMoveEvent(QMouseEvent* e)
 			nstep *= 10.0;
 
 		double dy = e->y() - last_pos.y();
-		last_pos = e->posF();
+		last_pos = e->localPos();
 		if (dy == 0.0) return;
 		if (dy > 0)
 			nstep *= -1.0;

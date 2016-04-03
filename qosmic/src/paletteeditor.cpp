@@ -978,7 +978,7 @@ bool PaletteEditor::loadCPTGradient(QFileInfo& file, flam3_palette pa)
 			else
 			{
 				logWarn("PaletteEditor::loadCPTGradient : %s has right adjusting "
-				"z0 entry at pos %d", file.fileName().toAscii().constData(), is.pos());
+				"z0 entry at pos %d", file.fileName().toLatin1().constData(), is.pos());
 				z0_idx += 0.0001;
 			}
 		}

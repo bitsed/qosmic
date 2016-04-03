@@ -631,8 +631,8 @@ namespace Util
 	{
 		char* locale = setup_C_locale();
 		flam3_genome* g
-			= flam3_parse_xml2(xml.toAscii().data(),
-				QString("stdin").toAscii().data(), 1, ncps);
+			= flam3_parse_xml2(xml.toLatin1().data(),
+				QString("stdin").toLatin1().data(), 1, ncps);
 		replace_C_locale(locale);
 		return g;
 	}

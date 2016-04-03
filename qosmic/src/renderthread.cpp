@@ -347,12 +347,9 @@ RenderStatus& RenderThread::getStatus()
 
 	if (rendering)
 	{
-		QTime zero;
-		const QTime time(zero.addMSecs((int)_est_remain));
-
 		status.State = RenderStatus::Busy;
 		status.Type = current_request->type();
-		status.EstRemain = time;
+		status.EstRemain = QTime::fromMSecsSinceStartOfDay((int)_est_remain);
 		status.Percent = _percent_finished;
 	}
 	else if (kill_all_jobs || _stop_current_job)
@@ -361,10 +358,8 @@ RenderStatus& RenderThread::getStatus()
 	}
 	else
 	{
-		QTime zero;
-		const QTime timer(zero.addMSecs(millis));
 		status.State = RenderStatus::Idle;
-		status.Runtime = timer;
+		status.Runtime = QTime::fromMSecsSinceStartOfDay(millis);
 	}
 	return status;
 }
@@ -539,7 +534,7 @@ void RenderStatus::createMessage()
 		else if (EstRemain.minute() > 1)
 			t_format = tr("mm:ss");
 		else
-			t_format = tr("ss.z");
+			t_format = tr("s.z");
 		estRemainString = EstRemain.toString(t_format);
 		message = tr("rendering... %L1% ( %2 remaining )")
 				.arg(Percent, 0, 'f', 1, '0')
@@ -557,7 +552,7 @@ void RenderStatus::createMessage()
 			t_format = tr("mm:ss");
 		else
 		{
-			t_format = tr("ss.z");
+			t_format = tr("s.z");
 			runtimeString = Runtime.toString(t_format);
 			message = tr("%1 rendered in %2 seconds").arg(Name).arg(runtimeString);
 			return;

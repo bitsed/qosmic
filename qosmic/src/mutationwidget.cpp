@@ -20,6 +20,8 @@
 #include <QSettings>
 #include <QListView>
 #include <QPainter>
+#include <QDrag>
+#include <QMimeData>
 
 #include "mutationwidget.h"
 #include "viewerpresetsmodel.h"
