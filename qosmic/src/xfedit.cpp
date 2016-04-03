@@ -1807,7 +1807,7 @@ void FigureEditor::editPostTriangle(bool flag)
 	else if (selectedTriangle)
 	{
 		postTriangle = new PostTriangle(this, selectedTriangle->xform(), basisTriangle);
-		const QPen pen( grid_color );
+		const QPen pen(grid_color, 0);
 		QBrush brush(grid_color, Qt::Dense5Pattern);
 		brush.setMatrix(basisTriangle->coordTransform());
 		postTriangle->setPen( pen );
