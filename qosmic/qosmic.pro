@@ -36,9 +36,8 @@ CONFIG += install_icons install_desktop
 
 
 ################################################################################
-## Add your non-english locale here to install the translations.  Only a naive
-## set of french translations is available.
-#CONFIG += ts_fr
+## Install translation files.
+#CONFIG += install_tr
 
 
 ################################################################################
@@ -123,7 +122,7 @@ target.path += $$PREFIX/bin
 INSTALLS += target
 
 ## add the translations to the install set
-ts_fr {
+install_tr {
 	translations.files= ts/*.qm
 	translations.path = $$TRANSDIR
 	INSTALLS += translations
@@ -325,7 +324,8 @@ SOURCES += \
 
 
 TRANSLATIONS = ts/qosmic_fr.ts \
- ts/qosmic_cs.ts
+ ts/qosmic_cs.ts \
+ ts/qosmic_ru.ts
 
 MOC_DIR = .moc
 OBJECTS_DIR = .obj
