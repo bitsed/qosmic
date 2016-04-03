@@ -448,8 +448,7 @@ void RenderThread::cancel(RenderRequest* req)
 	if (req->type() == RenderRequest::Queued)
 	{
 		rqueue_mutex.lock();
-		int count = request_queue.removeAll(req);
-		logFine("RenderThread::cancel : removing %d queued requests", count);
+		request_queue.removeAll(req);
 		rqueue_mutex.unlock();
 	}
 	else if (req->type() == RenderRequest::Preview)
