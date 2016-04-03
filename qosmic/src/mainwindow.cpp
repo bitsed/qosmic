@@ -776,14 +776,16 @@ void MainWindow::about()
 	"<p><b>Qosmic version %1</b></p>"
 	"<p>Copyright (C) 2007-2016 by David Bitseff<br>"
 	"<p>Use and redistribute under the terms of the<br>"
-	"<a href=\"http://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU General Public License Version 2</a></p>"
+	"<a href=\"http://www.gnu.org/licenses/gpl.html\">"
+	"GNU General Public License Version 3</a></p>"
 	"<p>Thanks to:<br>"
 	"- Scott Draves for the <a href=\"http://flam3.com/\">flam3</a> library<br>"
 	"- Erik Reckase for his work on the flam3 library<br>"
 	"- Mark James for his <a href=\"http://www.famfamfam.com/lab/icons/silk/\">Silk</a> icon set<br>"
 	"- Mark Townsend for the <a href=\"www.apophysis.org\">Apophysis</a> editor"
-	"<p>This version was compiled with Qt " QT_VERSION_STR "</p>";
-	QMessageBox::about(this, tr("About Qosmic"), QString::fromLatin1(msg).arg(QOSMIC_VERSION));
+	"<p>This version uses: Qt " QT_VERSION_STR ", " LUA_RELEASE	", %2</p>";
+	QMessageBox::about(this, tr("About Qosmic"),
+		QString::fromLatin1(msg).arg(QOSMIC_VERSION).arg(flam3_version()));
 }
 
 
