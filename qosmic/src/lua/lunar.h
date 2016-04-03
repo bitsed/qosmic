@@ -14,8 +14,6 @@ extern "C"
 #include "lauxlib.h"
 }
 
-#include "logger.h"
-
 namespace Lua
 {
 template <typename T> class Lunar
