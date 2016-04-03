@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007, 2008, 2009, 2011 by David Bitseff                 *
+ *   Copyright (C) 2007-2016 by David Bitseff                              *
  *   bitsed@gmail.com                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
