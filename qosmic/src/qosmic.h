@@ -25,10 +25,6 @@
 #define VERSION "unknown"
 #endif
 
-#ifndef FLAM3DIR
-#define FLAM3DIR ":/unknown"
-#endif
-
 #ifndef TRANSDIR
 #define TRANSDIR ":/unknown"
 #endif
@@ -38,7 +34,6 @@
 #endif
 
 static const QString QOSMIC_VERSION( VERSION );
-static const QString QOSMIC_FLAM3DIR( FLAM3DIR );
 static const QString QOSMIC_TRANSDIR( TRANSDIR );
 static const QString QOSMIC_SCRIPTSDIR( SCRIPTSDIR );
 static const QString QOSMIC_USERDIR( QDir::home().absoluteFilePath(".qosmic") );

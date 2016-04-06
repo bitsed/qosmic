@@ -49,20 +49,12 @@ CONFIG += install_icons install_desktop
 link_pkgconfig {
 	message("Config using pkg-config version "$$system(pkg-config --version))
 	PKGCONFIG = flam3 lua
-
-	## The directory that contains flam3-palettes.xml must be set here.  If
-	## your system has pkg-config, this should find the flam3 palettes.
-	PALETTESDIR = $$system(pkg-config --variable=datarootdir flam3)/flam3
 }
 else {
 	message("Config not using pkg-config")
 	## Adjust these variables to set paths and libs without using pkg-config.
-	## The PALETTESDIR must be set to the directory containing the
-	## flam3-palettes.xml file installed by the flam3 package.
-
-	## Point to the dir containing flam3-3.1.1 if it's not installed
+	## Point to the flam3-3.1.1 source directory
 	FLAM3_SRC_DIR = $$system(readlink -e ../flam3-3.1.1)
-	PALETTESDIR = $$FLAM3_SRC_DIR
 	INCLUDEPATH += $$FLAM3_SRC_DIR /usr/include/libxml2
 	LIBS += -L$$FLAM3_SRC_DIR/.libs
 	LIBS += -L/usr/lib/libxml2 -lflam3 -lm -ljpeg -lxml2 -llua
@@ -100,15 +92,8 @@ link_pkgconfig {
 	}
 }
 
-! exists($$PALETTESDIR/flam3-palettes.xml) {
-	error("The file $$PALETTESDIR/flam3-palettes.xml doesn't exist. " \
-	"Please install libflam3 (http://flam3.org/) and set PALETTESDIR" \
-	"to the directory containing flam3-palettes.xml in qosmic.pro.")
-}
-
 ################################################################################
 DEFINES += VERSION='\'"$$VERSION"\''
-DEFINES += FLAM3DIR='\'"$$PALETTESDIR"\''
 DEFINES += TRANSDIR='\'"$$TRANSDIR"\''
 DEFINES += SCRIPTSDIR='\'"$$SCRIPTSDIR"\''
 CONFIG += qt thread
@@ -144,7 +129,6 @@ install_desktop {
 
 message(Generating Makefile for Qosmic $$VERSION)
 message(Qt version : $$[QT_VERSION])
-message(Location of flam3-palettes.xml : $$PALETTESDIR/flam3-palettes.xml)
 ! link_pkgconfig {
 	message(Include header paths : $$INCLUDEPATH)
 	message(Include libraries : $$LIBS)

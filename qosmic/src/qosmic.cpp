@@ -59,38 +59,6 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	if (!QFileInfo(getenv("flam3_palettes")).exists())
-	{
-		// look for flam3 palettes
-		QStringList palettes;
-		palettes << QString(QOSMIC_FLAM3DIR).append("/flam3-palettes.xml")
-				 << "./flam3-palettes.xml"
-				 << "./flam3/flam3-palettes.xml" ;
-
-		bool no_palette(true);
-		foreach (QString palette, palettes)
-			if (QFileInfo(palette).exists())
-			{
-				putenv(QString("flam3_palettes=%1").arg(palette).toLatin1().data());
-				no_palette = false;
-				break;
-			}
-
-		if (no_palette)
-		{
-			cerr << QString(QCoreApplication::translate("CoreApp", "Error: "
-														"No palettes file found at:\n"
-														"%1\n%2\n%3\n%4\n\n"
-														"The flam3 palettes xml file could not\n"
-														"be found.  You can set this path using\n"
-														"the flam3_palettes environment variable.\n\n"
-														"For example:\n"
-														"flam3_palettes=/some/path-to/flam3-palettes.xml qosmic"))
-					.arg(palettes[0], palettes[1], palettes[2], getenv("flam3_palettes")) << endl;
-			return 1;
-		}
-	}
-
 	if (argc > 1 &&
 			QString(argv[1]).contains(QRegExp("--?(?:help|h|ver).*")))
 	{
@@ -99,14 +67,12 @@ int main(int argc, char* argv[])
 			"environment variables:\n"
 			"log=%2\n"
 			"flam3_verbose=%3\n"
-			"flam3_nthreads=%4\n"
-			"flam3_palettes=%5"))
+			"flam3_nthreads=%4\n"))
 			.arg(QOSMIC_VERSION)
 			.arg(Logger::getInstance()->level())
 			.arg(QString(getenv("flam3_verbose")).toInt())
 			.arg(QString(getenv("flam3_nthreads")).toInt() > 0 ?
 				QString(getenv("flam3_nthreads")).toInt() : flam3_count_nthreads())
-			.arg(getenv("flam3_palettes"))
 			<< endl;
 		return 0;
 	}
