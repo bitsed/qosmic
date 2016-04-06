@@ -38,10 +38,10 @@ AdjustSceneWidget::AdjustSceneWidget(FigureEditor* e, QWidget* parent)
 	connect(m_previewCheckBox, SIGNAL(toggled(bool)), this, SLOT(togglePreviewAction(bool)));
 	connect(m_gridCheckBox, SIGNAL(toggled(bool)), this, SLOT(toggleGridAction(bool)));
 	connect(m_labelsCheckBox, SIGNAL(toggled(bool)), this, SLOT(toggleLabelsAction(bool)));
-	connect(m_gridColorButton, SIGNAL(pressed()), this, SLOT(gridColorSelectAction()));
+	connect(m_gridColorButton, SIGNAL(clicked(bool)), this, SLOT(gridColorSelectAction()));
 	connect(m_guideCheckBox, SIGNAL(toggled(bool)), this, SLOT(toggleGuideAction(bool)));
-	connect(m_guideColorButton, SIGNAL(pressed()), this, SLOT(guideColorSelectAction()));
-	connect(m_bgColorButton, SIGNAL(pressed()), this, SLOT(bgColorSelectAction()));
+	connect(m_guideColorButton, SIGNAL(clicked(bool)), this, SLOT(guideColorSelectAction()));
+	connect(m_bgColorButton, SIGNAL(clicked(bool)), this, SLOT(bgColorSelectAction()));
 }
 
 void AdjustSceneWidget::toggleLabelsAction(bool checked)

@@ -98,7 +98,7 @@ EditModeSelectorWidget::EditModeSelectorWidget(FigureEditor* e, QWidget* parent)
 	connect(m_xfeditor, SIGNAL(editModeChangedSignal(FigureEditor::EditMode)), this, SLOT(setSelectedButton(FigureEditor::EditMode)));
 	connect(sceneScaleSlider, SIGNAL(valueChanged(int)), this, SLOT(sceneScaledSlot()));
 	connect(sceneCenterSelector, SIGNAL(activated(int)), this, SLOT(sceneCenteredSlot(int)));
-	connect(sceneConfigButton, SIGNAL(pressed()), this, SLOT(sceneConfigSlot()));
+	connect(sceneConfigButton, SIGNAL(clicked(bool)), this, SLOT(sceneConfigSlot()));
 	connect(autoScaleButton, SIGNAL(clicked(bool)), m_xfeditor, SLOT(autoScale()));
 	connect(m_xfeditor, SIGNAL(triangleSelectedSignal(Triangle*)), this, SLOT(triangleSelectedSlot(Triangle*)));
 
