@@ -1729,7 +1729,7 @@ QColor FigureEditor::gridColor() const
 void FigureEditor::setGridColor(const QColor& c)
 {
 	grid_color = c;
-	const QPen p(grid_color);
+	const QPen p(grid_color, 0);
 	const QBrush b(grid_color);
 	basisTriangle->setPen(p);
 	coordinateMark->setPen(p);
