@@ -21,7 +21,7 @@
 
 
 NodeItem::NodeItem( QGraphicsScene* c, Triangle* t, int id, const char* n )
-	: QGraphicsEllipseItem(0, c), canvas(c), edges(t), m_name(n), m_index(id)
+	: canvas(c), edges(t), m_name(n), m_index(id)
 {
 	setRect(-4., -4., 8., 8.);
 	setZValue( 0 );
@@ -31,6 +31,7 @@ NodeItem::NodeItem( QGraphicsScene* c, Triangle* t, int id, const char* n )
 	label->setBrush(QBrush(Qt::gray));
 	label->setZValue(0);
 	label->moveBy(-15., 3.);
+	canvas->addItem(this);
 	canvas->addItem(label);
 	setAcceptHoverEvents(true);
 }
