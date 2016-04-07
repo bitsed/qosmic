@@ -35,7 +35,6 @@ ImageSettingsWidget::ImageSettingsWidget(GenomeVector* gen, QWidget* parent)
 
 	presets = new ViewerPresetsWidget(genome);
 	presets->hide();
-	presets->setWindowModality(Qt::WindowModal);
 	m_presetsComboBox->clear();
 	m_presetsComboBox->addItem(QString());
 	m_presetsComboBox->addItems( presets->presetNames() );
