@@ -93,5 +93,8 @@
         <file>icons/silk/table.xpm</file>
         <file>icons/silk/text_columns.xpm</file>
         <file>icons/silk/wand.xpm</file>
+        <file>ts/qosmic_fr.qm</file>
+        <file>ts/qosmic_cs.qm</file>
+        <file>ts/qosmic_ru.qm</file>
     </qresource>
 </RCC>

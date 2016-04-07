@@ -11,11 +11,6 @@ SHARED = $$PREFIX/share
 
 
 ################################################################################
-## The translations files are installed in $$SHARED/translations
-TRANSDIR = $$SHARED/translations
-
-
-################################################################################
 ## Icons are installed in $$SHARED/pixmaps
 ICONSDIR = $$SHARED/pixmaps
 
@@ -33,11 +28,6 @@ DESKDIR = $$SHARED/applications
 ################################################################################
 ## Uncomment to install the qosmic.desktop file and the application icons.
 CONFIG += install_icons install_desktop
-
-
-################################################################################
-## Install translation files.
-#CONFIG += install_tr
 
 
 ################################################################################
@@ -105,13 +95,6 @@ DESTDIR = .
 ## add the target to the install set
 target.path += $$PREFIX/bin
 INSTALLS += target
-
-## add the translations to the install set
-install_tr {
-	translations.files= ts/*.qm
-	translations.path = $$TRANSDIR
-	INSTALLS += translations
-}
 
 ## add icons to the install set
 install_icons {

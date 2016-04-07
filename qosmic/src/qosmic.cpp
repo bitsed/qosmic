@@ -42,19 +42,17 @@ int main(int argc, char* argv[])
 	// Load translations if necessary
 	QTranslator translator;
 	{
-		QString locale = QLocale::system().name();
-		logInfo("main() : system locale is %s", locale.toLatin1().constData());
-		QString qmDir(QOSMIC_TRANSDIR);
-		QString qmFile(QString("qosmic_") + locale);
+		QLocale locale;
+		logInfo(QString("main() : system locale is %1").arg(locale.name()));
 
-		if (translator.load(qmFile, qmDir))
+		if (translator.load(locale, "qosmic", "_", ":/ts", ".qm"))
 		{
-			logInfo(QString("main() : installing translations for %1").arg(locale));
+			logInfo(QString("main() : installing translations for %1").arg(locale.name()));
 			app.installTranslator(&translator);
 		}
 		else
 		{
-			logInfo(QString("main() : no translations found for locale %1").arg(locale));
+			logInfo(QString("main() : no translations found for locale %1").arg(locale.name()));
 			logInfo("main() : using default locale");
 		}
 	}
