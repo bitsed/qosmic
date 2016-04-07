@@ -52,6 +52,7 @@ int main(int argc, char* argv[])
 		}
 		else
 			logInfo(QString("main() : no translations found for %1").arg(locale.name()));
+	}
 
 	if (argc > 1 &&
 			QString(argv[1]).contains(QRegExp("--?(?:help|h|ver).*")))
