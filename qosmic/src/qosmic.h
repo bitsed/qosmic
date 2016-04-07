@@ -25,16 +25,11 @@
 #define VERSION "unknown"
 #endif
 
-#ifndef TRANSDIR
-#define TRANSDIR ":/unknown"
-#endif
-
 #ifndef SCRIPTSDIR
 #define SCRIPTSDIR ":/unknown"
 #endif
 
 static const QString QOSMIC_VERSION( VERSION );
-static const QString QOSMIC_TRANSDIR( TRANSDIR );
 static const QString QOSMIC_SCRIPTSDIR( SCRIPTSDIR );
 static const QString QOSMIC_USERDIR( QDir::home().absoluteFilePath(".qosmic") );
 static const QString QOSMIC_AUTOSAVE( QOSMIC_USERDIR + "/autosave.flam3" );

@@ -51,11 +51,8 @@ int main(int argc, char* argv[])
 			app.installTranslator(&translator);
 		}
 		else
-		{
-			logInfo(QString("main() : no translations found for locale %1").arg(locale.name()));
-			logInfo("main() : using default locale");
-		}
-	}
+			logInfo(QString("main() : no translations found for %1").arg(locale.name()));
+	r
 
 	if (argc > 1 &&
 			QString(argv[1]).contains(QRegExp("--?(?:help|h|ver).*")))

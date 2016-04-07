@@ -84,7 +84,6 @@ link_pkgconfig {
 
 ################################################################################
 DEFINES += VERSION='\'"$$VERSION"\''
-DEFINES += TRANSDIR='\'"$$TRANSDIR"\''
 DEFINES += SCRIPTSDIR='\'"$$SCRIPTSDIR"\''
 CONFIG += qt thread
 QT += widgets
