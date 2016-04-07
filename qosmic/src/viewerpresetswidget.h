@@ -53,6 +53,8 @@ class ViewerPresetsWidget : public QWidget, public QosmicWidget,
 		void presetSelected();
 		void dataChanged();
 
+	protected:
+		void keyPressEvent(QKeyEvent*);
 };
 
 #endif

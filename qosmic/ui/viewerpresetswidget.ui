@@ -127,6 +127,23 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <widget class="QToolButton" name="m_hideButton">
+       <property name="toolTip">
+        <string>close</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../qosmic.qrc">
+         <normaloff>:/icons/silk/cross.xpm</normaloff>:/icons/silk/cross.xpm</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>

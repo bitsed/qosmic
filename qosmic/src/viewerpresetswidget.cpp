@@ -17,6 +17,7 @@
  ***************************************************************************/
 #include <QSettings>
 #include <QInputDialog>
+#include <QKeyEvent>
 
 #include "viewerpresetswidget.h"
 
@@ -36,6 +37,7 @@ ViewerPresetsWidget::ViewerPresetsWidget(GenomeVector* g, QWidget* parent)
 	connect(m_updateButton, SIGNAL(clicked(bool)), this, SLOT(updatePresetSlot()));
 	connect(m_upButton, SIGNAL(pressed()), this, SLOT(moveUpSlot()));
 	connect(m_downButton, SIGNAL(pressed()), this, SLOT(moveDownSlot()));
+	connect(m_hideButton, SIGNAL(clicked(bool)), this, SLOT(hide()));
 }
 
 void ViewerPresetsWidget::addPresetSlot()
@@ -145,3 +147,9 @@ void ViewerPresetsWidget::presetSelectedSlot(const QModelIndex& item)
 
 }
 
+void ViewerPresetsWidget::keyPressEvent(QKeyEvent* event) {
+	if (event->key() == Qt::Key_Escape)
+		hide();
+	else
+		QWidget::keyPressEvent(event);
+}
