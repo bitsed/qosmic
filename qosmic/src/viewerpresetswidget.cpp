@@ -31,9 +31,9 @@ ViewerPresetsWidget::ViewerPresetsWidget(GenomeVector* g, QWidget* parent)
 	connect(model, SIGNAL(dataChanged(const QModelIndex&,const QModelIndex&)), this, SIGNAL(dataChanged()));
 	connect(m_presetsList, SIGNAL(clicked(const QModelIndex&)), this, SLOT(presetSelectedSlot(const QModelIndex&)));
 
-	connect(m_addButton, SIGNAL(pressed()), this, SLOT(addPresetSlot()));
-	connect(m_delButton, SIGNAL(pressed()), this, SLOT(delPresetSlot()));
-	connect(m_updateButton, SIGNAL(pressed()), this, SLOT(updatePresetSlot()));
+	connect(m_addButton, SIGNAL(clicked(bool)), this, SLOT(addPresetSlot()));
+	connect(m_delButton, SIGNAL(clicked(bool)), this, SLOT(delPresetSlot()));
+	connect(m_updateButton, SIGNAL(clicked(bool)), this, SLOT(updatePresetSlot()));
 	connect(m_upButton, SIGNAL(pressed()), this, SLOT(moveUpSlot()));
 	connect(m_downButton, SIGNAL(pressed()), this, SLOT(moveDownSlot()));
 }

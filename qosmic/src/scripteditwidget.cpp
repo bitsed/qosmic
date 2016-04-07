@@ -40,10 +40,10 @@ ScriptEditWidget::ScriptEditWidget(MainWindow* m, QWidget* parent)
 	m_splitter->restoreState(s.value("editorsplitters").toByteArray());
 
 	connect(m_runButton, SIGNAL(pressed()), this, SLOT(runButtonPressedAction()));
-	connect(m_openButton, SIGNAL(pressed()), m_scriptEdit, SLOT(load()));
-	connect(m_saveButton, SIGNAL(pressed()), m_scriptEdit, SLOT(save()));
-	connect(m_saveAsButton, SIGNAL(pressed()), m_scriptEdit, SLOT(saveAs()));
-	connect(m_configButton, SIGNAL(pressed()), this, SLOT(configPressedAction()));
+	connect(m_openButton, SIGNAL(clicked(bool)), m_scriptEdit, SLOT(load()));
+	connect(m_saveButton, SIGNAL(clicked(bool)), m_scriptEdit, SLOT(save()));
+	connect(m_saveAsButton, SIGNAL(clicked(bool)), m_scriptEdit, SLOT(saveAs()));
+	connect(m_configButton, SIGNAL(clicked(bool)), this, SLOT(configPressedAction()));
 	connect(m_scriptEdit, SIGNAL(scriptLoaded()), this, SLOT(scriptLoadedAction()));
 	connect(m_scriptEdit, SIGNAL(scriptSaved()), this, SLOT(scriptSavedAction()));
 	connect(m_scriptEdit, SIGNAL(cursorPositionChanged()), this, SLOT(updateCursorLabel()));

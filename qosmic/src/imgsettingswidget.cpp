@@ -57,7 +57,7 @@ ImageSettingsWidget::ImageSettingsWidget(GenomeVector* gen, QWidget* parent)
 
 	connect(m_goLeftButton, SIGNAL(pressed()), this, SLOT(moveStackLeftAction()));
 	connect(m_goRightButton, SIGNAL(pressed()), this, SLOT(moveStackRightAction()));
-	connect(m_presetsButton, SIGNAL(pressed()), this, SLOT(showPresetsDialog()));
+	connect(m_presetsButton, SIGNAL(clicked(bool)), this, SLOT(showPresetsDialog()));
 	connect(m_presetsComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectPresetAction(int)));
 	connect(presets, SIGNAL(presetSelected()), this, SIGNAL(presetSelected()));
 	connect(presets, SIGNAL(dataChanged()), this, SLOT(presetsDataChangedAction()));

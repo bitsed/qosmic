@@ -34,7 +34,7 @@ SelectGenomeWidget::SelectGenomeWidget(GenomeVector* g, QWidget* parent)
 	connect(m_addButton, SIGNAL(pressed()), this, SLOT(addButtonPressedSlot()));
 	connect(m_deleteButton, SIGNAL(pressed()), this, SLOT(delButtonPressedSlot()));
 	connect(m_clearTrianglesButton, SIGNAL(pressed()), this, SLOT(clearTrianglesButtonPressedSlot()));
-	connect(m_configButton, SIGNAL(pressed()), this, SLOT(configButtonPressedSlot()));
+	connect(m_configButton, SIGNAL(clicked(bool)), this, SLOT(configButtonPressedSlot()));
 
 	m_genomesListView->setModel(genomes);
 	m_genomesListView->setGridSize(genomes->previewSize() + QSize(4,4));
