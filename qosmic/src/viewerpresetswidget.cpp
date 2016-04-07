@@ -76,7 +76,7 @@ void ViewerPresetsWidget::updatePresetSlot()
 	if (ok && !text.isEmpty())
 	{
 		flam3_genome* g = genomes->selectedGenome();
-		model->updatePresetSlot(idx.row(), idx.data().toString(), g);
+		model->updatePresetSlot(idx.row(), text, g);
 	}
 }
 
