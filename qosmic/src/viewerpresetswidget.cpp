@@ -25,6 +25,7 @@ ViewerPresetsWidget::ViewerPresetsWidget(GenomeVector* g, QWidget* parent)
 	: QWidget(parent), QosmicWidget(this, "ViewerPresetsWidget"), genomes(g)
 {
 	setupUi(this);
+	setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint);
 
 	model = ViewerPresetsModel::getInstance();
 	m_presetsList->setModel(model);

@@ -90,8 +90,12 @@ void ImageSettingsWidget::moveStackRightAction()
 
 void ImageSettingsWidget::showPresetsDialog()
 {
+	QPoint pos(m_presetsButton->pos());
+	pos.ry() -= presets->frameGeometry().height();
+	presets->move(m_presetsButton->mapToGlobal(pos));
 	presets->show();
-	presets->move(QCursor::pos() + QPoint(0, -presets->height()));
+	presets->activateWindow();
+	presets->raise();
 }
 
 void ImageSettingsWidget::selectPresetAction(int idx)
