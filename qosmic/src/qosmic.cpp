@@ -50,8 +50,9 @@ int main(int argc, char* argv[])
 			logInfo(QString("main() : installing translations for %1").arg(locale.name()));
 			app.installTranslator(&translator);
 		}
-		else
+		else {
 			logInfo(QString("main() : no translations found for %1").arg(locale.name()));
+		}
 	}
 
 	if (argc > 1 &&
