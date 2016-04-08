@@ -88,6 +88,7 @@ void SelectGenomeWidget::addButtonPressedSlot()
 		lastIdx += 1;
 		(genomes->data() + lastIdx)->time = ltime + 1.0;
 		Flam3FileStream::autoSave(genomes);
+		m_genomesListView->scrollTo(genomes->selectedIndex());
 	}
 }
 
