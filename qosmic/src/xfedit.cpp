@@ -30,10 +30,9 @@
 /**
  * The QGraphicsScene that manages the Triangles.
  */
-FigureEditor::FigureEditor(GenomeVector* g, QObject* parent)
+FigureEditor::FigureEditor(GenomeVector* g, QGraphicsView* parent)
 	: QGraphicsScene(parent), QosmicWidget(this, "FigureEditor"),
-	moving(0), genomes(g), view(dynamic_cast<QGraphicsView*>(parent)),
-	selectedTriangle(0), postTriangle(0),
+	moving(0), genomes(g), view(parent), selectedTriangle(0), postTriangle(0),
 	centered_scaling(None), transform_location(Origin), editMode(Move),
 	move_edge_mode(false), has_selection(false), is_selecting(false),
 	editing_post(false), menu_visible(false), move_border_size(10)

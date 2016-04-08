@@ -57,7 +57,7 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget, public UndoStat
 	public:
 		void clear();
 		QString& getStatus();
-		FigureEditor(GenomeVector*, QObject* parent=0);
+		FigureEditor(GenomeVector*, QGraphicsView* parent);
 		~FigureEditor();
 		BasisTriangle* basis() const;
 		const QMatrix& transform() const;
