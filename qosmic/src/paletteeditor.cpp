@@ -71,12 +71,17 @@ PaletteEditor::PaletteEditor ( QWidget* parent )
 	connect(m_rotateSlider, SIGNAL(sliderReleased()), this, SIGNAL(undoStateSignal()));
 	connect(m_openButton, SIGNAL(clicked(bool)), this, SLOT(openGradientAction(bool)));
 	connect(m_gradientStops, SIGNAL(stopsChanged()), this, SLOT(stopsChangedAction()));
+	connect(m_gradientStops, SIGNAL(stopsDropped()), this, SIGNAL(undoStateSignal()));
 	connect(m_gradientEnds, SIGNAL(stopsChanged()), this, SLOT(stopsChangedAction()));
+	connect(m_gradientEnds, SIGNAL(stopsDropped()), this, SIGNAL(undoStateSignal()));
 	connect(m_gradientSpreadGroup, SIGNAL(buttonClicked(int)), this, SLOT(stopsChangedAction()));
+	connect(m_gradientSpreadGroup, SIGNAL(buttonClicked(int)), this, SIGNAL(undoStateSignal()));
 	connect(m_resetGradientButton, SIGNAL(clicked(bool)), this, SLOT(resetGradientAction()));
+	connect(m_resetGradientButton, SIGNAL(clicked(bool)), this, SIGNAL(undoStateSignal()));
 	connect(m_saveGradientButton, SIGNAL(clicked(bool)), this, SLOT(saveGradientAction()));
 	connect(m_browseLineEdit, SIGNAL(returnPressed()), this, SLOT(browsePathChangedAction()));
 	connect(m_randomGradientButton, SIGNAL(clicked(bool)), this, SLOT(createRandomGradientAction()));
+	connect(m_randomGradientButton, SIGNAL(clicked(bool)), this, SIGNAL(undoStateSignal()));
 }
 
 void PaletteEditor::closeEvent(QCloseEvent* event)

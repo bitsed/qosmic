@@ -1347,6 +1347,7 @@ void MainWindow::paletteChangedAction()
 	m_colorSettingsWidget->reset();
 	m_colorBalanceWidget->reset();
 	m_xfeditor->colorChangedAction(selectedTriangle->xform()->color);
+	m_genomeSelectWidget->reset();
 	render();
 }
 
@@ -1355,6 +1356,7 @@ void MainWindow::paletteHueChangedAction()
 	m_paletteEditor->setPalette(genomes.selectedGenome()->palette);
 	m_colorSettingsWidget->reset();
 	m_xfeditor->colorChangedAction(selectedTriangle->xform()->color);
+	m_genomeSelectWidget->reset();
 	render();
 }
 

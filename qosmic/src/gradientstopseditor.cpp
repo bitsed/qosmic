@@ -102,6 +102,7 @@ void GradientStopsEditor::addStop()
 	selected_idx << stops.size() - 1;
 	update();
 	emit stopsChanged();
+	emit stopsDropped();
 	logFine(QString("GradientStopsEditor::addStop : found stop %1 at %2 mouse %3")
 		.arg(stops.last().first).arg(pos).arg(moving_start.x()));
 }
@@ -119,6 +120,7 @@ void GradientStopsEditor::removeStop()
 		selected_idx.pop_front();
 		update();
 		emit stopsChanged();
+		emit stopsDropped();
 	}
 }
 
@@ -209,7 +211,10 @@ void GradientStopsEditor::mouseMoveEvent(QMouseEvent* event)
 void GradientStopsEditor::mouseReleaseEvent(QMouseEvent* event)
 {
 	if (event->button() == Qt::LeftButton)
+	{
 		moving_idx = -1;
+		emit stopsDropped();
+	}
 }
 
 void GradientStopsEditor::paintEvent(QPaintEvent*)

@@ -68,6 +68,7 @@ class GradientStopsEditor : public QWidget
 
 	signals:
 		void stopsChanged();
+		void stopsDropped();
 
 	protected:
 		void mousePressEvent(QMouseEvent*);
