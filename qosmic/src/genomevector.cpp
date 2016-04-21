@@ -44,7 +44,8 @@ int GenomeVector::selected() const
 
 void GenomeVector::setSelected(int value)
 {
-	selected_index = value;
+	if (0 <= value && value < size())
+		selected_index = value;
 }
 
 flam3_genome* GenomeVector::selectedGenome()

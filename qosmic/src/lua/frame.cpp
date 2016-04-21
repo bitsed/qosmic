@@ -28,6 +28,7 @@ const char Frame::className[] = "Frame";
 Lunar<Frame>::RegType Frame::methods[] =
 {
 	method(get_genome),
+	method(selected),
 	method(bitdepth),
 	method(earlyclip),
 	method(render),
@@ -85,6 +86,19 @@ int Frame::get_genome(lua_State* L)
 	Genome* g = Lunar<Genome>::check(L, 1);
 	g->setContext(L, idx);
 
+	return 1;
+}
+
+int Frame::selected(lua_State* L)
+{
+	int isnum;
+	int idx = lua_tointegerx(L, 1, &isnum) - 1;
+	if (isnum)
+	{
+		genome_vec->setSelected(idx);
+		m_adapter->setModified(idx);
+	}
+	lua_pushinteger(L, genome_vec->selected() + 1);
 	return 1;
 }
 

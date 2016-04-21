@@ -36,6 +36,7 @@ class Frame : public LuaType
 
 		// lua interface
 		int get_genome(lua_State*);
+		int selected(lua_State*);
 		int bitdepth(lua_State*);
 		int earlyclip(lua_State*);
 		int num_genomes(lua_State*);

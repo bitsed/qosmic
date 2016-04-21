@@ -37,6 +37,10 @@ Frame:get_genome([idx =1])  -- Returns a reference to the Genome type at offset
 
 Frame:num_genomes() -- Returns the number of genomes in the genomes list
 
+Frame::selected([idx])              -- Returns the selected genome index.  If
+                                    -- idx is a valid index, then set the
+                                    -- seleted genome to that index.
+
 Frame:render([idx =1, [filename]])  -- Renders the genome at offset idx in the
                                     -- genomes list.  If filename is given, then
                                     -- the rendered image is saved to that file
