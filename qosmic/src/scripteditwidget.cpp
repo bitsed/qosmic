@@ -29,11 +29,17 @@ ScriptEditWidget::ScriptEditWidget(MainWindow* m, QWidget* parent)
 
 	QSettings s;
 	s.beginGroup("scripteditwidget");
+
+	QFont font(s.value("editorfont", m_scriptEdit->currentFont()).value<QFont>());
+	m_scriptEdit->setCurrentFont(font);
 	m_scriptEdit->setPlainText(s.value("editortext", "print('hello world.')").toString());
-	m_scriptEdit->setCurrentFont(s.value("editorfont", m_scriptEdit->currentFont()).value<QFont>());
 	lua_thread.setLuaPaths(s.value("luapaths", lua_thread.luaPaths()).toString());
 
+	QTextCharFormat fmt(m_printOutputEdit->currentCharFormat());
+	fmt.setFont(font);
+	m_printOutputEdit->setCurrentCharFormat(fmt);
 	m_printOutputEdit->setMinimumHeight(10);
+
 	QList<int> sizes;
 	sizes << 30 << 40;
 	m_splitter->setSizes(sizes);
@@ -137,7 +143,7 @@ void ScriptEditWidget::configPressedAction()
 	ScriptEditConfigDialog d(this);
 	d.setFont(m_scriptEdit->currentFont());
 	d.setLuaEnvText(lua_thread.luaPaths());
-	d.move(QCursor::pos());
+	d.move(m_configButton->mapToGlobal(QPoint(0, 0)) - QPoint(d.frameGeometry().width(), 0));
 	if (d.exec() == QDialog::Accepted)
 	{
 		QFont f(d.getFont());
@@ -147,6 +153,13 @@ void ScriptEditWidget::configPressedAction()
 		s.setValue("editorfont", f);
 		s.setValue("luapaths", paths);
 		m_scriptEdit->setCurrentFont(f);
+		QTextCharFormat fmt(m_printOutputEdit->currentCharFormat());
+		fmt.setFont(f);
+		m_printOutputEdit->selectAll();
+		m_printOutputEdit->setCurrentCharFormat(fmt);
+		QTextCursor cursor(m_printOutputEdit->textCursor());
+		cursor.clearSelection();
+		m_printOutputEdit->setTextCursor(cursor);
 		lua_thread.setLuaPaths(paths);
 	}
 }
@@ -199,7 +212,7 @@ void ScriptEditConfigDialog::fontSelectBoxChanged(const QFont& f)
 	if (!size.isEmpty())
 		cur_size = size;
 
-	QList<int> sizes = fonts.smoothSizes(f.family(), "Normal");
+	QList<int> sizes = fonts.pointSizes(f.family());
 	fontSizeBox->clear();
 	foreach (int i, sizes)
 		fontSizeBox->addItem(QString::number(i));
