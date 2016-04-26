@@ -1,13 +1,23 @@
 function dump_xform(xf)
 	print(xf)
-	print('pos=',xf:pos())
 	print('index=',xf:index())
+	print('pos=',xf:pos())
 	print('color=',xf:color())
 	print('density=',xf:density())
-	print('symmetry=',xf:symmetry())
+	print('color_speed=',xf:color_speed())
+	print('opacity=',xf:opacity())
 	print('a=',xf:a())
 	print('b=',xf:b())
 	print('c=',xf:c())
+	for _, v in ipairs(VARIATIONS) do
+		val, vars = xf:var(_)
+		if val ~= 0 then
+			print(v .. '=', val)
+			for _, v in pairs(vars) do
+				print('    ' .. _ .. '=', v)
+			end
+		end
+	end
 end
 
 function dump_genome(g)
@@ -29,7 +39,7 @@ function dump_genome(g)
 	print('background=', g:background())
 	print()
 	if (nxf > 0) then
-		for n = 0,(nxf - 1) do
+		for n = 1, nxf do
 			dump_xform(g:get_xform(n))
 			print()
 		end
@@ -45,7 +55,7 @@ function set_low_quality(g)
 end
 
 function modify_xf_test(xf,d)
-	for n=0,100 do
+	for n=1,100 do
 		xf:translate(d*0.05,0)
 		xf:rotate(3.6)
 		xf:scale(0.95)
@@ -54,34 +64,34 @@ function modify_xf_test(xf,d)
 end
 
 function rotate_xf_test(xf)
-	for n=0,360 do
+	for n=1,360 do
 		xf:rotate(1)
 		frame:update() -- update the widgets' data
-		frame:render()
 	end
 end
 
-function spread_colors(genome)
+function spread_colors(g)
 -- Spreads the color parameters evenly over all
 -- xforms in genome
-	local num_xf = genome:num_xforms()
-	for i = 0, num_xf - 1 do
-		genome:get_xform(i):color(i / (num_xf - 1));
+	local num_xf = g:num_xforms()
+	for i = 1, num_xf do
+		g:get_xform(i):color(i / num_xf);
 	end
 end
 
 function spread_density(g)
 -- Spreads the xform density parameters evenly over 1.0
-	local num_xf = genome:num_xforms()
-	for i = 0, num_xf - 1 do
-		genome:get_xform(i):density(1.0 / num_xf);
+	local num_xf = g:num_xforms()
+	for i = 1, num_xf do
+		g:get_xform(i):density(1.0 / num_xf);
 	end
 end
 
 function bw_palette(g)
 -- Creates a white to black gradient in the palette for genome g
-	for i = 0,255 do
-		v = (255-i)/255
+	for i = 1,256 do
+		v = (256-i)/256
 		g:palette(i, v,v,v)
 	end
 end
+
