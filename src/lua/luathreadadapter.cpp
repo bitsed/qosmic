@@ -132,7 +132,6 @@ void Lua::LuaThreadAdapter::waitForEvent()
 	while(!m_mutex.tryLock())
 	{
 		logFinest("Lua::LuaThreadAdapter::waitForEvent : waiting");
-		m_thread->msleep(10);
 		QCoreApplication::processEvents();
 	}
 	m_mutex.unlock();
