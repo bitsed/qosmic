@@ -1815,7 +1815,7 @@ QRectF FigureEditor::itemsSceneBounds()
 
 void FigureEditor::autoScale()
 {
-	QSizeF padding(100.0, 100.0);
+	static QSizeF padding(200.0, 200.0);
 	QSizeF s_size(itemsSceneBounds().size() + padding);
 	QSize v_size(view->maximumViewportSize());
 	double dz = qMin(v_size.width() / s_size.width(),
@@ -1828,9 +1828,8 @@ void FigureEditor::autoScale()
 		dz = qMin(v_size.width() / s_size.width(),
 				v_size.height() / s_size.height());
 	}
-	view->ensureVisible(itemsSceneBounds(), 0, 0);
 	adjustSceneRect();
-	findViewCenter();
+	view->centerOn(sceneRect().center());
 }
 
 void FigureEditor::selectNextTriangle()
