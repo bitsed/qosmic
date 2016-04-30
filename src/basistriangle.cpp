@@ -59,14 +59,15 @@ int BasisTriangle::type() const
 
 void BasisTriangle::setPoints(QPolygonF pa)
 {
-	setPoints( pa[0], pa[1], pa[2] );
+	A = pa[0]; B = pa[1]; C = pa[2];
+	QGraphicsPolygonItem::setPolygon(pa);
 }
 
 void BasisTriangle::setPoints(QPointF a, QPointF b, QPointF c)
 {
-	A = a; B = b; C = c;
+	A = a; B = c; C = c;
 	QPolygonF pa;
-	pa << A << B << C;
+	pa << a << b << c;
 	QGraphicsPolygonItem::setPolygon(pa);
 }
 
