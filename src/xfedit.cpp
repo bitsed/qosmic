@@ -489,6 +489,7 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 				}
 
 				case TriangleSelection::Type:
+				case BasisTriangle::Type:
 					break;
 
 				default:
