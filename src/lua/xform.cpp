@@ -1517,9 +1517,9 @@ int XForm::rotate(lua_State* L)
 		c = QPointF(x, y);
 		setModified();
 	}
-	QMatrix matrix;
-	matrix.translate(c.x(), c.y()).rotate(deg).translate(-c.x(), -c.y());
-	triangleCoords = matrix.map(QPolygonF(triangleCoords));
+	QTransform trans;
+	trans.translate(c.x(), c.y()).rotate(deg).translate(-c.x(), -c.y());
+	triangleCoords = trans.map(QPolygonF(triangleCoords));
 	c2xf();
 	return 0;
 }
@@ -1539,9 +1539,9 @@ int XForm::scale(lua_State* L)
 		c = QPointF(x, y);
 		setModified();
 	}
-	QMatrix matrix;
-	matrix.translate(c.x(), c.y()).scale(dx, dy).translate(-c.x(), -c.y());
-	triangleCoords = matrix.map(QPolygonF(triangleCoords));
+	QTransform trans;
+	trans.translate(c.x(), c.y()).scale(dx, dy).translate(-c.x(), -c.y());
+	triangleCoords = trans.map(QPolygonF(triangleCoords));
 	c2xf();
 	return 0;
 }
@@ -1559,9 +1559,9 @@ int XForm::shear(lua_State* L)
 		c = QPointF(x, y);
 		setModified();
 	}
-	QMatrix matrix;
-	matrix.translate(c.x(), c.y()).shear(dx, dy).translate(-c.x(), -c.y());
-	triangleCoords = matrix.map(QPolygonF(triangleCoords));
+	QTransform trans;
+	trans.translate(c.x(), c.y()).shear(dx, dy).translate(-c.x(), -c.y());
+	triangleCoords = trans.map(QPolygonF(triangleCoords));
 	c2xf();
 	return 0;
 }
@@ -1609,9 +1609,9 @@ int XForm::rotatep(lua_State* L)
 		c = QPointF(x, y);
 		setModified();
 	}
-	QMatrix matrix;
-	matrix.translate(c.x(), c.y()).rotate(deg).translate(-c.x(), -c.y());
-	triangleCoordsP = matrix.map(QPolygonF(triangleCoordsP));
+	QTransform trans;
+	trans.translate(c.x(), c.y()).rotate(deg).translate(-c.x(), -c.y());
+	triangleCoordsP = trans.map(QPolygonF(triangleCoordsP));
 	c2xfp();
 	return 0;
 }
@@ -1631,9 +1631,9 @@ int XForm::scalep(lua_State* L)
 		c = QPointF(x, y);
 		setModified();
 	}
-	QMatrix matrix;
-	matrix.translate(c.x(), c.y()).scale(dx, dy).translate(-c.x(), -c.y());
-	triangleCoordsP = matrix.map(QPolygonF(triangleCoordsP));
+	QTransform trans;
+	trans.translate(c.x(), c.y()).scale(dx, dy).translate(-c.x(), -c.y());
+	triangleCoordsP = trans.map(QPolygonF(triangleCoordsP));
 	c2xfp();
 	return 0;
 }
@@ -1651,9 +1651,9 @@ int XForm::shearp(lua_State* L)
 		c = QPointF(x, y);
 		setModified();
 	}
-	QMatrix matrix;
-	matrix.translate(c.x(), c.y()).shear(dx, dy).translate(-c.x(), -c.y());
-	triangleCoordsP = matrix.map(QPolygonF(triangleCoordsP));
+	QTransform trans;
+	trans.translate(c.x(), c.y()).shear(dx, dy).translate(-c.x(), -c.y());
+	triangleCoordsP = trans.map(QPolygonF(triangleCoordsP));
 	c2xfp();
 	return 0;
 }

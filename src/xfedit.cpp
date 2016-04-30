@@ -44,8 +44,8 @@ FigureEditor::FigureEditor(GenomeVector* g, QGraphicsView* parent)
 	QSettings settings;
 	settings.beginGroup("figureeditor");
 	QVariant v(settings.value("basis"));
-	if (!v.isNull() && v.convert(QVariant::Matrix))
-		setCoordTransform(v.value<QMatrix>());
+	if (!v.isNull() && v.convert(QVariant::Transform))
+		setCoordTransform(v.value<QTransform>());
 
 	popupMenu = new QMenu(tr("Edit Triangle"));
 	cutAction = new QAction(QIcon(":icons/silk/cut.xpm"),
@@ -1292,12 +1292,12 @@ BasisTriangle* FigureEditor::basis() const
 	return basisTriangle;
 }
 
-void FigureEditor::setCoordTransform(QMatrix m)
+void FigureEditor::setCoordTransform(QTransform m)
 {
 	basisTriangle->setCoordTransform(m);
 }
 
-const QMatrix& FigureEditor::transform() const
+const QTransform& FigureEditor::transform() const
 {
 	return basisTriangle->coordTransform();
 }
@@ -1324,7 +1324,7 @@ void FigureEditor::selectTriangle(Triangle* t)
 	selectedTriangle->setPen(QPen(c, 0, Qt::SolidLine));
 	c.setAlphaF(0.5);
 	QBrush brush(c, Qt::SolidPattern);
-	brush.setMatrix(basisTriangle->coordTransform());
+	brush.setTransform(basisTriangle->coordTransform());
 	selectedTriangle->setBrush(brush);
 	selectedTriangle->moveToFront();
 	box_center = selectedTriangle->polygon().boundingRect().center();
@@ -2007,7 +2007,7 @@ void FigureEditor::editPostTriangle(bool flag)
 		postTriangle = new PostTriangle(this, selectedTriangle->xform(), basisTriangle);
 		const QPen pen(grid_color, 0);
 		QBrush brush(grid_color, Qt::Dense5Pattern);
-		brush.setMatrix(basisTriangle->coordTransform());
+		brush.setTransform(basisTriangle->coordTransform());
 		postTriangle->setPen( pen );
 		postTriangle->setNodeColor(grid_color, pen.color());
 		postTriangle->setBrush(brush);

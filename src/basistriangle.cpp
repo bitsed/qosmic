@@ -37,18 +37,18 @@ BasisTriangle::~BasisTriangle()
 void BasisTriangle::scale(double dx, double dy)
 {
 	coordinateTransform.scale(dx,dy);
-	setTransform(QTransform(coordinateTransform));
+	setTransform(coordinateTransform);
 }
 
-const QMatrix& BasisTriangle::coordTransform() const
+const QTransform& BasisTriangle::coordTransform() const
 {
 	return coordinateTransform;
 }
 
-void BasisTriangle::setCoordTransform(QMatrix t)
+void BasisTriangle::setCoordTransform(QTransform t)
 {
 	coordinateTransform = t;
-	setTransform(QTransform(coordinateTransform));
+	setTransform(coordinateTransform);
 }
 
 int BasisTriangle::type() const

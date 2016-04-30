@@ -60,10 +60,10 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget, public UndoStat
 		FigureEditor(GenomeVector*, QGraphicsView* parent);
 		~FigureEditor();
 		BasisTriangle* basis() const;
-		const QMatrix& transform() const;
+		const QTransform& transform() const;
 		CoordinateMark* mark() const;
 		void setMarkVisible(bool);
-		void setCoordTransform(QMatrix);
+		void setCoordTransform(QTransform);
 		void selectTriangle(Triangle*);
 		void selectTriangle(int);
 		void triangleModifiedAction(Triangle*);

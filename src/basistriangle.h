@@ -32,7 +32,7 @@ class FigureEditor;
 class BasisTriangle : public QGraphicsPolygonItem
 {
 	protected:
-		QMatrix coordinateTransform;
+		QTransform coordinateTransform;
 		FigureEditor* canvas;
 
 	public:
@@ -44,8 +44,8 @@ class BasisTriangle : public QGraphicsPolygonItem
 		int type() const;
 		void setPoints(QPolygonF);
 		void setPoints(QPointF, QPointF, QPointF);
-		const QMatrix& coordTransform() const;
-		void setCoordTransform(QMatrix);
+		const QTransform& coordTransform() const;
+		void setCoordTransform(QTransform);
 		void scale(double, double);
 		TriangleCoords getCoords(double c[3][2]);
 		void applyTransform(TriangleCoords&, double[3][2]);

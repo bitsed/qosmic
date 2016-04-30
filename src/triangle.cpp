@@ -122,15 +122,15 @@ flam3_xform* Triangle::xform()
 
 void Triangle::basisScaledSlot()
 {
-	setTransform(QTransform(basisTriangle->coordTransform()));
+	setTransform(basisTriangle->coordTransform());
 	TriangleCoords tc = basisTriangle->getCoords(m_xform->c);
 	setPoints(tc);
 
-	// only update the brush matrix for selected triangles
+	// only update the brush transform for selected triangles
 	if (this == canvas->getSelectedTriangle())
 	{
 		QBrush b(brush());
-		b.setMatrix(basisTriangle->coordTransform());
+		b.setTransform(basisTriangle->coordTransform());
 		setBrush(b);
 	}
 	if (m_guide)
@@ -362,7 +362,7 @@ BasisTriangle* Triangle::basis() const
 	return basisTriangle;
 }
 
-const QMatrix& Triangle::getCoordinateTransform()
+const QTransform& Triangle::getCoordinateTransform()
 {
 	return basisTriangle->coordTransform();
 }

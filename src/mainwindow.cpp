@@ -456,7 +456,7 @@ void MainWindow::flameRenderedSlot(RenderEvent* e)
 void MainWindow::updateStatus(double posX, double posY)
 {
 	double tx, ty;
-	QMatrix trans(m_xfeditor->transform().inverted());
+	QTransform trans(m_xfeditor->transform().inverted());
 	trans.map(posX, posY, &tx, &ty);
 	switch (m_coordsWidget->coordType())
 	{

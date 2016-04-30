@@ -54,12 +54,12 @@ int PostTriangle::type() const
 
 void PostTriangle::basisScaledSlot()
 {
-	const QMatrix basis(basisTriangle->coordTransform());
-	setTransform(QTransform(basis));
+	const QTransform basis(basisTriangle->coordTransform());
+	setTransform(basis);
 	TriangleCoords tc = basisTriangle->getCoords(m_xform->post);
 	setPoints(tc);
 	QBrush b(brush());
-	b.setMatrix(basis);
+	b.setTransform(basis);
 	setBrush(b);
 }
 

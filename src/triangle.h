@@ -68,7 +68,7 @@ class Triangle : public QGraphicsPolygonItem, public TransformableGraphicsItem
 		void setVisible(bool);
 		virtual int type() const;
 		int nextZPos();
-		const QMatrix& getCoordinateTransform();
+		const QTransform& getCoordinateTransform();
 		TriangleNodes& getNodes();
 		TriangleCoords getCoords();
 		virtual void coordsToXForm();
