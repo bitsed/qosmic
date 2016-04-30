@@ -38,8 +38,8 @@ FigureEditor::FigureEditor(GenomeVector* g, QGraphicsView* parent)
 	move_edge_mode(false), has_selection(false), is_selecting(false),
 	editing_post(false), menu_visible(false), move_border_size(10)
 {
-	QMatrix b(100.0, 0.0, 0.0, -100.0, 0.0, 0.0);
-	basisTriangle = new BasisTriangle(b);
+	QTransform b(1.0, 0.0, 0.0, -1.0, 0.0, 0.0);
+	basisTriangle = new BasisTriangle(this, b);
 
 	QSettings settings;
 	settings.beginGroup("figureeditor");
@@ -92,7 +92,6 @@ FigureEditor::FigureEditor(GenomeVector* g, QGraphicsView* parent)
 	editMode = (EditMode)settings.value("editmode", (int)Move).toInt();
 
 	setBackgroundBrush(Qt::black);
-	basisTriangle->setGraphicsScene(this);
 	addItem(basisTriangle);
 
 	infoItem = new QGraphicsSimpleTextItem();

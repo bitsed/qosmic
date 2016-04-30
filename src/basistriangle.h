@@ -39,12 +39,11 @@ class BasisTriangle : public QGraphicsPolygonItem
 		QPointF A, B, C;
 		enum { Type = UserType + 1 };
 
-		BasisTriangle(QMatrix, QPolygonF p=QPolygonF());
+		BasisTriangle(FigureEditor* xfedit, QTransform& m);
 		~BasisTriangle();
 		int type() const;
 		void setPoints(QPolygonF);
 		void setPoints(QPointF, QPointF, QPointF);
-		void setGraphicsScene(FigureEditor*);
 		const QMatrix& coordTransform() const;
 		void setCoordTransform(QMatrix);
 		void scale(double, double);

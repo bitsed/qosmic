@@ -19,24 +19,19 @@
 #include "xfedit.h"
 
 
-BasisTriangle::BasisTriangle(QMatrix t, QPolygonF p) :
-		coordinateTransform(t), canvas(0)
+BasisTriangle::BasisTriangle(FigureEditor* xfedit, QTransform& t)
+: coordinateTransform(t), canvas(xfedit)
 {
-	if (p.isEmpty())
-		p << QPointF(0.0,0.0) << QPointF(1.0,0.0) << QPointF(0.0,1.0);
+	QPolygonF p;
+	p << QPointF(0.0,0.0) << QPointF(1.0,0.0) << QPointF(0.0,1.0);
 	setPoints(p);
 	setZValue(0);
 	setPen( QPen(Qt::gray) );
-	setTransform(QTransform(t));
+	setTransform(t);
 }
 
 BasisTriangle::~BasisTriangle()
 {
-}
-
-void BasisTriangle::setGraphicsScene(FigureEditor* e)
-{
-	canvas = e;
 }
 
 void BasisTriangle::scale(double dx, double dy)
