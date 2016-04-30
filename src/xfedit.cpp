@@ -20,6 +20,7 @@
 #include <QGraphicsView>
 #include <QScrollBar>
 #include <QSettings>
+#include <QScreen>
 #include <cmath>
 
 #include "xfedit.h"
@@ -132,6 +133,11 @@ FigureEditor::FigureEditor(GenomeVector* g, QGraphicsView* parent)
 	coordinateMark->centerOn(QPointF(0.0,0.0));
 	coordinateMark->setVisible(transform_location == Mark);
 	coordinateMark->setZValue(0);
+
+	QRectF c(view->mapToScene(
+		QGuiApplication::primaryScreen()->geometry()).boundingRect());
+	screen_width  = c.width();
+	screen_height = c.height();
 
 	connect(triangleMenu, SIGNAL(triggered(QAction*)), this, SLOT(triangleMenuAction(QAction*)));
 	connect(addAction, SIGNAL(triggered()), this, SLOT(addTriangleAction()));
@@ -1561,11 +1567,10 @@ void FigureEditor::findViewCenter()
 
 void FigureEditor::adjustSceneRect()
 {
-	// Adjust the sceneRect so it covers just more than the items.  This
-	// helps reposition the sceneview and adjusts the scrollbars.  It also
-	// helps avoid some "jumpiness" that sometimes happens when moving
-	// a graphicsitem outside of the sceneRect.
-	setSceneRect(itemsSceneBounds().adjusted(-200.,-200.,200.,200.));
+	// Adjust the sceneRect to cover all items.
+	setSceneRect(
+		itemsSceneBounds().adjusted(
+			-screen_width,-screen_height,screen_width,screen_height));
 
 	if (infoItem->isVisible())
 	{
