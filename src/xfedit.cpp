@@ -1802,7 +1802,7 @@ void FigureEditor::setMarkVisible(bool flag)
 // the itemsBoundingRect.
 QRectF FigureEditor::itemsSceneBounds()
 {
-	QRectF bounds(basisTriangle->sceneBoundingRect());
+	QRectF bounds;
 	foreach (Triangle* t, trianglesList)
 		bounds = bounds.united(t->sceneBoundingRect());
 	if (editing_post)
