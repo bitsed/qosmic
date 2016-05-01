@@ -571,7 +571,7 @@ void FigureEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e)
 			else if (editMode == Move)
 				setTransformLocation(transform_location);
 			update();
-			if (dz != QPointF(0.0, 0.0) || wheel_moved)
+			if (!dz.isNull() || wheel_moved)
 				emit undoStateSignal();
 		}
 	}
@@ -1189,6 +1189,7 @@ void FigureEditor::wheelEvent(QGraphicsSceneWheelEvent* e)
 			else
 				rad = 0.8333;
 		}
+		moving_start = QPointF(0.0, 0.0);
 		scaleBasis(rad,rad);
 		e->accept();
 	}
