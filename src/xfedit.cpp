@@ -135,8 +135,7 @@ FigureEditor::FigureEditor(GenomeVector* g, QGraphicsView* parent)
 
 	QRectF c(view->mapToScene(
 		QGuiApplication::primaryScreen()->geometry()).boundingRect());
-	screen_width  = c.width();
-	screen_height = c.height();
+	scene_padding = qMax(c.width(), c.height());
 
 	connect(triangleMenu, SIGNAL(triggered(QAction*)), this, SLOT(triangleMenuAction(QAction*)));
 	connect(addAction, SIGNAL(triggered()), this, SLOT(addTriangleAction()));
@@ -1570,7 +1569,7 @@ void FigureEditor::adjustSceneRect()
 	// Adjust the sceneRect to cover all items.
 	setSceneRect(
 		itemsSceneBounds().adjusted(
-			-screen_width,-screen_height,screen_width,screen_height));
+			-scene_padding,-scene_padding,scene_padding,scene_padding));
 
 	if (infoItem->isVisible())
 	{

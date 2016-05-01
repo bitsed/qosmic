@@ -227,8 +227,7 @@ class FigureEditor : public QGraphicsScene, public QosmicWidget, public UndoStat
 		int move_border_size;
 		int preview_density;
 		int preview_depth;
-		int screen_width;
-		int screen_height;
+		int scene_padding;
 };
 
 
