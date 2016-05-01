@@ -1506,8 +1506,8 @@ void FigureEditor::reset()
 		selectTriangle(trianglesList.last());
 
 	// recenter the scene on the current center point in the view
-	QPointF view_center( view->mapToScene(view->frameRect()).boundingRect().center() );
-	transform().inverted().map(view_center.x(), view_center.y(), &scene_start.rx(), &scene_start.ry());
+	QRect v(QPoint(0,0), view->maximumViewportSize());
+	QPointF scene_start(view->mapToScene(v.center()));
 	adjustSceneRect();
 
 	logFiner(QString("FigureEditor::reset : sceneRect %1,%2")
@@ -1562,7 +1562,7 @@ void FigureEditor::findViewCenter()
 	else if (!moving_start.isNull())
 		view->centerOn(moving_start);
 	else
-		view->centerOn(basisTriangle->mapToScene(scene_start));
+		view->centerOn(scene_start);
 }
 
 void FigureEditor::adjustSceneRect()
@@ -1860,7 +1860,8 @@ void FigureEditor::scaleBasis(double dx, double dy)
 	transform().inverted().map(moving_start.x(), moving_start.y(), &cursor_start.rx(), &cursor_start.ry());
 
 	// recenter the scene on the current center point in the view
-	QPointF view_center( view->mapToScene(view->frameRect()).boundingRect().center() );
+	QRect v(QPoint(0,0), view->maximumViewportSize());
+	QPointF view_center(view->mapToScene(v.center()));
 	transform().inverted().map(view_center.x(), view_center.y(), &scene_start.rx(), &scene_start.ry());
 
 	basisTriangle->scale(dx, dy);
@@ -1888,6 +1889,9 @@ void FigureEditor::scaleBasis(double dx, double dy)
 
 	// put back the moving_start position
 	transform().map(cursor_start.x(), cursor_start.y(), &moving_start.rx(), &moving_start.ry());
+
+	// and the scene position under the center of the view
+	transform().map(scene_start.x(), scene_start.y(), &scene_start.rx(), &scene_start.ry());
 
 	// update the guide dimensions
 	graphicsGuide->update();
