@@ -133,10 +133,6 @@ FigureEditor::FigureEditor(GenomeVector* g, QGraphicsView* parent)
 	coordinateMark->setVisible(transform_location == Mark);
 	coordinateMark->setZValue(0);
 
-	QRectF c(view->mapToScene(
-		QGuiApplication::primaryScreen()->geometry()).boundingRect());
-	scene_padding = qMax(c.width(), c.height());
-
 	connect(triangleMenu, SIGNAL(triggered(QAction*)), this, SLOT(triangleMenuAction(QAction*)));
 	connect(addAction, SIGNAL(triggered()), this, SLOT(addTriangleAction()));
 	connect(cutAction, SIGNAL(triggered()), this, SLOT(cutTriangleAction()));
@@ -1202,7 +1198,7 @@ void FigureEditor::scaleInScene()
 
 void FigureEditor::scaleOutScene()
 {
-	scaleBasis(.9090, .9090);
+	scaleBasis(.9, .9);
 }
 
 void FigureEditor::triangleModifiedAction(Triangle* t)
@@ -1506,9 +1502,10 @@ void FigureEditor::reset()
 		selectTriangle(trianglesList.last());
 
 	// recenter the scene on the current center point in the view
-	QRect v(QPoint(0,0), view->maximumViewportSize());
-	QPointF scene_start(view->mapToScene(v.center()));
+	QRect vrect(QPoint(0,0), view->maximumViewportSize());
+	scene_start = view->mapToScene(vrect).boundingRect().center();
 	adjustSceneRect();
+	findViewCenter();
 
 	logFiner(QString("FigureEditor::reset : sceneRect %1,%2")
 			.arg(sceneRect().width())
@@ -1568,6 +1565,10 @@ void FigureEditor::findViewCenter()
 void FigureEditor::adjustSceneRect()
 {
 	// Adjust the sceneRect to cover all items.
+	QRectF c(view->mapToScene(
+		QRect(QPoint(0,0), view->maximumViewportSize())).boundingRect());
+	int scene_padding = qMax(c.width(), c.height());
+
 	setSceneRect(
 		itemsSceneBounds().adjusted(
 			-scene_padding,-scene_padding,scene_padding,scene_padding));
@@ -1860,9 +1861,9 @@ void FigureEditor::scaleBasis(double dx, double dy)
 	transform().inverted().map(moving_start.x(), moving_start.y(), &cursor_start.rx(), &cursor_start.ry());
 
 	// recenter the scene on the current center point in the view
-	QRect v(QPoint(0,0), view->maximumViewportSize());
-	QPointF view_center(view->mapToScene(v.center()));
-	transform().inverted().map(view_center.x(), view_center.y(), &scene_start.rx(), &scene_start.ry());
+	QRect vrect(QPoint(0,0), view->maximumViewportSize() - QSize(1,1));
+	QPolygonF view_center(view->mapToScene(vrect));
+	view_center = transform().inverted().map(view_center);
 
 	basisTriangle->scale(dx, dy);
 	bLabelA->setPos(basisTriangle->mapToScene(basisTriangle->A) + QPointF(-8.0,0.0));
@@ -1890,8 +1891,8 @@ void FigureEditor::scaleBasis(double dx, double dy)
 	// put back the moving_start position
 	transform().map(cursor_start.x(), cursor_start.y(), &moving_start.rx(), &moving_start.ry());
 
-	// and the scene position under the center of the view
-	transform().map(scene_start.x(), scene_start.y(), &scene_start.rx(), &scene_start.ry());
+	// position the scene under the center of the view
+	scene_start = transform().map(view_center).boundingRect().center();
 
 	// update the guide dimensions
 	graphicsGuide->update();
