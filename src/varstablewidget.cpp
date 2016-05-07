@@ -118,9 +118,22 @@ void VarsTableWidget::keyPressEvent(QKeyEvent* e)
 			}
 			break;
 
+		case Qt::Key_Delete:
+		case Qt::Key_Backspace:
+			clearVariationValue(currentIndex());
+			break;
+
 		default:
 			QTreeView::keyPressEvent(e);
 	}
+}
+
+void VarsTableWidget::clearVariationValue(QModelIndex idx) {
+	model()->setData(idx, QLocale().toString(0.0, 'f', vars_precision));
+	if (idx.parent().isValid())
+		emit valueUpdated(idx.parent().row());
+	else
+		emit valueUpdated(idx.row());
 }
 
 void VarsTableWidget::mousePressEvent(QMouseEvent* e)
@@ -141,20 +154,12 @@ void VarsTableWidget::mousePressEvent(QMouseEvent* e)
 				start_item = QModelIndex();
 			break;
 		}
+
 		case Qt::MidButton:
-		{
-			QModelIndex idx( indexAt(e->pos()) );
-			if (idx.column() == 0)
-			{
-				selectionModel()->clear();
-				model()->setData(idx.sibling(idx.row(), 1), 0);
-				if (idx.parent().isValid())
-					emit valueUpdated(idx.parent().row());
-				else
-					emit valueUpdated(idx.row());
-			}
+		case Qt::RightButton:
+			clearVariationValue(indexAt(e->pos()));
 			break;
-		}
+
 		default:
 			;
 	}

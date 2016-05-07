@@ -98,6 +98,7 @@ class VarsTableWidget : public QTreeView
 		void mouseReleaseEvent(QMouseEvent*);
 		void keyPressEvent(QKeyEvent*);
 		void showHideNullRows();
+		void clearVariationValue(QModelIndex);
 
 	protected slots:
 		void commitData(QWidget*);
