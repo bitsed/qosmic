@@ -123,6 +123,38 @@ void VarsTableWidget::keyPressEvent(QKeyEvent* e)
 			clearVariationValue(currentIndex());
 			break;
 
+		case Qt::Key_Space:
+			edit(currentIndex());
+			break;
+
+		case Qt::Key_Up:
+		case Qt::Key_Down:
+			if (e->modifiers() & (Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier )) {
+				double nstep = step;
+				if (e->modifiers() & Qt::ShiftModifier)
+					nstep *= 0.10;
+				else if (e->modifiers() & Qt::ControlModifier)
+					nstep *= 10.0;
+
+				if (e->key() == Qt::Key_Down)
+					nstep *= -1.0;
+
+				QModelIndex idx(currentIndex());
+				double item_data = idx.data().toDouble();
+				double inc_value = item_data + nstep;
+				if (qFuzzyCompare(1 + inc_value, 1 + 0.0))
+					inc_value = 0.0;
+				model()->setData(idx, QLocale().toString(inc_value, 'f', vars_precision));
+
+				if (idx.parent().isValid())
+					emit valueUpdated(idx.parent().row());
+				else
+					emit valueUpdated(idx.row());
+
+				e->accept();
+				break;
+			}
+
 		default:
 			QTreeView::keyPressEvent(e);
 	}
@@ -170,7 +202,6 @@ void VarsTableWidget::mouseMoveEvent(QMouseEvent* e)
 {
 	if ((e->buttons() & Qt::LeftButton) && start_item.isValid())
 	{
-		double item_data = start_item.data().toDouble();
 		double nstep = step;
 		if (e->modifiers() & Qt::ShiftModifier)
 			nstep *= 0.10;
@@ -183,7 +214,10 @@ void VarsTableWidget::mouseMoveEvent(QMouseEvent* e)
 		if (dy > 0)
 			nstep *= -1.0;
 
+		double item_data = start_item.data().toDouble();
 		double inc_value = item_data + nstep;
+		if (qFuzzyCompare(1 + inc_value, 1 + 0.0))
+			inc_value = 0.0;
 		model()->setData(start_item, QLocale().toString(inc_value, 'f', vars_precision));
 
 		if (start_item.parent().isValid())

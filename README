@@ -250,13 +250,35 @@ Alt+9   - Select triangle 9
 
 The following keys are bound when focused on a spinbox
 
-[            - Increase the wheel or drag multiplier by ten
-]            - Decrease the wheel or drag multiplier by ten
+[            - Increase the key, wheel, or drag multiplier by ten
+]            - Decrease the key, wheel, or drag multiplier by ten
 Ctrl+Shift+= - Increase the number of decimal places by one
 Ctrl+-       - Decrease the number of decimal places by one
 Up           - Increase the value by the current multiplier
 Down         - Decrease the value by the current multiplier
 Return       - Update the preview
+
+
+
+The following keys are bound when focused on a variation value editor
+
+[            - Increase the key or drag multiplier by ten
+]            - Decrease the key or drag multiplier by ten
+Ctrl+Shift+= - Increase the number of decimal places by one
+Ctrl+-       - Decrease the number of decimal places by one
+Alt+Up       - Increase the value by the current multiplier
+Ctrl+Up      - Increase the value by the current multiplier*10
+Shift+Up     - Increase the value by the current multiplier/10
+Alt+Down     - Decrease the value by the current multiplier
+Ctrl+Down    - Decrease the value by the current multiplier*10
+Shift+Down   - Decrease the value by the current multiplier/10
+Up           - Move up
+Down         - Move down
+Space        - Edit the variation value
+Delete       - Set the value to zero
+Backspace    - Set the value to zero
+Return       - Update the preview
+
 
 
 
