@@ -7,6 +7,6 @@ GenericName[ru]=Редактор фракталов Flam3
 Comment=A cosmic recursive flame fractal editor written in Qt
 Comment[ru]=Рекурсивный фрактальный редактор
 Exec=qosmic
-Icon=/usr/share/pixmaps/qosmicicon.xpm
+Icon=qosmicicon.xpm
 Terminal=false
 Categories=Qt;KDE;Graphics;
