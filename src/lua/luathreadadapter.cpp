@@ -27,28 +27,33 @@ Lua::LuaThreadAdapter::LuaThreadAdapter(MainWindow* mw, LuaThread* t, QObject* p
 {
 	logFine("Lua::LuaThreadAdapter::LuaThreadAdapter : const");
 	moveToThread(t);
-	connect(m_win, SIGNAL(mainWindowChanged()),
-			this, SLOT(mainWindowChangedSlot()), Qt::QueuedConnection);
-	connect(m_win->renderThread(), SIGNAL(flameRendered(RenderEvent*)),
-			this, SLOT(flameRenderedSlot(RenderEvent*)), Qt::QueuedConnection);
-	connect(m_thread, SIGNAL(scriptStopped()),
-			this, SLOT(mainWindowChangedSlot()), Qt::QueuedConnection);
-	connect(this, SIGNAL(updateSignal()), m_win->xformEditor(),
-			SLOT(reset()),  Qt::QueuedConnection);
+	connect(this, SIGNAL(updateSignal()), m_win->xformEditor(), SLOT(reset()));
 }
-
 
 Lua::LuaThreadAdapter::~LuaThreadAdapter()
 {
 	logFine("Lua::LuaThreadAdapter::LuaThreadAdapter : dest");
-	disconnect(m_win->renderThread(), SIGNAL(flameRendered(RenderEvent*)),
-			   this, SLOT(flameRenderedSlot(RenderEvent*)));
-	disconnect(m_win, SIGNAL(mainWindowChanged()),
-			   this, SLOT(mainWindowChangedSlot()));
-	disconnect(m_thread, SIGNAL(scriptStopped()),
-			   this, SLOT(mainWindowChangedSlot()));
-	disconnect(this, SIGNAL(updateSignal()),
-			   m_win->xformEditor(), SLOT(reset()));
+}
+
+
+void Lua::LuaThreadAdapter::listen(bool listen)
+{
+	if (listen)
+	{
+		connect(m_win, SIGNAL(mainWindowChanged()),
+			this, SLOT(mainWindowChangedSlot()),
+			Qt::QueuedConnection);
+		connect(m_win->renderThread(), SIGNAL(flameRendered(RenderEvent*)),
+			this, SLOT(flameRenderedSlot(RenderEvent*)),
+			Qt::QueuedConnection);
+	}
+	else
+	{
+		disconnect(m_win->renderThread(), SIGNAL(flameRendered(RenderEvent*)),
+			this, SLOT(flameRenderedSlot(RenderEvent*)));
+		disconnect(m_win, SIGNAL(mainWindowChanged()),
+			this, SLOT(mainWindowChangedSlot()));
+	}
 }
 
 

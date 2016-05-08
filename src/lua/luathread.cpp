@@ -34,6 +34,8 @@ LuaThread::LuaThread(MainWindow* m, QObject* parent)
 	lua_paths.append(";" + QOSMIC_USERDIR  + "/scripts/?.lua");
 	thread_adapter = new LuaThreadAdapter(m, this);
 	irandinit(&ctx, 0);
+	connect(this, SIGNAL(scriptStopped()),
+		thread_adapter, SLOT(mainWindowChangedSlot()), Qt::DirectConnection);
 }
 
 LuaThread::~LuaThread()
@@ -51,6 +53,7 @@ void LuaThread::run()
 	int selected = genomes->selected();
 	thread_adapter->resetModified();
 	thread_adapter->window()->setDialogsEnabled(false);
+	thread_adapter->listen(true);
 	lua_stopluathread_script = false;
 	lua_error.clear();
 
@@ -87,6 +90,7 @@ void LuaThread::run()
 		logFine("LuaThread::run : rendering preview for %d", current);
 		thread_adapter->renderPreview(current);
 	}
+	thread_adapter->listen(false);
 	emit scriptFinished();
 }
 
