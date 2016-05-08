@@ -55,9 +55,11 @@ class VarsTableModel : public QAbstractItemModel
 	QMap<QString, VarsTableItem*> variationItems;
 
 	public:
+		static const QString RESET;
+		static const QString CLEAR;
+
 		VarsTableModel(QObject* parent=0);
 		~VarsTableModel();
-
 		QModelIndex index (int, int, const QModelIndex& =QModelIndex()) const;
 		int columnCount (const QModelIndex& =QModelIndex()) const;
 		int rowCount (const QModelIndex& =QModelIndex()) const;
@@ -98,7 +100,8 @@ class VarsTableWidget : public QTreeView
 		void mouseReleaseEvent(QMouseEvent*);
 		void keyPressEvent(QKeyEvent*);
 		void showHideNullRows();
-		void clearVariationValue(QModelIndex);
+		void clearVariationValue(QModelIndex&);
+		void setModelData(QModelIndex&, double);
 
 	protected slots:
 		void commitData(QWidget*);

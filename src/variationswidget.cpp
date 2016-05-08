@@ -30,7 +30,10 @@ VariationsWidget::VariationsWidget(GenomeVector* gen, QWidget* parent)
 	model = new VarsTableModel();
 	m_variationsTable->setModel(model);
 	m_variationsTable->restoreSettings();
-	m_variationsTable->header()->resizeSections(QHeaderView::ResizeToContents);
+	m_variationsTable->header()->setStretchLastSection(false);
+	m_variationsTable->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+	m_variationsTable->header()->setSectionResizeMode(1, QHeaderView::Stretch);
+	m_variationsTable->header()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
 	m_variationValueEditor->restoreSettings();
 	lastVariation = "";
 

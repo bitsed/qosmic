@@ -274,6 +274,8 @@ Ctrl+Down    - Decrease the value by the current multiplier*10
 Shift+Down   - Decrease the value by the current multiplier/10
 Up           - Move up
 Down         - Move down
+Right        - Move right or expand tree
+Left         - Move left or collapse tree
 Space        - Edit the variation value
 Delete       - Set the value to zero
 Backspace    - Set the value to zero

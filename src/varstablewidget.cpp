@@ -23,6 +23,10 @@
 #include "logger.h"
 
 
+const QString VarsTableModel::RESET = QString("x");
+const QString VarsTableModel::CLEAR = QString(" ");
+
+
 VarsTableWidget::VarsTableWidget(QWidget* parent)
 	: QTreeView(parent)
 {
@@ -32,8 +36,6 @@ VarsTableWidget::VarsTableWidget(QWidget* parent)
 	setEditTriggers(QAbstractItemView::DoubleClicked);
 	setSelectionMode(QAbstractItemView::SingleSelection);
 	setSelectionBehavior(QAbstractItemView::SelectItems);
-	setAutoScroll(false);
-	header()->setStretchLastSection(true);
 	header()->setSectionsMovable(false);
 }
 
@@ -120,16 +122,34 @@ void VarsTableWidget::keyPressEvent(QKeyEvent* e)
 
 		case Qt::Key_Delete:
 		case Qt::Key_Backspace:
-			clearVariationValue(currentIndex());
-			break;
+			{
+				QModelIndex idx(currentIndex());
+				clearVariationValue(idx);
+				break;
+			}
 
 		case Qt::Key_Space:
-			edit(currentIndex());
-			break;
+			{
+				QModelIndex idx(currentIndex());
+				QModelIndex vidx(idx.sibling(idx.row(), 1));
+				setCurrentIndex(vidx);
+				edit(vidx);
+				break;
+			}
+
+		case Qt::Key_Right:
+			{
+				QModelIndex idx(currentIndex());
+				QTreeView::keyPressEvent(e);
+				if (idx.column() == 1)
+					setCurrentIndex(idx);
+				break;
+			}
 
 		case Qt::Key_Up:
 		case Qt::Key_Down:
-			if (e->modifiers() & (Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier )) {
+			if (e->modifiers() & (Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier ))
+			{
 				double nstep = step;
 				if (e->modifiers() & Qt::ShiftModifier)
 					nstep *= 0.10;
@@ -140,17 +160,12 @@ void VarsTableWidget::keyPressEvent(QKeyEvent* e)
 					nstep *= -1.0;
 
 				QModelIndex idx(currentIndex());
-				double item_data = idx.data().toDouble();
+				QModelIndex vidx(idx.sibling(idx.row(), 1));
+				double item_data = vidx.data().toDouble();
 				double inc_value = item_data + nstep;
 				if (qFuzzyCompare(1 + inc_value, 1 + 0.0))
 					inc_value = 0.0;
-				model()->setData(idx, QLocale().toString(inc_value, 'f', vars_precision));
-
-				if (idx.parent().isValid())
-					emit valueUpdated(idx.parent().row());
-				else
-					emit valueUpdated(idx.row());
-
+				setModelData(vidx, inc_value);
 				e->accept();
 				break;
 			}
@@ -160,12 +175,12 @@ void VarsTableWidget::keyPressEvent(QKeyEvent* e)
 	}
 }
 
-void VarsTableWidget::clearVariationValue(QModelIndex idx) {
-	model()->setData(idx, QLocale().toString(0.0, 'f', vars_precision));
-	if (idx.parent().isValid())
-		emit valueUpdated(idx.parent().row());
-	else
-		emit valueUpdated(idx.row());
+void VarsTableWidget::clearVariationValue(QModelIndex& idx) {
+	QModelIndex vidx(idx.sibling(idx.row(), 1));
+	if (model()->data(vidx).toDouble() == 0.0)
+		return;
+	setModelData(vidx, 0.0);
+	emit undoStateSignal();
 }
 
 void VarsTableWidget::mousePressEvent(QMouseEvent* e)
@@ -182,15 +197,15 @@ void VarsTableWidget::mousePressEvent(QMouseEvent* e)
 				start_value = start_item.data().toDouble();
 				e->accept();
 			}
+			else if (idx.column() == 2)
+			{
+				clearVariationValue(idx);
+				e->accept();
+				return;
+			}
 			else
 				start_item = QModelIndex();
-			break;
 		}
-
-		case Qt::MidButton:
-		case Qt::RightButton:
-			clearVariationValue(indexAt(e->pos()));
-			break;
 
 		default:
 			;
@@ -218,13 +233,7 @@ void VarsTableWidget::mouseMoveEvent(QMouseEvent* e)
 		double inc_value = item_data + nstep;
 		if (qFuzzyCompare(1 + inc_value, 1 + 0.0))
 			inc_value = 0.0;
-		model()->setData(start_item, QLocale().toString(inc_value, 'f', vars_precision));
-
-		if (start_item.parent().isValid())
-			emit valueUpdated(start_item.parent().row());
-		else
-			emit valueUpdated(start_item.row());
-
+		setModelData(start_item, inc_value);
 		e->accept();
 	}
 }
@@ -268,18 +277,25 @@ void VarsTableWidget::commitData(QWidget* editor)
 			double current_value(idx.data().toDouble());
 			double editor_value( lineEdit->text().toDouble(&ok) );
 			if (ok && current_value != editor_value)
-			{
-				model()->setData(idx, QLocale().toString(editor_value, 'f', vars_precision));
-
-				if (idx.parent().isValid())
-					emit valueUpdated(idx.parent().row());
-				else
-					emit valueUpdated(idx.row());
-			}
+				setModelData(idx, editor_value);
 		}
 	}
 }
 
+
+void VarsTableWidget::setModelData(QModelIndex& idx, double value)
+{
+	QModelIndex vidx(idx.sibling(idx.row(), 1));
+	QModelIndex ridx(idx.sibling(idx.row(), 2));
+	model()->setData(vidx, QLocale().toString(value, 'f', vars_precision));
+	model()->setData(ridx,
+		value == 0.0 ? VarsTableModel::CLEAR : VarsTableModel::RESET);
+
+	if (idx.parent().isValid())
+		emit valueUpdated(idx.parent().row());
+	else
+		emit valueUpdated(idx.row());
+}
 
 //------------------------------------------------------------------------------
 
@@ -349,7 +365,7 @@ VarsTableModel::VarsTableModel(QObject* parent) : QAbstractItemModel(parent),
 	decimals(2), activeColor(QColor(200,230,240)), inactiveColor(Qt::white)
 {
 	QList<QVariant> itemData;
-	itemData << "Variation" << "Value";
+	itemData << "Variation" << "Value" << " ";
 	rootItem = new VarsTableItem(itemData);
 
 	// variables map setup
@@ -371,14 +387,14 @@ VarsTableModel::VarsTableModel(QObject* parent) : QAbstractItemModel(parent),
 	foreach (QString variation, Util::variation_names())
 	{
 		itemData.clear();
-		itemData << variation << "0.0";
+		itemData << variation << "0.0" << " ";
 		VarsTableItem* item = new VarsTableItem(itemData, rootItem);
 		rootItem->appendChild(item);
 		if (variablesMap.contains(variation))
 			foreach (QString variable, *(variablesMap.value(variation)))
 			{
 				itemData.clear();
-				itemData << variable << "0.0";
+				itemData << variable << "0.0" << " ";
 				VarsTableItem* variableItem = new VarsTableItem(itemData, item);
 				item->appendChild(variableItem);
 			}
@@ -462,15 +478,18 @@ bool VarsTableModel::setData(const QModelIndex& index, const QVariant& value, in
 		return false;
 
 	logFine(QString("VarsTableModel::setData : (%1,%2) %3").arg(index.row()).arg(index.column()).arg(value.toString()));
-	if (index.column() == 1)
+	if (index.column() > 0)
 	{
 		VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
 		if (item->setData(index.column(), value))
 		{
-			if (item->parent() == rootItem)
-				xform->var[index.row()] = value.toDouble();
-			else
-				Util::set_xform_variable(xform, item->data(0).toString(), value.toDouble());
+			if (index.column() == 1)
+			{
+				if (item->parent() == rootItem)
+					xform->var[index.row()] = value.toDouble();
+				else
+					Util::set_xform_variable(xform, item->data(0).toString(), value.toDouble());
+			}
 
 			emit dataChanged(index, index);
 			return true;
@@ -521,7 +540,7 @@ Qt::ItemFlags VarsTableModel::flags(const QModelIndex& index) const
 	if (index.column() == 1)
 		return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 
-	return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+	return Qt::ItemIsEnabled;
 }
 
 QVariant VarsTableModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -556,6 +575,7 @@ void VarsTableModel::updateVarsTableItem(VarsTableItem* item, double value)
 {
 	QLocale l;
 	item->setData(1, l.toString(value, 'f', decimals));
+	item->setData(2, value == 0.0 ? CLEAR : RESET);
 	int children = item->childCount();
 	if (children > 0)
 		for (int n = 0 ; n < children ; n++)
@@ -563,6 +583,7 @@ void VarsTableModel::updateVarsTableItem(VarsTableItem* item, double value)
 			VarsTableItem* child = item->child(n);
 			double value = Util::get_xform_variable(xform, child->data(0).toString());
 			child->setData(1, l.toString(value, 'f', decimals));
+			child->setData(2, value == 0.0 ? CLEAR : RESET);
 		}
 }
 
