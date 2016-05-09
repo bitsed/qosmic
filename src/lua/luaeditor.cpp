@@ -171,6 +171,7 @@ void LuaEditor::keyPressEvent(QKeyEvent* e)
 			c.setPosition(pos);
 			c.insertText("\n" + ws);
 			c.endEditBlock();
+			ensureCursorVisible();
 		}
 		else
 			QTextEdit::keyPressEvent(e);
