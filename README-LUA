@@ -337,6 +337,21 @@ while true do
 end
 
 
+-- The dialog() function can be used to collect input from the user
+
+prompt = "enter a number"
+text   = 2
+while not ok do
+    ok, text = dialog(prompt, text)
+    local n = tonumber(text)
+    if n then
+        print('got number', n)
+    else
+        prompt = 'not a number, try again'
+        ok = false
+    end
+end
+
 
 --
 -- Variation Types

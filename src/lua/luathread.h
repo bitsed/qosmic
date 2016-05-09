@@ -40,6 +40,9 @@ class LuaThread : public QThread
 	QString lua_paths;
 	bool lua_stopluathread_script;
 	randctx ctx;
+	bool input_response;
+	bool input_response_ok;
+	QString input_response_text;
 
 	public:
 		LuaThread(MainWindow* m, QObject* parent=0);
@@ -54,15 +57,19 @@ class LuaThread : public QThread
 		bool stopping() const;
 		QString getMessage();
 		void emitScriptOutput(const QString&);
+		void emitScriptInputRequest(const QString&, const QString&);
 		static int lua_stopluathread(lua_State*);
 		static int lua_irand(lua_State*);
 		static int lua_msleep(lua_State*);
 		static int lua_print(lua_State*);
+		static int lua_dialog(lua_State*);
+		void scriptInputResponse(bool, QString&);
 
 	signals:
 		void scriptFinished();
 		void scriptStopped();
 		void scriptHasOutput(const QString&);
+		void scriptInputRequest(const QString&, const QString&);
 
 	protected:
 		void lua_load_environment(lua_State*);

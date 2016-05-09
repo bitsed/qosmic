@@ -43,6 +43,7 @@ class ScriptEditWidget : public QWidget, private Ui::ScriptEditWidget
 		void scriptLoadedAction();
 		void scriptSavedAction();
 		void loadScript(const QString&);
+		void scriptInputDialog(const QString&, const QString&);
 
 	protected slots:
 		void runButtonPressedAction();

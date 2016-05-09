@@ -16,6 +16,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 #include <QSettings>
+#include <QInputDialog>
 
 #include "scripteditwidget.h"
 #include "mainwindow.h"
@@ -55,7 +56,19 @@ ScriptEditWidget::ScriptEditWidget(MainWindow* m, QWidget* parent)
 	connect(m_scriptEdit, SIGNAL(cursorPositionChanged()), this, SLOT(updateCursorLabel()));
 	connect(&lua_thread,  SIGNAL(scriptFinished()), this, SLOT(scriptFinishedAction()));
 	connect(&lua_thread,  SIGNAL(scriptHasOutput(const QString&)), this, SLOT(appendScriptOutput(const QString&)));
+	connect(&lua_thread,  SIGNAL(scriptInputRequest(const QString&, const QString&)),
+		this, SLOT(scriptInputDialog(const QString&, const QString&)));
 }
+
+
+void ScriptEditWidget::scriptInputDialog(const QString& prompt, const QString& text)
+{
+	bool ok;
+	QString response(QInputDialog::getText(this, tr("Script input request"),
+		prompt, QLineEdit::Normal, text, &ok, Qt::Dialog));
+	lua_thread.scriptInputResponse(ok, response);
+}
+
 
 void ScriptEditWidget::updateCursorLabel()
 {

@@ -169,6 +169,43 @@ int LuaThread::lua_print(lua_State* L)
 }
 
 
+void LuaThread::scriptInputResponse(bool ok, QString& response)
+{
+	input_response_text = response;
+	input_response_ok = ok;
+	input_response = true;
+}
+
+void LuaThread::emitScriptInputRequest(const QString& prompt, const QString& text)
+{
+	input_response = false;
+	input_response_ok = false;
+	input_response_text = QString();
+	emit scriptInputRequest(prompt, text);
+}
+
+int LuaThread::lua_dialog(lua_State* L)
+{
+	LuaThread* p = static_cast<LuaThread*>(lua_touserdata(L, lua_upvalueindex(1)));
+	if (p)
+	{
+		const QString prompt(luaL_optstring(L, 1, "?"));
+		const QString   text(luaL_optstring(L, 2, ""));
+		p->emitScriptInputRequest(prompt, text);
+
+		while (!p->input_response)
+			p->msleep(100);
+
+		lua_pushboolean(L, p->input_response_ok);
+		lua_pushstring(L, p->input_response_text.toLatin1().constData());
+	}
+	else
+		return luaL_error(L, "stack has no thread ref", "");
+
+	return 2;
+}
+
+
 int LuaThread::lua_irand(lua_State* L)
 {
 	LuaThread* p = static_cast<LuaThread*>(lua_touserdata(L, lua_upvalueindex(1)));
@@ -243,6 +280,10 @@ void LuaThread::lua_load_environment(lua_State* L)
 	lua_pushlightuserdata(L, (void*)this);
 	lua_pushcclosure(L, &LuaThread::lua_print, 1);
 	lua_setglobal(L, "print");
+
+	lua_pushlightuserdata(L, (void*)this);
+	lua_pushcclosure(L, &LuaThread::lua_dialog, 1);
+	lua_setglobal(L, "dialog");
 
 	// global flam3 variation constants
 	lua_pushinteger(L, VAR_LINEAR + 1); lua_setglobal(L, "LINEAR");
