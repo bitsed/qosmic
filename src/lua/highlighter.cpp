@@ -78,22 +78,90 @@ Highlighter::Highlighter(QTextDocument *parent)
 	rule.format = singleLineCommentFormat;
 	highlightingRules.append(rule);
 
+	multiLineCommentFormat.setForeground(Qt::gray);
+	multiLineCommentFormat.setFontItalic(true);
+
+	multiLineStringExpression  = QRegExp("\\[(=*)\\[");
+	multiLineCommentExpression = QRegExp("--[^\n]*\\[=*\\[");
 }
+
 
 void Highlighter::highlightBlock(const QString &text)
 {
-	foreach (HighlightingRule rule, highlightingRules)
+	setCurrentBlockState(0);
+
+	int level = 0;
+	int iscomment = 0;
+	int startIndex = 0;
+	int previousState = previousBlockState();
+
+	if (previousState < 1)
 	{
-		QRegExp expression(rule.pattern);
-		int index = text.indexOf(expression);
-		while (index >= 0)
+		// Apply these rules if not in a multi-line comment block
+		foreach (HighlightingRule rule, highlightingRules)
 		{
-			int length = expression.matchedLength();
-			setFormat(index, length, rule.format);
-			index = text.indexOf(expression, index + length);
+			QRegExp expression(rule.pattern);
+			int index = text.indexOf(expression);
+			while (index >= 0)
+			{
+				int length = expression.matchedLength();
+				setFormat(index, length, rule.format);
+				index = text.indexOf(expression, index + length);
+			}
 		}
+
+		// Look for a mutli-line string in this block
+		startIndex = text.indexOf(multiLineStringExpression);
+	}
+	else
+	{
+		level     = (previousState & 0x0f) - 1;
+		iscomment =  previousState & 0x10;
+	}
+
+	//
+	// Determine if the current block is in a multi-line comment/string.
+	//
+	// The current comment level is saved in the current block state.  The
+	// comment level is equal to the number of '=' characters in a long string
+	// token (eg. "[==[" has level 2).
+	//
+	// A block state value greater than zero indicates a previous or current
+	// comment block.  The comment level is one less than the block state
+	// value.  A flag in bit four indicates if the block is a multi-line
+	// comment or a quoted string.
+	//
+	while (startIndex >= 0)
+	{
+		if (multiLineStringExpression.matchedLength() > 0)
+		{
+			level = multiLineStringExpression.cap(1).length();
+			int idx = text.indexOf(multiLineCommentExpression);
+			if (idx >= 0)
+			{
+				startIndex = idx;
+				iscomment  = 0x10;
+			}
+		}
+
+		QRegExp endExpression(QString("\\]={%1}\\]").arg(level));
+		int endIndex = text.indexOf(endExpression, startIndex);
+		int commentLength;
+		if (endIndex == -1)
+		{
+			setCurrentBlockState(1 + level + iscomment);
+			commentLength = text.length() - startIndex;
+		}
+		else
+		{
+			commentLength = endIndex - startIndex
+				+ endExpression.matchedLength();
+		}
+		setFormat(startIndex, commentLength,
+			iscomment ? multiLineCommentFormat : quotationFormat);
+		startIndex = text.indexOf(multiLineStringExpression,
+			startIndex + commentLength);
 	}
 }
 
-
-}
+};

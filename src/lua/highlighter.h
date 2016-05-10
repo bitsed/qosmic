@@ -45,7 +45,10 @@ class Highlighter : public QSyntaxHighlighter
 		QTextCharFormat quotationFormat;
 		QTextCharFormat functionFormat;
 		QTextCharFormat constantFormat;
- };
+
+		QRegExp multiLineStringExpression;
+		QRegExp multiLineCommentExpression;
+};
 
 }
 
