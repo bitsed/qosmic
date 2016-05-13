@@ -695,6 +695,12 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 					sx = 1.0;
 				if ( (trect.height() < blen*2.0) )
 					sy = 1.0;
+				if (e->modifiers() & Qt::ControlModifier) {
+					if (e->modifiers() & Qt::ShiftModifier)
+						sy = 1.0;
+					else
+						sx = 1.0;
+				}
 				if ((sx != 1.0) || (sy != 1.0))
 				{
 					if (t->type() == TriangleSelection::Type)
