@@ -492,14 +492,9 @@ void DirectoryViewWidget::zoomInButtonClicked()
 	if (view_type == DETAILED)
 		view = m_treeView;
 
-	QSize s(view->iconSize());
-	if (s.width() < 16)
-		s = QSize(16, 16);
-	if (s.width() <= 120)
-	{
-		s += QSize( dx, dx );
+	QSize s(view->iconSize() + QSize(dx, dx));
+	if (s.width() <= 128)
 		view->setIconSize(s);
-	}
 }
 
 void DirectoryViewWidget::zoomOutButtonClicked()
@@ -509,11 +504,8 @@ void DirectoryViewWidget::zoomOutButtonClicked()
 	if (view_type == DETAILED)
 		view = m_treeView;
 
-	QSize s(view->iconSize());
-	if (s.width() >= 24)
-	{
-		s += QSize( dx, dx );
+	QSize s(view->iconSize() + QSize(dx, dx));
+	if (s.width() >= 8)
 		view->setIconSize(s);
-	}
 }
 

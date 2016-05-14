@@ -107,13 +107,10 @@ void DirectoryListView::wheelEvent(QWheelEvent* e)
 {
 	if (e->modifiers() & Qt::ControlModifier)
 	{
-		QSize s(iconSize());
 		int dx( 8 * ( e->delta() > 0 ? 1 : -1 ) );
-		if (s.width() < 9 && dx < 0)
-			return;
-		s += QSize( dx, dx );
-		logInfo(QString("DirectoryListView::setting icon size : dx %1").arg(s.width()));
-		setIconSize(s);
+		QSize s(iconSize() + QSize(dx, dx));
+		if (s.width() >= 8 && s.width() <= 128)
+			setIconSize(s);
 	}
 	else
 		QListView::wheelEvent(e);
