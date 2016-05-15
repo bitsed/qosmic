@@ -51,6 +51,7 @@ class RenderDialog : public QDialog, private Ui::RenderDialog
 		QStringList presets;
 		QString size;
 		QString preset;
+		QString nopreset;
 
 		QRegExpValidator sizeValidator;
 };

@@ -30,6 +30,7 @@ GenomeVector::GenomeVector()
 	preview_size   = s.value("previewsize", QSize(72, 56)).toSize();
 	preview_preset = s.value("previewpreset", ViewerPresetsModel::getInstance()->presetNames().first()).toString();
 	auto_save = (AutoSave)s.value("autosave", SaveOnExit).toInt();
+	request_name = tr("selector");
 	enable_previews = true;
 	use_previews = 0;
 	createClockPreview();
@@ -89,7 +90,7 @@ void GenomeVector::setCapacity(int entries)
 		for (int n = 0 ; n < r_requests.size() ; n++)
 		{
 			RenderRequest* req = r_requests.at(n);
-			if (req->name() == "selector" && !req->finished())
+			if (req->name() == request_name && !req->finished())
 				updatePreview(n);
 		}
 		r_thread->running_mutex.unlock();
@@ -130,7 +131,7 @@ void GenomeVector::insert(int i, int count, flam3_genome* genomes)
 			previews.insert(n, QVariant());
 		if (r_requests.size() <= n)
 		{
-			RenderRequest* req = new RenderRequest(0, preview_size, "selector", RenderRequest::Queued);
+			RenderRequest* req = new RenderRequest(0, preview_size, request_name, RenderRequest::Queued);
 			req->setImagePresets(preset);
 			r_requests.insert(n, req);
 		}
@@ -149,7 +150,7 @@ void GenomeVector::insert(int i, const flam3_genome& g)
 		previews.insert(i, QVariant());
 	if (r_requests.size() <= i)
 	{
-		RenderRequest* req = new RenderRequest(0, preview_size, "selector", RenderRequest::Queued);
+		RenderRequest* req = new RenderRequest(0, preview_size, request_name, RenderRequest::Queued);
 		req->setImagePresets(ViewerPresetsModel::getInstance()->preset(preview_preset));
 		r_requests.insert(i, req);
 	}
@@ -390,7 +391,7 @@ QVariant GenomeVector::data(const QModelIndex& idx, int role) const
 	if (role == Qt::DisplayRole || role == Qt::EditRole)
 	{
 		flam3_genome* g = const_cast<flam3_genome*>(QVector<flam3_genome>::data()) + row;
-		return QString("%1 xforms\ntime: %2").arg(g->num_xforms).arg(g->time);
+		return tr("%1 xforms\ntime: %2").arg(g->num_xforms).arg(g->time);
 	}
 
 	if (role == Qt::DecorationRole && row < previews.size())
@@ -411,11 +412,11 @@ QMap<int, QVariant> GenomeVector::itemData(const QModelIndex& index) const
 		return map;
 	}
 	flam3_genome* g = const_cast<flam3_genome*>(QVector<flam3_genome>::data()) + row;
-	QString s( QString("%1 xforms\ntime: %2").arg(g->num_xforms).arg(g->time) );
+	QString s( tr("%1 xforms\ntime: %2").arg(g->num_xforms).arg(g->time) );
 	map.insert(Qt::DisplayRole, s);
 	map.insert(Qt::EditRole, s);
 	map.insert(Qt::DecorationRole, previews.at(row));
-	map.insert(Qt::ToolTipRole, QString("genome %1").arg(row + 1));
+	map.insert(Qt::ToolTipRole, tr("genome %1").arg(row + 1));
 
 	return map;
 }
@@ -501,7 +502,7 @@ QVariant GenomeVector::headerData(int section, Qt::Orientation /*orientation*/, 
 		return QVariant();
 
 	int row = section;
-	return QString("Genome %1").arg(row);
+	return tr("Genome %1").arg(row);
 }
 
 void GenomeVector::updatePreviews()
@@ -548,7 +549,7 @@ void GenomeVector::updateSelectedPreview()
 void GenomeVector::flameRenderedAction(RenderEvent* e)
 {
 	RenderRequest* req = e->request();
-	if (req->type() == RenderRequest::Queued && req->name() == "selector")
+	if (req->type() == RenderRequest::Queued && req->name() == request_name)
 	{
 		int idx = r_requests.indexOf(req, 0);
 

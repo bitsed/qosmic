@@ -28,13 +28,13 @@ MotionViewVarItemEditor::MotionViewVarItemEditor(const MotionViewItemDelegate* d
 : QComboBox(p), m_delegate(d)
 {
 	QStringList items;
-	items << "animate" << "color" << "color_speed" << "density" << "opacity";
+	items << tr("animate") << tr("color") << tr("color_speed") << tr("density") << tr("opacity");
 	foreach (QString s, Util::variation_names())
-		items << QString("var: ") + s;
+		items << tr("var: ") + s;
 	foreach (QString s, Util::get_variable_names())
-		items << QString("par: ") + s;
-	items << "xform: a" << "xform: b" << "xform: c" << "xform: d" << "xform: e" << "xform: f"
-		  << "post: a" << "post: b" << "post: c" << "post: d" << "post: e" << "post: f";
+		items << tr("par: ") + s;
+	items << tr("xform: a") << tr("xform: b") << tr("xform: c") << tr("xform: d") << tr("xform: e") << tr("xform: f")
+		  << tr("post: a") << tr("post: b") << tr("post: c") << tr("post: d") << tr("post: e") << tr("post: f");
 	addItems(items);
 	connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxCurrentIndexChanged(int)));
 }
@@ -50,7 +50,7 @@ void MotionViewVarItemEditor::comboBoxCurrentIndexChanged(int /*idx*/)
 MotionViewFunctionItemEditor::MotionViewFunctionItemEditor(const MotionViewItemDelegate* d, QWidget* p)
 : QComboBox(p), m_delegate(d)
 {
-	addItems(QStringList() << "sin" << "hill" << "triangle");
+	addItems(QStringList() << tr("sin") << tr("hill") << tr("triangle"));
 	connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxCurrentIndexChanged(int)));
 }
 
@@ -218,10 +218,10 @@ void SheepLoopWidget::xformIdxBoxIndexChanged(int idx)
 	m_animateButton->setChecked(xform->animate);
 	model->clear();
 	model->setHorizontalHeaderLabels(QStringList()
-	<< QString("element")
-	<< QString("value")
-	<< QString("function")
-	<< QString("frequency"));
+	<< tr("element")
+	<< tr("value")
+	<< tr("function")
+	<< tr("frequency"));
 	connect(model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(motionItemChanged(QStandardItem*)));
 	for (int n = 0 ; n < xform->num_motion ; n++)
 	{
@@ -236,7 +236,7 @@ void SheepLoopWidget::xformIdxBoxIndexChanged(int idx)
 			}
 		if (var_idx != -1)
 		{
-			model->setItem(n, 0, new QStandardItem(QString("var: ") + Util::variation_names().at(var_idx)));
+			model->setItem(n, 0, new QStandardItem(tr("var: ") + Util::variation_names().at(var_idx)));
 			model->setItem(n, 1, new QStandardItem(QString::number(motion->var[var_idx])));
 		}
 		else
@@ -247,7 +247,7 @@ void SheepLoopWidget::xformIdxBoxIndexChanged(int idx)
 				double val = Util::get_xform_variable(motion, s);
 				if (val != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("par: ") + s));
+					model->setItem(n, 0, new QStandardItem(tr("par: ") + s));
 					model->setItem(n, 1, new QStandardItem(QString::number(val)));
 					found_val = true;
 					break;
@@ -257,97 +257,97 @@ void SheepLoopWidget::xformIdxBoxIndexChanged(int idx)
 			{
 				if (motion->animate != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("animate")));
+					model->setItem(n, 0, new QStandardItem(tr("animate")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->animate)));
 				}
 				else if (motion->color != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("color")));
+					model->setItem(n, 0, new QStandardItem(tr("color")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->color)));
 				}
 				else if (motion->color_speed != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("color_speed")));
+					model->setItem(n, 0, new QStandardItem(tr("color_speed")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->color_speed)));
 				}
 				else if (motion->density != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("density")));
+					model->setItem(n, 0, new QStandardItem(tr("density")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->density)));
 				}
 				else if (motion->opacity != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("opacity")));
+					model->setItem(n, 0, new QStandardItem(tr("opacity")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->opacity)));
 				}
 				else if (motion->c[0][0] != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("xform: a")));
+					model->setItem(n, 0, new QStandardItem(tr("xform: a")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->c[0][0])));
 				}
 				else if (motion->c[1][0] != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("xform: b")));
+					model->setItem(n, 0, new QStandardItem(tr("xform: b")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->c[1][0])));
 				}
 				else if (motion->c[2][0] != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("xform: c")));
+					model->setItem(n, 0, new QStandardItem(tr("xform: c")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->c[2][0])));
 				}
 				else if (motion->c[0][1] != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("xform: d")));
+					model->setItem(n, 0, new QStandardItem(tr("xform: d")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->c[0][1])));
 				}
 				else if (motion->c[1][1] != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("xform: e")));
+					model->setItem(n, 0, new QStandardItem(tr("xform: e")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->c[1][1])));
 				}
 				else if (motion->c[2][1] != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("xform: f")));
+					model->setItem(n, 0, new QStandardItem(tr("xform: f")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->c[2][1])));
 				}
 				else if (motion->post[0][0] != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("post: a")));
+					model->setItem(n, 0, new QStandardItem(tr("post: a")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->post[0][0])));
 				}
 				else if (motion->post[1][0] != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("post: b")));
+					model->setItem(n, 0, new QStandardItem(tr("post: b")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->post[1][0])));
 				}
 				else if (motion->post[2][0] != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("post: c")));
+					model->setItem(n, 0, new QStandardItem(tr("post: c")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->post[2][0])));
 				}
 				else if (motion->post[0][1] != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("post: d")));
+					model->setItem(n, 0, new QStandardItem(tr("post: d")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->post[0][1])));
 				}
 				else if (motion->post[1][1] != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("post: e")));
+					model->setItem(n, 0, new QStandardItem(tr("post: e")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->post[1][1])));
 				}
 				else if (motion->post[2][1] != 0.0)
 				{
-					model->setItem(n, 0, new QStandardItem(QString("post: f")));
+					model->setItem(n, 0, new QStandardItem(tr("post: f")));
 					model->setItem(n, 1, new QStandardItem(QString::number(motion->post[2][1])));
 				}
 			}
 		}
 		if (motion->motion_func == MOTION_SIN)
-			model->setItem(n, 2, new QStandardItem("sin"));
+			model->setItem(n, 2, new QStandardItem(tr("sin")));
 		else if (motion->motion_func == MOTION_HILL)
-			model->setItem(n, 2, new QStandardItem("hill"));
+			model->setItem(n, 2, new QStandardItem(tr("hill")));
 		else
-			model->setItem(n, 2, new QStandardItem("triangle"));
+			model->setItem(n, 2, new QStandardItem(tr("triangle")));
 		model->setItem(n, 3, new QStandardItem(QString::number(motion->motion_freq)));
 	}
 	m_motionElementsView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
@@ -374,50 +374,50 @@ void SheepLoopWidget::motionItemChanged(QStandardItem* item)
 			memset(motion, 0, sizeof(flam3_xform));
 			QString name = item->text();
 			double value = i->data(Qt::DisplayRole).toDouble();
-			if (name.startsWith("var: "))
+			if (name.startsWith(tr("var: ")))
 			{
 				name = name.remove(0,5);
 				logFine(QString("SheepLoopWidget::motionItemChanged setting var '%1'").arg(name));
 				motion->var[Util::flam3_variations().value(name)] = value;
 			}
-			else if (name.startsWith("par: "))
+			else if (name.startsWith(tr("par: ")))
 			{
 				name = name.remove(0,5);
 				Util::set_xform_variable(motion, name, value);
 			}
-			else if (name == "animate")
+			else if (name == tr("animate"))
 				motion->animate = value;
-			else if (name == "color")
+			else if (name == tr("color"))
 				motion->color = value;
-			else if (name == "color_speed")
+			else if (name == tr("color_speed"))
 				motion->color_speed = value;
-			else if (name == "density")
+			else if (name == tr("density"))
 				motion->density = value;
-			else if (name == "opacity")
+			else if (name == tr("opacity"))
 				motion->opacity = value;
-			else if (name == "xform: a")
+			else if (name == tr("xform: a"))
 				motion->c[0][0] = value;
-			else if (name == "xform: b")
+			else if (name == tr("xform: b"))
 				motion->c[1][0] = value;
-			else if (name == "xform: c")
+			else if (name == tr("xform: c"))
 				motion->c[2][0] = value;
-			else if (name == "xform: d")
+			else if (name == tr("xform: d"))
 				motion->c[0][1] = value;
-			else if (name == "xform: e")
+			else if (name == tr("xform: e"))
 				motion->c[1][1] = value;
-			else if (name == "xform: f")
+			else if (name == tr("xform: f"))
 				motion->c[2][1] = value;
-			else if (name == "post: a")
+			else if (name == tr("post: a"))
 				motion->post[0][0] = value;
-			else if (name == "post: b")
+			else if (name == tr("post: b"))
 				motion->post[1][0] = value;
-			else if (name == "post: c")
+			else if (name == tr("post: c"))
 				motion->post[2][0] = value;
-			else if (name == "post: d")
+			else if (name == tr("post: d"))
 				motion->post[0][1] = value;
-			else if (name == "post: e")
+			else if (name == tr("post: e"))
 				motion->post[1][1] = value;
-			else if (name == "post: f")
+			else if (name == tr("post: f"))
 				motion->post[2][1] = value;
 			else
 				logWarn(QString("SheepLoopWidget::motionItemChanged : unknown element %1").arg(name));
@@ -434,50 +434,50 @@ void SheepLoopWidget::motionItemChanged(QStandardItem* item)
 			memset(motion, 0, sizeof(flam3_xform));
 			QString name = i->text();
 			double value = item->data(Qt::DisplayRole).toDouble();
-			if (name.startsWith("var: "))
+			if (name.startsWith(tr("var: ")))
 			{
 				name = name.remove(0,5);
 				logFine(QString("SheepLoopWidget::motionItemChanged setting var '%1'").arg(name));
 				motion->var[Util::flam3_variations().value(name)] = value;
 			}
-			else if (name.startsWith("par: "))
+			else if (name.startsWith(tr("par: ")))
 			{
 				name = name.remove(0,5);
 				Util::set_xform_variable(motion, name, value);
 			}
-			else if (name == "animate")
+			else if (name == tr("animate"))
 				motion->animate = value;
-			else if (name == "color")
+			else if (name == tr("color"))
 				motion->color = value;
-			else if (name == "color_speed")
+			else if (name == tr("color_speed"))
 				motion->color_speed = value;
-			else if (name == "density")
+			else if (name == tr("density"))
 				motion->density = value;
-			else if (name == "opacity")
+			else if (name == tr("opacity"))
 				motion->opacity = value;
-			else if (name == "xform: a")
+			else if (name == tr("xform: a"))
 				motion->c[0][0] = value;
-			else if (name == "xform: b")
+			else if (name == tr("xform: b"))
 				motion->c[1][0] = value;
-			else if (name == "xform: c")
+			else if (name == tr("xform: c"))
 				motion->c[2][0] = value;
-			else if (name == "xform: d")
+			else if (name == tr("xform: d"))
 				motion->c[0][1] = value;
-			else if (name == "xform: e")
+			else if (name == tr("xform: e"))
 				motion->c[1][1] = value;
-			else if (name == "xform: f")
+			else if (name == tr("xform: f"))
 				motion->c[2][1] = value;
-			else if (name == "post: a")
+			else if (name == tr("post: a"))
 				motion->post[0][0] = value;
-			else if (name == "post: b")
+			else if (name == tr("post: b"))
 				motion->post[1][0] = value;
-			else if (name == "post: c")
+			else if (name == tr("post: c"))
 				motion->post[2][0] = value;
-			else if (name == "post: d")
+			else if (name == tr("post: d"))
 				motion->post[0][1] = value;
-			else if (name == "post: e")
+			else if (name == tr("post: e"))
 				motion->post[1][1] = value;
-			else if (name == "post: f")
+			else if (name == tr("post: f"))
 				motion->post[2][1] = value;
 			else
 				logWarn(QString("SheepLoopWidget::motionItemChanged : unknown element %1").arg(name));
@@ -488,9 +488,9 @@ void SheepLoopWidget::motionItemChanged(QStandardItem* item)
 	else if (col == 2)
 	{
 		QString m_func = item->text();
-		if (m_func == "sin")
+		if (m_func == tr("sin"))
 			motion->motion_func = MOTION_SIN;
-		else if (m_func == "hill")
+		else if (m_func == tr("hill"))
 			motion->motion_func = MOTION_HILL;
 		else
 			motion->motion_func = MOTION_TRIANGLE;
@@ -510,9 +510,9 @@ void SheepLoopWidget::addNewMotionElement()
 	flam3_add_motion_element(xform);
 	QStandardItemModel* model = qobject_cast<QStandardItemModel*>(m_motionElementsView->model());
 	int row = model->rowCount();
-	model->setItem(row, 0, new QStandardItem("var: linear"));
+	model->setItem(row, 0, new QStandardItem(tr("var: linear")));
 	model->setItem(row, 1, new QStandardItem("1"));
-	model->setItem(row, 2, new QStandardItem("sin"));
+	model->setItem(row, 2, new QStandardItem(tr("sin")));
 	model->setItem(row, 3, new QStandardItem("1"));
 }
 

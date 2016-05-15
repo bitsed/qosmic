@@ -33,7 +33,7 @@ ScriptEditWidget::ScriptEditWidget(MainWindow* m, QWidget* parent)
 
 	QFont font(s.value("editorfont", m_scriptEdit->currentFont()).value<QFont>());
 	m_scriptEdit->setCurrentFont(font);
-	m_scriptEdit->setPlainText(s.value("editortext", "print('hello world.')").toString());
+	m_scriptEdit->setPlainText(s.value("editortext", tr("print('hello world.')")).toString());
 	lua_thread.setLuaPaths(s.value("luapaths", lua_thread.luaPaths()).toString());
 
 	QTextCharFormat fmt(m_printOutputEdit->currentCharFormat());

@@ -365,7 +365,7 @@ VarsTableModel::VarsTableModel(QObject* parent) : QAbstractItemModel(parent),
 	decimals(2), activeColor(QColor(200,230,240)), inactiveColor(Qt::white)
 {
 	QList<QVariant> itemData;
-	itemData << "Variation" << "Value" << " ";
+	itemData << tr("Variation") << tr("Value") << " ";
 	rootItem = new VarsTableItem(itemData);
 
 	// variables map setup

@@ -185,8 +185,8 @@ bool LuaEditor::load(QString filename)
 	if (filename.isEmpty())
 	{
 		filename = QString(".lua");
-		filename = QFileDialog::getOpenFileName(this, "Open a script",
-				script_filename, "lua source (*.lua);;All files (*)");
+		filename = QFileDialog::getOpenFileName(this, tr("Open a script"),
+				script_filename, tr("lua source (*.lua);;All files (*)"));
 		if (filename.isEmpty())
 			return false;
 	}

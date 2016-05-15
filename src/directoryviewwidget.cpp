@@ -75,6 +75,46 @@ DirectoryViewWidget::DirectoryViewWidget(QWidget* parent)
 	connect(m_zoomOutButton, SIGNAL(clicked()), this, SLOT(zoomOutButtonClicked()));
 	connect(m_configButton, SIGNAL(clicked()), this, SLOT(configButtonClicked()));
 
+
+	configmenu = new QMenu(this);
+	sortmenu = configmenu->addMenu(tr("Sort by"));
+	nameaction = sortmenu->addAction(model->headerData(NAME, Qt::Horizontal).toString());
+	sizeaction = sortmenu->addAction(model->headerData(SIZE, Qt::Horizontal).toString());
+	typeaction = sortmenu->addAction(model->headerData(TYPE, Qt::Horizontal).toString());
+	dateaction = sortmenu->addAction(model->headerData(DATE, Qt::Horizontal).toString());
+	nameaction->setCheckable(true);
+	sizeaction->setCheckable(true);
+	typeaction->setCheckable(true);
+	dateaction->setCheckable(true);
+	nameaction->setData(NAME);
+	sizeaction->setData(SIZE);
+	typeaction->setData(TYPE);
+	dateaction->setData(DATE);
+	sortactions = new QActionGroup(this);
+	sortactions->addAction(nameaction);
+	sortactions->addAction(sizeaction);
+	sortactions->addAction(typeaction);
+	sortactions->addAction(dateaction);
+
+	sortmenu->addSeparator();
+	orderaction = sortmenu->addAction(tr("Descending"));
+	orderaction->setCheckable(true);
+
+	viewmenu = configmenu->addMenu(tr("View"));
+	viewactions = new QActionGroup(this);
+	shortaction  = viewactions->addAction(viewmenu->addAction(tr("Short View")));
+	detailaction = viewactions->addAction(viewmenu->addAction(tr("Detailed View")));
+	shortaction->setCheckable(true);
+	detailaction->setCheckable(true);
+
+	configmenu->addSeparator();
+	hiddenaction = configmenu->addAction(tr("Show Hidden Files"));
+	hiddenaction->setCheckable(true);
+
+	connect(configmenu, SIGNAL(triggered(QAction*)), this, SLOT(configMenuTriggered(QAction*)));
+	connect(viewmenu, SIGNAL(triggered(QAction*)), this, SLOT(viewMenuTriggered(QAction*)));
+	connect(sortmenu, SIGNAL(triggered(QAction*)), this, SLOT(sortMenuTriggered(QAction*)));
+
 	showHiddenFiles(show_hidden);
 	sortBy(sort_type);
 	setViewType(view_type);
@@ -194,18 +234,7 @@ void DirectoryViewWidget::restoreDetailedViewState()
 	if (!header->restoreState(h_state))
 	{
 		logInfo("DirectoryViewWidget::restoreDetailedViewState : setting default state");
-		QAbstractItemModel* h_model = header->model();
-		int h_type_idx = 2;
-		for (int i = 0 ; i < h_model->columnCount() ; i++)
-		{
-			if (h_model->headerData(i, Qt::Horizontal) == "Type")
-			{
-				h_type_idx = i;
-				break;
-			}
-		}
-		header->resizeSection(0, 300);
-		header->hideSection(h_type_idx);
+		header->resizeSection(NAME, 300);
 	}
 }
 
@@ -297,86 +326,35 @@ void DirectoryViewWidget::updateHistEntries(const QString& path)
 
 void DirectoryViewWidget::configButtonClicked()
 {
-	QMenu* popup = new QMenu(this);
-	QMenu* sortmenu = popup->addMenu("Sorting");
-	QAction* nameaction = sortmenu->addAction("By Name");
-	QAction* dateaction = sortmenu->addAction("By Date");
-	QAction* sizeaction = sortmenu->addAction("By Size");
-	QAction* typeaction = sortmenu->addAction("By Type");
-	nameaction->setCheckable(true);
-	dateaction->setCheckable(true);
-	sizeaction->setCheckable(true);
-	typeaction->setCheckable(true);
-	if (sort_type == NAME)
-		nameaction->setChecked(true);
-	else if (sort_type == DATE)
-		dateaction->setChecked(true);
-	else if (sort_type == TYPE)
-		typeaction->setChecked(true);
-	else
-		sizeaction->setChecked(true);
-
-	sortmenu->addSeparator();
-	QAction* orderaction = sortmenu->addAction("Descending");
-	orderaction->setCheckable(true);
+	sortactions->actions().at(sort_type)->setChecked(true);
+	viewactions->actions().at(view_type)->setChecked(true);
 	orderaction->setChecked(sort_order == Qt::DescendingOrder);
+	hiddenaction->setChecked((model->filter() & QDir::Hidden) != 0);
+	configmenu->exec(m_configButton->mapToGlobal(QPoint(0,0)));
+}
 
-	QMenu* viewmenu = popup->addMenu("View");
-	QAction* shorttype = viewmenu->addAction("Short View");
-	QAction* detailtype = viewmenu->addAction("Detailed View");
-	shorttype->setCheckable(true);
-	detailtype->setCheckable(true);
-	if (view_type == SHORT)
-		shorttype->setChecked(true);
+void DirectoryViewWidget::sortMenuTriggered(QAction* action)
+{
+	SortType type = sort_type;
+	if (action == orderaction)
+		sort_order = action->isChecked()
+			? Qt::DescendingOrder : Qt::AscendingOrder;
 	else
-		detailtype->setChecked(true);
+		type = (SortType)action->data().toInt();
+	sortBy(type);
+}
 
-	popup->addSeparator();
-	QAction* hidden = popup->addAction("Show Hidden Files");
-	hidden->setCheckable(true);
-	hidden->setChecked((model->filter() & QDir::Hidden) != 0);
-
-	connect(popup, SIGNAL(triggered(QAction*)), this, SLOT(configMenuTriggered(QAction*)));
-	connect(viewmenu, SIGNAL(triggered(QAction*)), this, SLOT(configMenuTriggered(QAction*)));
-	connect(sortmenu, SIGNAL(triggered(QAction*)), this, SLOT(configMenuTriggered(QAction*)));
-
-	popup->exec(m_configButton->mapToGlobal(QPoint(0,0)));
-
-	delete popup;
+void DirectoryViewWidget::viewMenuTriggered(QAction* /* action */)
+{
+	setViewType(shortaction->isChecked() ? SHORT : DETAILED);
 }
 
 void DirectoryViewWidget::configMenuTriggered(QAction* action)
 {
-	if (action->text() == "Descending")
-	{
-		Qt::SortOrder order = Qt::AscendingOrder;
-		if (action->isChecked())
-			order = Qt::DescendingOrder;
-		setSortOrder(order);
-	}
-	else if (action->text() == "Show Hidden Files")
-	{
-		bool showhidden = action->isChecked();
-		showHiddenFiles(showhidden);
-	}
-	else if (action->text() == "Short View")
-		setViewType(SHORT);
-	else if (action->text() == "Detailed View")
-		setViewType(DETAILED);
-	else
-	{
-		SortType type;
-		if (action->text() == "By Date")
-			type = DATE;
-		else if (action->text() == "By Size")
-			type = SIZE;
-		else if (action->text() == "By Type")
-			type = TYPE;
-		else
-			type = NAME;
-		sortBy(type);
-	}
+	if (action == hiddenaction)
+		showHiddenFiles(action->isChecked());
 }
+
 
 void DirectoryViewWidget::showHiddenFiles(bool flag)
 {
@@ -393,31 +371,9 @@ void DirectoryViewWidget::sortBy(SortType type)
 {
 	sort_type = type;
 	if (view_type == DETAILED)
-	{
-		QString header;
-		if (sort_type == DATE)
-			header = "Date Modified";
-		else if (sort_type == SIZE)
-			header = "Size";
-		else if (sort_type == TYPE)
-			header = "Type";
-		else
-			header = "Name";
-		QAbstractItemModel* h_model = m_treeView->header()->model();
-		for (int i = 0 ; i < h_model->columnCount() ; i++)
-		{
-			if (h_model->headerData(i, Qt::Horizontal) == header)
-			{
-				m_treeView->sortByColumn(i, sort_order);
-				break;
-			}
-		}
-	}
-	else
-	{
-		if (model)
-			model->sort((int)sort_type, sort_order);
-	}
+		m_treeView->sortByColumn(sort_type, sort_order);
+	else if (model)
+		model->sort(sort_type, sort_order);
 }
 
 DirectoryViewWidget::SortType DirectoryViewWidget::sortType() const
@@ -469,15 +425,7 @@ DirectoryViewWidget::ViewType DirectoryViewWidget::viewType() const
 void DirectoryViewWidget::detailedViewSortTypeChanged(int section, Qt::SortOrder order)
 {
 	sort_order = order;
-	QString type = m_treeView->header()->model()->headerData(section, Qt::Horizontal).toString();
-	if (type == "Date Modified")
-		sort_type = DATE;
-	else if (type == "Size")
-		sort_type = SIZE;
-	else if (type == "Type")
-		sort_type = TYPE;
-	else
-		sort_type = NAME;
+	sort_type = (SortType)section;
 }
 
 void DirectoryViewWidget::fileImageRendered(const QString& /*path*/)

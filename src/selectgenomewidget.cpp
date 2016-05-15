@@ -129,8 +129,8 @@ void SelectGenomeWidget::configButtonPressedSlot()
 		{
 			QFile asFile(QOSMIC_AUTOSAVE);
 			if (asFile.exists() && !asFile.remove())
-				QMessageBox::warning(this, "Error",
-				QString("Couldn't remove %1: %2")
+				QMessageBox::warning(this, tr("Error"),
+				tr("Couldn't remove %1: %2")
 				.arg(asFile.fileName()).arg(asFile.errorString()));
 		}
 	}

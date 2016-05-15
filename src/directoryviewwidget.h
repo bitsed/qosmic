@@ -70,6 +70,8 @@ class DirectoryViewWidget : public QWidget, private Ui::DirectoryViewWidget
 		void historyIndexChanged(const QString&);
 		void configButtonClicked();
 		void configMenuTriggered(QAction*);
+		void viewMenuTriggered(QAction*);
+		void sortMenuTriggered(QAction*);
 		void showHiddenFiles(bool);
 		void sortBy(SortType);
 		void detailedViewSortTypeChanged(int, Qt::SortOrder);
@@ -86,6 +88,20 @@ class DirectoryViewWidget : public QWidget, private Ui::DirectoryViewWidget
 		ViewType view_type;
 		SortType sort_type;
 		Qt::SortOrder sort_order;
+		QMenu* configmenu;
+		QMenu* sortmenu;
+		QMenu* viewmenu;
+		QAction* nameaction;
+		QAction* dateaction;
+		QAction* sizeaction;
+		QAction* typeaction;
+		QAction* orderaction;
+		QAction* shortaction;
+		QAction* detailaction;
+		QAction* hiddenaction;
+		QActionGroup* sortactions;
+		QActionGroup* viewactions;
 };
+
 
 #endif

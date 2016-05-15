@@ -133,6 +133,7 @@ class MainWindow
 		RenderRequest m_viewer_request;
 		RenderRequest m_file_request;
 		RenderRequestList m_sheep_requests;
+		QString m_sheep_reqname;
 		bool m_dialogsEnabled;
 
 		FigureEditor* m_xfeditor;

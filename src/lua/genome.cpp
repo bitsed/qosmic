@@ -19,6 +19,9 @@
 #include "xform.h"
 #include "luathreadadapter.h"
 
+#include <QApplication>
+#define tr(msg) QCoreApplication::translate("Lua::Genome", msg).toLatin1().constData()
+
 namespace Lua
 {
 const char Genome::className[] = "Genome";
@@ -105,7 +108,7 @@ flam3_genome* Genome::get_genome_ptr(lua_State* L)
 		if (m_idx < vec->size())
 			genome_ptr = vec->data() + m_idx;
 		else
-			luaL_error(L, "index out of bounds: Genome[%d]", m_idx + 1);
+			luaL_error(L, tr("index out of bounds: Genome[%d]"), m_idx + 1);
 	}
 	else
 		genome_ptr = &m_genome;
@@ -332,7 +335,7 @@ int Genome::xform(lua_State* L)
 		{
 			int idx = luaL_checkint(L, 1) - 1;
 			if (idx > genome_ptr->num_xforms || idx < 0)
-				luaL_error(L, "index out of range: Genome.XForm[%d] is null", idx + 1);
+				luaL_error(L, tr("index out of range: Genome.XForm[%d] is null"), idx + 1);
 			lua_pop(L, 1);
 			luaL_getmetatable(L, XForm::className);
 			Lunar<XForm>::new_T(L);
@@ -383,7 +386,7 @@ int Genome::get_xform(lua_State* L)
 	}
 	else
 	{
-		luaL_error(L, "genome has no xform at index %d", xfn + 1);
+		luaL_error(L, tr("genome has no xform at index %d"), xfn + 1);
 		return 0;
 	}
 	return 1;
@@ -453,7 +456,7 @@ int Genome::copy_xform(lua_State* L)
 	int dest_idx = luaL_checkint(L, 2) - 1;
 
 	if (dest_idx < 0)
-		luaL_error(L, "genome has no xform at index %d", dest_idx + 1);
+		luaL_error(L, tr("genome has no xform at index %d"), dest_idx + 1);
 
 	if (lua_isuserdata(L, 1))
 		from = Lunar<XForm>::check(L, 1)->get_xform_ptr(L);
@@ -462,7 +465,7 @@ int Genome::copy_xform(lua_State* L)
 	{
 		src_idx = luaL_checkint(L, 1) - 1;
 		if (src_idx >= genome_ptr->num_xforms || src_idx < 0)
-			luaL_error(L, "genome has no xform at index %d", src_idx + 1);
+			luaL_error(L, tr("genome has no xform at index %d"), src_idx + 1);
 	}
 
 	if (genome_ptr->num_xforms <= dest_idx)
@@ -486,7 +489,7 @@ int Genome::del_xform(lua_State* L)
 	get_genome_ptr(L);
 	int idx = luaL_checkint(L, 1) - 1;
 	if (idx >= genome_ptr->num_xforms || idx < 0)
-		luaL_error(L, "genome has no xform at index %d", idx + 1);
+		luaL_error(L, tr("genome has no xform at index %d"), idx + 1);
 	else
 	{
 		flam3_delete_xform(genome_ptr, idx);
@@ -586,7 +589,7 @@ int Genome::palette(lua_State* L)
 	{
 		int idx = qMax(0, luaL_checkint(L, 1) - 1);
 		if (idx > 255)
-			luaL_error(L, "index %d out of range", idx + 1);
+			luaL_error(L, tr("index %d out of range"), idx + 1);
 		double r, g, b, a;
 		if (lua_gettop(L) > 1)
 		{
@@ -666,7 +669,7 @@ int Genome::chaos(lua_State* L)
 		{
 			int idx = qMax(0, luaL_checkint(L, 1) - 1);
 			if (idx >= genome_ptr->num_xforms)
-				luaL_error(L, "no index %d in chaos array", idx + 1);
+				luaL_error(L, tr("no index %d in chaos array"), idx + 1);
 			if (lua_type(L, 2) == LUA_TTABLE)
 			{
 				// setting chaos array for one xform index
@@ -687,7 +690,7 @@ int Genome::chaos(lua_State* L)
 					// setting chaos array for one table entry
 					int rdx = qMax(0, luaL_checkint(L, 2) - 1);
 					if (rdx >= genome_ptr->num_xforms)
-						luaL_error(L, "no index %d,%d in chaos array", idx + 1, rdx + 1);
+						luaL_error(L, tr("no index %d,%d in chaos array"), idx + 1, rdx + 1);
 					double val = luaL_checknumber(L, 3);
 					genome_ptr->chaos[idx][rdx] = val;
 					setModified();
@@ -699,7 +702,7 @@ int Genome::chaos(lua_State* L)
 						// return chaos array for one chaos entry
 						int rdx = qMax(0, luaL_checkint(L, 2) - 1);
 						if (rdx >= genome_ptr->num_xforms)
-							luaL_error(L, "no index %d,%d in chaos array", idx + 1, rdx + 1);
+							luaL_error(L, tr("no index %d,%d in chaos array"), idx + 1, rdx + 1);
 						lua_pushnumber(L, genome_ptr->chaos[idx][rdx]);
 					}
 					else

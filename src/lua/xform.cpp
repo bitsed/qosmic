@@ -19,6 +19,8 @@
 #include "luathreadadapter.h"
 
 #include <cmath>
+#include <QCoreApplication>
+#define tr(msg) QCoreApplication::translate("Lua::XForm", msg).toLatin1().constData()
 
 namespace Lua
 {
@@ -113,7 +115,7 @@ flam3_xform* XForm::get_xform_ptr(lua_State* L)
 		if (m_xfidx >= 0 && m_xfidx < g->num_xforms) // has an xform index
 			xform_ptr = g->xform + m_xfidx;
 		else
-			luaL_error(L, "index out of bounds: Genome[%d].XForm[%d]", m_gidx + 1, m_xfidx + 1);
+			luaL_error(L, tr("index out of bounds: Genome[%d].XForm[%d]"), m_gidx + 1, m_xfidx + 1);
 	}
 	else
 	{
@@ -275,7 +277,7 @@ int XForm::var(lua_State* L)
 					"end } end") || lua_pcall(L, 0, 0, 0);
 				if (error)
 				{
-					QString s("couldn't build metatables for var.variables: %1");
+					QString s(tr("couldn't build metatables for var.variables: %1"));
 					luaL_error(L, "%s", s.arg(lua_tostring(L, -1)).toLatin1().constData());
 				}
 
@@ -297,7 +299,7 @@ int XForm::var(lua_State* L)
 				"end } end") || lua_pcall(L, 0, 0, 0);
 			if (error)
 			{
-				QString s("couldn't build metatables for var: %1");
+				QString s(tr("couldn't build metatables for var: %1"));
 				luaL_error(L, "%s", s.arg(lua_tostring(L, -1)).toLatin1().constData());
 			}
 			lua_getglobal(L, "_xform_var_metatable");
@@ -333,14 +335,14 @@ int XForm::var(lua_State* L)
 		{
 			var_num = lua_tointeger(L, 1) - 1;
 			if (var_num < 0 || var_num >= flam3_nvariations)
-				luaL_error(L, "invalid variation index %d", var_num + 1);
+				luaL_error(L, tr("invalid variation index %d"), var_num + 1);
 		}
 		else
 		{
 			const char* name = luaL_checkstring(L, 1);
 			var_num = Util::variation_number(QString(name).toLower());
 			if (var_num == -1)
-				luaL_error(L, "variation %s not found", name);
+				luaL_error(L, tr("variation %s not found"), name);
 		}
 
 		int args = lua_gettop(L);
@@ -352,7 +354,7 @@ int XForm::var(lua_State* L)
 			if (args == 3)
 			{
 				if (!lua_istable(L, 3))
-					luaL_error(L, "variables argument is not a valid table");
+					luaL_error(L, tr("variables argument is not a valid table"));
 				get_variables_from_table(L, var_num);
 			}
 			else
@@ -379,7 +381,7 @@ int XForm::var(lua_State* L)
 	if (!lua_isnil(L, -1))\
 	{\
 		if (!lua_isnumber(L, -1))\
-			luaL_error(L, "number expected for variable " #VARIABLE);\
+			luaL_error(L, tr("number expected for variable " #VARIABLE));\
 		xform_ptr->VARIATION##_##VARIABLE = lua_tonumber(L, -1);\
 	}\
 	lua_pop(L, 1);

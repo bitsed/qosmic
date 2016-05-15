@@ -81,9 +81,9 @@ QVariant ViewerPresetsModel::headerData(int section, Qt::Orientation orientation
 		return QVariant();
 
 	if (orientation == Qt::Horizontal)
-		return QString("Column %1").arg(section);
+		return tr("Column %1").arg(section);
 	else
-		return QString("Row %1").arg(section);
+		return tr("Row %1").arg(section);
 }
 
 void ViewerPresetsModel::addPresetSlot(const QString& name, flam3_genome* genome)

@@ -36,7 +36,7 @@ class LuaThread : public QThread
 
 	LuaThreadAdapter* thread_adapter;
 	QString lua_text;
-	QString lua_error;
+	QString lua_errstr;
 	QString lua_paths;
 	bool lua_stopluathread_script;
 	randctx ctx;

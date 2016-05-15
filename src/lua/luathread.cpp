@@ -28,7 +28,7 @@
 namespace Lua
 {
 LuaThread::LuaThread(MainWindow* m, QObject* parent)
-: QThread(parent), lua_error(), lua_paths()
+: QThread(parent), lua_errstr(), lua_paths()
 {
 	lua_paths.append(QOSMIC_SCRIPTSDIR + "/?.lua");
 	lua_paths.append(";" + QOSMIC_USERDIR  + "/scripts/?.lua");
@@ -55,27 +55,27 @@ void LuaThread::run()
 	thread_adapter->window()->setDialogsEnabled(false);
 	thread_adapter->listen(true);
 	lua_stopluathread_script = false;
-	lua_error.clear();
+	lua_errstr.clear();
 
 	int error = luaL_loadstring(L, lua_text.toLatin1().constData())
 					|| lua_pcall(L, 0, LUA_MULTRET, 0);
 	if (error)
 	{
-		lua_error = tr("error: %1").arg(lua_tostring(L, -1));
-		if (lua_error.contains(QRegExp(tr("stopping$")))) // error says stopping if stopped
+		lua_errstr = tr("error: %1").arg(lua_tostring(L, -1));
+		if (lua_errstr.contains(QRegExp(tr("stopping$")))) // error says stopping if stopped
 		{
-			lua_error = tr("script stopped");
+			lua_errstr = tr("script stopped");
 			logInfo("LuaThread::run : script stopped");
 		}
 		else
 		{
-			logError(QString("LuaThread::run : %1").arg(lua_error));
-			emitScriptOutput(lua_error);
+			logError(QString("LuaThread::run : %1").arg(lua_errstr));
+			emitScriptOutput(lua_errstr);
 		}
 		lua_pop(L, 1);  /* pop error message from the stack */
 	}
 	else
-		lua_error = tr("ok");
+		lua_errstr = tr("ok");
 
 	lua_close(L);
 	thread_adapter->window()->setDialogsEnabled(true);
@@ -120,7 +120,7 @@ int LuaThread::lua_stopluathread(lua_State* L)
 			lua_pushboolean(L, p->lua_stopluathread_script);
 	}
 	else
-		return luaL_error(L, "stack has no thread ref", "");
+		return luaL_error(L, tr("stack has no thread ref").toLatin1().constData());
 
 	return 1;
 }
@@ -153,9 +153,15 @@ int LuaThread::lua_print(lua_State* L)
 			lua_pushvalue(L, i);   /* value to print */
 			lua_call(L, 1, 1);
 			s = lua_tostring(L, -1);  /* get result */
-			if (s == NULL)
-				return luaL_error(L, LUA_QL("tostring") " must return a string to "
-								  LUA_QL("print"));
+			if (s == NULL) {
+				luaL_Buffer b;
+				luaL_buffinit(L, &b);
+				luaL_addstring(&b, LUA_QL("tostring"));
+				luaL_addstring(&b, tr(" must return a string to ").toLatin1().constData());
+				luaL_addstring(&b, LUA_QL("print"));
+				luaL_pushresult(&b);
+				return lua_error(L);
+			}
 			if (i>1) p->emitScriptOutput("\t");
 			p->emitScriptOutput(s);
 			lua_pop(L, 1);  /* pop result */
@@ -163,7 +169,7 @@ int LuaThread::lua_print(lua_State* L)
 		p->emitScriptOutput("\n");
 	}
 	else
-		return luaL_error(L, "stack has no thread ref", "");
+		return luaL_error(L, tr("stack has no thread ref").toLatin1().constData());
 
 	return 0;
 }
@@ -200,7 +206,7 @@ int LuaThread::lua_dialog(lua_State* L)
 		lua_pushstring(L, p->input_response_text.toLatin1().constData());
 	}
 	else
-		return luaL_error(L, "stack has no thread ref", "");
+		return luaL_error(L, tr("stack has no thread ref").toLatin1().constData());
 
 	return 2;
 }
@@ -215,7 +221,7 @@ int LuaThread::lua_irand(lua_State* L)
 		lua_pushnumber(L, (double)irand(&(p->ctx)) / 0xffffffff );
 	}
 	else
-		return luaL_error(L, "stack has no thread ref", "");
+		return luaL_error(L, tr("stack has no thread ref").toLatin1().constData());
 
 	return 1;
 }
@@ -230,12 +236,12 @@ int LuaThread::lua_msleep(lua_State* L)
 		lua_settop(L, 0);
 		// check if stopped
 		if (p->lua_stopluathread_script)
-			return luaL_error(L, "stopping", "");
+			return luaL_error(L, tr("stopping").toLatin1().constData());
 		else
 			lua_pushboolean(L, 1);
 	}
 	else
-		return luaL_error(L, "stack has no thread ref", "");
+		return luaL_error(L, tr("stack has no thread ref").toLatin1().constData());
 
 	return 1;
 }
@@ -566,7 +572,7 @@ QString LuaThread::getMessage()
 		msg.chop(8 - (pos++ % 8));
 		return msg;
 	}
-	return lua_error;
+	return lua_errstr;
 }
 
 }

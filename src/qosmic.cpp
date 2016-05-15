@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 	}
 
 	if (argc > 1 &&
-			QString(argv[1]).contains(QRegExp("--?(?:help|h|ver).*")))
+			QString(argv[1]).contains(QRegExp("--?[hv]")))
 	{
 		cout << QString(QCoreApplication::translate("CoreApp", "Qosmic %1\n"
 			"Usage: qosmic [flam3 file]\n\n"

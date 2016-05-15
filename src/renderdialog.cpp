@@ -25,6 +25,7 @@ RenderDialog::RenderDialog(QWidget* parent,
 		QString file, QString lastPath, QSize seyz, QStringList list)
 	: QDialog(parent),
 	fileName(file), lastDir(lastPath), imgSize(seyz), presets(list),
+	nopreset(tr("genome quality")),
 	sizeValidator(QRegExp("\\d+\\s*x\\s*\\d+"), this)
 {
 	setupUi(this);
@@ -33,7 +34,7 @@ RenderDialog::RenderDialog(QWidget* parent,
 	QSettings settings;
 
 	m_filePathLineEdit->setText(QDir(lastDir).absoluteFilePath(fileName));
-	m_qualityComboBox->addItem(tr("current settings"));
+	m_qualityComboBox->addItem(nopreset);
 	m_qualityComboBox->addItems(presets);
 
 	QString quality(settings.value("renderdialog/last_quality").toString());
@@ -130,7 +131,7 @@ void RenderDialog::filePathButtonSlot()
 {
 	QString imageName = fileName;
 	if (imageName.isEmpty())
-		imageName = "untitled.png";
+		imageName = tr("untitled.png");
 
 	imageName = QFileDialog::getSaveFileName(this,
 		tr("Save an image as ..."),
@@ -152,7 +153,7 @@ QString RenderDialog::selectedPreset()
 
 bool RenderDialog::presetSelected()
 {
-	return preset != tr("current settings");
+	return preset != nopreset;
 }
 
 bool RenderDialog::sizeSelected()

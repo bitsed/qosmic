@@ -19,6 +19,9 @@
 #include "genome.h"
 #include "luathreadadapter.h"
 
+#include <QApplication>
+#define tr(msg) QCoreApplication::translate("Lua::Frame", msg).toLatin1().constData()
+
 #define method(name) {#name, &Frame::name}
 namespace Lua
 {
@@ -202,7 +205,7 @@ int Frame::load(lua_State* L)
 	int args = lua_gettop(L);
 	if (args != 1)
 	{
-		luaL_error(L, "load requires one string argument", "");
+		luaL_error(L, tr("load requires one string argument"));
 		lua_pushboolean(L, false);
 	}
 	else
@@ -220,7 +223,7 @@ int Frame::save(lua_State* L)
 	int args = lua_gettop(L);
 	if (args != 1)
 	{
-		luaL_error(L, "save requires one string argument", "");
+		luaL_error(L, tr("save requires one string argument"));
 		lua_pushboolean(L, false);
 	}
 	else
@@ -238,7 +241,7 @@ int Frame::copy_genome(lua_State* L)
 		to = luaL_checkint(L, 2) - 1;
 
 	if (to < 0)
-		luaL_error(L, "index out of range: Genome[%d] is null", to + 1);
+		luaL_error(L, tr("index out of range: Genome[%d] is null"), to + 1);
 
 	if (lua_isuserdata(L, 1))
 	{
@@ -280,7 +283,7 @@ int Frame::copy_genome(lua_State* L)
 			return 0;
 
 		if (from >= genome_vec->size() || from < 0)
-			luaL_error(L, "index out of range: Genome[%d] is null", from + 1);
+			luaL_error(L, tr("index out of range: Genome[%d] is null"), from + 1);
 
 		flam3_genome* gd = genome_vec->data();
 		if (gd + from != gd + to)
@@ -401,7 +404,7 @@ int Frame::genome(lua_State* L)
 		{
 			int idx = luaL_checkint(L, 1) - 1;
 			if (idx < 0)
-				luaL_error(L, "index out of range: Genome[%d] is null", idx + 1);
+				luaL_error(L, tr("index out of range: Genome[%d] is null"), idx + 1);
 			Lua::Genome* lg = Lunar<Genome>::check(L, 2);
 			flam3_genome* g = lg->get_genome_ptr(L);
 			flam3_genome* to = genome_vec->data() + idx;
@@ -435,7 +438,7 @@ int Frame::genome(lua_State* L)
 		{
 			int idx = luaL_checkint(L, 1) - 1;
 			if (idx >= genome_vec->size() || idx < 0)
-				luaL_error(L, "index out of range: Genome[%d] is null", idx + 1);
+				luaL_error(L, tr("index out of range: Genome[%d] is null"), idx + 1);
 			lua_pop(L, 1);
 			luaL_getmetatable(L, Genome::className);
 			Lunar<Genome>::new_T(L);

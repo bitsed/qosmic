@@ -16,6 +16,9 @@ extern "C"
 
 #include "logger.h"
 
+#include <QCoreApplication>
+#define tr(msg) QCoreApplication::translate("Lua::Lunar", msg).toLatin1().constData()
+
 namespace Lua
 {
 template <typename T> class Lunar
@@ -80,7 +83,7 @@ template <typename T> class Lunar
 			if (!luaL_checkudata(L, base, T::className))
 			{
 				lua_settop(L, base - 1);         // drop userdata and args
-				lua_pushfstring(L, "not a valid %s userdata", T::className);
+				lua_pushfstring(L, tr("not a valid %s userdata"), T::className);
 				return -1;
 			}
 
@@ -89,7 +92,7 @@ template <typename T> class Lunar
 			if (lua_isnil(L, -1))              // no method?
 			{
 				lua_settop(L, base - 1);         // drop userdata and args
-				lua_pushfstring(L, "%s missing method '%s'", T::className, method);
+				lua_pushfstring(L, tr("%s missing method '%s'"), T::className, method);
 				return -1;
 			}
 			lua_insert(L, base);               // put method under userdata, args
@@ -98,8 +101,8 @@ template <typename T> class Lunar
 			if (status)
 			{
 				const char* msg = lua_tostring(L, -1);
-				if (msg == NULL) msg = "(error with no message)";
-				lua_pushfstring(L, "%s:%s status = %d\n%s", T::className, method, status, msg);
+				if (msg == NULL) msg = tr("(error with no message)");
+				lua_pushfstring(L, tr("%s:%s status = %d\n%s"), T::className, method, status, msg);
 				lua_remove(L, base);             // remove old message
 				return -1;
 			}
@@ -111,7 +114,7 @@ template <typename T> class Lunar
 		{
 			if (!obj) { lua_pushnil(L); return 0; }
 			luaL_getmetatable(L, T::className);  // lookup metatable in Lua registry
-			if (lua_isnil(L, -1)) luaL_error(L, "%s missing metatable", T::className);
+			if (lua_isnil(L, -1)) luaL_error(L, tr("%s missing metatable"), T::className);
 			int mt = lua_gettop(L);
 			subtable(L, mt, "userdata", "v");
 			userdataType* ud =
@@ -155,7 +158,7 @@ template <typename T> class Lunar
 			lua_remove(L, 1);  // remove self so member function args start at index 1
 			// check if stopped
 			if (obj->context() && obj->context()->thread()->stopping())
-				return luaL_error(L, "stopping", "");
+				return luaL_error(L, tr("stopping"));
 			// get member function from upvalue
 			RegType* l = static_cast<RegType*>(lua_touserdata(L, lua_upvalueindex(1)));
 			return (obj->*(l->mfunc))(L);  // call member function
@@ -281,4 +284,6 @@ template <typename T> class Lunar
 		}
 };
 }
+
+#undef tr
 #endif

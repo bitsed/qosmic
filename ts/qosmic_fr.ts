@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="fr">
+<TS version="2.1" language="fr">
 <context>
     <name>AdjustSceneWidget</name>
     <message>
@@ -374,7 +374,7 @@ d&apos;arrière plan</translation>
 <context>
     <name>CoreApp</name>
     <message>
-        <location filename="../src/qosmic.cpp" line="65"/>
+        <location filename="../src/qosmic.cpp" line="61"/>
         <source>Qosmic %1
 Usage: qosmic [flam3 file]
 
@@ -386,7 +386,7 @@ flam3_nthreads=%4
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/qosmic.cpp" line="87"/>
+        <location filename="../src/qosmic.cpp" line="83"/>
         <source>Couldn&apos;t load file %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -394,7 +394,37 @@ flam3_nthreads=%4
 <context>
     <name>DirectoryViewWidget</name>
     <message>
-        <location filename="../src/directoryviewwidget.cpp" line="87"/>
+        <location filename="../src/directoryviewwidget.cpp" line="80"/>
+        <source>Sort by</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/directoryviewwidget.cpp" line="100"/>
+        <source>Descending</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/directoryviewwidget.cpp" line="103"/>
+        <source>View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/directoryviewwidget.cpp" line="105"/>
+        <source>Short View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/directoryviewwidget.cpp" line="106"/>
+        <source>Detailed View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/directoryviewwidget.cpp" line="111"/>
+        <source>Show Hidden Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/directoryviewwidget.cpp" line="127"/>
         <source>Select a directory</source>
         <translation type="unfinished"></translation>
     </message>
@@ -805,14 +835,14 @@ flam3_nthreads=%4
         <translation type="unfinished">Triangles</translation>
     </message>
     <message>
-        <location filename="../src/xfedit.cpp" line="905"/>
+        <location filename="../src/xfedit.cpp" line="911"/>
         <source>post transform: %1
 </source>
         <translation type="unfinished">transform post: %1
 </translation>
     </message>
     <message>
-        <location filename="../src/xfedit.cpp" line="2050"/>
+        <location filename="../src/xfedit.cpp" line="2064"/>
         <source>transform: %1
 density: %L2
 </source>
@@ -821,7 +851,7 @@ densité: %L2
 </translation>
     </message>
     <message>
-        <location filename="../src/xfedit.cpp" line="2053"/>
+        <location filename="../src/xfedit.cpp" line="2067"/>
         <source>final transform: %1
 density: %L2
 </source>
@@ -844,6 +874,31 @@ densité: %L2
     <message>
         <location filename="../src/genomecolorselector.cpp" line="33"/>
         <source>Show Histogram</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GenomeVector</name>
+    <message>
+        <location filename="../src/genomevector.cpp" line="33"/>
+        <source>selector</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/genomevector.cpp" line="394"/>
+        <location filename="../src/genomevector.cpp" line="415"/>
+        <source>%1 xforms
+time: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/genomevector.cpp" line="419"/>
+        <source>genome %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/genomevector.cpp" line="505"/>
+        <source>Genome %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1129,6 +1184,72 @@ densité: %L2
     </message>
 </context>
 <context>
+    <name>Lua</name>
+    <message>
+        <location filename="../src/lua/xform.cpp" line="384"/>
+        <source>number expected for variable </source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Lua::Frame</name>
+    <message>
+        <location filename="../src/lua/frame.cpp" line="208"/>
+        <source>load requires one string argument</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/frame.cpp" line="226"/>
+        <source>save requires one string argument</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/frame.cpp" line="244"/>
+        <location filename="../src/lua/frame.cpp" line="286"/>
+        <location filename="../src/lua/frame.cpp" line="407"/>
+        <location filename="../src/lua/frame.cpp" line="441"/>
+        <source>index out of range: Genome[%d] is null</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Lua::Genome</name>
+    <message>
+        <location filename="../src/lua/genome.cpp" line="111"/>
+        <source>index out of bounds: Genome[%d]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/genome.cpp" line="338"/>
+        <source>index out of range: Genome.XForm[%d] is null</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/genome.cpp" line="389"/>
+        <location filename="../src/lua/genome.cpp" line="459"/>
+        <location filename="../src/lua/genome.cpp" line="468"/>
+        <location filename="../src/lua/genome.cpp" line="492"/>
+        <source>genome has no xform at index %d</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/genome.cpp" line="592"/>
+        <source>index %d out of range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/genome.cpp" line="672"/>
+        <source>no index %d in chaos array</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/genome.cpp" line="693"/>
+        <location filename="../src/lua/genome.cpp" line="705"/>
+        <source>no index %d,%d in chaos array</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Lua::LuaEditor</name>
     <message>
         <location filename="../src/lua/luaeditor.cpp" line="48"/>
@@ -1161,30 +1282,36 @@ densité: %L2
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="196"/>
-        <location filename="../src/lua/luaeditor.cpp" line="228"/>
+        <location filename="../src/lua/luaeditor.cpp" line="188"/>
+        <source>Open a script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/luaeditor.cpp" line="197"/>
+        <location filename="../src/lua/luaeditor.cpp" line="229"/>
         <source>Application error</source>
         <translation type="unfinished">Erreur de Application</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="197"/>
+        <location filename="../src/lua/luaeditor.cpp" line="198"/>
         <source>Cannot read file %1
 </source>
         <translation type="unfinished">Erreur lecture le fichier %1
 </translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="214"/>
+        <location filename="../src/lua/luaeditor.cpp" line="215"/>
         <source>Save a script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="215"/>
+        <location filename="../src/lua/luaeditor.cpp" line="189"/>
+        <location filename="../src/lua/luaeditor.cpp" line="216"/>
         <source>lua source (*.lua);;All files (*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="229"/>
+        <location filename="../src/lua/luaeditor.cpp" line="230"/>
         <source>Cannot write file %1
 </source>
         <translation type="unfinished">Ne peut pas écire le fichier %1
@@ -1194,28 +1321,114 @@ densité: %L2
 <context>
     <name>Lua::LuaThread</name>
     <message>
-        <location filename="../src/lua/luathread.cpp" line="61"/>
+        <location filename="../src/lua/luathread.cpp" line="64"/>
         <source>error: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/lua/luathread.cpp" line="62"/>
+        <location filename="../src/lua/luathread.cpp" line="65"/>
         <source>stopping$</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/lua/luathread.cpp" line="64"/>
+        <location filename="../src/lua/luathread.cpp" line="67"/>
         <source>script stopped</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/lua/luathread.cpp" line="75"/>
+        <location filename="../src/lua/luathread.cpp" line="78"/>
         <source>ok</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/lua/luathread.cpp" line="520"/>
+        <location filename="../src/lua/luathread.cpp" line="123"/>
+        <location filename="../src/lua/luathread.cpp" line="172"/>
+        <location filename="../src/lua/luathread.cpp" line="209"/>
+        <location filename="../src/lua/luathread.cpp" line="224"/>
+        <location filename="../src/lua/luathread.cpp" line="244"/>
+        <source>stack has no thread ref</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/luathread.cpp" line="160"/>
+        <source> must return a string to </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/luathread.cpp" line="239"/>
+        <source>stopping</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/luathread.cpp" line="571"/>
         <source>Running ........</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Lua::Lunar</name>
+    <message>
+        <location filename="../src/lua/lunar.h" line="86"/>
+        <source>not a valid %s userdata</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/lunar.h" line="95"/>
+        <source>%s missing method &apos;%s&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/lunar.h" line="104"/>
+        <source>(error with no message)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/lunar.h" line="105"/>
+        <source>%s:%s status = %d
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/lunar.h" line="117"/>
+        <source>%s missing metatable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/lunar.h" line="161"/>
+        <source>stopping</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Lua::XForm</name>
+    <message>
+        <location filename="../src/lua/xform.cpp" line="118"/>
+        <source>index out of bounds: Genome[%d].XForm[%d]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/xform.cpp" line="280"/>
+        <source>couldn&apos;t build metatables for var.variables: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/xform.cpp" line="302"/>
+        <source>couldn&apos;t build metatables for var: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/xform.cpp" line="338"/>
+        <source>invalid variation index %d</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/xform.cpp" line="345"/>
+        <source>variation %s not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/lua/xform.cpp" line="357"/>
+        <source>variables argument is not a valid table</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1247,6 +1460,11 @@ densité: %L2
         <location filename="../ui/mainviewer.ui" line="17"/>
         <source>flame viewer</source>
         <translation type="unfinished">affichage la flame</translation>
+    </message>
+    <message>
+        <location filename="../src/mainviewer.cpp" line="46"/>
+        <source>viewer</source>
+        <translation type="unfinished">affichage</translation>
     </message>
     <message>
         <location filename="../src/mainviewer.cpp" line="49"/>
@@ -1300,6 +1518,7 @@ densité: %L2
     </message>
     <message>
         <location filename="../src/mainviewer.cpp" line="103"/>
+        <location filename="../src/mainviewer.cpp" line="388"/>
         <source>save image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1309,6 +1528,16 @@ densité: %L2
         <translation type="unfinished">Sauvegarder une image</translation>
     </message>
     <message>
+        <location filename="../src/mainviewer.cpp" line="221"/>
+        <source>untitled.png</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainviewer.cpp" line="539"/>
+        <source>genome %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Viewer Presets</source>
         <translation type="obsolete">Paramètres d&apos;Affichage</translation>
     </message>
@@ -1316,40 +1545,40 @@ densité: %L2
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/mainwindow.cpp" line="96"/>
+        <location filename="../src/mainwindow.cpp" line="98"/>
         <source>Preview</source>
         <translation type="unfinished">Affichage Inférieur</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="111"/>
-        <location filename="../src/mainwindow.cpp" line="1040"/>
+        <location filename="../src/mainwindow.cpp" line="113"/>
+        <location filename="../src/mainwindow.cpp" line="1041"/>
         <source>Triangles</source>
         <translation type="unfinished">Triangles</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="128"/>
+        <location filename="../src/mainwindow.cpp" line="130"/>
         <source>Densities</source>
         <translation type="unfinished">Densitées</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="153"/>
-        <location filename="../src/mainwindow.cpp" line="1030"/>
+        <location filename="../src/mainwindow.cpp" line="155"/>
+        <location filename="../src/mainwindow.cpp" line="1031"/>
         <source>Viewer</source>
         <translation type="unfinished">Affichage</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="166"/>
+        <location filename="../src/mainwindow.cpp" line="168"/>
         <source>Image</source>
         <translation type="unfinished">Image</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="182"/>
-        <location filename="../src/mainwindow.cpp" line="1060"/>
+        <location filename="../src/mainwindow.cpp" line="184"/>
+        <location filename="../src/mainwindow.cpp" line="1061"/>
         <source>Camera</source>
         <translation type="unfinished">Appareil</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="198"/>
+        <location filename="../src/mainwindow.cpp" line="200"/>
         <source>Coordinates</source>
         <translation type="unfinished">Coordonnées</translation>
     </message>
@@ -1358,7 +1587,7 @@ densité: %L2
         <translation type="obsolete">Modifier de Triangle</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="217"/>
+        <location filename="../src/mainwindow.cpp" line="219"/>
         <source>Colors</source>
         <translation type="unfinished">Couleurs</translation>
     </message>
@@ -1367,49 +1596,54 @@ densité: %L2
         <translation type="obsolete">Paramètres d&apos;Affichage</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="242"/>
+        <location filename="../src/mainwindow.cpp" line="244"/>
         <source>Color Balance</source>
         <translation type="unfinished">Balancier de Couleur</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="257"/>
+        <location filename="../src/mainwindow.cpp" line="259"/>
         <source>Variations</source>
         <translation type="unfinished">Variations</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="337"/>
+        <location filename="../src/mainwindow.cpp" line="339"/>
         <source>Browse</source>
         <translation type="unfinished">Navigateur du Fichier</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="308"/>
-        <location filename="../src/mainwindow.cpp" line="1070"/>
+        <location filename="../src/mainwindow.cpp" line="310"/>
+        <location filename="../src/mainwindow.cpp" line="1071"/>
         <source>Palettes</source>
         <translation type="unfinished">Palettes</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="323"/>
-        <location filename="../src/mainwindow.cpp" line="1075"/>
+        <location filename="../src/mainwindow.cpp" line="325"/>
+        <location filename="../src/mainwindow.cpp" line="1076"/>
         <source>Mutations</source>
         <translation type="unfinished">Mutation</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="371"/>
+        <location filename="../src/mainwindow.cpp" line="373"/>
         <source>Edit Script</source>
         <translation type="unfinished">Édition de Script</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="293"/>
+        <location filename="../src/mainwindow.cpp" line="295"/>
         <source>Genomes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="792"/>
+        <location filename="../src/mainwindow.cpp" line="663"/>
+        <source>untitled.png</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="782"/>
         <source>About Qosmic</source>
         <translation type="unfinished">A propos de Qosmic</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="802"/>
+        <location filename="../src/mainwindow.cpp" line="803"/>
         <source>Reset</source>
         <translation type="unfinished">Recommencer</translation>
     </message>
@@ -1418,88 +1652,93 @@ densité: %L2
         <translation type="obsolete">Ctrl+R</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="804"/>
+        <location filename="../src/mainwindow.cpp" line="805"/>
         <source>Load default genome</source>
         <translation type="unfinished">Ouvrir le genome par défaut</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="807"/>
+        <location filename="../src/mainwindow.cpp" line="808"/>
         <source>&amp;Open...</source>
         <translation type="unfinished">&amp;Ouvrir...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="809"/>
+        <location filename="../src/mainwindow.cpp" line="810"/>
         <source>Open an existing file</source>
         <translation type="unfinished">Ouvrir un fichier de flam3</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="812"/>
+        <location filename="../src/mainwindow.cpp" line="813"/>
         <source>&amp;Save</source>
         <translation type="unfinished">&amp;Sauvegarder</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="814"/>
+        <location filename="../src/mainwindow.cpp" line="815"/>
         <source>Save the flame to disk</source>
         <translation type="unfinished">Sauvegarder un fichier de flam3</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="817"/>
+        <location filename="../src/mainwindow.cpp" line="818"/>
         <source>Save &amp;As...</source>
         <translation type="unfinished">Sauve&amp;garder sous...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="819"/>
+        <location filename="../src/mainwindow.cpp" line="820"/>
         <source>Save the flame under a new name</source>
         <translation type="unfinished">Sauvegarder un fichier de flam3 sous un nouveau nom</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="822"/>
+        <location filename="../src/mainwindow.cpp" line="823"/>
         <source>Render to &amp;file...</source>
         <translation type="unfinished">&amp;Rendrer à du fichier...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="824"/>
+        <location filename="../src/mainwindow.cpp" line="825"/>
         <source>Save an image of current flame</source>
         <translation type="unfinished">Sauvegarder une image de flam3</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="827"/>
+        <location filename="../src/mainwindow.cpp" line="828"/>
         <source>Q&amp;uicksave flame...</source>
         <translation type="unfinished">Q&amp;uicksauvegarder flame...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="829"/>
+        <location filename="../src/mainwindow.cpp" line="830"/>
         <source>Quickly save file and image of current flame</source>
         <translation type="unfinished">Sauvegarder un fichier et une image de flam3 rapidement</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="839"/>
+        <location filename="../src/mainwindow.cpp" line="840"/>
         <source>&amp;Quit</source>
         <translation type="unfinished">&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="841"/>
+        <location filename="../src/mainwindow.cpp" line="842"/>
         <source>Quit the application</source>
         <translation type="unfinished">Quitter l&apos;application</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="844"/>
+        <location filename="../src/mainwindow.cpp" line="845"/>
         <source>&amp;Stop rendering</source>
         <translation type="unfinished">Arrêtter de &amp;Rendrer</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1259"/>
+        <location filename="../src/mainwindow.cpp" line="1260"/>
         <source>Couldn&apos;t save file %1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1626"/>
+        <location filename="../src/mainwindow.cpp" line="1304"/>
+        <source>untitled.flam3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="1629"/>
         <source>undo %1/%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1711"/>
+        <location filename="../src/mainwindow.cpp" line="1714"/>
         <source>Save a sheep</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1508,12 +1747,12 @@ densité: %L2
         <translation type="obsolete">Ctrl+A</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="846"/>
+        <location filename="../src/mainwindow.cpp" line="847"/>
         <source>Stop rendering</source>
         <translation type="unfinished">Arrêtter de Rendrer</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="849"/>
+        <location filename="../src/mainwindow.cpp" line="850"/>
         <source>&amp;Random Flame</source>
         <translation type="unfinished">&amp;Flame Aléatoire</translation>
     </message>
@@ -1522,7 +1761,7 @@ densité: %L2
         <translation type="obsolete">Ctrl+F</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="851"/>
+        <location filename="../src/mainwindow.cpp" line="852"/>
         <source>Generate a random xform set</source>
         <translation type="unfinished">Créer un genome aléatoire</translation>
     </message>
@@ -1535,65 +1774,65 @@ densité: %L2
         <translation type="obsolete">Ctrl+E</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="856"/>
+        <location filename="../src/mainwindow.cpp" line="857"/>
         <source>Rescale the editor</source>
         <translation type="unfinished">Echelle automatique</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="859"/>
+        <location filename="../src/mainwindow.cpp" line="860"/>
         <source>Select next triangle</source>
         <translation type="unfinished">Sélectionnez le triangle prochain</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="864"/>
+        <location filename="../src/mainwindow.cpp" line="865"/>
         <source>Select previous triangle</source>
         <translation type="unfinished">Sélectionnez le triangle précédente</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="883"/>
-        <location filename="../src/mainwindow.cpp" line="887"/>
+        <location filename="../src/mainwindow.cpp" line="884"/>
+        <location filename="../src/mainwindow.cpp" line="888"/>
         <source>Undo</source>
         <translation type="unfinished">Annuler</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="891"/>
-        <location filename="../src/mainwindow.cpp" line="895"/>
+        <location filename="../src/mainwindow.cpp" line="892"/>
+        <location filename="../src/mainwindow.cpp" line="896"/>
         <source>Redo</source>
         <translation type="unfinished">Refaire</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="917"/>
         <location filename="../src/mainwindow.cpp" line="918"/>
+        <location filename="../src/mainwindow.cpp" line="919"/>
         <source>Import genomes</source>
         <translation type="unfinished">Importer des genomes</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="922"/>
+        <location filename="../src/mainwindow.cpp" line="923"/>
         <source>Export current genome</source>
         <translation type="unfinished">Exporter le genome actif</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="923"/>
+        <location filename="../src/mainwindow.cpp" line="924"/>
         <source>Export the current genome</source>
         <translation type="unfinished">Exporter le genome actif</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1009"/>
+        <location filename="../src/mainwindow.cpp" line="1010"/>
         <source>File</source>
         <translation type="unfinished">Fichier</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1011"/>
+        <location filename="../src/mainwindow.cpp" line="1012"/>
         <source>Show &amp;File Toolbar</source>
         <translation type="unfinished">Outils de &amp;Fichier</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1012"/>
+        <location filename="../src/mainwindow.cpp" line="1013"/>
         <source>Show the file toolbar</source>
         <translation type="unfinished">Afficher la trousse à outils de fichier</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1002"/>
+        <location filename="../src/mainwindow.cpp" line="1003"/>
         <source>Widgets</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1602,67 +1841,72 @@ densité: %L2
         <translation type="obsolete">Ajuster La Scène</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="751"/>
-        <location filename="../src/mainwindow.cpp" line="773"/>
+        <location filename="../src/mainwindow.cpp" line="753"/>
+        <location filename="../src/mainwindow.cpp" line="775"/>
         <source>Error</source>
         <translation type="unfinished">Erreur</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="752"/>
+        <location filename="../src/mainwindow.cpp" line="754"/>
         <source>Cannot import file %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="774"/>
+        <location filename="../src/mainwindow.cpp" line="776"/>
         <source>Cannot write file to %1</source>
         <translation type="unfinished">Impossible d&apos;enregistrer le fichier %1
  {1?}</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="869"/>
+        <location filename="../src/mainwindow.cpp" line="783"/>
+        <source>&lt;p&gt;&lt;b&gt;Qosmic version %1&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Copyright (C) 2007-2016 by David Bitseff&lt;br&gt;&lt;p&gt;Use and redistribute under the terms of the&lt;br&gt;&lt;a href=&quot;http://www.gnu.org/licenses/gpl.html&quot;&gt;GNU General Public License Version 3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Thanks to:&lt;br&gt;- Scott Draves for the &lt;a href=&quot;http://flam3.com/&quot;&gt;flam3&lt;/a&gt; library&lt;br&gt;- Erik Reckase for his work on the flam3 library&lt;br&gt;- Mark James for his &lt;a href=&quot;http://www.famfamfam.com/lab/icons/silk/&quot;&gt;Silk&lt;/a&gt; icon set&lt;br&gt;- Mark Townsend for the &lt;a href=&quot;www.apophysis.org&quot;&gt;Apophysis&lt;/a&gt; editor&lt;p&gt;This version uses: Qt </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="870"/>
         <source>Scale in the scene</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="876"/>
+        <location filename="../src/mainwindow.cpp" line="877"/>
         <source>Scale out the scene</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="899"/>
-        <location filename="../src/mainwindow.cpp" line="901"/>
+        <location filename="../src/mainwindow.cpp" line="900"/>
+        <location filename="../src/mainwindow.cpp" line="902"/>
         <source>Cut</source>
         <translation type="unfinished">Tailler</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="905"/>
-        <location filename="../src/mainwindow.cpp" line="907"/>
+        <location filename="../src/mainwindow.cpp" line="906"/>
+        <location filename="../src/mainwindow.cpp" line="908"/>
         <source>Copy</source>
         <translation type="unfinished">Copier</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="911"/>
-        <location filename="../src/mainwindow.cpp" line="913"/>
+        <location filename="../src/mainwindow.cpp" line="912"/>
+        <location filename="../src/mainwindow.cpp" line="914"/>
         <source>Paste</source>
         <translation type="unfinished">Coller</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1004"/>
+        <location filename="../src/mainwindow.cpp" line="1005"/>
         <source>Show &amp;Widgets Toolbar</source>
         <translation type="unfinished">Outils de &amp;Widgets</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1005"/>
+        <location filename="../src/mainwindow.cpp" line="1006"/>
         <source>Show the widgets toolbar</source>
         <translation type="unfinished">Afficher la trousse à outils de widgets</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1015"/>
+        <location filename="../src/mainwindow.cpp" line="1016"/>
         <source>Edit</source>
         <translation type="unfinished">Edition</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1017"/>
+        <location filename="../src/mainwindow.cpp" line="1018"/>
         <source>Show &amp;Edit Toolbar</source>
         <translation type="unfinished">Outils de &amp;Edition</translation>
     </message>
@@ -1671,62 +1915,62 @@ densité: %L2
         <translation type="obsolete">Afficher la trousse à outils de edition</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="927"/>
+        <location filename="../src/mainwindow.cpp" line="928"/>
         <source>&amp;About</source>
         <translation type="unfinished">&amp;A propos</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="928"/>
+        <location filename="../src/mainwindow.cpp" line="929"/>
         <source>Show the application&apos;s About box</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="931"/>
+        <location filename="../src/mainwindow.cpp" line="932"/>
         <source>About &amp;Qt</source>
         <translation type="unfinished">A propos de &amp;Qt</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="932"/>
+        <location filename="../src/mainwindow.cpp" line="933"/>
         <source>Show the Qt library&apos;s About box</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="940"/>
+        <location filename="../src/mainwindow.cpp" line="941"/>
         <source>&amp;File</source>
         <translation type="unfinished">&amp;Fichier</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="953"/>
+        <location filename="../src/mainwindow.cpp" line="954"/>
         <source>&amp;Edit</source>
         <translation type="unfinished">&amp;Edition</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="968"/>
+        <location filename="../src/mainwindow.cpp" line="969"/>
         <source>&amp;Widgets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="974"/>
+        <location filename="../src/mainwindow.cpp" line="975"/>
         <source>&amp;Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1018"/>
+        <location filename="../src/mainwindow.cpp" line="1019"/>
         <source>Show scene editing toolbar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1055"/>
+        <location filename="../src/mainwindow.cpp" line="1056"/>
         <source>Image Quality</source>
         <translation type="unfinished">Qualité de l&apos;image</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1035"/>
+        <location filename="../src/mainwindow.cpp" line="1036"/>
         <source>Previewer</source>
         <translation type="unfinished">Affichage Inférieur</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="854"/>
+        <location filename="../src/mainwindow.cpp" line="855"/>
         <source>Rescale View</source>
         <translation type="unfinished">Echelle</translation>
     </message>
@@ -1735,47 +1979,47 @@ densité: %L2
         <translation type="obsolete">Modifier de Triangle</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1045"/>
+        <location filename="../src/mainwindow.cpp" line="1046"/>
         <source>Triangle Variations</source>
         <translation type="unfinished">Variations de Triangle</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1050"/>
+        <location filename="../src/mainwindow.cpp" line="1051"/>
         <source>Triangle Color</source>
         <translation type="unfinished">Couleur de Triangle</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1065"/>
+        <location filename="../src/mainwindow.cpp" line="1066"/>
         <source>Color Settings</source>
         <translation type="unfinished">Paramètres de Couleur</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1080"/>
+        <location filename="../src/mainwindow.cpp" line="1081"/>
         <source>Genome List</source>
         <translation type="unfinished">Liste des Genomes</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1085"/>
+        <location filename="../src/mainwindow.cpp" line="1086"/>
         <source>Triangle Densities</source>
         <translation type="unfinished">Densitées des Triangles</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1095"/>
+        <location filename="../src/mainwindow.cpp" line="1096"/>
         <source>Directory Browser</source>
         <translation type="unfinished">Navigateur du Fichier</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1100"/>
+        <location filename="../src/mainwindow.cpp" line="1101"/>
         <source>Triangle Coordinates</source>
         <translation type="unfinished">Coordonnées de Triangle</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1105"/>
+        <location filename="../src/mainwindow.cpp" line="1106"/>
         <source>Sheep Loop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1110"/>
+        <location filename="../src/mainwindow.cpp" line="1111"/>
         <source>Script Editor</source>
         <translation type="unfinished">Console d&apos;édition de scripts</translation>
     </message>
@@ -1788,28 +2032,28 @@ densité: %L2
         <translation type="obsolete">Fichier est ouvert</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="697"/>
-        <location filename="../src/mainwindow.cpp" line="1239"/>
-        <location filename="../src/mainwindow.cpp" line="1258"/>
+        <location filename="../src/mainwindow.cpp" line="699"/>
+        <location filename="../src/mainwindow.cpp" line="1240"/>
+        <location filename="../src/mainwindow.cpp" line="1259"/>
         <source>Application error</source>
         <translation type="unfinished">Erreur d&apos;Application</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="698"/>
+        <location filename="../src/mainwindow.cpp" line="700"/>
         <source>Cannot write file %1
 </source>
         <translation type="unfinished">Impossible d&apos;enregistrer le fichier %1</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1240"/>
+        <location filename="../src/mainwindow.cpp" line="1241"/>
         <source>Couldn&apos;t open file %1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1253"/>
-        <location filename="../src/mainwindow.cpp" line="1291"/>
-        <location filename="../src/mainwindow.cpp" line="1724"/>
+        <location filename="../src/mainwindow.cpp" line="1254"/>
+        <location filename="../src/mainwindow.cpp" line="1292"/>
+        <location filename="../src/mainwindow.cpp" line="1727"/>
         <source>File saved</source>
         <translation type="unfinished">Sauvegarder du fichier</translation>
     </message>
@@ -1832,27 +2076,27 @@ densité: %L2
 </translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1629"/>
+        <location filename="../src/mainwindow.cpp" line="1632"/>
         <source>last undo</source>
         <translation type="unfinished">Dernier Annuler</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1640"/>
+        <location filename="../src/mainwindow.cpp" line="1643"/>
         <source>redo %1/%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1643"/>
+        <location filename="../src/mainwindow.cpp" line="1646"/>
         <source>last redo</source>
         <translation type="unfinished">Dernier Refaire</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="565"/>
+        <location filename="../src/mainwindow.cpp" line="567"/>
         <source>Open a flame</source>
         <translation type="unfinished">Ouvrir un flame</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="594"/>
+        <location filename="../src/mainwindow.cpp" line="596"/>
         <source>Save a flame</source>
         <translation type="unfinished">Sauvegarder un flame</translation>
     </message>
@@ -1861,12 +2105,12 @@ densité: %L2
         <translation type="obsolete">Sauvegarder une image</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="743"/>
+        <location filename="../src/mainwindow.cpp" line="745"/>
         <source>Import genomes from a file</source>
         <translation type="unfinished">Importer des genomes</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="763"/>
+        <location filename="../src/mainwindow.cpp" line="765"/>
         <source>Save the current genome</source>
         <translation type="unfinished">Sauvegarder le genome</translation>
     </message>
@@ -1886,22 +2130,32 @@ densité: %L2
         <translation type="unfinished">fichier.png</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="275"/>
-        <location filename="../src/mainwindow.cpp" line="1090"/>
+        <location filename="../src/mainwindow.cpp" line="56"/>
+        <source>sheep</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="277"/>
+        <location filename="../src/mainwindow.cpp" line="1091"/>
         <source>Chaos</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="353"/>
+        <location filename="../src/mainwindow.cpp" line="355"/>
         <source>Sheep Loops</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="566"/>
-        <location filename="../src/mainwindow.cpp" line="595"/>
-        <location filename="../src/mainwindow.cpp" line="744"/>
-        <location filename="../src/mainwindow.cpp" line="764"/>
-        <location filename="../src/mainwindow.cpp" line="1712"/>
+        <location filename="../src/mainwindow.cpp" line="493"/>
+        <source> [%1/%2] : (%L3%4%L5) : mark (%L6%7%L8)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="568"/>
+        <location filename="../src/mainwindow.cpp" line="597"/>
+        <location filename="../src/mainwindow.cpp" line="746"/>
+        <location filename="../src/mainwindow.cpp" line="766"/>
+        <location filename="../src/mainwindow.cpp" line="1715"/>
         <source>flam3 xml (*.flam *.flam3 *.flame);;All files (*)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1935,6 +2189,122 @@ densité: %L2
         <location filename="../ui/mainwindow.ui" line="115"/>
         <location filename="../ui/mainwindow.ui" line="118"/>
         <source>Flip Triangles</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MotionViewFunctionItemEditor</name>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="53"/>
+        <source>sin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="53"/>
+        <source>hill</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="53"/>
+        <source>triangle</source>
+        <translation type="unfinished">triangle</translation>
+    </message>
+</context>
+<context>
+    <name>MotionViewVarItemEditor</name>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="31"/>
+        <source>animate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="31"/>
+        <source>color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="31"/>
+        <source>color_speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="31"/>
+        <source>density</source>
+        <translation type="unfinished">densité</translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="31"/>
+        <source>opacity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="33"/>
+        <source>var: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="35"/>
+        <source>par: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="36"/>
+        <source>xform: a</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="36"/>
+        <source>xform: b</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="36"/>
+        <source>xform: c</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="36"/>
+        <source>xform: d</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="36"/>
+        <source>xform: e</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="36"/>
+        <source>xform: f</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="37"/>
+        <source>post: a</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="37"/>
+        <source>post: b</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="37"/>
+        <source>post: c</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="37"/>
+        <source>post: d</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="37"/>
+        <source>post: e</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="37"/>
+        <source>post: f</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2021,47 +2391,62 @@ densité: %L2
         <source>regenerate</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../src/mutationwidget.cpp" line="49"/>
+        <source>genome A</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mutationwidget.cpp" line="50"/>
+        <source>genome B</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mutationwidget.cpp" line="88"/>
+        <source>mutation %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PaletteEditor</name>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="117"/>
+        <location filename="../src/paletteeditor.cpp" line="122"/>
         <source>Save gradient to a cpt file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="119"/>
+        <location filename="../src/paletteeditor.cpp" line="124"/>
         <source>CPT Gradient Files (*.cpt)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="134"/>
+        <location filename="../src/paletteeditor.cpp" line="139"/>
         <source>Error: Couldn&apos;t open file %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="175"/>
+        <location filename="../src/paletteeditor.cpp" line="180"/>
         <source>Error: Couldn&apos;t write to file %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="515"/>
-        <location filename="../src/paletteeditor.cpp" line="1037"/>
+        <location filename="../src/paletteeditor.cpp" line="520"/>
+        <location filename="../src/paletteeditor.cpp" line="1042"/>
         <source>Invalid path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="516"/>
+        <location filename="../src/paletteeditor.cpp" line="521"/>
         <source>The directory path %1 couldn&apos;t be opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="537"/>
+        <location filename="../src/paletteeditor.cpp" line="542"/>
         <source>Gradient Files (*.cpt *.ggr *.ugr)</source>
         <translation type="unfinished">Ficher du gradient (*.cpt *.ggr *.ugr)</translation>
     </message>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="1038"/>
+        <location filename="../src/paletteeditor.cpp" line="1043"/>
         <source>The gradient path %1 doesn&apos;t exist.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2135,7 +2520,7 @@ densité: %L2
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="535"/>
+        <location filename="../src/paletteeditor.cpp" line="540"/>
         <source>Select a gradient file to load</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2143,23 +2528,27 @@ densité: %L2
 <context>
     <name>RenderDialog</name>
     <message>
-        <location filename="../src/renderdialog.cpp" line="36"/>
-        <location filename="../src/renderdialog.cpp" line="155"/>
-        <source>current settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/renderdialog.cpp" line="94"/>
-        <source>File already exists</source>
+        <location filename="../src/renderdialog.cpp" line="28"/>
+        <source>genome quality</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/renderdialog.cpp" line="95"/>
+        <source>File already exists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/renderdialog.cpp" line="96"/>
         <source>Do you want to overwrite %1?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/renderdialog.cpp" line="136"/>
+        <location filename="../src/renderdialog.cpp" line="134"/>
+        <source>untitled.png</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/renderdialog.cpp" line="137"/>
         <source>Save an image as ...</source>
         <translation type="unfinished">Sauvegarder une image de ...</translation>
     </message>
@@ -2378,22 +2767,32 @@ densité: %L2
         <translation type="obsolete">terminer</translation>
     </message>
     <message>
-        <location filename="../src/scripteditwidget.cpp" line="57"/>
+        <location filename="../src/scripteditwidget.cpp" line="36"/>
+        <source>print(&apos;hello world.&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/scripteditwidget.cpp" line="67"/>
+        <source>Script input request</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/scripteditwidget.cpp" line="76"/>
         <source>row: %1, col: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/scripteditwidget.cpp" line="84"/>
+        <location filename="../src/scripteditwidget.cpp" line="103"/>
         <source>running script...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/scripteditwidget.cpp" line="94"/>
+        <location filename="../src/scripteditwidget.cpp" line="113"/>
         <source>script stopped</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/scripteditwidget.cpp" line="114"/>
+        <location filename="../src/scripteditwidget.cpp" line="133"/>
         <source>saved: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2494,6 +2893,16 @@ densité: %L2
         <location filename="../ui/selectgenomewidget.ui" line="138"/>
         <location filename="../ui/selectgenomewidget.ui" line="164"/>
         <source>...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/selectgenomewidget.cpp" line="132"/>
+        <source>Error</source>
+        <translation type="unfinished">Erreur</translation>
+    </message>
+    <message>
+        <location filename="../src/selectgenomewidget.cpp" line="133"/>
+        <source>Couldn&apos;t remove %1: %2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2644,6 +3053,9 @@ animate - time based interpolation of adjacent genomes</source>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="241"/>
         <location filename="../ui/sheeploopwidget.ui" line="700"/>
+        <location filename="../src/sheeploopwidget.cpp" line="260"/>
+        <location filename="../src/sheeploopwidget.cpp" line="388"/>
+        <location filename="../src/sheeploopwidget.cpp" line="448"/>
         <source>animate</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2855,6 +3267,175 @@ animate - time based interpolation of adjacent genomes</source>
         <source>-</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="221"/>
+        <source>element</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="222"/>
+        <source>value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="223"/>
+        <source>function</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="224"/>
+        <source>frequency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="239"/>
+        <location filename="../src/sheeploopwidget.cpp" line="377"/>
+        <location filename="../src/sheeploopwidget.cpp" line="437"/>
+        <source>var: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="250"/>
+        <location filename="../src/sheeploopwidget.cpp" line="383"/>
+        <location filename="../src/sheeploopwidget.cpp" line="443"/>
+        <source>par: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="265"/>
+        <location filename="../src/sheeploopwidget.cpp" line="390"/>
+        <location filename="../src/sheeploopwidget.cpp" line="450"/>
+        <source>color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="270"/>
+        <location filename="../src/sheeploopwidget.cpp" line="392"/>
+        <location filename="../src/sheeploopwidget.cpp" line="452"/>
+        <source>color_speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="275"/>
+        <location filename="../src/sheeploopwidget.cpp" line="394"/>
+        <location filename="../src/sheeploopwidget.cpp" line="454"/>
+        <source>density</source>
+        <translation type="unfinished">densité</translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="280"/>
+        <location filename="../src/sheeploopwidget.cpp" line="396"/>
+        <location filename="../src/sheeploopwidget.cpp" line="456"/>
+        <source>opacity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="285"/>
+        <location filename="../src/sheeploopwidget.cpp" line="398"/>
+        <location filename="../src/sheeploopwidget.cpp" line="458"/>
+        <source>xform: a</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="290"/>
+        <location filename="../src/sheeploopwidget.cpp" line="400"/>
+        <location filename="../src/sheeploopwidget.cpp" line="460"/>
+        <source>xform: b</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="295"/>
+        <location filename="../src/sheeploopwidget.cpp" line="402"/>
+        <location filename="../src/sheeploopwidget.cpp" line="462"/>
+        <source>xform: c</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="300"/>
+        <location filename="../src/sheeploopwidget.cpp" line="404"/>
+        <location filename="../src/sheeploopwidget.cpp" line="464"/>
+        <source>xform: d</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="305"/>
+        <location filename="../src/sheeploopwidget.cpp" line="406"/>
+        <location filename="../src/sheeploopwidget.cpp" line="466"/>
+        <source>xform: e</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="310"/>
+        <location filename="../src/sheeploopwidget.cpp" line="408"/>
+        <location filename="../src/sheeploopwidget.cpp" line="468"/>
+        <source>xform: f</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="315"/>
+        <location filename="../src/sheeploopwidget.cpp" line="410"/>
+        <location filename="../src/sheeploopwidget.cpp" line="470"/>
+        <source>post: a</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="320"/>
+        <location filename="../src/sheeploopwidget.cpp" line="412"/>
+        <location filename="../src/sheeploopwidget.cpp" line="472"/>
+        <source>post: b</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="325"/>
+        <location filename="../src/sheeploopwidget.cpp" line="414"/>
+        <location filename="../src/sheeploopwidget.cpp" line="474"/>
+        <source>post: c</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="330"/>
+        <location filename="../src/sheeploopwidget.cpp" line="416"/>
+        <location filename="../src/sheeploopwidget.cpp" line="476"/>
+        <source>post: d</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="335"/>
+        <location filename="../src/sheeploopwidget.cpp" line="418"/>
+        <location filename="../src/sheeploopwidget.cpp" line="478"/>
+        <source>post: e</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="340"/>
+        <location filename="../src/sheeploopwidget.cpp" line="420"/>
+        <location filename="../src/sheeploopwidget.cpp" line="480"/>
+        <source>post: f</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="346"/>
+        <location filename="../src/sheeploopwidget.cpp" line="491"/>
+        <location filename="../src/sheeploopwidget.cpp" line="515"/>
+        <source>sin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="348"/>
+        <location filename="../src/sheeploopwidget.cpp" line="493"/>
+        <source>hill</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="350"/>
+        <source>triangle</source>
+        <translation type="unfinished">triangle</translation>
+    </message>
+    <message>
+        <location filename="../src/sheeploopwidget.cpp" line="513"/>
+        <source>var: linear</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>StatusWidget</name>
@@ -2992,6 +3573,16 @@ animate - time based interpolation of adjacent genomes</source>
         <source>*</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../src/triangledensitywidget.cpp" line="134"/>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/triangledensitywidget.cpp" line="186"/>
+        <source>density: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>VariationsWidget</name>
@@ -3012,7 +3603,30 @@ animate - time based interpolation of adjacent genomes</source>
     </message>
 </context>
 <context>
+    <name>VarsTableModel</name>
+    <message>
+        <location filename="../src/varstablewidget.cpp" line="368"/>
+        <source>Variation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/varstablewidget.cpp" line="368"/>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ViewerPresetsModel</name>
+    <message>
+        <location filename="../src/viewerpresetsmodel.cpp" line="84"/>
+        <source>Column %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/viewerpresetsmodel.cpp" line="86"/>
+        <source>Row %1</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <location filename="../src/viewerpresetsmodel.cpp" line="217"/>
         <source>very-low quality</source>
@@ -3047,18 +3661,23 @@ animate - time based interpolation of adjacent genomes</source>
 <context>
     <name>ViewerPresetsWidget</name>
     <message>
-        <location filename="../src/viewerpresetswidget.cpp" line="49"/>
+        <location filename="../src/viewerpresetswidget.cpp" line="48"/>
+        <source>q%1/o%2/e%3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/viewerpresetswidget.cpp" line="52"/>
         <source>Add a new preset</source>
         <translation type="unfinished">Ajouter les paramètres d&apos;affichage</translation>
     </message>
     <message>
-        <location filename="../src/viewerpresetswidget.cpp" line="50"/>
-        <location filename="../src/viewerpresetswidget.cpp" line="74"/>
+        <location filename="../src/viewerpresetswidget.cpp" line="53"/>
+        <location filename="../src/viewerpresetswidget.cpp" line="77"/>
         <source>Enter a name for the preset</source>
         <translation type="unfinished">Donner un nom pour les paramètres d&apos;affichage</translation>
     </message>
     <message>
-        <location filename="../src/viewerpresetswidget.cpp" line="73"/>
+        <location filename="../src/viewerpresetswidget.cpp" line="76"/>
         <source>Rename preset</source>
         <translation type="unfinished">Renommer les paramètres d&apos;affichage</translation>
     </message>
@@ -3106,6 +3725,11 @@ animate - time based interpolation of adjacent genomes</source>
         <location filename="../ui/viewerpresetswidget.ui" line="103"/>
         <source>move down</source>
         <translation type="unfinished">déplacer en bas</translation>
+    </message>
+    <message>
+        <location filename="../ui/viewerpresetswidget.ui" line="133"/>
+        <source>close</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

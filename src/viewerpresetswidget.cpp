@@ -45,7 +45,7 @@ void ViewerPresetsWidget::addPresetSlot()
 {
 	bool ok;
 	flam3_genome* g = genomes->selectedGenome();
-	QString name = QString("q%1/o%2/e%3")
+	QString name = tr("q%1/o%2/e%3")
 			.arg(g->sample_density)
 			.arg(g->spatial_oversample)
 			.arg(g->estimator);

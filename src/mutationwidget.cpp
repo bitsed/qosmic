@@ -46,8 +46,8 @@ MutationWidget::MutationWidget(GenomeVector* gen,  RenderThread* t, QWidget* par
 		   << label_c71 << label_c72 << label_c73
 		   << label_c81 << label_c82 << label_c83;
 
-	label_a1->setToolTip(QString("genome A"));
-	label_b1->setToolTip(QString("genome B"));
+	label_a1->setToolTip(tr("genome A"));
+	label_b1->setToolTip(tr("genome B"));
 
 	ViewerPresetsModel* presets = ViewerPresetsModel::getInstance();
 
@@ -85,7 +85,7 @@ MutationWidget::MutationWidget(GenomeVector* gen,  RenderThread* t, QWidget* par
 				p->setFrameColor(colors[(n + 5) % 7]);
 			}
 		}
-		RenderRequest* r = new RenderRequest(genome->data(), labels_size, QString("mutation %1").arg(n + 1), RenderRequest::Queued);
+		RenderRequest* r = new RenderRequest(genome->data(), labels_size, tr("mutation %1").arg(n + 1), RenderRequest::Queued);
 		requests << r;
 		connect(labels[n], SIGNAL(mutationASelected(MutationPreviewWidget*)), this, SLOT(mutationASelectedAction(MutationPreviewWidget*)));
 		connect(labels[n], SIGNAL(mutationBSelected(MutationPreviewWidget*)), this, SLOT(mutationBSelectedAction(MutationPreviewWidget*)));

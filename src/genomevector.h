@@ -45,6 +45,7 @@ class GenomeVector : public QAbstractListModel, public QVector<flam3_genome>
 		QList<RenderRequest*> r_requests;
 		QPixmap clock_preview;
 		AutoSave auto_save;
+		QString request_name;
 
 	public:
 		GenomeVector();

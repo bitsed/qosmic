@@ -43,7 +43,7 @@ MainViewer::MainViewer(QWidget* parent, const QString& title)
 {
 	setupUi(this);
 
-	m_request.setName("viewer");
+	m_request.setName(tr("viewer"));
 	m_request.setType(RenderRequest::Queued);
 
 	fullscreen_action = new QAction(tr("fullscreen"), this);
@@ -218,7 +218,7 @@ void MainViewer::scaleResetAction()
 void MainViewer::saveImageAction()
 {
 	QString fileName = QFileDialog::getSaveFileName(this,
-			tr("Save an image"), "untitled.png");
+			tr("Save an image"), tr("untitled.png"));
 
 	if (!fileName.isEmpty()
 			   && QFileInfo(QFileInfo(fileName).path()).isWritable())
@@ -385,7 +385,7 @@ void MainViewer::buildPopupMenu()
 		popupMenu->addAction(status_action);
 		popupMenu->addAction(fullscreen_action);
 		popupMenu->addSeparator();
-		a = popupMenu->addAction("save image");
+		a = popupMenu->addAction(tr("save image"));
 		a->setCheckable(false);
 		connect(a, SIGNAL(triggered(bool)), this, SLOT(saveImageAction()));
 	}
@@ -536,7 +536,7 @@ void MainViewer::dropEvent(QDropEvent* event)
 		GenomeVector* genomes = getWidget<MainWindow>()->genomeVector();
 		if (idx < genomes->size())
 		{
-			m_request.setName(QString("genome %1").arg(idx + 1));
+			m_request.setName(tr("genome %1").arg(idx + 1));
 			m_request.setGenome(genomes->data() + idx);
 			do_render = true;
 		}

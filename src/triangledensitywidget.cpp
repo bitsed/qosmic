@@ -131,7 +131,7 @@ void TriangleDensityWidget::reset()
 	resetSliders(getNorm());
 
 	QStringList items;
-	items << "None";
+	items << tr("None");
 	for (int n = 1 ; n <= genome->size() ; n++)
 		items << QString::number(n);
 	int n = m_crossComboBox->currentIndex();
@@ -183,7 +183,7 @@ void TriangleDensityWidget::resetSliders(double norm)
 			sl->blockSignals(false);
 			sl->setVisible(true);
 			la->setVisible(true);
-			sl->setToolTip(QString("density: %1")
+			sl->setToolTip(tr("density: %1")
 				.arg(other_genome.xform[n].density));
 			if (other_genome.final_xform_enable
 				&& other_genome.final_xform_index == n)

@@ -53,6 +53,8 @@ MainWindow::MainWindow()
 	m_file_request.setName(tr("file.png"));
 	m_file_request.setType(RenderRequest::File);
 
+	m_sheep_reqname = tr("sheep");
+
 	// the render thread
 	m_rthread = RenderThread::getInstance();
 	connect(m_rthread, SIGNAL(flameRendered(RenderEvent*)), this, SLOT(flameRenderedSlot(RenderEvent*)));
@@ -439,7 +441,7 @@ void MainWindow::flameRenderedSlot(RenderEvent* e)
 		m_viewer->setPixmap(QPixmap::fromImage(req->image()));
 		e->accept();
 	}
-	else if (req->name().contains(QString("sheep")))
+	else if (req->name().contains(m_sheep_reqname))
 	{
 		logFiner(QString("MainWindow::flameRenderedSlot : displaying sheep %1").arg(req->name()));
 		m_previewWidget->setPixmap(QPixmap::fromImage(req->image()));
@@ -488,7 +490,7 @@ void MainWindow::updateStatus(double posX, double posY)
 			case TriangleCoordsWidget::Radian:
 				Util::rectToPolar(mx, my, &mx, &my);
 		}
-		coordsLabel.setText(QString(" [%1/%2] : (%L3%4%L5) : mark (%L6%7%L8)")
+		coordsLabel.setText(tr(" [%1/%2] : (%L3%4%L5) : mark (%L6%7%L8)")
 			.arg(m_xfeditor->selectedTriangleIndex() + 1)
 			.arg(m_xfeditor->getNumberOfTriangles())
 			.arg(tx, 0, 'f', 4).arg(separator).arg(ty, 0, 'f', 4)
@@ -658,7 +660,7 @@ bool MainWindow::saveImage(const QString& filename, int idx)
 	{
 		fileName = origName = curFile;
 		if (fileName.isEmpty())
-			fileName = "untitled.png";
+			fileName = tr("untitled.png");
 		else
 		{
 			int pos = fileName.lastIndexOf('.');
@@ -777,8 +779,8 @@ void MainWindow::exportAction()
 
 void MainWindow::about()
 {
-	static const char* msg =
-	"<p><b>Qosmic version %1</b></p>"
+	QMessageBox::about(this, tr("About Qosmic"),
+	tr("<p><b>Qosmic version %1</b></p>"
 	"<p>Copyright (C) 2007-2016 by David Bitseff<br>"
 	"<p>Use and redistribute under the terms of the<br>"
 	"<a href=\"http://www.gnu.org/licenses/gpl.html\">"
@@ -788,9 +790,8 @@ void MainWindow::about()
 	"- Erik Reckase for his work on the flam3 library<br>"
 	"- Mark James for his <a href=\"http://www.famfamfam.com/lab/icons/silk/\">Silk</a> icon set<br>"
 	"- Mark Townsend for the <a href=\"www.apophysis.org\">Apophysis</a> editor"
-	"<p>This version uses: Qt " QT_VERSION_STR ", " LUA_RELEASE	", %2</p>";
-	QMessageBox::about(this, tr("About Qosmic"),
-		QString::fromLatin1(msg).arg(QOSMIC_VERSION).arg(flam3_version()));
+	"<p>This version uses: Qt " QT_VERSION_STR ", " LUA_RELEASE	", %2</p>")
+	.arg(QOSMIC_VERSION).arg(flam3_version()));
 }
 
 
@@ -1300,7 +1301,7 @@ void MainWindow::setCurrentFile(const QString& fileName)
 	curFile = fileName;
 	QString shownName;
 	if (curFile.isEmpty())
-		shownName = "untitled.flam3";
+		shownName = tr("untitled.flam3");
 	else
 	{
 		shownName = strippedName(curFile);
@@ -1684,7 +1685,7 @@ void MainWindow::runSheepLoop(bool flag)
 				{
 					request = new RenderRequest();
 					request->setType(RenderRequest::Queued);
-					request->setName(QString("sheep %1").arg(i));
+					request->setName(QString(m_sheep_reqname + " %1").arg(i));
 					m_sheep_requests.append(request);
 				}
 
