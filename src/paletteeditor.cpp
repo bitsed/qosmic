@@ -284,7 +284,7 @@ void PaletteEditor::stopsChangedAction()
 	qreal c4 = 0.01;
 	qreal norm = c2 + c3 + c4;
 	qreal k = 0.0;
-	qreal skip( (GradientBufferSize / 256.0) / qMax(1.0/GradientBufferSize , end - start) );
+	qreal skip( (GradientBufferSize / 256.0) / qMax(qreal(1.0/GradientBufferSize), end - start) );
 	for (int n = 0 ; n < ibuf_size ; n++, k += skip)
 	{
 		int j = k;
@@ -816,22 +816,22 @@ bool PaletteEditor::loadGIMPGradient(QFileInfo& file, flam3_palette pa)
 		QColor midc_color;
 		if (coloring == 0)
 			midc_color = QColor::fromRgbF(
-			qBound(0., leftc_color.redF() + rdx, 1.0),
-			qBound(0., leftc_color.greenF() + gdx, 1.0),
-			qBound(0., leftc_color.blueF() + bdx, 1.0),
-			qBound(0., leftc_color.alphaF() + adx, 1.0) );
+			qBound(qreal(0.0), leftc_color.redF() + rdx, qreal(1.0)),
+			qBound(qreal(0.0), leftc_color.greenF() + gdx, qreal(1.0)),
+			qBound(qreal(0.0), leftc_color.blueF() + bdx, qreal(1.0)),
+			qBound(qreal(0.0), leftc_color.alphaF() + adx, qreal(1.0)) );
 		else
 		{
-			double h = leftc_color.hueF() + rdx;
+			qreal h = leftc_color.hueF() + rdx;
 			if (h >= 1.0)
 				h -= 1.0;
 			else if (h < 0)
 				h += 1.0;
 			midc_color = QColor::fromHsvF(
-			qBound(0., h , 1.0),
-			qBound(0., leftc_color.saturationF() + gdx, 1.0),
-			qBound(0., leftc_color.valueF() + bdx, 1.0),
-			qBound(0., leftc_color.alphaF() + adx, 1.0) );
+			qBound(qreal(0.0), h , qreal(1.0)),
+			qBound(qreal(0.0), leftc_color.saturationF() + gdx, qreal(1.0)),
+			qBound(qreal(0.0), leftc_color.valueF() + bdx, qreal(1.0)),
+			qBound(qreal(0.0), leftc_color.alphaF() + adx, qreal(1.0)) );
 		}
 
 		if (midc_idx == leftc_idx)

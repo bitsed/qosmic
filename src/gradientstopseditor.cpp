@@ -178,7 +178,7 @@ void GradientStopsEditor::mouseMoveEvent(QMouseEvent* event)
 				{
 					qreal cur( data[n].first );
 					qreal dx( (qreal)(event->x() - moving_start.x()) / size().width() );
-					qreal val( qBound(0.0, data[n].first + dx, 1.0) );
+					qreal val( qBound(qreal(0.0), cur + dx, qreal(1.0)) );
 					if (val != cur)
 					{
 						data[n].first = val;
@@ -195,7 +195,7 @@ void GradientStopsEditor::mouseMoveEvent(QMouseEvent* event)
 			else
 			{
 				qreal cur( data[moving_idx].first );
-				qreal val( qBound(0.0, (qreal)event->x() / size().width(), 1.0) );
+				qreal val( qBound(qreal(0.0), qreal(event->x()) / size().width(), qreal(1.0)) );
 				if (val != cur)
 				{
 					data[moving_idx].first = val;
@@ -233,7 +233,7 @@ void GradientStopsEditor::paintEvent(QPaintEvent*)
 	{
 		GradientStop stop( stops.at(n) );
 		painter.setBrush(QBrush(stop.second));
-		qreal x( qBound(0.0, stop.first * w, w - 1.0) );
+		qreal x( qBound(qreal(0.0), stop.first * w, qreal(w - 1)) );
 		if (selected_idx.contains(n))
 		{
 			QColor c( QColor::fromRgb(

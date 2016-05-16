@@ -704,9 +704,13 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 				if ((sx != 1.0) || (sy != 1.0))
 				{
 					if (t->type() == TriangleSelection::Type)
-						scaleSelection(qMin(sx, 1.15), qMin(sy, 1.15), tpos);
+						scaleSelection(
+							qMin(sx, qreal(1.15)),
+							qMin(sy, qreal(1.15)), tpos);
 					else
-						scaleTriangle(dynamic_cast<Triangle*>(t), qMin(sx, 1.15), qMin(sy, 1.15), tpos);
+						scaleTriangle(dynamic_cast<Triangle*>(t),
+							qMin(sx, qreal(1.15)),
+							qMin(sy, qreal(1.15)), tpos);
 				}
 			}
 		}
