@@ -16,6 +16,9 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
+#include <QAbstractTextDocumentLayout>
+#include <QScrollBar>
+#include <QPainter>
 #include <QFile>
 #include <QSettings>
 #include <QKeyEvent>
@@ -32,6 +35,13 @@ namespace Lua {
 LuaEditor::LuaEditor(QWidget* pa) : QTextEdit(pa), parent(pa)
 {
 	highlighter = new Highlighter(document());
+	lineWidget = new LineWidget(this);
+
+	connect(document(), SIGNAL(blockCountChanged(int)),
+		this, SLOT(updateLineWidgetWidth(int)));
+	connect(this, SIGNAL(cursorPositionChanged()),
+		this, SLOT(highlightCurrentLine()));
+	highlightCurrentLine();
 
 	QStringList names = QFontDatabase().families();
 	QStringList prefs;
@@ -249,11 +259,139 @@ QString LuaEditor::scriptFile() const
 	return script_filename;
 }
 
-}
 
-void Lua::LuaEditor::setCurrentFont(const QFont& f)
+void LuaEditor::setCurrentFont(const QFont& f)
 {
 	QString text(toPlainText());
 	QTextEdit::setCurrentFont(f);
 	setPlainText(text);
+	updateLineWidgetWidth(0);
+}
+
+
+
+int LuaEditor::lineWidgetWidth()
+{
+	QFontMetrics fm(currentFont());
+	int digits = 1;
+	int max = qMax(1, document()->blockCount());
+	while (max >= 10) {
+		max /= 10;
+		++digits;
+	}
+
+	return 12 + fm.width(QLatin1Char('9')) * digits;
+}
+
+
+void LuaEditor::updateLineWidgetWidth(int)
+{
+	setViewportMargins(lineWidgetWidth(), 0, 0, 0);
+}
+
+
+void LuaEditor::scrollContentsBy(int dx, int dy)
+{
+	QTextEdit::scrollContentsBy(dx, dy);
+	lineWidget->scroll(0, dy);
+}
+
+
+void LuaEditor::resizeEvent(QResizeEvent* e)
+{
+	QTextEdit::resizeEvent(e);
+	QRect cr = contentsRect();
+	cr.setWidth(lineWidgetWidth());
+	lineWidget->setGeometry(cr);
+}
+
+
+void LuaEditor::highlightCurrentLine()
+{
+	QList<QTextEdit::ExtraSelection> extraSelections;
+
+	if (!isReadOnly()) {
+		QTextEdit::ExtraSelection selection;
+
+		QColor lineColor = QColor(Qt::yellow).lighter(160);
+
+		selection.format.setBackground(lineColor);
+		selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+		selection.cursor = textCursor();
+		selection.cursor.clearSelection();
+		extraSelections.append(selection);
+	}
+
+	setExtraSelections(extraSelections);
+}
+
+
+QTextBlock LuaEditor::getFirstVisibleBlock()
+{
+	QRect view = viewport()->geometry();
+	int xpos = view.x();
+	int ypos = view.y() - verticalScrollBar()->sliderPosition();
+	QAbstractTextDocumentLayout* layout = document()->documentLayout();
+	QTextBlock block = document()->begin();
+	while (block.isValid())
+	{
+		if (view.intersects(
+			layout->blockBoundingRect(block)
+				.translated(xpos, ypos).toRect()))
+			return block;
+		block = block.next();
+	}
+
+	return document()->begin();
+}
+
+
+void LuaEditor::lineWidgetPaintEvent(QPaintEvent* event)
+{
+	QPainter painter(lineWidget);
+	QRect view = viewport()->geometry();
+	int xpos = view.x();
+	int ypos = view.y() - verticalScrollBar()->sliderPosition();
+	QTextBlock block = getFirstVisibleBlock();
+	QAbstractTextDocumentLayout* layout = document()->documentLayout();
+	QRect brect = layout->blockBoundingRect(block)
+		.translated(xpos, ypos).toRect();
+	int top = brect.top();
+	int bottom = brect.bottom();
+	QFont font(currentFont());
+	int height = QFontMetrics(font).height();
+	QColor c(palette().color(QPalette::Base));
+	painter.setPen(c.lightness() > 127 ? c.darker(150) : c.lighter(150));
+	painter.setFont(currentFont());
+	while (block.isValid() && top <= event->rect().bottom())
+	{
+		if (block.isVisible() && bottom >= event->rect().top())
+			painter.drawText(0, top, lineWidget->width() - 9, height,
+				Qt::AlignRight, QString::number(block.blockNumber() + 1));
+
+		block = block.next();
+		top = bottom;
+		bottom = top + layout->blockBoundingRect(block)
+			.translated(xpos, ypos).toRect().height();
+	}
+}
+
+
+LineWidget::LineWidget(LuaEditor* editor)
+: QWidget(editor), luaEditor(editor)
+{
+}
+
+QSize LineWidget::sizeHint() const
+{
+	return QSize(luaEditor->lineWidgetWidth(), 0);
+}
+
+void LineWidget::paintEvent(QPaintEvent* event)
+{
+	luaEditor->lineWidgetPaintEvent(event);
+}
+
+
+
 }

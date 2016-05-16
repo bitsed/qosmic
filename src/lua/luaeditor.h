@@ -31,6 +31,8 @@ class LuaEditor : public QTextEdit
 	public:
 		LuaEditor(QWidget* pa=0);
 		~LuaEditor();
+		void lineWidgetPaintEvent(QPaintEvent*);
+	    int lineWidgetWidth();
 
 	public slots:
 		bool save();
@@ -44,11 +46,37 @@ class LuaEditor : public QTextEdit
 		void scriptSaved();
 
 	protected:
+		void resizeEvent(QResizeEvent*);
 		void keyPressEvent(QKeyEvent*);
+		void scrollContentsBy(int dx, int dy);
+		QTextBlock getFirstVisibleBlock();
 		QString script_filename;
 		QWidget* parent;
+		QWidget* lineWidget;
 		Highlighter* highlighter;
+
+	private slots:
+		void highlightCurrentLine();
+		void updateLineWidgetWidth(int);
 };
+
+
+class LineWidget : public QWidget
+{
+	Q_OBJECT
+
+	public:
+		LineWidget(LuaEditor* editor);
+		QSize sizeHint() const;
+
+	protected:
+		void paintEvent(QPaintEvent *event);
+
+	private:
+		LuaEditor* luaEditor;
+};
+
+
 
 }
 
