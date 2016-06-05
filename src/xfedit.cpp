@@ -1645,8 +1645,7 @@ void FigureEditor::colorChangedAction(double /*idx*/)
 		QBrush brush(triangle->brush());
 		pen.setColor(c);
 		triangle->setPen(pen);
-		foreach (NodeItem* n, triangle->getNodes())
-			n->setPen(QPen(grid_color), c);
+		triangle->setNodeColor(grid_color, c);
 		c.setAlphaF(0.5);
 		brush.setColor(c);
 		triangle->setBrush(brush);
