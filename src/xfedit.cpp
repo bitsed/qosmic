@@ -267,17 +267,13 @@ void FigureEditor::cutTriangleAction()
 		i.toBack();
 		while (i.hasPrevious())
 			flam3_delete_xform(genome_ptr, i.previous());
+		selectTriangle(qMax(0, idxs.at(0) - 1));
+		reset();
+		emit triangleListChangedSignal();
+		emit undoStateSignal();
 	}
 	else
-	{
-		Triangle* t = getCurrentOrSelected();
-		int idx = trianglesList.indexOf(t, 0);
-		logFine(QString("FigureEditor::cutTriangleAction : removing triangle %1").arg(idx));
-		flam3_delete_xform(genome_ptr, idx);
-	}
-	reset();
-	emit triangleListChangedSignal();
-	emit undoStateSignal();
+		removeTriangleAction();
 }
 
 void FigureEditor::copyTriangleAction()
@@ -343,6 +339,7 @@ void FigureEditor::removeTriangleAction()
 	logFine(QString("FigureEditor::removeTriangleAction : "
 		"Removing triangle %1").arg(idx));
 	flam3_delete_xform(genome_ptr, idx);
+	selectTriangle(qMax(0, idx - 1));
 	reset();
 	emit triangleListChangedSignal();
 	emit undoStateSignal();
