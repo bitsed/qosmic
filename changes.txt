@@ -1,13 +1,22 @@
 Version 1.6.0
 
 - Update to Qt5.5, Lua 5.2, and flam3 3.1.1
-- Improved variations widget.
-- Fix a crash in Lua XForm:get_genome when adding new genomes.
-- Add <ctime> include to flam3util.cpp for win32 support.
-- Fix infinite loop bug on read error in loadCPTGradient.
-- Set the flam3_genome.symmetry to 1 when loading the default flam3 xml.
-- Use M_PI constant defined in <cmath>.
-- Fix PaletteEditor log messages.
+- Fix a crash in Lua XForm:get_genome when adding new genomes
+- Add <ctime> include to flam3util.cpp for win32 support
+- Fix infinite loop bug on read error in loadCPTGradient
+- Set the flam3_genome.symmetry to 1 when loading the default flam3 xml
+- Use M_PI constant defined in <cmath>
+- Fix PaletteEditor log messages
+- Add ru and cz locale translation files
+- Use consistent types with Qt compare functions to address build issues
+- Highlight multi-line comments and strings in the lua editor
+- Added a lua script dialog() function
+- Added a clear/delete button for items in the variations editor
+- Scroll to the new genome when the duplicate button is clicked
+- Load translations from application resources
+- Remove checks for flam3_palettes environment variable
+- Scaling and editing improvements in the xform editor
+- Add labels to the triangles in the xform editor
 
 
 Version 1.5.0
