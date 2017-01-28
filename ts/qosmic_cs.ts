@@ -74,7 +74,7 @@
     <message>
         <location filename="../ui/adjustscenewidget.ui" line="199"/>
         <source>triangle labels</source>
-        <translation type="unfinished"></translation>
+        <translation>Popisy  trojúhelníku</translation>
     </message>
     <message>
         <source>grid color</source>
@@ -429,7 +429,13 @@ log=%2
 flam3_verbose=%3
 flam3_nthreads=%4
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Qosmic %1
+Použití: qosmic [soubor flam3]
+
+Proměnné prostředí:
+log=%2
+flam3_verbose=%3
+flam3_nthreads=%4</translation>
     </message>
     <message>
         <location filename="../src/qosmic.cpp" line="83"/>
@@ -442,32 +448,32 @@ flam3_nthreads=%4
     <message>
         <location filename="../src/directoryviewwidget.cpp" line="80"/>
         <source>Sort by</source>
-        <translation type="unfinished"></translation>
+        <translation>Řadit dle</translation>
     </message>
     <message>
         <location filename="../src/directoryviewwidget.cpp" line="100"/>
         <source>Descending</source>
-        <translation type="unfinished"></translation>
+        <translation>Sestupně</translation>
     </message>
     <message>
         <location filename="../src/directoryviewwidget.cpp" line="103"/>
         <source>View</source>
-        <translation type="unfinished"></translation>
+        <translation>Pohled</translation>
     </message>
     <message>
         <location filename="../src/directoryviewwidget.cpp" line="105"/>
         <source>Short View</source>
-        <translation type="unfinished"></translation>
+        <translation>Zestručněný pohled</translation>
     </message>
     <message>
         <location filename="../src/directoryviewwidget.cpp" line="106"/>
         <source>Detailed View</source>
-        <translation type="unfinished"></translation>
+        <translation>Podrobný pohled</translation>
     </message>
     <message>
         <location filename="../src/directoryviewwidget.cpp" line="111"/>
         <source>Show Hidden Files</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukázat skryté soubory</translation>
     </message>
     <message>
         <location filename="../src/directoryviewwidget.cpp" line="127"/>
@@ -632,7 +638,7 @@ flam3_nthreads=%4
         <location filename="../ui/editmodeselectorwidget.ui" line="476"/>
         <location filename="../ui/editmodeselectorwidget.ui" line="761"/>
         <source>circum</source>
-        <translation type="unfinished"></translation>
+        <translation>Okolo</translation>
     </message>
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="481"/>
@@ -881,7 +887,7 @@ flam3_nthreads=%4
         <translation>Trojúhelníky</translation>
     </message>
     <message>
-        <location filename="../src/xfedit.cpp" line="911"/>
+        <location filename="../src/xfedit.cpp" line="912"/>
         <source>post transform: %1
 </source>
         <translation>Proměna po: %1
@@ -928,24 +934,25 @@ hustota: %L2
     <message>
         <location filename="../src/genomevector.cpp" line="33"/>
         <source>selector</source>
-        <translation type="unfinished"></translation>
+        <translation>Volič</translation>
     </message>
     <message>
         <location filename="../src/genomevector.cpp" line="394"/>
         <location filename="../src/genomevector.cpp" line="415"/>
         <source>%1 xforms
 time: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 xforms
+čas: %2</translation>
     </message>
     <message>
         <location filename="../src/genomevector.cpp" line="419"/>
         <source>genome %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Genom %1</translation>
     </message>
     <message>
         <location filename="../src/genomevector.cpp" line="505"/>
         <source>Genome %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Genom %1</translation>
     </message>
 </context>
 <context>
@@ -1241,7 +1248,7 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/lua/xform.cpp" line="384"/>
         <source>number expected for variable </source>
-        <translation type="unfinished"></translation>
+        <translation>Číslo očekávané pro proměnnou </translation>
     </message>
 </context>
 <context>
@@ -1249,12 +1256,12 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/lua/frame.cpp" line="208"/>
         <source>load requires one string argument</source>
-        <translation type="unfinished"></translation>
+        <translation>Nahrání vyžaduje argument o jednom řetězci</translation>
     </message>
     <message>
         <location filename="../src/lua/frame.cpp" line="226"/>
         <source>save requires one string argument</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložení vyžaduje argument o jednom řetězci</translation>
     </message>
     <message>
         <location filename="../src/lua/frame.cpp" line="244"/>
@@ -1262,7 +1269,7 @@ filtru s alespoň touto šířkou na všechny body</translation>
         <location filename="../src/lua/frame.cpp" line="407"/>
         <location filename="../src/lua/frame.cpp" line="441"/>
         <source>index out of range: Genome[%d] is null</source>
-        <translation type="unfinished"></translation>
+        <translation>Index mimo rozsah: Genome[%d] je nulový</translation>
     </message>
 </context>
 <context>
@@ -1270,12 +1277,12 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/lua/genome.cpp" line="111"/>
         <source>index out of bounds: Genome[%d]</source>
-        <translation type="unfinished"></translation>
+        <translation>Index mimo hranice: Genome[%d]</translation>
     </message>
     <message>
         <location filename="../src/lua/genome.cpp" line="338"/>
         <source>index out of range: Genome.XForm[%d] is null</source>
-        <translation type="unfinished"></translation>
+        <translation>Index mimo rozsah: Genome.XForm[%d] je nulový</translation>
     </message>
     <message>
         <location filename="../src/lua/genome.cpp" line="389"/>
@@ -1283,88 +1290,88 @@ filtru s alespoň touto šířkou na všechny body</translation>
         <location filename="../src/lua/genome.cpp" line="468"/>
         <location filename="../src/lua/genome.cpp" line="492"/>
         <source>genome has no xform at index %d</source>
-        <translation type="unfinished"></translation>
+        <translation>Genome nemá žádný xform při indexu %d</translation>
     </message>
     <message>
         <location filename="../src/lua/genome.cpp" line="592"/>
         <source>index %d out of range</source>
-        <translation type="unfinished"></translation>
+        <translation>Index %d mimo rozsah</translation>
     </message>
     <message>
         <location filename="../src/lua/genome.cpp" line="672"/>
         <source>no index %d in chaos array</source>
-        <translation type="unfinished"></translation>
+        <translation>Žádný index %d v poli zmatku</translation>
     </message>
     <message>
         <location filename="../src/lua/genome.cpp" line="693"/>
         <location filename="../src/lua/genome.cpp" line="705"/>
         <source>no index %d,%d in chaos array</source>
-        <translation type="unfinished"></translation>
+        <translation>Žádný index %d,%d v poli zmatku</translation>
     </message>
 </context>
 <context>
     <name>Lua::LuaEditor</name>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="48"/>
+        <location filename="../src/lua/luaeditor.cpp" line="58"/>
         <source>Open a file</source>
         <translation>Otevřít soubor</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="49"/>
+        <location filename="../src/lua/luaeditor.cpp" line="59"/>
         <source>Ctrl+1</source>
         <translation>Ctrl+1</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="54"/>
+        <location filename="../src/lua/luaeditor.cpp" line="64"/>
         <source>Save file</source>
         <translation>Uložit soubor</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="55"/>
+        <location filename="../src/lua/luaeditor.cpp" line="65"/>
         <source>Ctrl+2</source>
         <translation>Ctrl+2</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="60"/>
+        <location filename="../src/lua/luaeditor.cpp" line="70"/>
         <source>Save to file</source>
         <translation>Uložit do souboru</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="61"/>
+        <location filename="../src/lua/luaeditor.cpp" line="71"/>
         <source>Ctrl+3</source>
         <translation>Ctrl+3</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="188"/>
+        <location filename="../src/lua/luaeditor.cpp" line="198"/>
         <source>Open a script</source>
-        <translation type="unfinished"></translation>
+        <translation>Otevřít skript</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="197"/>
-        <location filename="../src/lua/luaeditor.cpp" line="229"/>
+        <location filename="../src/lua/luaeditor.cpp" line="207"/>
+        <location filename="../src/lua/luaeditor.cpp" line="239"/>
         <source>Application error</source>
         <translation>Chyba programu</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="198"/>
+        <location filename="../src/lua/luaeditor.cpp" line="208"/>
         <source>Cannot read file %1
 </source>
         <translation>Nelze přečíst soubor %1
 </translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="215"/>
+        <location filename="../src/lua/luaeditor.cpp" line="225"/>
         <source>Save a script</source>
         <translation>Uložit skript</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="189"/>
-        <location filename="../src/lua/luaeditor.cpp" line="216"/>
+        <location filename="../src/lua/luaeditor.cpp" line="199"/>
+        <location filename="../src/lua/luaeditor.cpp" line="226"/>
         <source>lua source (*.lua);;All files (*)</source>
         <translation>Zdroj lua (*.lua);;Všechny soubory (*)</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="230"/>
+        <location filename="../src/lua/luaeditor.cpp" line="240"/>
         <source>Cannot write file %1
 </source>
         <translation>Nelze zapsat soubor %1
@@ -1400,17 +1407,17 @@ filtru s alespoň touto šířkou na všechny body</translation>
         <location filename="../src/lua/luathread.cpp" line="224"/>
         <location filename="../src/lua/luathread.cpp" line="244"/>
         <source>stack has no thread ref</source>
-        <translation type="unfinished"></translation>
+        <translation>Zásobník nemá žádný odkaz na vlákno</translation>
     </message>
     <message>
         <location filename="../src/lua/luathread.cpp" line="160"/>
         <source> must return a string to </source>
-        <translation type="unfinished"></translation>
+        <translation> musí vrátit řetězec </translation>
     </message>
     <message>
         <location filename="../src/lua/luathread.cpp" line="239"/>
         <source>stopping</source>
-        <translation type="unfinished"></translation>
+        <translation>Zastavuje se</translation>
     </message>
     <message>
         <location filename="../src/lua/luathread.cpp" line="571"/>
@@ -1423,33 +1430,34 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/lua/lunar.h" line="86"/>
         <source>not a valid %s userdata</source>
-        <translation type="unfinished"></translation>
+        <translation>Nejsou platná %s uživatelská data</translation>
     </message>
     <message>
         <location filename="../src/lua/lunar.h" line="95"/>
         <source>%s missing method &apos;%s&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>%s chybí metoda &apos;%s&apos;</translation>
     </message>
     <message>
         <location filename="../src/lua/lunar.h" line="104"/>
         <source>(error with no message)</source>
-        <translation type="unfinished"></translation>
+        <translation>(chyba bez zprávy o chybě)</translation>
     </message>
     <message>
         <location filename="../src/lua/lunar.h" line="105"/>
         <source>%s:%s status = %d
 %s</source>
-        <translation type="unfinished"></translation>
+        <translation>%s:%s stav = %d
+%s</translation>
     </message>
     <message>
         <location filename="../src/lua/lunar.h" line="117"/>
         <source>%s missing metatable</source>
-        <translation type="unfinished"></translation>
+        <translation>%s chybí popisná tabulka</translation>
     </message>
     <message>
         <location filename="../src/lua/lunar.h" line="161"/>
         <source>stopping</source>
-        <translation type="unfinished"></translation>
+        <translation>Zastavuje se</translation>
     </message>
 </context>
 <context>
@@ -1457,32 +1465,32 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/lua/xform.cpp" line="118"/>
         <source>index out of bounds: Genome[%d].XForm[%d]</source>
-        <translation type="unfinished"></translation>
+        <translation>Index mimo hranice: Genome[%d].XForm[%d]</translation>
     </message>
     <message>
         <location filename="../src/lua/xform.cpp" line="280"/>
         <source>couldn&apos;t build metatables for var.variables: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se sestavit popisné tabulky pro var.proměnné: %1</translation>
     </message>
     <message>
         <location filename="../src/lua/xform.cpp" line="302"/>
         <source>couldn&apos;t build metatables for var: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se sestavit popisné tabulky pro obměnu: %1</translation>
     </message>
     <message>
         <location filename="../src/lua/xform.cpp" line="338"/>
         <source>invalid variation index %d</source>
-        <translation type="unfinished"></translation>
+        <translation>Neplatná změna indexu %d</translation>
     </message>
     <message>
         <location filename="../src/lua/xform.cpp" line="345"/>
         <source>variation %s not found</source>
-        <translation type="unfinished"></translation>
+        <translation>Obměna %s nenalezena</translation>
     </message>
     <message>
         <location filename="../src/lua/xform.cpp" line="357"/>
         <source>variables argument is not a valid table</source>
-        <translation type="unfinished"></translation>
+        <translation>Argument proměnné není platná tabulka</translation>
     </message>
 </context>
 <context>
@@ -1517,12 +1525,12 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/mainviewer.cpp" line="46"/>
         <source>viewer</source>
-        <translation type="unfinished">Prohlížeč</translation>
+        <translation>Prohlížeč</translation>
     </message>
     <message>
         <location filename="../src/mainviewer.cpp" line="49"/>
         <source>fullscreen</source>
-        <translation type="unfinished"></translation>
+        <translation>Na celou obrazovku</translation>
     </message>
     <message>
         <location filename="../src/mainviewer.cpp" line="61"/>
@@ -1583,12 +1591,12 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/mainviewer.cpp" line="221"/>
         <source>untitled.png</source>
-        <translation type="unfinished"></translation>
+        <translation>Bez názvu.png</translation>
     </message>
     <message>
         <location filename="../src/mainviewer.cpp" line="539"/>
         <source>genome %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Genom %1</translation>
     </message>
     <message>
         <source>Viewer Presets</source>
@@ -1604,7 +1612,7 @@ filtru s alespoň touto šířkou na všechny body</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="113"/>
-        <location filename="../src/mainwindow.cpp" line="1041"/>
+        <location filename="../src/mainwindow.cpp" line="1042"/>
         <source>Triangles</source>
         <translation>Trojúhelníky</translation>
     </message>
@@ -1615,7 +1623,7 @@ filtru s alespoň touto šířkou na všechny body</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="155"/>
-        <location filename="../src/mainwindow.cpp" line="1031"/>
+        <location filename="../src/mainwindow.cpp" line="1032"/>
         <source>Viewer</source>
         <translation>Prohlížeč</translation>
     </message>
@@ -1626,7 +1634,7 @@ filtru s alespoň touto šířkou na všechny body</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="184"/>
-        <location filename="../src/mainwindow.cpp" line="1061"/>
+        <location filename="../src/mainwindow.cpp" line="1062"/>
         <source>Camera</source>
         <translation>Kamera</translation>
     </message>
@@ -1665,13 +1673,13 @@ filtru s alespoň touto šířkou na všechny body</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="310"/>
-        <location filename="../src/mainwindow.cpp" line="1071"/>
+        <location filename="../src/mainwindow.cpp" line="1072"/>
         <source>Palettes</source>
         <translation>Barevné palety</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="325"/>
-        <location filename="../src/mainwindow.cpp" line="1076"/>
+        <location filename="../src/mainwindow.cpp" line="1077"/>
         <source>Mutations</source>
         <translation>Mutace</translation>
     </message>
@@ -1688,7 +1696,7 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/mainwindow.cpp" line="663"/>
         <source>untitled.png</source>
-        <translation type="unfinished"></translation>
+        <translation>Bez názvu.png</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="782"/>
@@ -1696,7 +1704,12 @@ filtru s alespoň touto šířkou na všechny body</translation>
         <translation>O programu Qosmic</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="803"/>
+        <location filename="../src/mainwindow.cpp" line="783"/>
+        <source>&lt;p&gt;&lt;b&gt;Qosmic version %1&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Copyright (C) 2007-2016 by David Bitseff&lt;br&gt;&lt;p&gt;Use and redistribute under the terms of the&lt;br&gt;&lt;a href=&quot;http://www.gnu.org/licenses/gpl.html&quot;&gt;GNU General Public License Version 3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Thanks to:&lt;br&gt;- Scott Draves for the &lt;a href=&quot;http://flam3.com/&quot;&gt;flam3&lt;/a&gt; library&lt;br&gt;- Erik Reckase for his work on the flam3 library&lt;br&gt;- Mark James for his &lt;a href=&quot;http://www.famfamfam.com/lab/icons/silk/&quot;&gt;Silk&lt;/a&gt; icon set&lt;br&gt;- Mark Townsend for the &lt;a href=&quot;www.apophysis.org&quot;&gt;Apophysis&lt;/a&gt; editor&lt;br&gt;- Pavel Fric for Czech Translations&lt;br&gt;&lt;p&gt;This version uses: Qt </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="804"/>
         <source>Reset</source>
         <translation>Nastavit znovu</translation>
     </message>
@@ -1705,93 +1718,93 @@ filtru s alespoň touto šířkou na všechny body</translation>
         <translation type="obsolete">Ctrl+R</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="805"/>
+        <location filename="../src/mainwindow.cpp" line="806"/>
         <source>Load default genome</source>
         <translation>Nahrát výchozí genom</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="808"/>
+        <location filename="../src/mainwindow.cpp" line="809"/>
         <source>&amp;Open...</source>
         <translation>&amp;Otevřít...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="810"/>
+        <location filename="../src/mainwindow.cpp" line="811"/>
         <source>Open an existing file</source>
         <translation>Otevřít stávající soubor</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="813"/>
+        <location filename="../src/mainwindow.cpp" line="814"/>
         <source>&amp;Save</source>
         <translation>&amp;Uložit</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="815"/>
+        <location filename="../src/mainwindow.cpp" line="816"/>
         <source>Save the flame to disk</source>
         <translation>Uložit plamen na disk</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="818"/>
+        <location filename="../src/mainwindow.cpp" line="819"/>
         <source>Save &amp;As...</source>
         <translation>Uložit &amp;jako...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="820"/>
+        <location filename="../src/mainwindow.cpp" line="821"/>
         <source>Save the flame under a new name</source>
         <translation>Uložit plamen pod novým názvem</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="823"/>
+        <location filename="../src/mainwindow.cpp" line="824"/>
         <source>Render to &amp;file...</source>
         <translation>&amp;Udělat do souboru...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="825"/>
+        <location filename="../src/mainwindow.cpp" line="826"/>
         <source>Save an image of current flame</source>
         <translation>Uložit obrázek nynějšího plamene</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="828"/>
+        <location filename="../src/mainwindow.cpp" line="829"/>
         <source>Q&amp;uicksave flame...</source>
         <translation>Uložit plamen &amp;rychle...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="830"/>
+        <location filename="../src/mainwindow.cpp" line="831"/>
         <source>Quickly save file and image of current flame</source>
         <translation>Rychle uložit soubor a obrázek nynějšího plamene</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="840"/>
+        <location filename="../src/mainwindow.cpp" line="841"/>
         <source>&amp;Quit</source>
         <translation>&amp;Ukončit</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="842"/>
+        <location filename="../src/mainwindow.cpp" line="843"/>
         <source>Quit the application</source>
         <translation>Ukončit program</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="845"/>
+        <location filename="../src/mainwindow.cpp" line="846"/>
         <source>&amp;Stop rendering</source>
         <translation>&amp;Zastavit dělání</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1260"/>
+        <location filename="../src/mainwindow.cpp" line="1261"/>
         <source>Couldn&apos;t save file %1
 </source>
         <translation>Nepodařilo se uložit soubor %1</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1304"/>
+        <location filename="../src/mainwindow.cpp" line="1305"/>
         <source>untitled.flam3</source>
-        <translation type="unfinished"></translation>
+        <translation>Bez názvu.flam3</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1629"/>
+        <location filename="../src/mainwindow.cpp" line="1630"/>
         <source>undo %1/%2</source>
         <translation>Zpět %1/%2</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1714"/>
+        <location filename="../src/mainwindow.cpp" line="1715"/>
         <source>Save a sheep</source>
         <translation>Uložit ovci</translation>
     </message>
@@ -1800,12 +1813,12 @@ filtru s alespoň touto šířkou na všechny body</translation>
         <translation type="obsolete">Ctrl+A</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="847"/>
+        <location filename="../src/mainwindow.cpp" line="848"/>
         <source>Stop rendering</source>
         <translation>Zastavit dělání</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="850"/>
+        <location filename="../src/mainwindow.cpp" line="851"/>
         <source>&amp;Random Flame</source>
         <translation>&amp;Náhodný plamen</translation>
     </message>
@@ -1814,7 +1827,7 @@ filtru s alespoň touto šířkou na všechny body</translation>
         <translation type="obsolete">Ctrl+F</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="852"/>
+        <location filename="../src/mainwindow.cpp" line="853"/>
         <source>Generate a random xform set</source>
         <translation>Vytvořit náhodný genom</translation>
     </message>
@@ -1827,65 +1840,65 @@ filtru s alespoň touto šířkou na všechny body</translation>
         <translation type="obsolete">Ctrl+E</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="857"/>
+        <location filename="../src/mainwindow.cpp" line="858"/>
         <source>Rescale the editor</source>
         <translation>Změnit měřítko editoru</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="860"/>
+        <location filename="../src/mainwindow.cpp" line="861"/>
         <source>Select next triangle</source>
         <translation>Vybrat další trojúhelník</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="865"/>
+        <location filename="../src/mainwindow.cpp" line="866"/>
         <source>Select previous triangle</source>
         <translation>Vybrat předchozí trojúhelník</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="884"/>
-        <location filename="../src/mainwindow.cpp" line="888"/>
+        <location filename="../src/mainwindow.cpp" line="885"/>
+        <location filename="../src/mainwindow.cpp" line="889"/>
         <source>Undo</source>
         <translation>Zpět</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="892"/>
-        <location filename="../src/mainwindow.cpp" line="896"/>
+        <location filename="../src/mainwindow.cpp" line="893"/>
+        <location filename="../src/mainwindow.cpp" line="897"/>
         <source>Redo</source>
         <translation>Znovu</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="918"/>
         <location filename="../src/mainwindow.cpp" line="919"/>
+        <location filename="../src/mainwindow.cpp" line="920"/>
         <source>Import genomes</source>
         <translation>Zavést genomy</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="923"/>
+        <location filename="../src/mainwindow.cpp" line="924"/>
         <source>Export current genome</source>
         <translation>Vyvést nynější genom</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="924"/>
+        <location filename="../src/mainwindow.cpp" line="925"/>
         <source>Export the current genome</source>
         <translation>Vyvést nynější genom</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1010"/>
+        <location filename="../src/mainwindow.cpp" line="1011"/>
         <source>File</source>
         <translation>Soubor</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1012"/>
+        <location filename="../src/mainwindow.cpp" line="1013"/>
         <source>Show &amp;File Toolbar</source>
         <translation>Ukázat nástrojový panel pro &amp;soubor</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1013"/>
+        <location filename="../src/mainwindow.cpp" line="1014"/>
         <source>Show the file toolbar</source>
         <translation>Ukázat nástrojový panel pro soubor</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1003"/>
+        <location filename="../src/mainwindow.cpp" line="1004"/>
         <source>Widgets</source>
         <translation>Doplňky</translation>
     </message>
@@ -1910,55 +1923,54 @@ filtru s alespoň touto šířkou na všechny body</translation>
         <translation>Soubor nelze zapsat do %1</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="783"/>
         <source>&lt;p&gt;&lt;b&gt;Qosmic version %1&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Copyright (C) 2007-2016 by David Bitseff&lt;br&gt;&lt;p&gt;Use and redistribute under the terms of the&lt;br&gt;&lt;a href=&quot;http://www.gnu.org/licenses/gpl.html&quot;&gt;GNU General Public License Version 3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Thanks to:&lt;br&gt;- Scott Draves for the &lt;a href=&quot;http://flam3.com/&quot;&gt;flam3&lt;/a&gt; library&lt;br&gt;- Erik Reckase for his work on the flam3 library&lt;br&gt;- Mark James for his &lt;a href=&quot;http://www.famfamfam.com/lab/icons/silk/&quot;&gt;Silk&lt;/a&gt; icon set&lt;br&gt;- Mark Townsend for the &lt;a href=&quot;www.apophysis.org&quot;&gt;Apophysis&lt;/a&gt; editor&lt;p&gt;This version uses: Qt </source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">&lt;p&gt;&lt;b&gt;Verze programu Qosmic %1&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Autorské právo (C) 2007-2016 David Bitseff&lt;br&gt;&lt;p&gt;Používejte a šiřte za podmínek&lt;br&gt;&lt;a href=&quot;http://www.gnu.org/licenses/gpl.html&quot;&gt;GNU General Public License verze 3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Poděkování:&lt;br&gt;- Scott Draves za &lt;a href=&quot;http://flam3.com/&quot;&gt;flam3&lt;/a&gt; library&lt;br&gt;- Erik Reckase za jeho práci na knihovně flam3&lt;br&gt;- Mark James za jeho sadu ikon &lt;a href=&quot;http://www.famfamfam.com/lab/icons/silk/&quot;&gt;Silk&lt;/a&gt;&lt;br&gt;- Mark Townsend za editor &lt;a href=&quot;www.apophysis.org&quot;&gt;Apophysis&lt;/a&gt;&lt;p&gt;Tato verze používá: Qt </translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="870"/>
+        <location filename="../src/mainwindow.cpp" line="871"/>
         <source>Scale in the scene</source>
         <translation>Zvětšit scénu</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="877"/>
+        <location filename="../src/mainwindow.cpp" line="878"/>
         <source>Scale out the scene</source>
         <translation>Zmenšit scénu</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="900"/>
-        <location filename="../src/mainwindow.cpp" line="902"/>
+        <location filename="../src/mainwindow.cpp" line="901"/>
+        <location filename="../src/mainwindow.cpp" line="903"/>
         <source>Cut</source>
         <translation>Vyjmout</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="906"/>
-        <location filename="../src/mainwindow.cpp" line="908"/>
+        <location filename="../src/mainwindow.cpp" line="907"/>
+        <location filename="../src/mainwindow.cpp" line="909"/>
         <source>Copy</source>
         <translation>Kopírovat</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="912"/>
-        <location filename="../src/mainwindow.cpp" line="914"/>
+        <location filename="../src/mainwindow.cpp" line="913"/>
+        <location filename="../src/mainwindow.cpp" line="915"/>
         <source>Paste</source>
         <translation>Vložit</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1005"/>
+        <location filename="../src/mainwindow.cpp" line="1006"/>
         <source>Show &amp;Widgets Toolbar</source>
         <translation>Ukázat nástrojový panel pro &amp;doplňky</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1006"/>
+        <location filename="../src/mainwindow.cpp" line="1007"/>
         <source>Show the widgets toolbar</source>
         <translation>Ukázat nástrojový panel pro doplňky</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1016"/>
+        <location filename="../src/mainwindow.cpp" line="1017"/>
         <source>Edit</source>
         <translation>Úpravy</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1018"/>
+        <location filename="../src/mainwindow.cpp" line="1019"/>
         <source>Show &amp;Edit Toolbar</source>
         <translation>Ukázat nástrojový panel pro ú&amp;pravy</translation>
     </message>
@@ -1967,62 +1979,62 @@ filtru s alespoň touto šířkou na všechny body</translation>
         <translation type="obsolete">Afficher la trousse à outils de edition</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="928"/>
+        <location filename="../src/mainwindow.cpp" line="929"/>
         <source>&amp;About</source>
         <translation>&amp;O programu</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="929"/>
+        <location filename="../src/mainwindow.cpp" line="930"/>
         <source>Show the application&apos;s About box</source>
         <translation>Ukázat okénko &quot;O programu&quot;</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="932"/>
+        <location filename="../src/mainwindow.cpp" line="933"/>
         <source>About &amp;Qt</source>
         <translation>O &amp;Qt</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="933"/>
+        <location filename="../src/mainwindow.cpp" line="934"/>
         <source>Show the Qt library&apos;s About box</source>
         <translation>Ukázat okénko &quot;O knihovně Qt&quot;</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="941"/>
+        <location filename="../src/mainwindow.cpp" line="942"/>
         <source>&amp;File</source>
         <translation>&amp;Soubor</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="954"/>
+        <location filename="../src/mainwindow.cpp" line="955"/>
         <source>&amp;Edit</source>
         <translation>&amp;Úpravy</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="969"/>
+        <location filename="../src/mainwindow.cpp" line="970"/>
         <source>&amp;Widgets</source>
         <translation>&amp;Doplňky</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="975"/>
+        <location filename="../src/mainwindow.cpp" line="976"/>
         <source>&amp;Info</source>
         <translation>&amp;Informace</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1019"/>
+        <location filename="../src/mainwindow.cpp" line="1020"/>
         <source>Show scene editing toolbar</source>
         <translation>Ukázat nástrojový panel pro úpravování scény</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1056"/>
+        <location filename="../src/mainwindow.cpp" line="1057"/>
         <source>Image Quality</source>
         <translation>Jakost obrázku</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1036"/>
+        <location filename="../src/mainwindow.cpp" line="1037"/>
         <source>Previewer</source>
         <translation>Náhled</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="855"/>
+        <location filename="../src/mainwindow.cpp" line="856"/>
         <source>Rescale View</source>
         <translation>Změnit velikost pohledu</translation>
     </message>
@@ -2031,47 +2043,47 @@ filtru s alespoň touto šířkou na všechny body</translation>
         <translation type="obsolete">Modifier de Triangle</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1046"/>
+        <location filename="../src/mainwindow.cpp" line="1047"/>
         <source>Triangle Variations</source>
         <translation>Obměny trojúhelníku</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1051"/>
+        <location filename="../src/mainwindow.cpp" line="1052"/>
         <source>Triangle Color</source>
         <translation>Barva trojúhelníku</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1066"/>
+        <location filename="../src/mainwindow.cpp" line="1067"/>
         <source>Color Settings</source>
         <translation>Nastavení barev</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1081"/>
+        <location filename="../src/mainwindow.cpp" line="1082"/>
         <source>Genome List</source>
         <translation>Seznam genomů</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1086"/>
+        <location filename="../src/mainwindow.cpp" line="1087"/>
         <source>Triangle Densities</source>
         <translation>Hustoty trojúhelníků</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1096"/>
+        <location filename="../src/mainwindow.cpp" line="1097"/>
         <source>Directory Browser</source>
         <translation>Prohlížeč adresářů</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1101"/>
+        <location filename="../src/mainwindow.cpp" line="1102"/>
         <source>Triangle Coordinates</source>
         <translation>Souřadnice trojúhelníku</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1106"/>
+        <location filename="../src/mainwindow.cpp" line="1107"/>
         <source>Sheep Loop</source>
         <translation>Ovčí smyčka</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1111"/>
+        <location filename="../src/mainwindow.cpp" line="1112"/>
         <source>Script Editor</source>
         <translation>Editor skriptů</translation>
     </message>
@@ -2085,8 +2097,8 @@ filtru s alespoň touto šířkou na všechny body</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="699"/>
-        <location filename="../src/mainwindow.cpp" line="1240"/>
-        <location filename="../src/mainwindow.cpp" line="1259"/>
+        <location filename="../src/mainwindow.cpp" line="1241"/>
+        <location filename="../src/mainwindow.cpp" line="1260"/>
         <source>Application error</source>
         <translation>Chyba programu</translation>
     </message>
@@ -2098,16 +2110,16 @@ filtru s alespoň touto šířkou na všechny body</translation>
 </translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1241"/>
+        <location filename="../src/mainwindow.cpp" line="1242"/>
         <source>Couldn&apos;t open file %1
 </source>
         <translation>Nepodařilo se otevřít soubor %1
 </translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1254"/>
-        <location filename="../src/mainwindow.cpp" line="1292"/>
-        <location filename="../src/mainwindow.cpp" line="1727"/>
+        <location filename="../src/mainwindow.cpp" line="1255"/>
+        <location filename="../src/mainwindow.cpp" line="1293"/>
+        <location filename="../src/mainwindow.cpp" line="1728"/>
         <source>File saved</source>
         <translation>Soubor uložen</translation>
     </message>
@@ -2130,17 +2142,17 @@ filtru s alespoň touto šířkou na všechny body</translation>
 </translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1632"/>
+        <location filename="../src/mainwindow.cpp" line="1633"/>
         <source>last undo</source>
         <translation>Poslední krok zpět</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1643"/>
+        <location filename="../src/mainwindow.cpp" line="1644"/>
         <source>redo %1/%2</source>
         <translation>Znovu %1/%2</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1646"/>
+        <location filename="../src/mainwindow.cpp" line="1647"/>
         <source>last redo</source>
         <translation>Poslední krok znovu</translation>
     </message>
@@ -2181,16 +2193,16 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/mainwindow.cpp" line="53"/>
         <source>file.png</source>
-        <translation>soubor.png</translation>
+        <translation>Soubor.png</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="56"/>
         <source>sheep</source>
-        <translation type="unfinished"></translation>
+        <translation>Beránek</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="277"/>
-        <location filename="../src/mainwindow.cpp" line="1091"/>
+        <location filename="../src/mainwindow.cpp" line="1092"/>
         <source>Chaos</source>
         <translation>Zmatek</translation>
     </message>
@@ -2202,14 +2214,14 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/mainwindow.cpp" line="493"/>
         <source> [%1/%2] : (%L3%4%L5) : mark (%L6%7%L8)</source>
-        <translation type="unfinished"></translation>
+        <translation> [%1/%2] : (%L3%4%L5) : značka (%L6%7%L8)</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="568"/>
         <location filename="../src/mainwindow.cpp" line="597"/>
         <location filename="../src/mainwindow.cpp" line="746"/>
         <location filename="../src/mainwindow.cpp" line="766"/>
-        <location filename="../src/mainwindow.cpp" line="1715"/>
+        <location filename="../src/mainwindow.cpp" line="1716"/>
         <source>flam3 xml (*.flam *.flam3 *.flame);;All files (*)</source>
         <translation>flam3 xml (*.flam *.flam3 *.flame);;All files (*)</translation>
     </message>
@@ -2251,17 +2263,17 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="53"/>
         <source>sin</source>
-        <translation type="unfinished"></translation>
+        <translation>sin</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="53"/>
         <source>hill</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopec</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="53"/>
         <source>triangle</source>
-        <translation type="unfinished"></translation>
+        <translation>Trojúhelník</translation>
     </message>
 </context>
 <context>
@@ -2269,97 +2281,97 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="31"/>
         <source>animate</source>
-        <translation type="unfinished">Animovat</translation>
+        <translation>Animovat</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="31"/>
         <source>color</source>
-        <translation type="unfinished"></translation>
+        <translation>Barva</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="31"/>
         <source>color_speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Barva_rychlost</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="31"/>
         <source>density</source>
-        <translation type="unfinished">Hustota</translation>
+        <translation>Hustota</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="31"/>
         <source>opacity</source>
-        <translation type="unfinished">Neprůhlednost</translation>
+        <translation>Neprůhlednost</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="33"/>
         <source>var: </source>
-        <translation type="unfinished"></translation>
+        <translation>Proměnná:</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="35"/>
         <source>par: </source>
-        <translation type="unfinished"></translation>
+        <translation>Parametr:</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="36"/>
         <source>xform: a</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: a</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="36"/>
         <source>xform: b</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: b</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="36"/>
         <source>xform: c</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: c</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="36"/>
         <source>xform: d</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: d</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="36"/>
         <source>xform: e</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: e</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="36"/>
         <source>xform: f</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: f</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="37"/>
         <source>post: a</source>
-        <translation type="unfinished"></translation>
+        <translation>post: a</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="37"/>
         <source>post: b</source>
-        <translation type="unfinished"></translation>
+        <translation>post: b</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="37"/>
         <source>post: c</source>
-        <translation type="unfinished"></translation>
+        <translation>post: c</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="37"/>
         <source>post: d</source>
-        <translation type="unfinished"></translation>
+        <translation>post: d</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="37"/>
         <source>post: e</source>
-        <translation type="unfinished"></translation>
+        <translation>post: e</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="37"/>
         <source>post: f</source>
-        <translation type="unfinished"></translation>
+        <translation>post: f</translation>
     </message>
 </context>
 <context>
@@ -2448,17 +2460,17 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/mutationwidget.cpp" line="49"/>
         <source>genome A</source>
-        <translation type="unfinished"></translation>
+        <translation>Genom A</translation>
     </message>
     <message>
         <location filename="../src/mutationwidget.cpp" line="50"/>
         <source>genome B</source>
-        <translation type="unfinished"></translation>
+        <translation>Genom B</translation>
     </message>
     <message>
         <location filename="../src/mutationwidget.cpp" line="88"/>
         <source>mutation %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Mutace %1</translation>
     </message>
 </context>
 <context>
@@ -2589,7 +2601,7 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/renderdialog.cpp" line="28"/>
         <source>genome quality</source>
-        <translation type="unfinished">Jakost genomu</translation>
+        <translation>Jakost genomu</translation>
     </message>
     <message>
         <location filename="../src/renderdialog.cpp" line="95"/>
@@ -2604,7 +2616,7 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/renderdialog.cpp" line="134"/>
         <source>untitled.png</source>
-        <translation type="unfinished"></translation>
+        <translation>Bez názvu.png</translation>
     </message>
     <message>
         <location filename="../src/renderdialog.cpp" line="137"/>
@@ -2693,7 +2705,7 @@ filtru s alespoň touto šířkou na všechny body</translation>
         <location filename="../src/renderthread.cpp" line="534"/>
         <location filename="../src/renderthread.cpp" line="552"/>
         <source>s.z</source>
-        <translation type="unfinished"></translation>
+        <translation>s.z</translation>
     </message>
     <message>
         <location filename="../src/renderthread.cpp" line="536"/>
@@ -2832,12 +2844,12 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/scripteditwidget.cpp" line="36"/>
         <source>print(&apos;hello world.&apos;)</source>
-        <translation type="unfinished"></translation>
+        <translation>print(&apos;lodi ahóoj.&apos;)</translation>
     </message>
     <message>
         <location filename="../src/scripteditwidget.cpp" line="67"/>
         <source>Script input request</source>
-        <translation type="unfinished"></translation>
+        <translation>Požadavek na vstup skriptu</translation>
     </message>
     <message>
         <location filename="../src/scripteditwidget.cpp" line="76"/>
@@ -2961,12 +2973,12 @@ filtru s alespoň touto šířkou na všechny body</translation>
     <message>
         <location filename="../src/selectgenomewidget.cpp" line="132"/>
         <source>Error</source>
-        <translation type="unfinished">Chyba</translation>
+        <translation>Chyba</translation>
     </message>
     <message>
         <location filename="../src/selectgenomewidget.cpp" line="133"/>
         <source>Couldn&apos;t remove %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se odstranit %1: %2</translation>
     </message>
 </context>
 <context>
@@ -3335,171 +3347,171 @@ a nashromáždí interpolované kontrolní body</translation>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="221"/>
         <source>element</source>
-        <translation type="unfinished"></translation>
+        <translation>Prvek</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="222"/>
         <source>value</source>
-        <translation type="unfinished"></translation>
+        <translation>Hodnota</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="223"/>
         <source>function</source>
-        <translation type="unfinished"></translation>
+        <translation>Funkce</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="224"/>
         <source>frequency</source>
-        <translation type="unfinished"></translation>
+        <translation>Kmitočet</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="239"/>
         <location filename="../src/sheeploopwidget.cpp" line="377"/>
         <location filename="../src/sheeploopwidget.cpp" line="437"/>
         <source>var: </source>
-        <translation type="unfinished"></translation>
+        <translation>Proměnná:</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="250"/>
         <location filename="../src/sheeploopwidget.cpp" line="383"/>
         <location filename="../src/sheeploopwidget.cpp" line="443"/>
         <source>par: </source>
-        <translation type="unfinished"></translation>
+        <translation>Parametr:</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="265"/>
         <location filename="../src/sheeploopwidget.cpp" line="390"/>
         <location filename="../src/sheeploopwidget.cpp" line="450"/>
         <source>color</source>
-        <translation type="unfinished"></translation>
+        <translation>Barva</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="270"/>
         <location filename="../src/sheeploopwidget.cpp" line="392"/>
         <location filename="../src/sheeploopwidget.cpp" line="452"/>
         <source>color_speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Barva_rychlost</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="275"/>
         <location filename="../src/sheeploopwidget.cpp" line="394"/>
         <location filename="../src/sheeploopwidget.cpp" line="454"/>
         <source>density</source>
-        <translation type="unfinished">Hustota</translation>
+        <translation>Hustota</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="280"/>
         <location filename="../src/sheeploopwidget.cpp" line="396"/>
         <location filename="../src/sheeploopwidget.cpp" line="456"/>
         <source>opacity</source>
-        <translation type="unfinished">Neprůhlednost</translation>
+        <translation>Neprůhlednost</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="285"/>
         <location filename="../src/sheeploopwidget.cpp" line="398"/>
         <location filename="../src/sheeploopwidget.cpp" line="458"/>
         <source>xform: a</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: a</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="290"/>
         <location filename="../src/sheeploopwidget.cpp" line="400"/>
         <location filename="../src/sheeploopwidget.cpp" line="460"/>
         <source>xform: b</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: b</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="295"/>
         <location filename="../src/sheeploopwidget.cpp" line="402"/>
         <location filename="../src/sheeploopwidget.cpp" line="462"/>
         <source>xform: c</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: c</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="300"/>
         <location filename="../src/sheeploopwidget.cpp" line="404"/>
         <location filename="../src/sheeploopwidget.cpp" line="464"/>
         <source>xform: d</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: d</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="305"/>
         <location filename="../src/sheeploopwidget.cpp" line="406"/>
         <location filename="../src/sheeploopwidget.cpp" line="466"/>
         <source>xform: e</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: e</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="310"/>
         <location filename="../src/sheeploopwidget.cpp" line="408"/>
         <location filename="../src/sheeploopwidget.cpp" line="468"/>
         <source>xform: f</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: f</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="315"/>
         <location filename="../src/sheeploopwidget.cpp" line="410"/>
         <location filename="../src/sheeploopwidget.cpp" line="470"/>
         <source>post: a</source>
-        <translation type="unfinished"></translation>
+        <translation>post: a</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="320"/>
         <location filename="../src/sheeploopwidget.cpp" line="412"/>
         <location filename="../src/sheeploopwidget.cpp" line="472"/>
         <source>post: b</source>
-        <translation type="unfinished"></translation>
+        <translation>post: b</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="325"/>
         <location filename="../src/sheeploopwidget.cpp" line="414"/>
         <location filename="../src/sheeploopwidget.cpp" line="474"/>
         <source>post: c</source>
-        <translation type="unfinished"></translation>
+        <translation>post: c</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="330"/>
         <location filename="../src/sheeploopwidget.cpp" line="416"/>
         <location filename="../src/sheeploopwidget.cpp" line="476"/>
         <source>post: d</source>
-        <translation type="unfinished"></translation>
+        <translation>post: d</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="335"/>
         <location filename="../src/sheeploopwidget.cpp" line="418"/>
         <location filename="../src/sheeploopwidget.cpp" line="478"/>
         <source>post: e</source>
-        <translation type="unfinished"></translation>
+        <translation>post: e</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="340"/>
         <location filename="../src/sheeploopwidget.cpp" line="420"/>
         <location filename="../src/sheeploopwidget.cpp" line="480"/>
         <source>post: f</source>
-        <translation type="unfinished"></translation>
+        <translation>post: f</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="346"/>
         <location filename="../src/sheeploopwidget.cpp" line="491"/>
         <location filename="../src/sheeploopwidget.cpp" line="515"/>
         <source>sin</source>
-        <translation type="unfinished"></translation>
+        <translation>sin</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="348"/>
         <location filename="../src/sheeploopwidget.cpp" line="493"/>
         <source>hill</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopec</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="350"/>
         <source>triangle</source>
-        <translation type="unfinished"></translation>
+        <translation>Trojúhelník</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="513"/>
         <source>var: linear</source>
-        <translation type="unfinished"></translation>
+        <translation>Proměnná: Lineární</translation>
     </message>
 </context>
 <context>
@@ -3641,12 +3653,12 @@ a nashromáždí interpolované kontrolní body</translation>
     <message>
         <location filename="../src/triangledensitywidget.cpp" line="134"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Žádný</translation>
     </message>
     <message>
         <location filename="../src/triangledensitywidget.cpp" line="186"/>
         <source>density: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Hustota: %1</translation>
     </message>
 </context>
 <context>
@@ -3672,12 +3684,12 @@ a nashromáždí interpolované kontrolní body</translation>
     <message>
         <location filename="../src/varstablewidget.cpp" line="368"/>
         <source>Variation</source>
-        <translation type="unfinished"></translation>
+        <translation>Obměna</translation>
     </message>
     <message>
         <location filename="../src/varstablewidget.cpp" line="368"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Hodnota</translation>
     </message>
 </context>
 <context>
@@ -3685,12 +3697,12 @@ a nashromáždí interpolované kontrolní body</translation>
     <message>
         <location filename="../src/viewerpresetsmodel.cpp" line="84"/>
         <source>Column %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Sloupec %1</translation>
     </message>
     <message>
         <location filename="../src/viewerpresetsmodel.cpp" line="86"/>
         <source>Row %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Řádek %1</translation>
     </message>
     <message>
         <location filename="../src/viewerpresetsmodel.cpp" line="217"/>
@@ -3728,7 +3740,7 @@ a nashromáždí interpolované kontrolní body</translation>
     <message>
         <location filename="../src/viewerpresetswidget.cpp" line="48"/>
         <source>q%1/o%2/e%3</source>
-        <translation type="unfinished"></translation>
+        <translation>q%1/o%2/e%3</translation>
     </message>
     <message>
         <location filename="../src/viewerpresetswidget.cpp" line="52"/>
@@ -3794,7 +3806,7 @@ a nashromáždí interpolované kontrolní body</translation>
     <message>
         <location filename="../ui/viewerpresetswidget.ui" line="133"/>
         <source>close</source>
-        <translation type="unfinished">Zavřít</translation>
+        <translation>Zavřít</translation>
     </message>
 </context>
 </TS>

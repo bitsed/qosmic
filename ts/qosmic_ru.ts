@@ -734,7 +734,7 @@ flam3_nthreads=%4
         <translation>Треугольники</translation>
     </message>
     <message>
-        <location filename="../src/xfedit.cpp" line="911"/>
+        <location filename="../src/xfedit.cpp" line="912"/>
         <source>post transform: %1
 </source>
         <translation type="unfinished"></translation>
@@ -1132,66 +1132,66 @@ time: %2</source>
 <context>
     <name>Lua::LuaEditor</name>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="48"/>
+        <location filename="../src/lua/luaeditor.cpp" line="58"/>
         <source>Open a file</source>
         <translation>Открыть файл</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="49"/>
+        <location filename="../src/lua/luaeditor.cpp" line="59"/>
         <source>Ctrl+1</source>
         <translation>Ctrl+1</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="54"/>
+        <location filename="../src/lua/luaeditor.cpp" line="64"/>
         <source>Save file</source>
         <translation>Сохранить файл</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="55"/>
+        <location filename="../src/lua/luaeditor.cpp" line="65"/>
         <source>Ctrl+2</source>
         <translation>Ctrl+2</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="60"/>
+        <location filename="../src/lua/luaeditor.cpp" line="70"/>
         <source>Save to file</source>
         <translation>Сохранить в файл</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="61"/>
+        <location filename="../src/lua/luaeditor.cpp" line="71"/>
         <source>Ctrl+3</source>
         <translation>Ctrl+3</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="188"/>
+        <location filename="../src/lua/luaeditor.cpp" line="198"/>
         <source>Open a script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="197"/>
-        <location filename="../src/lua/luaeditor.cpp" line="229"/>
+        <location filename="../src/lua/luaeditor.cpp" line="207"/>
+        <location filename="../src/lua/luaeditor.cpp" line="239"/>
         <source>Application error</source>
         <translation>Ошибка приложения</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="198"/>
+        <location filename="../src/lua/luaeditor.cpp" line="208"/>
         <source>Cannot read file %1
 </source>
         <translation>Не удалось прочитать файл %1
 </translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="215"/>
+        <location filename="../src/lua/luaeditor.cpp" line="225"/>
         <source>Save a script</source>
         <translation>Сохранить скрипт</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="189"/>
-        <location filename="../src/lua/luaeditor.cpp" line="216"/>
+        <location filename="../src/lua/luaeditor.cpp" line="199"/>
+        <location filename="../src/lua/luaeditor.cpp" line="226"/>
         <source>lua source (*.lua);;All files (*)</source>
         <translation>Исходники lua (*.lua);;Все файлы (*)</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="230"/>
+        <location filename="../src/lua/luaeditor.cpp" line="240"/>
         <source>Cannot write file %1
 </source>
         <translation>Не удалось записать файл %1
@@ -1438,7 +1438,7 @@ time: %2</source>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="113"/>
-        <location filename="../src/mainwindow.cpp" line="1041"/>
+        <location filename="../src/mainwindow.cpp" line="1042"/>
         <source>Triangles</source>
         <translation>Треугольники</translation>
     </message>
@@ -1449,7 +1449,7 @@ time: %2</source>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="155"/>
-        <location filename="../src/mainwindow.cpp" line="1031"/>
+        <location filename="../src/mainwindow.cpp" line="1032"/>
         <source>Viewer</source>
         <translation>Просмотр</translation>
     </message>
@@ -1460,7 +1460,7 @@ time: %2</source>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="184"/>
-        <location filename="../src/mainwindow.cpp" line="1061"/>
+        <location filename="../src/mainwindow.cpp" line="1062"/>
         <source>Camera</source>
         <translation>Камера</translation>
     </message>
@@ -1491,13 +1491,13 @@ time: %2</source>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="310"/>
-        <location filename="../src/mainwindow.cpp" line="1071"/>
+        <location filename="../src/mainwindow.cpp" line="1072"/>
         <source>Palettes</source>
         <translation>Палитры</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="325"/>
-        <location filename="../src/mainwindow.cpp" line="1076"/>
+        <location filename="../src/mainwindow.cpp" line="1077"/>
         <source>Mutations</source>
         <translation>Мутации</translation>
     </message>
@@ -1518,7 +1518,7 @@ time: %2</source>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="277"/>
-        <location filename="../src/mainwindow.cpp" line="1091"/>
+        <location filename="../src/mainwindow.cpp" line="1092"/>
         <source>Chaos</source>
         <translation>Хаос</translation>
     </message>
@@ -1542,7 +1542,7 @@ time: %2</source>
         <location filename="../src/mainwindow.cpp" line="597"/>
         <location filename="../src/mainwindow.cpp" line="746"/>
         <location filename="../src/mainwindow.cpp" line="766"/>
-        <location filename="../src/mainwindow.cpp" line="1715"/>
+        <location filename="../src/mainwindow.cpp" line="1716"/>
         <source>flam3 xml (*.flam *.flam3 *.flame);;All files (*)</source>
         <translation>flam3 xml (*.flam *.flam3 *.flame);;Все файлы (*)</translation>
     </message>
@@ -1558,8 +1558,8 @@ time: %2</source>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="699"/>
-        <location filename="../src/mainwindow.cpp" line="1240"/>
-        <location filename="../src/mainwindow.cpp" line="1259"/>
+        <location filename="../src/mainwindow.cpp" line="1241"/>
+        <location filename="../src/mainwindow.cpp" line="1260"/>
         <source>Application error</source>
         <translation>Ошибка приложения</translation>
     </message>
@@ -1602,364 +1602,364 @@ time: %2</source>
         <translation>О Qosmic</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="783"/>
-        <source>&lt;p&gt;&lt;b&gt;Qosmic version %1&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Copyright (C) 2007-2016 by David Bitseff&lt;br&gt;&lt;p&gt;Use and redistribute under the terms of the&lt;br&gt;&lt;a href=&quot;http://www.gnu.org/licenses/gpl.html&quot;&gt;GNU General Public License Version 3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Thanks to:&lt;br&gt;- Scott Draves for the &lt;a href=&quot;http://flam3.com/&quot;&gt;flam3&lt;/a&gt; library&lt;br&gt;- Erik Reckase for his work on the flam3 library&lt;br&gt;- Mark James for his &lt;a href=&quot;http://www.famfamfam.com/lab/icons/silk/&quot;&gt;Silk&lt;/a&gt; icon set&lt;br&gt;- Mark Townsend for the &lt;a href=&quot;www.apophysis.org&quot;&gt;Apophysis&lt;/a&gt; editor&lt;p&gt;This version uses: Qt </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="803"/>
+        <location filename="../src/mainwindow.cpp" line="804"/>
         <source>Reset</source>
         <translation>Сбросить</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="805"/>
+        <location filename="../src/mainwindow.cpp" line="806"/>
         <source>Load default genome</source>
         <translation>Загрузить типовой геном</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="808"/>
+        <location filename="../src/mainwindow.cpp" line="809"/>
         <source>&amp;Open...</source>
         <translation>&amp;Открыть...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="810"/>
+        <location filename="../src/mainwindow.cpp" line="811"/>
         <source>Open an existing file</source>
         <translation>Открыть существующий файл</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="813"/>
+        <location filename="../src/mainwindow.cpp" line="814"/>
         <source>&amp;Save</source>
         <translation>&amp;Сохранить</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="815"/>
+        <location filename="../src/mainwindow.cpp" line="816"/>
         <source>Save the flame to disk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="818"/>
+        <location filename="../src/mainwindow.cpp" line="819"/>
         <source>Save &amp;As...</source>
         <translation>Сохранить &amp;как...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="820"/>
+        <location filename="../src/mainwindow.cpp" line="821"/>
         <source>Save the flame under a new name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="823"/>
+        <location filename="../src/mainwindow.cpp" line="824"/>
         <source>Render to &amp;file...</source>
         <translation>&amp;Визуализовать в файл...</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="825"/>
+        <location filename="../src/mainwindow.cpp" line="826"/>
         <source>Save an image of current flame</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="828"/>
+        <location filename="../src/mainwindow.cpp" line="829"/>
         <source>Q&amp;uicksave flame...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="830"/>
+        <location filename="../src/mainwindow.cpp" line="831"/>
         <source>Quickly save file and image of current flame</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="840"/>
+        <location filename="../src/mainwindow.cpp" line="841"/>
         <source>&amp;Quit</source>
         <translation>В&amp;ыход</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="842"/>
+        <location filename="../src/mainwindow.cpp" line="843"/>
         <source>Quit the application</source>
         <translation>Завершить работу с приложением</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="845"/>
+        <location filename="../src/mainwindow.cpp" line="846"/>
         <source>&amp;Stop rendering</source>
         <translation>&amp;Остановить рендеринг</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="847"/>
+        <location filename="../src/mainwindow.cpp" line="848"/>
         <source>Stop rendering</source>
         <translation>Остановить рендеринг</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="850"/>
+        <location filename="../src/mainwindow.cpp" line="851"/>
         <source>&amp;Random Flame</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="852"/>
+        <location filename="../src/mainwindow.cpp" line="853"/>
         <source>Generate a random xform set</source>
         <translation>Генерировать случайный набор xform</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="857"/>
+        <location filename="../src/mainwindow.cpp" line="858"/>
         <source>Rescale the editor</source>
         <translation>Перемасштабировать редактор</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="860"/>
+        <location filename="../src/mainwindow.cpp" line="861"/>
         <source>Select next triangle</source>
         <translation>Выбрать следующий треугольник</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="865"/>
+        <location filename="../src/mainwindow.cpp" line="866"/>
         <source>Select previous triangle</source>
         <translation>Выбрать предыдущий треугольник</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="870"/>
+        <location filename="../src/mainwindow.cpp" line="871"/>
         <source>Scale in the scene</source>
         <translation>Шкала в сцене</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="877"/>
+        <location filename="../src/mainwindow.cpp" line="878"/>
         <source>Scale out the scene</source>
         <translation>Шкала за сценой</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="884"/>
-        <location filename="../src/mainwindow.cpp" line="888"/>
+        <location filename="../src/mainwindow.cpp" line="885"/>
+        <location filename="../src/mainwindow.cpp" line="889"/>
         <source>Undo</source>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="892"/>
-        <location filename="../src/mainwindow.cpp" line="896"/>
+        <location filename="../src/mainwindow.cpp" line="893"/>
+        <location filename="../src/mainwindow.cpp" line="897"/>
         <source>Redo</source>
         <translation>Вернуть</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="900"/>
-        <location filename="../src/mainwindow.cpp" line="902"/>
+        <location filename="../src/mainwindow.cpp" line="901"/>
+        <location filename="../src/mainwindow.cpp" line="903"/>
         <source>Cut</source>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="906"/>
-        <location filename="../src/mainwindow.cpp" line="908"/>
+        <location filename="../src/mainwindow.cpp" line="907"/>
+        <location filename="../src/mainwindow.cpp" line="909"/>
         <source>Copy</source>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="912"/>
-        <location filename="../src/mainwindow.cpp" line="914"/>
+        <location filename="../src/mainwindow.cpp" line="913"/>
+        <location filename="../src/mainwindow.cpp" line="915"/>
         <source>Paste</source>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="918"/>
         <location filename="../src/mainwindow.cpp" line="919"/>
+        <location filename="../src/mainwindow.cpp" line="920"/>
         <source>Import genomes</source>
         <translation>Импортировать геномы</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="923"/>
+        <location filename="../src/mainwindow.cpp" line="924"/>
         <source>Export current genome</source>
         <translation>Экспортировать текущий геном</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="924"/>
+        <location filename="../src/mainwindow.cpp" line="925"/>
         <source>Export the current genome</source>
         <translation>Экспортировать текущий геном</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1010"/>
+        <location filename="../src/mainwindow.cpp" line="1011"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1012"/>
+        <location filename="../src/mainwindow.cpp" line="1013"/>
         <source>Show &amp;File Toolbar</source>
         <translation>Показать панель &amp;файлов</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1013"/>
+        <location filename="../src/mainwindow.cpp" line="1014"/>
         <source>Show the file toolbar</source>
         <translation>Показать панель файлов</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1241"/>
+        <location filename="../src/mainwindow.cpp" line="1242"/>
         <source>Couldn&apos;t open file %1
 </source>
         <translation>Не удалось открыть файл %1
 </translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1260"/>
+        <location filename="../src/mainwindow.cpp" line="1261"/>
         <source>Couldn&apos;t save file %1
 </source>
         <translation>Не удалось сохранить файл %1
 </translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1304"/>
+        <location filename="../src/mainwindow.cpp" line="1305"/>
         <source>untitled.flam3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1629"/>
+        <location filename="../src/mainwindow.cpp" line="1630"/>
         <source>undo %1/%2</source>
         <translation>Отмена %1/%2</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1714"/>
+        <location filename="../src/mainwindow.cpp" line="1715"/>
         <source>Save a sheep</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1003"/>
+        <location filename="../src/mainwindow.cpp" line="1004"/>
         <source>Widgets</source>
         <translation>Виджеты</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="855"/>
+        <location filename="../src/mainwindow.cpp" line="856"/>
         <source>Rescale View</source>
         <translation>Перемасштабировать просмотр</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1005"/>
+        <location filename="../src/mainwindow.cpp" line="1006"/>
         <source>Show &amp;Widgets Toolbar</source>
         <translation>Показать панель &amp;виджетов</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1006"/>
+        <location filename="../src/mainwindow.cpp" line="1007"/>
         <source>Show the widgets toolbar</source>
         <translation>Показать панель виджетов</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1016"/>
+        <location filename="../src/mainwindow.cpp" line="1017"/>
         <source>Edit</source>
         <translation>Правка</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1018"/>
+        <location filename="../src/mainwindow.cpp" line="1019"/>
         <source>Show &amp;Edit Toolbar</source>
         <translation>Показать панель &amp;правки</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="928"/>
+        <location filename="../src/mainwindow.cpp" line="929"/>
         <source>&amp;About</source>
         <translation>&amp;О программе</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="929"/>
+        <location filename="../src/mainwindow.cpp" line="930"/>
         <source>Show the application&apos;s About box</source>
         <translation>Показать диалог с информацией о программе</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="932"/>
+        <location filename="../src/mainwindow.cpp" line="933"/>
         <source>About &amp;Qt</source>
         <translation>О &amp;Qt</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="933"/>
+        <location filename="../src/mainwindow.cpp" line="934"/>
         <source>Show the Qt library&apos;s About box</source>
         <translation>Показать диалог с информацией о библиотеке Qt</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="941"/>
+        <location filename="../src/mainwindow.cpp" line="942"/>
         <source>&amp;File</source>
         <translation>&amp;Файл</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="954"/>
+        <location filename="../src/mainwindow.cpp" line="955"/>
         <source>&amp;Edit</source>
         <translation>&amp;Правка</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="969"/>
+        <location filename="../src/mainwindow.cpp" line="970"/>
         <source>&amp;Widgets</source>
         <translation>&amp;Виджеты</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="975"/>
+        <location filename="../src/mainwindow.cpp" line="976"/>
         <source>&amp;Info</source>
         <translation>&amp;Справка</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1019"/>
+        <location filename="../src/mainwindow.cpp" line="1020"/>
         <source>Show scene editing toolbar</source>
         <translation>Показать панель правки сцены</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1056"/>
+        <location filename="../src/mainwindow.cpp" line="1057"/>
         <source>Image Quality</source>
         <translation>Качество изображения</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1036"/>
+        <location filename="../src/mainwindow.cpp" line="1037"/>
         <source>Previewer</source>
         <translation>Предпросмотрщик</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1046"/>
+        <location filename="../src/mainwindow.cpp" line="783"/>
+        <source>&lt;p&gt;&lt;b&gt;Qosmic version %1&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Copyright (C) 2007-2016 by David Bitseff&lt;br&gt;&lt;p&gt;Use and redistribute under the terms of the&lt;br&gt;&lt;a href=&quot;http://www.gnu.org/licenses/gpl.html&quot;&gt;GNU General Public License Version 3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Thanks to:&lt;br&gt;- Scott Draves for the &lt;a href=&quot;http://flam3.com/&quot;&gt;flam3&lt;/a&gt; library&lt;br&gt;- Erik Reckase for his work on the flam3 library&lt;br&gt;- Mark James for his &lt;a href=&quot;http://www.famfamfam.com/lab/icons/silk/&quot;&gt;Silk&lt;/a&gt; icon set&lt;br&gt;- Mark Townsend for the &lt;a href=&quot;www.apophysis.org&quot;&gt;Apophysis&lt;/a&gt; editor&lt;br&gt;- Pavel Fric for Czech Translations&lt;br&gt;&lt;p&gt;This version uses: Qt </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="1047"/>
         <source>Triangle Variations</source>
         <translation>Вариации треугольника</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1051"/>
+        <location filename="../src/mainwindow.cpp" line="1052"/>
         <source>Triangle Color</source>
         <translation>Цвет треугольника</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1066"/>
+        <location filename="../src/mainwindow.cpp" line="1067"/>
         <source>Color Settings</source>
         <translation>Настройки цвета</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1081"/>
+        <location filename="../src/mainwindow.cpp" line="1082"/>
         <source>Genome List</source>
         <translation>Список геномов</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1086"/>
+        <location filename="../src/mainwindow.cpp" line="1087"/>
         <source>Triangle Densities</source>
         <translation>Плотность треугольника</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1096"/>
+        <location filename="../src/mainwindow.cpp" line="1097"/>
         <source>Directory Browser</source>
         <translation>Просмотр директории</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1101"/>
+        <location filename="../src/mainwindow.cpp" line="1102"/>
         <source>Triangle Coordinates</source>
         <translation>Координаты треугольника</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1106"/>
+        <location filename="../src/mainwindow.cpp" line="1107"/>
         <source>Sheep Loop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1111"/>
+        <location filename="../src/mainwindow.cpp" line="1112"/>
         <source>Script Editor</source>
         <translation>Редактор сценария</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1254"/>
-        <location filename="../src/mainwindow.cpp" line="1292"/>
-        <location filename="../src/mainwindow.cpp" line="1727"/>
+        <location filename="../src/mainwindow.cpp" line="1255"/>
+        <location filename="../src/mainwindow.cpp" line="1293"/>
+        <location filename="../src/mainwindow.cpp" line="1728"/>
         <source>File saved</source>
         <translation>Файл сохранен</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1632"/>
+        <location filename="../src/mainwindow.cpp" line="1633"/>
         <source>last undo</source>
         <translation>Последнее отмененное</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1643"/>
+        <location filename="../src/mainwindow.cpp" line="1644"/>
         <source>redo %1/%2</source>
         <translation>Повтор %1/%2</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1646"/>
+        <location filename="../src/mainwindow.cpp" line="1647"/>
         <source>last redo</source>
         <translation>Последнее повторенное</translation>
     </message>

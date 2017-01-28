@@ -789,7 +789,8 @@ void MainWindow::about()
 	"- Scott Draves for the <a href=\"http://flam3.com/\">flam3</a> library<br>"
 	"- Erik Reckase for his work on the flam3 library<br>"
 	"- Mark James for his <a href=\"http://www.famfamfam.com/lab/icons/silk/\">Silk</a> icon set<br>"
-	"- Mark Townsend for the <a href=\"www.apophysis.org\">Apophysis</a> editor"
+	"- Mark Townsend for the <a href=\"www.apophysis.org\">Apophysis</a> editor<br>"
+	"- Pavel Fric for Czech Translations<br>"
 	"<p>This version uses: Qt " QT_VERSION_STR ", " LUA_RELEASE	", %2</p>")
 	.arg(QOSMIC_VERSION).arg(flam3_version()));
 }
