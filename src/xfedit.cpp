@@ -38,7 +38,7 @@ FigureEditor::FigureEditor(GenomeVector* g, QGraphicsView* parent)
 	move_edge_mode(false), has_selection(false), is_selecting(false),
 	editing_post(false), menu_visible(false), move_border_size(10)
 {
-	QTransform b(1.0, 0.0, 0.0, -1.0, 0.0, 0.0);
+	QTransform b(100.0, 0.0, 0.0, -100.0, 0.0, 0.0);
 	basisTriangle = new BasisTriangle(this, b);
 
 	QSettings settings;
