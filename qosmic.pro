@@ -17,7 +17,7 @@ ICONSDIR = $$SHARED/pixmaps
 
 ################################################################################
 ## Qosmic Lua scripts are installed in $$SHARED/scripts
-SCRIPTSDIR = $$SHARED/scripts
+SCRIPTSDIR = $$SHARED/qosmic/scripts
 
 
 ################################################################################
@@ -26,8 +26,8 @@ DESKDIR = $$SHARED/applications
 
 
 ################################################################################
-## Uncomment to install the qosmic.desktop file and the application icons.
-CONFIG += install_icons install_desktop
+## Uncomment to install the qosmic.desktop file, application icons, and scripts.
+CONFIG += install_icons install_desktop install_scripts
 
 
 ################################################################################
@@ -53,7 +53,7 @@ else {
 
 ################################################################################
 ## Build style flags.  Adding debug enables more verbose logging.
-#CONFIG += release warn_off
+CONFIG += release warn_off
 #CONFIG += debug warn_on
 
 
@@ -89,24 +89,34 @@ CONFIG += qt thread
 QT += widgets
 RESOURCES = qosmic.qrc
 INCLUDEPATH += src
-DESTDIR = .
 
-## add the target to the install set
-target.path += $$PREFIX/bin
-INSTALLS += target
+## packagers may define ROOT for install sandboxes
+#ROOT = /tmp
+
+## add the qosmic program to the install set
+qosmic.files = qosmic
+qosmic.path = $$clean_path($$ROOT/$$PREFIX/bin)
+INSTALLS = qosmic
 
 ## add icons to the install set
 install_icons {
 	icons.files = icons/qosmicicon.xpm
-	icons.path = $$ICONSDIR
+	icons.path = $$clean_path($$ROOT/$$ICONSDIR)
 	INSTALLS += icons
 }
 
 ## add the qosmic.desktop file to the install set
 install_desktop {
    desktop.files = qosmic.desktop
-   desktop.path  = $$DESKDIR
+   desktop.path  = $$clean_path($$ROOT/$$DESKDIR)
    INSTALLS += desktop
+}
+
+## add the scripts to the install set
+install_scripts {
+   scripts.files = scripts/*
+   scripts.path  = $$clean_path($$ROOT/$$SCRIPTSDIR)
+   INSTALLS += scripts
 }
 
 message(Generating Makefile for Qosmic $$VERSION)
