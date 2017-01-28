@@ -21,7 +21,7 @@ RDEPEND="dev-lang/lua:5.2
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
 
-DOCS="changes.txt README"
+DOCS="changes.txt README README-LUA"
 
 src_prepare() {
 	eqmake5 ROOT=${D}
