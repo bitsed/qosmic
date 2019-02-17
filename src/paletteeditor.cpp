@@ -20,6 +20,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QLinearGradient>
+#include <QButtonGroup>
 
 #include "paletteeditor.h"
 #include "flam3util.h"

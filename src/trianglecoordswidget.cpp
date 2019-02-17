@@ -16,6 +16,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
 #include <QSettings>
+#include <QButtonGroup>
 
 #include "flam3util.h"
 #include "trianglecoordswidget.h"
