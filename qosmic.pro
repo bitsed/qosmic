@@ -38,16 +38,16 @@ CONFIG += install_icons install_desktop install_scripts
 
 link_pkgconfig {
 	message("Config using pkg-config version "$$system(pkg-config --version))
-	PKGCONFIG = flam3 lua
+	PKGCONFIG = flam3 lua5.2
 }
 else {
 	message("Config not using pkg-config")
 	## Adjust these variables to set paths and libs without using pkg-config.
 	## Point to the flam3-3.1.1 source directory
 	FLAM3_SRC_DIR = $$system(readlink -e ../flam3-3.1.1)
-	INCLUDEPATH += $$FLAM3_SRC_DIR /usr/include/libxml2
+	INCLUDEPATH += $$FLAM3_SRC_DIR /usr/include/libxml2 /usr/include/lua5.2/
 	LIBS += -L$$FLAM3_SRC_DIR/.libs
-	LIBS += -L/usr/lib/libxml2 -lflam3 -lm -ljpeg -lxml2 -llua
+	LIBS += -L/usr/lib/libxml2 -lflam3 -lm -ljpeg -lxml2 -llua5.2
 }
 
 
