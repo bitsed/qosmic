@@ -1,4 +1,6 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="ru" version="2.1">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.1" language="ru">
 <context>
     <name>AdjustSceneWidget</name>
     <message>
@@ -341,7 +343,7 @@ increases.  -1 = disabled, 0 = no highlights</source>
 <context>
     <name>CoreApp</name>
     <message>
-        <location filename="../src/qosmic.cpp" line="61"/>
+        <location filename="../src/qosmic.cpp" line="82"/>
         <source>Qosmic %1
 Usage: qosmic [flam3 file]
 
@@ -360,7 +362,7 @@ flam3_nthreads=%4
 </translation>
     </message>
     <message>
-        <location filename="../src/qosmic.cpp" line="83"/>
+        <location filename="../src/qosmic.cpp" line="104"/>
         <source>Couldn&apos;t load file %1</source>
         <translation>Не удалось загрузить файл %1</translation>
     </message>
@@ -1944,7 +1946,7 @@ time: %2</source>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1242"/>
-        <source>Couldn't open file %1
+        <source>Couldn&apos;t open file %1
 </source>
         <translation>Не удалось открыть файл %1
 </translation>
@@ -1958,7 +1960,7 @@ time: %2</source>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1261"/>
-        <source>Couldn't save file %1
+        <source>Couldn&apos;t save file %1
 </source>
         <translation>Не удалось сохранить файл %1
 </translation>
