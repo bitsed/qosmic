@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="ru_RU">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="ru" version="2.1">
 <context>
     <name>AdjustSceneWidget</name>
     <message>
@@ -9,34 +7,9 @@
         <translation>Настройки сцены</translation>
     </message>
     <message>
-        <location filename="../ui/adjustscenewidget.ui" line="165"/>
-        <source>grid</source>
-        <translation>Сетка</translation>
-    </message>
-    <message>
-        <location filename="../ui/adjustscenewidget.ui" line="151"/>
-        <source>set grid color</source>
-        <translation>Установить цвет сетки</translation>
-    </message>
-    <message>
-        <location filename="../ui/adjustscenewidget.ui" line="172"/>
-        <source>guide</source>
-        <translation>Руководство</translation>
-    </message>
-    <message>
-        <location filename="../ui/adjustscenewidget.ui" line="185"/>
-        <source>set guide color</source>
-        <translation>Установить цвет руководства</translation>
-    </message>
-    <message>
-        <location filename="../ui/adjustscenewidget.ui" line="135"/>
-        <source>background color</source>
-        <translation>Цвет фона</translation>
-    </message>
-    <message>
         <location filename="../ui/adjustscenewidget.ui" line="52"/>
         <source>set background color</source>
-        <translation>Установить цвет фона</translation>
+        <translation>Выбрать цвет фона</translation>
     </message>
     <message>
         <location filename="../ui/adjustscenewidget.ui" line="66"/>
@@ -64,9 +37,34 @@
         <translation>Предпросмотр итераций</translation>
     </message>
     <message>
+        <location filename="../ui/adjustscenewidget.ui" line="135"/>
+        <source>background color</source>
+        <translation>Цвет фона</translation>
+    </message>
+    <message>
+        <location filename="../ui/adjustscenewidget.ui" line="151"/>
+        <source>set grid color</source>
+        <translation>Выбрать цвет сетки</translation>
+    </message>
+    <message>
+        <location filename="../ui/adjustscenewidget.ui" line="165"/>
+        <source>grid</source>
+        <translation>Сетка</translation>
+    </message>
+    <message>
+        <location filename="../ui/adjustscenewidget.ui" line="172"/>
+        <source>guide</source>
+        <translation>Руководство</translation>
+    </message>
+    <message>
+        <location filename="../ui/adjustscenewidget.ui" line="185"/>
+        <source>set guide color</source>
+        <translation>Выбрать цвет руководства</translation>
+    </message>
+    <message>
         <location filename="../ui/adjustscenewidget.ui" line="199"/>
         <source>triangle labels</source>
-        <translation type="unfinished"></translation>
+        <translation>метки треугольников</translation>
     </message>
 </context>
 <context>
@@ -191,7 +189,8 @@
         <location filename="../ui/colorbalancewidget.ui" line="237"/>
         <source>the maximum Value for an RGB color before trending the color towards white as the density 
 increases.  -1 = disabled, 0 = no highlights</source>
-        <translation></translation>
+        <translation>Наибольшее значение для цвета RGB до направления цвета к белому по мере увеличения плотности.
+-1 = Отключено, 0 = Нет выделения цветом</translation>
     </message>
     <message>
         <location filename="../ui/colorbalancewidget.ui" line="241"/>
@@ -231,7 +230,7 @@ increases.  -1 = disabled, 0 = no highlights</source>
     <message>
         <location filename="../ui/colorbalancewidget.ui" line="338"/>
         <source>early clip</source>
-        <translation type="unfinished"></translation>
+        <translation>Предыдущий клип</translation>
     </message>
 </context>
 <context>
@@ -259,7 +258,7 @@ increases.  -1 = disabled, 0 = no highlights</source>
     <message>
         <location filename="../ui/colordialog.ui" line="210"/>
         <source>Green</source>
-        <translation>Зеленый</translation>
+        <translation>Зелёный</translation>
     </message>
     <message>
         <location filename="../ui/colordialog.ui" line="239"/>
@@ -316,12 +315,12 @@ increases.  -1 = disabled, 0 = no highlights</source>
         <source>background
  color</source>
         <translation>Фоновый
-цвет</translation>
+  цвет</translation>
     </message>
     <message>
         <location filename="../ui/colorsettingswidget.ui" line="223"/>
         <source>per iteration scaling factor on the transform color</source>
-        <translation type="unfinished"></translation>
+        <translation>Коэффициент масштабирования на итерацию по преобразованию цвета</translation>
     </message>
     <message>
         <location filename="../ui/colorsettingswidget.ui" line="226"/>
@@ -342,24 +341,6 @@ increases.  -1 = disabled, 0 = no highlights</source>
 <context>
     <name>CoreApp</name>
     <message>
-        <source>Qosmic %1
-Usage: qosmic [flam3 file]
-
-environment variables:
-log=%2
-flam3_verbose=%3
-flam3_nthreads=%4
-flam3_palettes=%5</source>
-        <translation type="obsolete">Qosmic %1
-Использование: qosmic [flam3 файл]
-
-переменные окружения:
-log=%2
-flam3_verbose=%3
-flam3_nthreads=%4
-flam3_palettes=%5</translation>
-    </message>
-    <message>
         <location filename="../src/qosmic.cpp" line="61"/>
         <source>Qosmic %1
 Usage: qosmic [flam3 file]
@@ -369,7 +350,14 @@ log=%2
 flam3_verbose=%3
 flam3_nthreads=%4
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Qosmic %1
+Использование: qosmic [flam3 файл]
+
+переменные окружения:
+log=%2
+flam3_verbose=%3
+flam3_nthreads=%4
+</translation>
     </message>
     <message>
         <location filename="../src/qosmic.cpp" line="83"/>
@@ -380,44 +368,9 @@ flam3_nthreads=%4
 <context>
     <name>DirectoryViewWidget</name>
     <message>
-        <location filename="../src/directoryviewwidget.cpp" line="80"/>
-        <source>Sort by</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/directoryviewwidget.cpp" line="100"/>
-        <source>Descending</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/directoryviewwidget.cpp" line="103"/>
-        <source>View</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/directoryviewwidget.cpp" line="105"/>
-        <source>Short View</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/directoryviewwidget.cpp" line="106"/>
-        <source>Detailed View</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/directoryviewwidget.cpp" line="111"/>
-        <source>Show Hidden Files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/directoryviewwidget.cpp" line="127"/>
-        <source>Select a directory</source>
-        <translation>Выберите каталог</translation>
-    </message>
-    <message>
         <location filename="../ui/directoryviewwidget.ui" line="14"/>
         <source>Form</source>
-        <translation>Form</translation>
+        <translation>Форма</translation>
     </message>
     <message>
         <location filename="../ui/directoryviewwidget.ui" line="20"/>
@@ -431,12 +384,47 @@ flam3_nthreads=%4
     <message>
         <location filename="../ui/directoryviewwidget.ui" line="118"/>
         <source>+</source>
-        <translation></translation>
+        <translation>+</translation>
     </message>
     <message>
         <location filename="../ui/directoryviewwidget.ui" line="129"/>
         <source>-</source>
-        <translation></translation>
+        <translation>-</translation>
+    </message>
+    <message>
+        <location filename="../src/directoryviewwidget.cpp" line="80"/>
+        <source>Sort by</source>
+        <translation>Сортировать по</translation>
+    </message>
+    <message>
+        <location filename="../src/directoryviewwidget.cpp" line="100"/>
+        <source>Descending</source>
+        <translation>По убыванию</translation>
+    </message>
+    <message>
+        <location filename="../src/directoryviewwidget.cpp" line="103"/>
+        <source>View</source>
+        <translation>Просмотр</translation>
+    </message>
+    <message>
+        <location filename="../src/directoryviewwidget.cpp" line="105"/>
+        <source>Short View</source>
+        <translation>Краткий просмотр</translation>
+    </message>
+    <message>
+        <location filename="../src/directoryviewwidget.cpp" line="106"/>
+        <source>Detailed View</source>
+        <translation>Детальный просмотр</translation>
+    </message>
+    <message>
+        <location filename="../src/directoryviewwidget.cpp" line="111"/>
+        <source>Show Hidden Files</source>
+        <translation>Показать скрытые файлы</translation>
+    </message>
+    <message>
+        <location filename="../src/directoryviewwidget.cpp" line="127"/>
+        <source>Select a directory</source>
+        <translation>Выберите каталог</translation>
     </message>
 </context>
 <context>
@@ -444,7 +432,7 @@ flam3_nthreads=%4
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="26"/>
         <source>EditModeSelector</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройка режима редактирования</translation>
     </message>
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="55"/>
@@ -514,17 +502,17 @@ flam3_nthreads=%4
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="339"/>
         <source>%</source>
-        <translation></translation>
+        <translation>%</translation>
     </message>
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="367"/>
         <source>+</source>
-        <translation></translation>
+        <translation>+</translation>
     </message>
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="374"/>
         <source>-</source>
-        <translation></translation>
+        <translation>-</translation>
     </message>
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="393"/>
@@ -534,7 +522,7 @@ flam3_nthreads=%4
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="396"/>
         <source>horiz</source>
-        <translation>горизонт.</translation>
+        <translation>Горизонт.</translation>
     </message>
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="407"/>
@@ -544,7 +532,7 @@ flam3_nthreads=%4
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="410"/>
         <source>vert</source>
-        <translation>верт.</translation>
+        <translation>Верт.</translation>
     </message>
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="446"/>
@@ -560,25 +548,25 @@ flam3_nthreads=%4
         <location filename="../ui/editmodeselectorwidget.ui" line="466"/>
         <location filename="../ui/editmodeselectorwidget.ui" line="751"/>
         <source>origin</source>
-        <translation>начало коорд.</translation>
+        <translation>Начало коорд.</translation>
     </message>
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="471"/>
         <location filename="../ui/editmodeselectorwidget.ui" line="756"/>
         <source>mark</source>
-        <translation>метка</translation>
+        <translation>Метка</translation>
     </message>
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="476"/>
         <location filename="../ui/editmodeselectorwidget.ui" line="761"/>
         <source>circum</source>
-        <translation>вокруг</translation>
+        <translation>Вокруг</translation>
     </message>
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="481"/>
         <location filename="../ui/editmodeselectorwidget.ui" line="766"/>
         <source>box</source>
-        <translation>ящик</translation>
+        <translation>Ящик</translation>
     </message>
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="486"/>
@@ -628,12 +616,12 @@ flam3_nthreads=%4
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="573"/>
         <source>edit the post transform</source>
-        <translation type="unfinished"></translation>
+        <translation>Редактировать запись преобразования</translation>
     </message>
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="576"/>
         <source>post</source>
-        <translation type="unfinished"></translation>
+        <translation>После</translation>
     </message>
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="614"/>
@@ -643,7 +631,7 @@ flam3_nthreads=%4
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="630"/>
         <source>selection type</source>
-        <translation type="unfinished">Тип выделения</translation>
+        <translation>Тип выделения</translation>
     </message>
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="634"/>
@@ -653,7 +641,7 @@ flam3_nthreads=%4
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="639"/>
         <source>nodes</source>
-        <translation>узлы</translation>
+        <translation>Узлы</translation>
     </message>
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="675"/>
@@ -678,7 +666,7 @@ flam3_nthreads=%4
     <message>
         <location filename="../ui/editmodeselectorwidget.ui" line="746"/>
         <source>scene</source>
-        <translation>сцена</translation>
+        <translation>Сцена</translation>
     </message>
 </context>
 <context>
@@ -737,7 +725,8 @@ flam3_nthreads=%4
         <location filename="../src/xfedit.cpp" line="912"/>
         <source>post transform: %1
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Сообщение преобразования: %1
+</translation>
     </message>
     <message>
         <location filename="../src/xfedit.cpp" line="2064"/>
@@ -776,24 +765,25 @@ density: %L2
     <message>
         <location filename="../src/genomevector.cpp" line="33"/>
         <source>selector</source>
-        <translation type="unfinished"></translation>
+        <translation>выделитель</translation>
     </message>
     <message>
         <location filename="../src/genomevector.cpp" line="394"/>
         <location filename="../src/genomevector.cpp" line="415"/>
         <source>%1 xforms
 time: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 xforms
+время: %2</translation>
     </message>
     <message>
         <location filename="../src/genomevector.cpp" line="419"/>
         <source>genome %1</source>
-        <translation type="unfinished"></translation>
+        <translation>геном %1</translation>
     </message>
     <message>
         <location filename="../src/genomevector.cpp" line="505"/>
         <source>Genome %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Геном %1</translation>
     </message>
 </context>
 <context>
@@ -816,7 +806,7 @@ time: %2</source>
     <message>
         <location filename="../ui/genomevectorlistmodelitemeditor.ui" line="55"/>
         <source>x</source>
-        <translation></translation>
+        <translation>x</translation>
     </message>
 </context>
 <context>
@@ -868,7 +858,7 @@ time: %2</source>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="119"/>
         <source>samples per pixel</source>
-        <translation>образцов на пиксель</translation>
+        <translation>Образцов на пиксель</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="122"/>
@@ -878,7 +868,7 @@ time: %2</source>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="169"/>
         <source>spatial filter radius (variance of gaussian)</source>
-        <translation type="unfinished"></translation>
+        <translation>Радиус пространственного фильтра (Гаусова дисперсия)</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="172"/>
@@ -888,7 +878,7 @@ time: %2</source>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="207"/>
         <source>shape of the spatial filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Форма пространственного фильтра</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="210"/>
@@ -913,78 +903,116 @@ time: %2</source>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="242"/>
         <source>triangle</source>
-        <translation>треугольник</translation>
+        <translation>Треугольник</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="247"/>
         <source>bell</source>
-        <translation type="unfinished"></translation>
+        <translation>Звонок</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="252"/>
         <source>bspline</source>
-        <translation type="unfinished"></translation>
+        <translation>B-образная кривая</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="257"/>
         <source>mitchell</source>
-        <translation type="unfinished"></translation>
+        <translation>Митчелл</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="262"/>
         <source>blackman</source>
-        <translation type="unfinished"></translation>
+        <translation>Блэкмэн</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="267"/>
         <source>catrom</source>
-        <translation type="unfinished"></translation>
+        <translation>Катром</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="272"/>
         <source>hanning</source>
-        <translation type="unfinished"></translation>
+        <translation>Ханнинг</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="277"/>
         <source>hamming</source>
-        <translation type="unfinished"></translation>
+        <translation>Хамминг</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="282"/>
         <source>lanczos3</source>
-        <translation type="unfinished"></translation>
+        <translation>Ланкзос3</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="287"/>
         <source>lanczos2</source>
-        <translation type="unfinished"></translation>
+        <translation>Ланкзос2</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="292"/>
         <source>quadratic</source>
-        <translation type="unfinished"></translation>
+        <translation>Квадратный</translation>
+    </message>
+    <message>
+        <location filename="../ui/imgsettingswidget.ui" line="312"/>
+        <source>density estimation parameters for blurring low density hits</source>
+        <translation>Параметры для оценки плотности размывания низкой плотности</translation>
+    </message>
+    <message>
+        <location filename="../ui/imgsettingswidget.ui" line="315"/>
+        <source>estimator</source>
+        <translation>Оценщик</translation>
+    </message>
+    <message>
+        <location filename="../ui/imgsettingswidget.ui" line="328"/>
+        <source>filter width for bin with one hit</source>
+        <translation>Ширина фильтра для бункера с одним выводом</translation>
+    </message>
+    <message>
+        <location filename="../ui/imgsettingswidget.ui" line="353"/>
+        <source>exponent on decay function</source>
+        <translation>Функция затухания по экспоненте</translation>
+    </message>
+    <message>
+        <location filename="../ui/imgsettingswidget.ui" line="356"/>
+        <source>estimator curve</source>
+        <translation>Оценка кривой</translation>
+    </message>
+    <message>
+        <location filename="../ui/imgsettingswidget.ui" line="397"/>
+        <source>minimum filter width used.  forces filter
+ to be used of at least this width on all pts</source>
+        <translation>Мин. ипользуемый диапазон фильтра. Причём диапазон фильтра
+д.б. не меньше диапазона разброса всех пунктов.</translation>
+    </message>
+    <message>
+        <location filename="../ui/imgsettingswidget.ui" line="401"/>
+        <source>estimator min</source>
+        <translation>Оценщик по мин.</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="436"/>
         <source>spatial oversample</source>
-        <translation type="unfinished"></translation>
+        <translation>Пространственная передискретизация</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="439"/>
         <source>oversample</source>
-        <translation type="unfinished"></translation>
+        <translation>Передискретизация</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="474"/>
         <source>sample density iterations. number of times
  the buckets are filtered into the accumulator</source>
-        <translation type="unfinished"></translation>
+        <translation>Итерации плотности образца.
+Сколько раз поршни отфильтрованы в накопитель</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="478"/>
         <source>passes</source>
-        <translation type="unfinished"></translation>
+        <translation>Проходы</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="516"/>
@@ -999,53 +1027,12 @@ time: %2</source>
 0 means pick a random symmetry (maybe none)
 -1 means bilateral (reflection)
 -2 or less means rotational and reflective</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/imgsettingswidget.ui" line="652"/>
-        <source>&lt;</source>
-        <translation>&lt;</translation>
-    </message>
-    <message>
-        <location filename="../ui/imgsettingswidget.ui" line="669"/>
-        <source>&gt;</source>
-        <translation>&gt;</translation>
-    </message>
-    <message>
-        <location filename="../ui/imgsettingswidget.ui" line="312"/>
-        <source>density estimation parameters for blurring low density hits</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/imgsettingswidget.ui" line="315"/>
-        <source>estimator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/imgsettingswidget.ui" line="328"/>
-        <source>filter width for bin with one hit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/imgsettingswidget.ui" line="353"/>
-        <source>exponent on decay function</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/imgsettingswidget.ui" line="356"/>
-        <source>estimator curve</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/imgsettingswidget.ui" line="397"/>
-        <source>minimum filter width used.  forces filter
- to be used of at least this width on all pts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/imgsettingswidget.ui" line="401"/>
-        <source>estimator min</source>
-        <translation type="unfinished"></translation>
+        <translation>Группа генома симметрии
+2 или более означает вращательное
+1 означает идентичность, то есть никакой симметрии
+0 означает случайный выбор симметрии (может не быть ни одного)
+-1 означает одностороннее (отражение)
+-2 или менее означает вращательное и отражательное</translation>
     </message>
     <message>
         <location filename="../ui/imgsettingswidget.ui" line="545"/>
@@ -1062,13 +1049,23 @@ time: %2</source>
         <source>...</source>
         <translation>...</translation>
     </message>
+    <message>
+        <location filename="../ui/imgsettingswidget.ui" line="652"/>
+        <source>&lt;</source>
+        <translation>&lt;</translation>
+    </message>
+    <message>
+        <location filename="../ui/imgsettingswidget.ui" line="669"/>
+        <source>&gt;</source>
+        <translation>&gt;</translation>
+    </message>
 </context>
 <context>
     <name>Lua</name>
     <message>
         <location filename="../src/lua/xform.cpp" line="384"/>
         <source>number expected for variable </source>
-        <translation type="unfinished"></translation>
+        <translation>ожидаемое число для переменной </translation>
     </message>
 </context>
 <context>
@@ -1076,12 +1073,12 @@ time: %2</source>
     <message>
         <location filename="../src/lua/frame.cpp" line="208"/>
         <source>load requires one string argument</source>
-        <translation type="unfinished"></translation>
+        <translation>загрузка требует один аргумент</translation>
     </message>
     <message>
         <location filename="../src/lua/frame.cpp" line="226"/>
         <source>save requires one string argument</source>
-        <translation type="unfinished"></translation>
+        <translation>сохранение требует один аргумент</translation>
     </message>
     <message>
         <location filename="../src/lua/frame.cpp" line="244"/>
@@ -1089,7 +1086,7 @@ time: %2</source>
         <location filename="../src/lua/frame.cpp" line="407"/>
         <location filename="../src/lua/frame.cpp" line="441"/>
         <source>index out of range: Genome[%d] is null</source>
-        <translation type="unfinished"></translation>
+        <translation>индекс вне допустимого диапазона: Геном[%d] пуст</translation>
     </message>
 </context>
 <context>
@@ -1097,12 +1094,12 @@ time: %2</source>
     <message>
         <location filename="../src/lua/genome.cpp" line="111"/>
         <source>index out of bounds: Genome[%d]</source>
-        <translation type="unfinished"></translation>
+        <translation>индекс вне границ: Геном[%d]</translation>
     </message>
     <message>
         <location filename="../src/lua/genome.cpp" line="338"/>
         <source>index out of range: Genome.XForm[%d] is null</source>
-        <translation type="unfinished"></translation>
+        <translation>индекс вне допустимого диапазона: Геном.Xформа[%d] пуста</translation>
     </message>
     <message>
         <location filename="../src/lua/genome.cpp" line="389"/>
@@ -1110,23 +1107,23 @@ time: %2</source>
         <location filename="../src/lua/genome.cpp" line="468"/>
         <location filename="../src/lua/genome.cpp" line="492"/>
         <source>genome has no xform at index %d</source>
-        <translation type="unfinished"></translation>
+        <translation>геном не имеет Xформы в индексе %d</translation>
     </message>
     <message>
         <location filename="../src/lua/genome.cpp" line="592"/>
         <source>index %d out of range</source>
-        <translation type="unfinished"></translation>
+        <translation>индекс %d вне допустимого диапазона</translation>
     </message>
     <message>
         <location filename="../src/lua/genome.cpp" line="672"/>
         <source>no index %d in chaos array</source>
-        <translation type="unfinished"></translation>
+        <translation>нет индекса %d в массиве хаоса</translation>
     </message>
     <message>
         <location filename="../src/lua/genome.cpp" line="693"/>
         <location filename="../src/lua/genome.cpp" line="705"/>
         <source>no index %d,%d in chaos array</source>
-        <translation type="unfinished"></translation>
+        <translation>нет индекса %d,%d в массиве хаоса</translation>
     </message>
 </context>
 <context>
@@ -1164,7 +1161,13 @@ time: %2</source>
     <message>
         <location filename="../src/lua/luaeditor.cpp" line="198"/>
         <source>Open a script</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть сценарий</translation>
+    </message>
+    <message>
+        <location filename="../src/lua/luaeditor.cpp" line="199"/>
+        <location filename="../src/lua/luaeditor.cpp" line="226"/>
+        <source>lua source (*.lua);;All files (*)</source>
+        <translation>Исходники lua (*.lua);;Все файлы (*)</translation>
     </message>
     <message>
         <location filename="../src/lua/luaeditor.cpp" line="207"/>
@@ -1185,12 +1188,6 @@ time: %2</source>
         <translation>Сохранить скрипт</translation>
     </message>
     <message>
-        <location filename="../src/lua/luaeditor.cpp" line="199"/>
-        <location filename="../src/lua/luaeditor.cpp" line="226"/>
-        <source>lua source (*.lua);;All files (*)</source>
-        <translation>Исходники lua (*.lua);;Все файлы (*)</translation>
-    </message>
-    <message>
         <location filename="../src/lua/luaeditor.cpp" line="240"/>
         <source>Cannot write file %1
 </source>
@@ -1208,7 +1205,7 @@ time: %2</source>
     <message>
         <location filename="../src/lua/luathread.cpp" line="65"/>
         <source>stopping$</source>
-        <translation>остановка$</translation>
+        <translation>Остановка$</translation>
     </message>
     <message>
         <location filename="../src/lua/luathread.cpp" line="67"/>
@@ -1218,7 +1215,7 @@ time: %2</source>
     <message>
         <location filename="../src/lua/luathread.cpp" line="78"/>
         <source>ok</source>
-        <translation></translation>
+        <translation>ОК</translation>
     </message>
     <message>
         <location filename="../src/lua/luathread.cpp" line="123"/>
@@ -1227,17 +1224,17 @@ time: %2</source>
         <location filename="../src/lua/luathread.cpp" line="224"/>
         <location filename="../src/lua/luathread.cpp" line="244"/>
         <source>stack has no thread ref</source>
-        <translation type="unfinished"></translation>
+        <translation>стек не имеет ссылки на поток</translation>
     </message>
     <message>
         <location filename="../src/lua/luathread.cpp" line="160"/>
         <source> must return a string to </source>
-        <translation type="unfinished"></translation>
+        <translation> должен вернуть строку в </translation>
     </message>
     <message>
         <location filename="../src/lua/luathread.cpp" line="239"/>
         <source>stopping</source>
-        <translation type="unfinished"></translation>
+        <translation>остановка</translation>
     </message>
     <message>
         <location filename="../src/lua/luathread.cpp" line="571"/>
@@ -1250,33 +1247,34 @@ time: %2</source>
     <message>
         <location filename="../src/lua/lunar.h" line="86"/>
         <source>not a valid %s userdata</source>
-        <translation type="unfinished"></translation>
+        <translation>%s  не являются допустимыми пользовательскими данными</translation>
     </message>
     <message>
         <location filename="../src/lua/lunar.h" line="95"/>
         <source>%s missing method &apos;%s&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>%s отсутствует метод &apos;%s&apos;</translation>
     </message>
     <message>
         <location filename="../src/lua/lunar.h" line="104"/>
         <source>(error with no message)</source>
-        <translation type="unfinished"></translation>
+        <translation>(ошибка без сообщения)</translation>
     </message>
     <message>
         <location filename="../src/lua/lunar.h" line="105"/>
         <source>%s:%s status = %d
 %s</source>
-        <translation type="unfinished"></translation>
+        <translation>%s:%s статус = %d
+%s</translation>
     </message>
     <message>
         <location filename="../src/lua/lunar.h" line="117"/>
         <source>%s missing metatable</source>
-        <translation type="unfinished"></translation>
+        <translation>%s отсутствует метатаблица</translation>
     </message>
     <message>
         <location filename="../src/lua/lunar.h" line="161"/>
         <source>stopping</source>
-        <translation type="unfinished"></translation>
+        <translation>остановка</translation>
     </message>
 </context>
 <context>
@@ -1284,36 +1282,41 @@ time: %2</source>
     <message>
         <location filename="../src/lua/xform.cpp" line="118"/>
         <source>index out of bounds: Genome[%d].XForm[%d]</source>
-        <translation type="unfinished"></translation>
+        <translation>индекс вне границ: Геном[%d].Xформа[%d]</translation>
     </message>
     <message>
         <location filename="../src/lua/xform.cpp" line="280"/>
         <source>couldn&apos;t build metatables for var.variables: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>не удалось построить метатаблицы для переменная.переменные: %1</translation>
     </message>
     <message>
         <location filename="../src/lua/xform.cpp" line="302"/>
         <source>couldn&apos;t build metatables for var: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>не удалось построить метатаблицы для переменной %1</translation>
     </message>
     <message>
         <location filename="../src/lua/xform.cpp" line="338"/>
         <source>invalid variation index %d</source>
-        <translation type="unfinished"></translation>
+        <translation>недопустимый индекс вариации %d</translation>
     </message>
     <message>
         <location filename="../src/lua/xform.cpp" line="345"/>
         <source>variation %s not found</source>
-        <translation type="unfinished"></translation>
+        <translation>вариация %s не найдена</translation>
     </message>
     <message>
         <location filename="../src/lua/xform.cpp" line="357"/>
         <source>variables argument is not a valid table</source>
-        <translation type="unfinished"></translation>
+        <translation>аргумент переменных не является допустимой таблицей</translation>
     </message>
 </context>
 <context>
     <name>MainPreviewWidget</name>
+    <message>
+        <location filename="../ui/mainpreviewwidget.ui" line="14"/>
+        <source>Preview</source>
+        <translation>Предпросмотр</translation>
+    </message>
     <message>
         <location filename="../src/mainpreviewwidget.cpp" line="31"/>
         <source>presets</source>
@@ -1324,23 +1327,23 @@ time: %2</source>
         <source>genome quality</source>
         <translation>Качество генома</translation>
     </message>
-    <message>
-        <location filename="../ui/mainpreviewwidget.ui" line="14"/>
-        <source>Preview</source>
-        <translation>Предпросмотр</translation>
-    </message>
 </context>
 <context>
     <name>MainViewer</name>
     <message>
+        <location filename="../ui/mainviewer.ui" line="17"/>
+        <source>flame viewer</source>
+        <translation>Просмотр пламени</translation>
+    </message>
+    <message>
         <location filename="../src/mainviewer.cpp" line="46"/>
         <source>viewer</source>
-        <translation type="unfinished">Просмотр</translation>
+        <translation>просмотр</translation>
     </message>
     <message>
         <location filename="../src/mainviewer.cpp" line="49"/>
         <source>fullscreen</source>
-        <translation type="unfinished"></translation>
+        <translation>Полный экран</translation>
     </message>
     <message>
         <location filename="../src/mainviewer.cpp" line="61"/>
@@ -1401,21 +1404,48 @@ time: %2</source>
     <message>
         <location filename="../src/mainviewer.cpp" line="221"/>
         <source>untitled.png</source>
-        <translation type="unfinished"></translation>
+        <translation>untitled.png</translation>
     </message>
     <message>
         <location filename="../src/mainviewer.cpp" line="539"/>
         <source>genome %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/mainviewer.ui" line="17"/>
-        <source>flame viewer</source>
-        <translation type="unfinished"></translation>
+        <translation>геном %1</translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
+    <message>
+        <location filename="../ui/mainwindow.ui" line="15"/>
+        <source>Qosmic</source>
+        <translation>Qosmic</translation>
+    </message>
+    <message>
+        <location filename="../ui/mainwindow.ui" line="76"/>
+        <source>Add Triangle</source>
+        <translation>Добавить треугольник</translation>
+    </message>
+    <message>
+        <location filename="../ui/mainwindow.ui" line="85"/>
+        <source>Move Triangles</source>
+        <translation>Переместить треугольники</translation>
+    </message>
+    <message>
+        <location filename="../ui/mainwindow.ui" line="94"/>
+        <source>Rotate Triangles</source>
+        <translation>Вращать треугольники</translation>
+    </message>
+    <message>
+        <location filename="../ui/mainwindow.ui" line="103"/>
+        <location filename="../ui/mainwindow.ui" line="106"/>
+        <source>Scale Triangles</source>
+        <translation>Масштабировать треугольники</translation>
+    </message>
+    <message>
+        <location filename="../ui/mainwindow.ui" line="115"/>
+        <location filename="../ui/mainwindow.ui" line="118"/>
+        <source>Flip Triangles</source>
+        <translation>Повернуть треугольники</translation>
+    </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="45"/>
         <source>preview</source>
@@ -1429,7 +1459,12 @@ time: %2</source>
     <message>
         <location filename="../src/mainwindow.cpp" line="53"/>
         <source>file.png</source>
-        <translation></translation>
+        <translation>file.png</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="56"/>
+        <source>sheep</source>
+        <translation>овца</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="98"/>
@@ -1485,9 +1520,15 @@ time: %2</source>
         <translation>Вариации</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="339"/>
-        <source>Browse</source>
-        <translation>Браузер</translation>
+        <location filename="../src/mainwindow.cpp" line="277"/>
+        <location filename="../src/mainwindow.cpp" line="1092"/>
+        <source>Chaos</source>
+        <translation>Хаос</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="295"/>
+        <source>Genomes</source>
+        <translation>Геномы</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="310"/>
@@ -1502,40 +1543,29 @@ time: %2</source>
         <translation>Мутации</translation>
     </message>
     <message>
+        <location filename="../src/mainwindow.cpp" line="339"/>
+        <source>Browse</source>
+        <translation>Обзор</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="355"/>
+        <source>Sheep Loops</source>
+        <translation>Овечьи петли</translation>
+    </message>
+    <message>
         <location filename="../src/mainwindow.cpp" line="373"/>
         <source>Edit Script</source>
         <translation>Правка сценария</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="295"/>
-        <source>Genomes</source>
-        <translation>Геномы</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="56"/>
-        <source>sheep</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="277"/>
-        <location filename="../src/mainwindow.cpp" line="1092"/>
-        <source>Chaos</source>
-        <translation>Хаос</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="355"/>
-        <source>Sheep Loops</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/mainwindow.cpp" line="493"/>
         <source> [%1/%2] : (%L3%4%L5) : mark (%L6%7%L8)</source>
-        <translation type="unfinished"></translation>
+        <translation> [%1/%2] : (%L3%4%L5) : метка (%L6%7%L8)</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="567"/>
         <source>Open a flame</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть пламя</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="568"/>
@@ -1549,12 +1579,12 @@ time: %2</source>
     <message>
         <location filename="../src/mainwindow.cpp" line="596"/>
         <source>Save a flame</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить пламя</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="663"/>
         <source>untitled.png</source>
-        <translation type="unfinished"></translation>
+        <translation>untitled.png</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="699"/>
@@ -1602,6 +1632,11 @@ time: %2</source>
         <translation>О Qosmic</translation>
     </message>
     <message>
+        <location filename="../src/mainwindow.cpp" line="783"/>
+        <source>&lt;p&gt;&lt;b&gt;Qosmic version %1&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Copyright (C) 2007-2016 by David Bitseff&lt;br&gt;&lt;p&gt;Use and redistribute under the terms of the&lt;br&gt;&lt;a href=&quot;http://www.gnu.org/licenses/gpl.html&quot;&gt;GNU General Public License Version 3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Thanks to:&lt;br&gt;- Scott Draves for the &lt;a href=&quot;http://flam3.com/&quot;&gt;flam3&lt;/a&gt; library&lt;br&gt;- Erik Reckase for his work on the flam3 library&lt;br&gt;- Mark James for his &lt;a href=&quot;http://www.famfamfam.com/lab/icons/silk/&quot;&gt;Silk&lt;/a&gt; icon set&lt;br&gt;- Mark Townsend for the &lt;a href=&quot;www.apophysis.org&quot;&gt;Apophysis&lt;/a&gt; editor&lt;br&gt;- Pavel Fric for Czech Translations&lt;br&gt;&lt;p&gt;This version uses: Qt </source>
+        <translation>&lt;p&gt;&lt;b&gt;Qosmic версии %1&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Copyright (C) 2007-2016 David Bitseff&lt;br&gt;&lt;p&gt;Используйте и распространяйте под условиями&lt;br&gt;&lt;a href=&quot;http://www.gnu.org/licenses/gpl.html&quot;&gt;лицензии GNU General Public License версии 3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Благодарности:&lt;br&gt;- Scott Draves за &lt;a href=&quot;http://flam3.com/&quot;&gt;flam3&lt;/a&gt; библиотеку&lt;br&gt;- Erik Reckase за его работу над библиотекой flam3&lt;br&gt;- Mark James за его &lt;a href=&quot;http://www.famfamfam.com/lab/icons/silk/&quot;&gt;Silk&lt;/a&gt; набор иконок&lt;br&gt;- Mark Townsend за &lt;a href=&quot;www.apophysis.org&quot;&gt;Apophysis&lt;/a&gt; редактор &lt;br&gt;- Pavel Fric за чешский перевод&lt;br&gt;&lt;p&gt;Эта версия использует: Qt </translation>
+    </message>
+    <message>
         <location filename="../src/mainwindow.cpp" line="804"/>
         <source>Reset</source>
         <translation>Сбросить</translation>
@@ -1629,7 +1664,7 @@ time: %2</source>
     <message>
         <location filename="../src/mainwindow.cpp" line="816"/>
         <source>Save the flame to disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить пламя на диск</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="819"/>
@@ -1639,7 +1674,7 @@ time: %2</source>
     <message>
         <location filename="../src/mainwindow.cpp" line="821"/>
         <source>Save the flame under a new name</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить пламя под новым именем</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="824"/>
@@ -1649,17 +1684,17 @@ time: %2</source>
     <message>
         <location filename="../src/mainwindow.cpp" line="826"/>
         <source>Save an image of current flame</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить текущее изображение пламени</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="829"/>
         <source>Q&amp;uicksave flame...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Быстрое сохранение пламени...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="831"/>
         <source>Quickly save file and image of current flame</source>
-        <translation type="unfinished"></translation>
+        <translation>Быстро сохранить файл и  текущее изображение пламени</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="841"/>
@@ -1684,12 +1719,17 @@ time: %2</source>
     <message>
         <location filename="../src/mainwindow.cpp" line="851"/>
         <source>&amp;Random Flame</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Случайность пламени</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="853"/>
         <source>Generate a random xform set</source>
         <translation>Генерировать случайный набор xform</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="856"/>
+        <source>Rescale View</source>
+        <translation>Перемасштабировать просмотр</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="858"/>
@@ -1763,80 +1803,6 @@ time: %2</source>
         <translation>Экспортировать текущий геном</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1011"/>
-        <source>File</source>
-        <translation>Файл</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="1013"/>
-        <source>Show &amp;File Toolbar</source>
-        <translation>Показать панель &amp;файлов</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="1014"/>
-        <source>Show the file toolbar</source>
-        <translation>Показать панель файлов</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="1242"/>
-        <source>Couldn&apos;t open file %1
-</source>
-        <translation>Не удалось открыть файл %1
-</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="1261"/>
-        <source>Couldn&apos;t save file %1
-</source>
-        <translation>Не удалось сохранить файл %1
-</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="1305"/>
-        <source>untitled.flam3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="1630"/>
-        <source>undo %1/%2</source>
-        <translation>Отмена %1/%2</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="1715"/>
-        <source>Save a sheep</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="1004"/>
-        <source>Widgets</source>
-        <translation>Виджеты</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="856"/>
-        <source>Rescale View</source>
-        <translation>Перемасштабировать просмотр</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="1006"/>
-        <source>Show &amp;Widgets Toolbar</source>
-        <translation>Показать панель &amp;виджетов</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="1007"/>
-        <source>Show the widgets toolbar</source>
-        <translation>Показать панель виджетов</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="1017"/>
-        <source>Edit</source>
-        <translation>Правка</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="1019"/>
-        <source>Show &amp;Edit Toolbar</source>
-        <translation>Показать панель &amp;правки</translation>
-    </message>
-    <message>
         <location filename="../src/mainwindow.cpp" line="929"/>
         <source>&amp;About</source>
         <translation>&amp;О программе</translation>
@@ -1877,24 +1843,54 @@ time: %2</source>
         <translation>&amp;Справка</translation>
     </message>
     <message>
+        <location filename="../src/mainwindow.cpp" line="1004"/>
+        <source>Widgets</source>
+        <translation>Виджеты</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="1006"/>
+        <source>Show &amp;Widgets Toolbar</source>
+        <translation>Показать панель &amp;виджетов</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="1007"/>
+        <source>Show the widgets toolbar</source>
+        <translation>Показать панель виджетов</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="1011"/>
+        <source>File</source>
+        <translation>Файл</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="1013"/>
+        <source>Show &amp;File Toolbar</source>
+        <translation>Показать панель &amp;файлов</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="1014"/>
+        <source>Show the file toolbar</source>
+        <translation>Показать панель файлов</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="1017"/>
+        <source>Edit</source>
+        <translation>Правка</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="1019"/>
+        <source>Show &amp;Edit Toolbar</source>
+        <translation>Показать панель &amp;правки</translation>
+    </message>
+    <message>
         <location filename="../src/mainwindow.cpp" line="1020"/>
         <source>Show scene editing toolbar</source>
         <translation>Показать панель правки сцены</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="1057"/>
-        <source>Image Quality</source>
-        <translation>Качество изображения</translation>
-    </message>
-    <message>
         <location filename="../src/mainwindow.cpp" line="1037"/>
         <source>Previewer</source>
         <translation>Предпросмотрщик</translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="783"/>
-        <source>&lt;p&gt;&lt;b&gt;Qosmic version %1&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Copyright (C) 2007-2016 by David Bitseff&lt;br&gt;&lt;p&gt;Use and redistribute under the terms of the&lt;br&gt;&lt;a href=&quot;http://www.gnu.org/licenses/gpl.html&quot;&gt;GNU General Public License Version 3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Thanks to:&lt;br&gt;- Scott Draves for the &lt;a href=&quot;http://flam3.com/&quot;&gt;flam3&lt;/a&gt; library&lt;br&gt;- Erik Reckase for his work on the flam3 library&lt;br&gt;- Mark James for his &lt;a href=&quot;http://www.famfamfam.com/lab/icons/silk/&quot;&gt;Silk&lt;/a&gt; icon set&lt;br&gt;- Mark Townsend for the &lt;a href=&quot;www.apophysis.org&quot;&gt;Apophysis&lt;/a&gt; editor&lt;br&gt;- Pavel Fric for Czech Translations&lt;br&gt;&lt;p&gt;This version uses: Qt </source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1047"/>
@@ -1905,6 +1901,11 @@ time: %2</source>
         <location filename="../src/mainwindow.cpp" line="1052"/>
         <source>Triangle Color</source>
         <translation>Цвет треугольника</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="1057"/>
+        <source>Image Quality</source>
+        <translation>Качество изображения</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1067"/>
@@ -1934,7 +1935,7 @@ time: %2</source>
     <message>
         <location filename="../src/mainwindow.cpp" line="1107"/>
         <source>Sheep Loop</source>
-        <translation type="unfinished"></translation>
+        <translation>Овечья петля</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1112"/>
@@ -1942,16 +1943,40 @@ time: %2</source>
         <translation>Редактор сценария</translation>
     </message>
     <message>
+        <location filename="../src/mainwindow.cpp" line="1242"/>
+        <source>Couldn't open file %1
+</source>
+        <translation>Не удалось открыть файл %1
+</translation>
+    </message>
+    <message>
         <location filename="../src/mainwindow.cpp" line="1255"/>
         <location filename="../src/mainwindow.cpp" line="1293"/>
         <location filename="../src/mainwindow.cpp" line="1728"/>
         <source>File saved</source>
-        <translation>Файл сохранен</translation>
+        <translation>Файл сохранён</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="1261"/>
+        <source>Couldn't save file %1
+</source>
+        <translation>Не удалось сохранить файл %1
+</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="1305"/>
+        <source>untitled.flam3</source>
+        <translation>untitled.flam3</translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="1630"/>
+        <source>undo %1/%2</source>
+        <translation>Отмена %1/%2</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1633"/>
         <source>last undo</source>
-        <translation>Последнее отмененное</translation>
+        <translation>Последнее отменённое</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1644"/>
@@ -1964,36 +1989,9 @@ time: %2</source>
         <translation>Последнее повторенное</translation>
     </message>
     <message>
-        <location filename="../ui/mainwindow.ui" line="15"/>
-        <source>Qosmic</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../ui/mainwindow.ui" line="76"/>
-        <source>Add Triangle</source>
-        <translation>Добавить треугольник</translation>
-    </message>
-    <message>
-        <location filename="../ui/mainwindow.ui" line="85"/>
-        <source>Move Triangles</source>
-        <translation>Переместить треугольники</translation>
-    </message>
-    <message>
-        <location filename="../ui/mainwindow.ui" line="94"/>
-        <source>Rotate Triangles</source>
-        <translation>Вращать треугольники</translation>
-    </message>
-    <message>
-        <location filename="../ui/mainwindow.ui" line="103"/>
-        <location filename="../ui/mainwindow.ui" line="106"/>
-        <source>Scale Triangles</source>
-        <translation>Масштабировать треугольники</translation>
-    </message>
-    <message>
-        <location filename="../ui/mainwindow.ui" line="115"/>
-        <location filename="../ui/mainwindow.ui" line="118"/>
-        <source>Flip Triangles</source>
-        <translation>Повернуть треугольники</translation>
+        <location filename="../src/mainwindow.cpp" line="1715"/>
+        <source>Save a sheep</source>
+        <translation>Сохранить овцу</translation>
     </message>
 </context>
 <context>
@@ -2001,17 +1999,17 @@ time: %2</source>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="53"/>
         <source>sin</source>
-        <translation type="unfinished"></translation>
+        <translation>синус</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="53"/>
         <source>hill</source>
-        <translation type="unfinished"></translation>
+        <translation>холм</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="53"/>
         <source>triangle</source>
-        <translation type="unfinished">треугольник</translation>
+        <translation>треугольник</translation>
     </message>
 </context>
 <context>
@@ -2019,97 +2017,97 @@ time: %2</source>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="31"/>
         <source>animate</source>
-        <translation type="unfinished">Анимировать</translation>
+        <translation>анимировать</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="31"/>
         <source>color</source>
-        <translation type="unfinished"></translation>
+        <translation>цвет</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="31"/>
         <source>color_speed</source>
-        <translation type="unfinished"></translation>
+        <translation>скорость цвета</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="31"/>
         <source>density</source>
-        <translation type="unfinished">Плотность</translation>
+        <translation>плотность</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="31"/>
         <source>opacity</source>
-        <translation type="unfinished">Непрозрачность</translation>
+        <translation>непрозрачность</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="33"/>
         <source>var: </source>
-        <translation type="unfinished"></translation>
+        <translation>переменная: </translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="35"/>
         <source>par: </source>
-        <translation type="unfinished"></translation>
+        <translation>параметр: </translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="36"/>
         <source>xform: a</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: a</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="36"/>
         <source>xform: b</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: b</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="36"/>
         <source>xform: c</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: c</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="36"/>
         <source>xform: d</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: d</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="36"/>
         <source>xform: e</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: e</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="36"/>
         <source>xform: f</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: f</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="37"/>
         <source>post: a</source>
-        <translation type="unfinished"></translation>
+        <translation>после: a</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="37"/>
         <source>post: b</source>
-        <translation type="unfinished"></translation>
+        <translation>после: b</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="37"/>
         <source>post: c</source>
-        <translation type="unfinished"></translation>
+        <translation>после: c</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="37"/>
         <source>post: d</source>
-        <translation type="unfinished"></translation>
+        <translation>после: d</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="37"/>
         <source>post: e</source>
-        <translation type="unfinished"></translation>
+        <translation>после: e</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="37"/>
         <source>post: f</source>
-        <translation type="unfinished"></translation>
+        <translation>после: f</translation>
     </message>
 </context>
 <context>
@@ -2194,72 +2192,36 @@ time: %2</source>
     <message>
         <location filename="../src/mutationwidget.cpp" line="49"/>
         <source>genome A</source>
-        <translation type="unfinished"></translation>
+        <translation>геном A</translation>
     </message>
     <message>
         <location filename="../src/mutationwidget.cpp" line="50"/>
         <source>genome B</source>
-        <translation type="unfinished"></translation>
+        <translation>геном B</translation>
     </message>
     <message>
         <location filename="../src/mutationwidget.cpp" line="88"/>
         <source>mutation %1</source>
-        <translation type="unfinished"></translation>
+        <translation>мутация %1</translation>
     </message>
 </context>
 <context>
     <name>PaletteEditor</name>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="122"/>
-        <source>Save gradient to a cpt file</source>
-        <translation>Сохранить градиент в cpt файл</translation>
-    </message>
-    <message>
-        <location filename="../src/paletteeditor.cpp" line="124"/>
-        <source>CPT Gradient Files (*.cpt)</source>
-        <translation>Файлы градиентов CPT (*.cpt)</translation>
-    </message>
-    <message>
-        <location filename="../src/paletteeditor.cpp" line="139"/>
-        <source>Error: Couldn&apos;t open file %1</source>
-        <translation>Ошибка: Не удалось открыть файл %1</translation>
-    </message>
-    <message>
-        <location filename="../src/paletteeditor.cpp" line="180"/>
-        <source>Error: Couldn&apos;t write to file %1</source>
-        <translation>Ошибка: Не удалось записать файл в %1</translation>
-    </message>
-    <message>
-        <location filename="../src/paletteeditor.cpp" line="520"/>
-        <location filename="../src/paletteeditor.cpp" line="1042"/>
-        <source>Invalid path</source>
-        <translation>Неверный путь</translation>
-    </message>
-    <message>
-        <location filename="../src/paletteeditor.cpp" line="521"/>
-        <source>The directory path %1 couldn&apos;t be opened.</source>
-        <translation>Путь директории %1 не может быть открыт.</translation>
-    </message>
-    <message>
-        <location filename="../src/paletteeditor.cpp" line="540"/>
-        <source>Select a gradient file to load</source>
-        <translation>Выбрать файл градиента для загрузки</translation>
-    </message>
-    <message>
-        <location filename="../src/paletteeditor.cpp" line="542"/>
-        <source>Gradient Files (*.cpt *.ggr *.ugr)</source>
-        <translation>Файлы градиентов (*.cpt *.ggr *.ugr)</translation>
-    </message>
-    <message>
-        <location filename="../src/paletteeditor.cpp" line="1043"/>
-        <source>The gradient path %1 doesn&apos;t exist.</source>
-        <translation>Путь градиента %1 не существует.</translation>
-    </message>
-    <message>
         <location filename="../ui/paletteeditor.ui" line="14"/>
         <location filename="../ui/paletteeditor.ui" line="100"/>
         <source>Palettes</source>
         <translation>Палитры</translation>
+    </message>
+    <message>
+        <location filename="../ui/paletteeditor.ui" line="126"/>
+        <source>Browse</source>
+        <translation>Обзор</translation>
+    </message>
+    <message>
+        <location filename="../ui/paletteeditor.ui" line="137"/>
+        <source>...</source>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../ui/paletteeditor.ui" line="170"/>
@@ -2274,7 +2236,7 @@ time: %2</source>
     <message>
         <location filename="../ui/paletteeditor.ui" line="211"/>
         <source>pad</source>
-        <translation type="unfinished"></translation>
+        <translation>Панель</translation>
     </message>
     <message>
         <location filename="../ui/paletteeditor.ui" line="218"/>
@@ -2291,7 +2253,7 @@ time: %2</source>
         <source>number of randomly generated stops,
 &lt; 2 implies random number on [2,128]</source>
         <translation>Число случайно сгенерированных остановок,
-&lt; 2 влечет случайное число из [2,128]</translation>
+&lt; 2 влечёт случайное число из [2,128]</translation>
     </message>
     <message>
         <location filename="../ui/paletteeditor.ui" line="325"/>
@@ -2316,47 +2278,54 @@ time: %2</source>
         <translation>Сохранить</translation>
     </message>
     <message>
-        <location filename="../ui/paletteeditor.ui" line="126"/>
-        <source>Browse</source>
-        <translation>Браузер</translation>
+        <location filename="../src/paletteeditor.cpp" line="123"/>
+        <source>Save gradient to a cpt file</source>
+        <translation>Сохранить градиент в cpt файл</translation>
     </message>
     <message>
-        <location filename="../ui/paletteeditor.ui" line="137"/>
-        <source>...</source>
-        <translation>...</translation>
+        <location filename="../src/paletteeditor.cpp" line="125"/>
+        <source>CPT Gradient Files (*.cpt)</source>
+        <translation>Файлы градиентов CPT (*.cpt)</translation>
+    </message>
+    <message>
+        <location filename="../src/paletteeditor.cpp" line="140"/>
+        <source>Error: Couldn&apos;t open file %1</source>
+        <translation>Ошибка: Не удалось открыть файл %1</translation>
+    </message>
+    <message>
+        <location filename="../src/paletteeditor.cpp" line="181"/>
+        <source>Error: Couldn&apos;t write to file %1</source>
+        <translation>Ошибка: Не удалось записать файл в %1</translation>
+    </message>
+    <message>
+        <location filename="../src/paletteeditor.cpp" line="521"/>
+        <location filename="../src/paletteeditor.cpp" line="1043"/>
+        <source>Invalid path</source>
+        <translation>Неверный путь</translation>
+    </message>
+    <message>
+        <location filename="../src/paletteeditor.cpp" line="522"/>
+        <source>The directory path %1 couldn&apos;t be opened.</source>
+        <translation>Путь директории %1 не может быть открыт.</translation>
+    </message>
+    <message>
+        <location filename="../src/paletteeditor.cpp" line="541"/>
+        <source>Select a gradient file to load</source>
+        <translation>Выбрать файл градиента для загрузки</translation>
+    </message>
+    <message>
+        <location filename="../src/paletteeditor.cpp" line="543"/>
+        <source>Gradient Files (*.cpt *.ggr *.ugr)</source>
+        <translation>Файлы градиентов (*.cpt *.ggr *.ugr)</translation>
+    </message>
+    <message>
+        <location filename="../src/paletteeditor.cpp" line="1044"/>
+        <source>The gradient path %1 doesn&apos;t exist.</source>
+        <translation>Путь градиента %1 не существует.</translation>
     </message>
 </context>
 <context>
     <name>RenderDialog</name>
-    <message>
-        <source>current settings</source>
-        <translation type="vanished">Текущие настройки</translation>
-    </message>
-    <message>
-        <location filename="../src/renderdialog.cpp" line="28"/>
-        <source>genome quality</source>
-        <translation type="unfinished">Качество генома</translation>
-    </message>
-    <message>
-        <location filename="../src/renderdialog.cpp" line="95"/>
-        <source>File already exists</source>
-        <translation>Файл уже существует</translation>
-    </message>
-    <message>
-        <location filename="../src/renderdialog.cpp" line="96"/>
-        <source>Do you want to overwrite %1?</source>
-        <translation>Вы хотите перезаписать %1?</translation>
-    </message>
-    <message>
-        <location filename="../src/renderdialog.cpp" line="134"/>
-        <source>untitled.png</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/renderdialog.cpp" line="137"/>
-        <source>Save an image as ...</source>
-        <translation>Сохранить изображение как ...</translation>
-    </message>
     <message>
         <location filename="../ui/renderdialog.ui" line="26"/>
         <source>Render an image</source>
@@ -2383,6 +2352,31 @@ time: %2</source>
         <location filename="../ui/renderdialog.ui" line="81"/>
         <source>Quality</source>
         <translation>Качество</translation>
+    </message>
+    <message>
+        <location filename="../src/renderdialog.cpp" line="28"/>
+        <source>genome quality</source>
+        <translation>качество генома</translation>
+    </message>
+    <message>
+        <location filename="../src/renderdialog.cpp" line="95"/>
+        <source>File already exists</source>
+        <translation>Файл уже существует</translation>
+    </message>
+    <message>
+        <location filename="../src/renderdialog.cpp" line="96"/>
+        <source>Do you want to overwrite %1?</source>
+        <translation>Вы хотите перезаписать %1?</translation>
+    </message>
+    <message>
+        <location filename="../src/renderdialog.cpp" line="134"/>
+        <source>untitled.png</source>
+        <translation>untitled.png</translation>
+    </message>
+    <message>
+        <location filename="../src/renderdialog.cpp" line="137"/>
+        <source>Save an image as ...</source>
+        <translation>Сохранить изображение как ...</translation>
     </message>
 </context>
 <context>
@@ -2428,14 +2422,10 @@ time: %2</source>
         <translation>мин:сек</translation>
     </message>
     <message>
-        <source>ss.z</source>
-        <translation type="obsolete">сек.мс</translation>
-    </message>
-    <message>
         <location filename="../src/renderthread.cpp" line="534"/>
         <location filename="../src/renderthread.cpp" line="552"/>
         <source>s.z</source>
-        <translation type="unfinished"></translation>
+        <translation>s.z</translation>
     </message>
     <message>
         <location filename="../src/renderthread.cpp" line="536"/>
@@ -2478,12 +2468,12 @@ time: %2</source>
     <message>
         <location filename="../ui/scripteditconfigdialog.ui" line="67"/>
         <source>Lua</source>
-        <translation></translation>
+        <translation>Lua</translation>
     </message>
     <message>
         <location filename="../ui/scripteditconfigdialog.ui" line="73"/>
         <source>Lua Search Paths</source>
-        <translation>Поти поиска Lua</translation>
+        <translation>Пути поиска Lua</translation>
     </message>
 </context>
 <context>
@@ -2499,8 +2489,18 @@ time: %2</source>
         <translation>Открыть</translation>
     </message>
     <message>
+        <location filename="../ui/scripteditwidget.ui" line="107"/>
+        <source>open</source>
+        <translation>Открыть</translation>
+    </message>
+    <message>
         <location filename="../ui/scripteditwidget.ui" line="124"/>
         <source>Save</source>
+        <translation>Сохранить</translation>
+    </message>
+    <message>
+        <location filename="../ui/scripteditwidget.ui" line="127"/>
+        <source>save</source>
         <translation>Сохранить</translation>
     </message>
     <message>
@@ -2526,12 +2526,7 @@ time: %2</source>
     <message>
         <location filename="../ui/scripteditwidget.ui" line="174"/>
         <source>Ctrl+Return</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../ui/scripteditwidget.ui" line="107"/>
-        <source>open</source>
-        <translation>Открыть</translation>
+        <translation>Ctrl+Return</translation>
     </message>
     <message>
         <location filename="../ui/scripteditwidget.ui" line="194"/>
@@ -2544,19 +2539,14 @@ time: %2</source>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../ui/scripteditwidget.ui" line="127"/>
-        <source>save</source>
-        <translation>Сохранить</translation>
-    </message>
-    <message>
         <location filename="../src/scripteditwidget.cpp" line="36"/>
         <source>print(&apos;hello world.&apos;)</source>
-        <translation type="unfinished"></translation>
+        <translation>print(&apos;привет, мир.&apos;)</translation>
     </message>
     <message>
         <location filename="../src/scripteditwidget.cpp" line="67"/>
         <source>Script input request</source>
-        <translation type="unfinished"></translation>
+        <translation>Запрос ввода сценария</translation>
     </message>
     <message>
         <location filename="../src/scripteditwidget.cpp" line="76"/>
@@ -2655,6 +2645,14 @@ time: %2</source>
         <translation>Дублировать геном</translation>
     </message>
     <message>
+        <location filename="../ui/selectgenomewidget.ui" line="74"/>
+        <location filename="../ui/selectgenomewidget.ui" line="106"/>
+        <location filename="../ui/selectgenomewidget.ui" line="138"/>
+        <location filename="../ui/selectgenomewidget.ui" line="164"/>
+        <source>...</source>
+        <translation>...</translation>
+    </message>
+    <message>
         <location filename="../ui/selectgenomewidget.ui" line="103"/>
         <source>remove genome</source>
         <translation>Удалить геном</translation>
@@ -2670,22 +2668,14 @@ time: %2</source>
         <translation>Настроить</translation>
     </message>
     <message>
-        <location filename="../ui/selectgenomewidget.ui" line="74"/>
-        <location filename="../ui/selectgenomewidget.ui" line="106"/>
-        <location filename="../ui/selectgenomewidget.ui" line="138"/>
-        <location filename="../ui/selectgenomewidget.ui" line="164"/>
-        <source>...</source>
-        <translation>...</translation>
-    </message>
-    <message>
         <location filename="../src/selectgenomewidget.cpp" line="132"/>
         <source>Error</source>
-        <translation type="unfinished">Ошибка</translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <location filename="../src/selectgenomewidget.cpp" line="133"/>
         <source>Couldn&apos;t remove %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось удалить %1: %2</translation>
     </message>
 </context>
 <context>
@@ -2717,6 +2707,11 @@ time: %2</source>
         <translation>Разрешить финальное преобразование</translation>
     </message>
     <message>
+        <location filename="../ui/selecttrianglewidget.ui" line="99"/>
+        <source>final</source>
+        <translation>Финал</translation>
+    </message>
+    <message>
         <location filename="../ui/selecttrianglewidget.ui" line="119"/>
         <source>probability that this function is chosen</source>
         <translation>Вероятность того, что эта функция выбрана</translation>
@@ -2731,18 +2726,13 @@ time: %2</source>
         <source>remove the selected triangle</source>
         <translation>Удалить выделенный треугольник</translation>
     </message>
-    <message>
-        <location filename="../ui/selecttrianglewidget.ui" line="99"/>
-        <source>final</source>
-        <translation>Финал</translation>
-    </message>
 </context>
 <context>
     <name>SheepLoopWidget</name>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="14"/>
         <source>SheepLoopWidget</source>
-        <translation type="unfinished"></translation>
+        <translation>Виджет овечьих петель</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="37"/>
@@ -2754,12 +2744,12 @@ time: %2</source>
         <location filename="../ui/sheeploopwidget.ui" line="40"/>
         <location filename="../ui/sheeploopwidget.ui" line="663"/>
         <source>genome</source>
-        <translation>геном</translation>
+        <translation>Геном</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="53"/>
         <source>first keyframe</source>
-        <translation type="unfinished"></translation>
+        <translation>первый ключевой кадр</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="78"/>
@@ -2769,7 +2759,7 @@ time: %2</source>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="91"/>
         <source>last keyframe</source>
-        <translation type="unfinished"></translation>
+        <translation>Последний ключевой кадр</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="120"/>
@@ -2805,23 +2795,24 @@ time: %2</source>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="186"/>
         <source>frames per loop</source>
-        <translation type="unfinished"></translation>
+        <translation>Кадров в цикле</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="202"/>
         <source>loops</source>
-        <translation type="unfinished"></translation>
+        <translation>Циклы</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="215"/>
         <source>rotation loops</source>
-        <translation type="unfinished"></translation>
+        <translation>Чередование циклов</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="231"/>
         <source>sequence - rotate animated xforms and interpolate adjacent genomes
 animate - time based interpolation of adjacent genomes</source>
-        <translation type="unfinished"></translation>
+        <translation>Последовательность - вращение анимированных xforms и интерполирование соседних геномов
+Анимация - время интерполяции на основе соседних геномов</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="236"/>
@@ -2840,39 +2831,39 @@ animate - time based interpolation of adjacent genomes</source>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="270"/>
         <source>stagger</source>
-        <translation type="unfinished"></translation>
+        <translation>Колебаться</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="283"/>
         <source>fractional overlap of xform interpolation</source>
-        <translation type="unfinished"></translation>
+        <translation>Незначительное перекрытие интерполяции xform</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="302"/>
         <source>interpolation curve for this genome in the animation sequence</source>
-        <translation type="unfinished"></translation>
+        <translation>Интерполяция кривой  для этого генома в анимационной последовательности</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="305"/>
         <source>interp curve</source>
-        <translation type="unfinished"></translation>
+        <translation>Интерп. кривой</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="318"/>
         <source>how flames change over time</source>
-        <translation type="unfinished"></translation>
+        <translation>Как пламя меняется с течением времени</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="322"/>
         <location filename="../ui/sheeploopwidget.ui" line="361"/>
         <location filename="../ui/sheeploopwidget.ui" line="436"/>
         <source>linear</source>
-        <translation>линейный</translation>
+        <translation>Линейный</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="327"/>
         <source>smooth</source>
-        <translation>гладкий</translation>
+        <translation>Гладкий</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="341"/>
@@ -2892,17 +2883,17 @@ animate - time based interpolation of adjacent genomes</source>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="366"/>
         <source>log</source>
-        <translation>лог</translation>
+        <translation>Лог</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="371"/>
         <source>compat</source>
-        <translation type="unfinished"></translation>
+        <translation>Совместимость</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="376"/>
         <source>older</source>
-        <translation>старее</translation>
+        <translation>Старее</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="384"/>
@@ -2917,12 +2908,12 @@ animate - time based interpolation of adjacent genomes</source>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="401"/>
         <source>hsv</source>
-        <translation type="unfinished"></translation>
+        <translation>HSV</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="406"/>
         <source>sweep</source>
-        <translation type="unfinished"></translation>
+        <translation>Развёртка</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="414"/>
@@ -2932,7 +2923,7 @@ animate - time based interpolation of adjacent genomes</source>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="427"/>
         <source>interpolation between palette entries</source>
-        <translation type="unfinished"></translation>
+        <translation>Интерполяция между записями палитр</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="431"/>
@@ -2948,7 +2939,8 @@ animate - time based interpolation of adjacent genomes</source>
         <location filename="../ui/sheeploopwidget.ui" line="488"/>
         <source>number of time steps per batch. this many
    interpolated control points are used per batch and accumulated</source>
-        <translation type="unfinished"></translation>
+        <translation>Число временных шагов на дозу. Сколько раз использовано
+и накоплено интерполированных контрольных точек на дозу</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="492"/>
@@ -2988,7 +2980,7 @@ animate - time based interpolation of adjacent genomes</source>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="597"/>
         <source>exp</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспонента</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="605"/>
@@ -3003,7 +2995,7 @@ animate - time based interpolation of adjacent genomes</source>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="628"/>
         <source>exponent</source>
-        <translation>экспонента</translation>
+        <translation>Экспонента</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="641"/>
@@ -3023,7 +3015,7 @@ animate - time based interpolation of adjacent genomes</source>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="697"/>
         <source>animate this transform in the electricsheep loop</source>
-        <translation type="unfinished"></translation>
+        <translation>Анимировать это преобразование в петлю с электроовцой</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="727"/>
@@ -3033,7 +3025,7 @@ animate - time based interpolation of adjacent genomes</source>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="730"/>
         <source>+</source>
-        <translation></translation>
+        <translation>+</translation>
     </message>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="737"/>
@@ -3043,176 +3035,176 @@ animate - time based interpolation of adjacent genomes</source>
     <message>
         <location filename="../ui/sheeploopwidget.ui" line="740"/>
         <source>-</source>
-        <translation></translation>
+        <translation>-</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="221"/>
         <source>element</source>
-        <translation type="unfinished"></translation>
+        <translation>элемент</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="222"/>
         <source>value</source>
-        <translation type="unfinished"></translation>
+        <translation>значение</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="223"/>
         <source>function</source>
-        <translation type="unfinished"></translation>
+        <translation>функция</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="224"/>
         <source>frequency</source>
-        <translation type="unfinished"></translation>
+        <translation>частота</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="239"/>
         <location filename="../src/sheeploopwidget.cpp" line="377"/>
         <location filename="../src/sheeploopwidget.cpp" line="437"/>
         <source>var: </source>
-        <translation type="unfinished"></translation>
+        <translation>переменная: </translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="250"/>
         <location filename="../src/sheeploopwidget.cpp" line="383"/>
         <location filename="../src/sheeploopwidget.cpp" line="443"/>
         <source>par: </source>
-        <translation type="unfinished"></translation>
+        <translation>параметр: </translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="265"/>
         <location filename="../src/sheeploopwidget.cpp" line="390"/>
         <location filename="../src/sheeploopwidget.cpp" line="450"/>
         <source>color</source>
-        <translation type="unfinished"></translation>
+        <translation>цвет</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="270"/>
         <location filename="../src/sheeploopwidget.cpp" line="392"/>
         <location filename="../src/sheeploopwidget.cpp" line="452"/>
         <source>color_speed</source>
-        <translation type="unfinished"></translation>
+        <translation>скорость цвета</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="275"/>
         <location filename="../src/sheeploopwidget.cpp" line="394"/>
         <location filename="../src/sheeploopwidget.cpp" line="454"/>
         <source>density</source>
-        <translation type="unfinished">Плотность</translation>
+        <translation>плотность</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="280"/>
         <location filename="../src/sheeploopwidget.cpp" line="396"/>
         <location filename="../src/sheeploopwidget.cpp" line="456"/>
         <source>opacity</source>
-        <translation type="unfinished">Непрозрачность</translation>
+        <translation>непрозрачность</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="285"/>
         <location filename="../src/sheeploopwidget.cpp" line="398"/>
         <location filename="../src/sheeploopwidget.cpp" line="458"/>
         <source>xform: a</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: a</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="290"/>
         <location filename="../src/sheeploopwidget.cpp" line="400"/>
         <location filename="../src/sheeploopwidget.cpp" line="460"/>
         <source>xform: b</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: b</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="295"/>
         <location filename="../src/sheeploopwidget.cpp" line="402"/>
         <location filename="../src/sheeploopwidget.cpp" line="462"/>
         <source>xform: c</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: c</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="300"/>
         <location filename="../src/sheeploopwidget.cpp" line="404"/>
         <location filename="../src/sheeploopwidget.cpp" line="464"/>
         <source>xform: d</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: d</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="305"/>
         <location filename="../src/sheeploopwidget.cpp" line="406"/>
         <location filename="../src/sheeploopwidget.cpp" line="466"/>
         <source>xform: e</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: e</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="310"/>
         <location filename="../src/sheeploopwidget.cpp" line="408"/>
         <location filename="../src/sheeploopwidget.cpp" line="468"/>
         <source>xform: f</source>
-        <translation type="unfinished"></translation>
+        <translation>xform: f</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="315"/>
         <location filename="../src/sheeploopwidget.cpp" line="410"/>
         <location filename="../src/sheeploopwidget.cpp" line="470"/>
         <source>post: a</source>
-        <translation type="unfinished"></translation>
+        <translation>после: a</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="320"/>
         <location filename="../src/sheeploopwidget.cpp" line="412"/>
         <location filename="../src/sheeploopwidget.cpp" line="472"/>
         <source>post: b</source>
-        <translation type="unfinished"></translation>
+        <translation>после: b</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="325"/>
         <location filename="../src/sheeploopwidget.cpp" line="414"/>
         <location filename="../src/sheeploopwidget.cpp" line="474"/>
         <source>post: c</source>
-        <translation type="unfinished"></translation>
+        <translation>после: c</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="330"/>
         <location filename="../src/sheeploopwidget.cpp" line="416"/>
         <location filename="../src/sheeploopwidget.cpp" line="476"/>
         <source>post: d</source>
-        <translation type="unfinished"></translation>
+        <translation>после: d</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="335"/>
         <location filename="../src/sheeploopwidget.cpp" line="418"/>
         <location filename="../src/sheeploopwidget.cpp" line="478"/>
         <source>post: e</source>
-        <translation type="unfinished"></translation>
+        <translation>после: e</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="340"/>
         <location filename="../src/sheeploopwidget.cpp" line="420"/>
         <location filename="../src/sheeploopwidget.cpp" line="480"/>
         <source>post: f</source>
-        <translation type="unfinished"></translation>
+        <translation>после: f</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="346"/>
         <location filename="../src/sheeploopwidget.cpp" line="491"/>
         <location filename="../src/sheeploopwidget.cpp" line="515"/>
         <source>sin</source>
-        <translation type="unfinished"></translation>
+        <translation>синус</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="348"/>
         <location filename="../src/sheeploopwidget.cpp" line="493"/>
         <source>hill</source>
-        <translation type="unfinished"></translation>
+        <translation>холм</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="350"/>
         <source>triangle</source>
-        <translation type="unfinished">треугольник</translation>
+        <translation>треугольник</translation>
     </message>
     <message>
         <location filename="../src/sheeploopwidget.cpp" line="513"/>
         <source>var: linear</source>
-        <translation type="unfinished"></translation>
+        <translation>переменная: линейный</translation>
     </message>
 </context>
 <context>
@@ -3238,32 +3230,32 @@ animate - time based interpolation of adjacent genomes</source>
     <message>
         <location filename="../ui/trianglecoordswidget.ui" line="70"/>
         <source>x</source>
-        <translation></translation>
+        <translation>x</translation>
     </message>
     <message>
         <location filename="../ui/trianglecoordswidget.ui" line="98"/>
         <source>y</source>
-        <translation></translation>
+        <translation>y</translation>
     </message>
     <message>
         <location filename="../ui/trianglecoordswidget.ui" line="120"/>
         <source>O:</source>
-        <translation></translation>
+        <translation>O:</translation>
     </message>
     <message>
         <location filename="../ui/trianglecoordswidget.ui" line="207"/>
         <source>X:</source>
-        <translation></translation>
+        <translation>X:</translation>
     </message>
     <message>
         <location filename="../ui/trianglecoordswidget.ui" line="294"/>
         <source>Y:</source>
-        <translation></translation>
+        <translation>Y:</translation>
     </message>
     <message>
         <location filename="../ui/trianglecoordswidget.ui" line="404"/>
         <source>rect</source>
-        <translation type="unfinished"></translation>
+        <translation>прям</translation>
     </message>
     <message>
         <location filename="../ui/trianglecoordswidget.ui" line="426"/>
@@ -3278,32 +3270,32 @@ animate - time based interpolation of adjacent genomes</source>
     <message>
         <location filename="../ui/trianglecoordswidget.ui" line="482"/>
         <source>a:</source>
-        <translation></translation>
+        <translation>a:</translation>
     </message>
     <message>
         <location filename="../ui/trianglecoordswidget.ui" line="535"/>
         <source>d:</source>
-        <translation></translation>
+        <translation>d:</translation>
     </message>
     <message>
         <location filename="../ui/trianglecoordswidget.ui" line="588"/>
         <source>b:</source>
-        <translation></translation>
+        <translation>b:</translation>
     </message>
     <message>
         <location filename="../ui/trianglecoordswidget.ui" line="641"/>
         <source>e:</source>
-        <translation></translation>
+        <translation>e:</translation>
     </message>
     <message>
         <location filename="../ui/trianglecoordswidget.ui" line="694"/>
         <source>c:</source>
-        <translation></translation>
+        <translation>c:</translation>
     </message>
     <message>
         <location filename="../ui/trianglecoordswidget.ui" line="747"/>
         <source>f:</source>
-        <translation></translation>
+        <translation>f:</translation>
     </message>
 </context>
 <context>
@@ -3352,14 +3344,14 @@ animate - time based interpolation of adjacent genomes</source>
         <translation>*</translation>
     </message>
     <message>
-        <location filename="../src/triangledensitywidget.cpp" line="134"/>
+        <location filename="../src/triangledensitywidget.cpp" line="135"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет</translation>
     </message>
     <message>
-        <location filename="../src/triangledensitywidget.cpp" line="186"/>
+        <location filename="../src/triangledensitywidget.cpp" line="187"/>
         <source>density: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>плотность: %1</translation>
     </message>
 </context>
 <context>
@@ -3377,7 +3369,7 @@ animate - time based interpolation of adjacent genomes</source>
     <message>
         <location filename="../ui/variationswidget.ui" line="38"/>
         <source>+</source>
-        <translation></translation>
+        <translation>+</translation>
     </message>
 </context>
 <context>
@@ -3385,12 +3377,12 @@ animate - time based interpolation of adjacent genomes</source>
     <message>
         <location filename="../src/varstablewidget.cpp" line="368"/>
         <source>Variation</source>
-        <translation type="unfinished"></translation>
+        <translation>Вариация</translation>
     </message>
     <message>
         <location filename="../src/varstablewidget.cpp" line="368"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Значение</translation>
     </message>
 </context>
 <context>
@@ -3398,12 +3390,12 @@ animate - time based interpolation of adjacent genomes</source>
     <message>
         <location filename="../src/viewerpresetsmodel.cpp" line="84"/>
         <source>Column %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Столбец %1</translation>
     </message>
     <message>
         <location filename="../src/viewerpresetsmodel.cpp" line="86"/>
         <source>Row %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Строка %1</translation>
     </message>
     <message>
         <location filename="../src/viewerpresetsmodel.cpp" line="217"/>
@@ -3439,9 +3431,59 @@ animate - time based interpolation of adjacent genomes</source>
 <context>
     <name>ViewerPresetsWidget</name>
     <message>
+        <location filename="../ui/viewerpresetswidget.ui" line="17"/>
+        <source>Viewer Presets</source>
+        <translation>Профили просмотра</translation>
+    </message>
+    <message>
+        <location filename="../ui/viewerpresetswidget.ui" line="32"/>
+        <source>add</source>
+        <translation>Добавить</translation>
+    </message>
+    <message>
+        <location filename="../ui/viewerpresetswidget.ui" line="35"/>
+        <source>+</source>
+        <translation>+</translation>
+    </message>
+    <message>
+        <location filename="../ui/viewerpresetswidget.ui" line="52"/>
+        <source>remove</source>
+        <translation>Удалить</translation>
+    </message>
+    <message>
+        <location filename="../ui/viewerpresetswidget.ui" line="55"/>
+        <source>-</source>
+        <translation>-</translation>
+    </message>
+    <message>
+        <location filename="../ui/viewerpresetswidget.ui" line="72"/>
+        <source>update preset</source>
+        <translation>Обновить профиль</translation>
+    </message>
+    <message>
+        <location filename="../ui/viewerpresetswidget.ui" line="75"/>
+        <source>&lt;&gt;</source>
+        <translation>&lt;&gt;</translation>
+    </message>
+    <message>
+        <location filename="../ui/viewerpresetswidget.ui" line="86"/>
+        <source>move up</source>
+        <translation>Сдвинуть вверх</translation>
+    </message>
+    <message>
+        <location filename="../ui/viewerpresetswidget.ui" line="103"/>
+        <source>move down</source>
+        <translation>Сдвинуть вниз</translation>
+    </message>
+    <message>
+        <location filename="../ui/viewerpresetswidget.ui" line="133"/>
+        <source>close</source>
+        <translation>закрыть</translation>
+    </message>
+    <message>
         <location filename="../src/viewerpresetswidget.cpp" line="48"/>
         <source>q%1/o%2/e%3</source>
-        <translation type="unfinished"></translation>
+        <translation>q%1/o%2/e%3</translation>
     </message>
     <message>
         <location filename="../src/viewerpresetswidget.cpp" line="52"/>
@@ -3458,56 +3500,6 @@ animate - time based interpolation of adjacent genomes</source>
         <location filename="../src/viewerpresetswidget.cpp" line="76"/>
         <source>Rename preset</source>
         <translation>Переименовать профиль</translation>
-    </message>
-    <message>
-        <location filename="../ui/viewerpresetswidget.ui" line="17"/>
-        <source>Viewer Presets</source>
-        <translation>Профили просмотра</translation>
-    </message>
-    <message>
-        <location filename="../ui/viewerpresetswidget.ui" line="32"/>
-        <source>add</source>
-        <translation>Добавить</translation>
-    </message>
-    <message>
-        <location filename="../ui/viewerpresetswidget.ui" line="35"/>
-        <source>+</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../ui/viewerpresetswidget.ui" line="52"/>
-        <source>remove</source>
-        <translation>Удалить</translation>
-    </message>
-    <message>
-        <location filename="../ui/viewerpresetswidget.ui" line="55"/>
-        <source>-</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../ui/viewerpresetswidget.ui" line="72"/>
-        <source>update preset</source>
-        <translation>Обновить профиль</translation>
-    </message>
-    <message>
-        <location filename="../ui/viewerpresetswidget.ui" line="75"/>
-        <source>&lt;&gt;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../ui/viewerpresetswidget.ui" line="86"/>
-        <source>move up</source>
-        <translation>Сдвинуть вверх</translation>
-    </message>
-    <message>
-        <location filename="../ui/viewerpresetswidget.ui" line="103"/>
-        <source>move down</source>
-        <translation>Сдвинуть вниз</translation>
-    </message>
-    <message>
-        <location filename="../ui/viewerpresetswidget.ui" line="133"/>
-        <source>close</source>
-        <translation type="unfinished">Закрыть</translation>
     </message>
 </context>
 </TS>
