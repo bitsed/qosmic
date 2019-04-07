@@ -24,7 +24,7 @@
 
 #undef VERSION
 extern "C" {
-#include "flam3/flam3.h"
+#include "flam3.h"
 }
 
 
