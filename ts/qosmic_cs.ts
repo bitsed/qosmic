@@ -420,7 +420,7 @@ flam3_nthreads=%4
 flam3_palettes=%5</translation>
     </message>
     <message>
-        <location filename="../src/qosmic.cpp" line="61"/>
+        <location filename="../src/qosmic.cpp" line="82"/>
         <source>Qosmic %1
 Usage: qosmic [flam3 file]
 
@@ -438,7 +438,7 @@ flam3_verbose=%3
 flam3_nthreads=%4</translation>
     </message>
     <message>
-        <location filename="../src/qosmic.cpp" line="83"/>
+        <location filename="../src/qosmic.cpp" line="104"/>
         <source>Couldn&apos;t load file %1</source>
         <translation>Nepodařilo se nahrát soubor %1</translation>
     </message>
@@ -2476,43 +2476,43 @@ filtru s alespoň touto šířkou na všechny body</translation>
 <context>
     <name>PaletteEditor</name>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="122"/>
+        <location filename="../src/paletteeditor.cpp" line="123"/>
         <source>Save gradient to a cpt file</source>
         <translation>Uložit přechod do souboru cpt</translation>
     </message>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="124"/>
+        <location filename="../src/paletteeditor.cpp" line="125"/>
         <source>CPT Gradient Files (*.cpt)</source>
         <translation>Přechodové soubory CPT (*.cpt)</translation>
     </message>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="139"/>
+        <location filename="../src/paletteeditor.cpp" line="140"/>
         <source>Error: Couldn&apos;t open file %1</source>
         <translation>Chyba: Nepodařilo se otevřít soubor %1</translation>
     </message>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="180"/>
+        <location filename="../src/paletteeditor.cpp" line="181"/>
         <source>Error: Couldn&apos;t write to file %1</source>
         <translation>Chyba: Nepodařilo se zapsat do souboru %1</translation>
     </message>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="520"/>
-        <location filename="../src/paletteeditor.cpp" line="1042"/>
+        <location filename="../src/paletteeditor.cpp" line="521"/>
+        <location filename="../src/paletteeditor.cpp" line="1043"/>
         <source>Invalid path</source>
         <translation>Neplatná cesta</translation>
     </message>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="521"/>
+        <location filename="../src/paletteeditor.cpp" line="522"/>
         <source>The directory path %1 couldn&apos;t be opened.</source>
         <translation>Cestu k adresáři %1 se nepodařilo otevřít.</translation>
     </message>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="542"/>
+        <location filename="../src/paletteeditor.cpp" line="543"/>
         <source>Gradient Files (*.cpt *.ggr *.ugr)</source>
         <translation>Přechodové soubory (*.cpt *.ggr *.ugr)</translation>
     </message>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="1043"/>
+        <location filename="../src/paletteeditor.cpp" line="1044"/>
         <source>The gradient path %1 doesn&apos;t exist.</source>
         <translation>Cestu k přechodu %1 neexistuje.</translation>
     </message>
@@ -2587,7 +2587,7 @@ filtru s alespoň touto šířkou na všechny body</translation>
         <translation>...</translation>
     </message>
     <message>
-        <location filename="../src/paletteeditor.cpp" line="540"/>
+        <location filename="../src/paletteeditor.cpp" line="541"/>
         <source>Select a gradient file to load</source>
         <translation>Vybrat soubor s přechodem k nahrání</translation>
     </message>
@@ -3651,12 +3651,12 @@ a nashromáždí interpolované kontrolní body</translation>
         <translation>*</translation>
     </message>
     <message>
-        <location filename="../src/triangledensitywidget.cpp" line="134"/>
+        <location filename="../src/triangledensitywidget.cpp" line="135"/>
         <source>None</source>
         <translation>Žádný</translation>
     </message>
     <message>
-        <location filename="../src/triangledensitywidget.cpp" line="186"/>
+        <location filename="../src/triangledensitywidget.cpp" line="187"/>
         <source>density: %1</source>
         <translation>Hustota: %1</translation>
     </message>

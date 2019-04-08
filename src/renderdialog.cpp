@@ -44,7 +44,7 @@ RenderDialog::RenderDialog(QWidget* parent,
 	if (cnt == 0)
 	{
 		QStringList dims;
-		dims << "640x480" << "600x800" << "1024x768" << "1280x960" << "1280x1024";
+		dims << "640x480" << "600x800" << "1024x768" << "1280x960" << "1280x1024" << "1920x1080";
 		m_sizeComboBox->addItems(dims);
 	}
 	else

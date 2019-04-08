@@ -19,6 +19,7 @@
 #include <QApplication>
 #include <QTranslator>
 #include <QFileInfo>
+#include <QLibraryInfo>
 
 #include "qosmic.h"
 #include "logger.h"
@@ -38,6 +39,26 @@ int main(int argc, char* argv[])
 	// Initialize the logger
 	Logger::getInstance()->setLevel(Logger::levelFor(getenv("log")));
 	logInfo(QString("main() : Qosmic (version %1)").arg(QOSMIC_VERSION));
+
+    // Translations for Qt strings 
+	QTranslator qttranslator;
+	{
+		QString locale = QLocale::system().name();
+        logInfo("main() : system locale is %s", locale.toLatin1().constData());
+		QString qmDir(QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+		QString qmFile(QString("qt_") + locale);
+
+		if (qttranslator.load(qmFile, qmDir))
+		{
+			logInfo(QString("main() : installing qt translations for %1").arg(locale));
+			app.installTranslator(&qttranslator);
+		}
+		else
+		{
+			logInfo(QString("main() : no qt translations found for locale %1").arg(locale));
+			logInfo("main() : using default locale");
+		}
+	}
 
 	// Load translations if necessary
 	QTranslator translator;
