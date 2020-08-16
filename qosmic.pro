@@ -2,7 +2,9 @@
 #################### qmake project file for qosmic application #################
 ################################################################################
 ## Installation prefix on *nix/osx.  Binaries are installed in $$PREFIX/bin
-PREFIX = /usr
+isEmpty(PREFIX) {
+    PREFIX = /usr
+}
 
 
 ################################################################################
