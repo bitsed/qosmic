@@ -15,6 +15,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  ***************************************************************************/
+#include <QApplication>
 #include <QSettings>
 #include <QLineEdit>
 #include <QHeaderView>
@@ -362,7 +363,7 @@ VarsTableItem* VarsTableItem::parent()
 // -----------------------------------------------------------------------------
 
 VarsTableModel::VarsTableModel(QObject* parent) : QAbstractItemModel(parent),
-	decimals(2), activeColor(QColor(200,230,240)), inactiveColor(Qt::white)
+	decimals(2)
 {
 	QList<QVariant> itemData;
 	itemData << tr("Variation") << tr("Value") << " ";
@@ -457,13 +458,21 @@ QVariant VarsTableModel::data(const QModelIndex& index, int role) const
 			VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
 			return item->data(index.column());
 		}
+		case Qt::ForegroundRole:
+		{
+			VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
+			if (index.column() == 1 && QLocale().toDouble(item->data(1).toString()) != 0.0)
+				return QApplication::palette().highlightedText();
+			else
+				return QApplication::palette().text();
+		}
 		case Qt::BackgroundRole:
 		{
 			VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
-			if (index.column() == 1 && item->data(1).toDouble() != 0.0)
-				return activeColor;
+			if (index.column() == 1 && QLocale().toDouble(item->data(1).toString()) != 0.0)
+				return QApplication::palette().highlight();
 			else
-				return inactiveColor;
+				return QApplication::palette().base();
 		}
 	}
 	return QVariant();
