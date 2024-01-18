@@ -50,8 +50,6 @@ class VarsTableModel : public QAbstractItemModel
 	VarsTableItem* rootItem;
 	flam3_xform* xform;
 	int decimals;
-	const QBrush activeColor;
-	const QBrush inactiveColor;
 	QMap<QString, VarsTableItem*> variationItems;
 
 	public:
