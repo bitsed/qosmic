@@ -34,12 +34,13 @@ CONFIG += install_icons install_desktop install_scripts
 
 ################################################################################
 ## Add linked libs and paths for headers and palettes here using pkg-config.
-## If your system doesn't support pkg-config then comment out the next line and
-## set these values below.
-#CONFIG += link_pkgconfig
+## Comment out the next line and ## set these values below if your system
+## doesn't use pkg-config.
+CONFIG += link_pkgconfig
 
 link_pkgconfig {
-	message("Config using pkg-config version "$$system(pkg-config --version))
+	PKG_CONFIG = $$pkgConfigExecutable()
+	message("Config using pkg-config version "$$system($$PKG_CONFIG --version))
 	PKGCONFIG = flam3 lua5.2
 }
 else {
@@ -49,7 +50,7 @@ else {
 	FLAM3_SRC_DIR = $$system(readlink -e ../flam3-3.1.1)
 	INCLUDEPATH += $$FLAM3_SRC_DIR /usr/include/libxml2 /usr/include/lua5.2/
 	LIBS += -L$$FLAM3_SRC_DIR/.libs
-	LIBS += -L/usr/lib/libxml2 -lflam3 -lm -ljpeg -lxml2 -llua5.2
+	LIBS += -L/usr/lib/libxml2 -lflam3 -lm -ljpeg -lxml2 -llua5.2 -lstdc++
 }
 
 
@@ -79,7 +80,7 @@ system(test $$QT_MAJOR_VERSION -lt 5 -o $$QT_MINOR_VERSION -lt 5) {
 }
 
 link_pkgconfig {
-	! system(pkg-config --atleast-version 3.1.1 flam3) {
+	! system($$PKG_CONFIG --atleast-version 3.1.1 flam3) {
 		error("Qosmic $$VERSION requires at least version 3.1.1 of flam3 to build.")
 	}
 }
