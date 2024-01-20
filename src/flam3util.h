@@ -23,10 +23,11 @@
 #include <QColor>
 
 #undef VERSION
+
 extern "C" {
+#define U_SHOW_CPLUSPLUS_API 0
 #include "flam3.h"
 }
-
 
 namespace Util
 {
