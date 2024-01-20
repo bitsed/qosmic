@@ -38,7 +38,7 @@ class ChaosTableView : public QTableView
 		void restoreSettings();
 
 	signals:
-		void valueUpdated(int);
+		void valueUpdated();
 		void undoStateSignal();
 		void precisionChanged();
 
@@ -47,6 +47,7 @@ class ChaosTableView : public QTableView
 		void mouseMoveEvent(QMouseEvent*);
 		void mouseReleaseEvent(QMouseEvent*);
 		void keyPressEvent(QKeyEvent*);
+		void resetChaosValue(QModelIndex&);
 
 	protected slots:
 		void commitData(QWidget*);
@@ -79,9 +80,6 @@ class ChaosWidget : public QWidget, private Ui::ChaosWidget
 
 	protected:
 		void wheelEvent(QWheelEvent*);
-
-	protected slots:
-		void chaosEditedSlot(int);
 
 	private:
 		GenomeVector* genomes;

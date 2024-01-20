@@ -102,7 +102,6 @@ void VarsTableWidget::keyPressEvent(QKeyEvent* e)
 			break;
 
 		case Qt::Key_Return:
-			emit valueUpdated(0);
 			break;
 
 		case Qt::Key_Plus:
@@ -162,7 +161,7 @@ void VarsTableWidget::keyPressEvent(QKeyEvent* e)
 
 				QModelIndex idx(currentIndex());
 				QModelIndex vidx(idx.sibling(idx.row(), 1));
-				double item_data = vidx.data().toDouble();
+				double item_data = vidx.data(Qt::UserRole).toDouble();
 				double inc_value = item_data + nstep;
 				if (qFuzzyCompare(1 + inc_value, 1 + 0.0))
 					inc_value = 0.0;
@@ -178,7 +177,7 @@ void VarsTableWidget::keyPressEvent(QKeyEvent* e)
 
 void VarsTableWidget::clearVariationValue(QModelIndex& idx) {
 	QModelIndex vidx(idx.sibling(idx.row(), 1));
-	if (model()->data(vidx).toDouble() == 0.0)
+	if (model()->data(vidx, Qt::UserRole).toDouble() == 0.0)
 		return;
 	setModelData(vidx, 0.0);
 	emit undoStateSignal();
@@ -195,7 +194,7 @@ void VarsTableWidget::mousePressEvent(QMouseEvent* e)
 			{
 				start_item = idx;
 				last_pos = e->localPos();
-				start_value = start_item.data().toDouble();
+				start_value = start_item.data(Qt::UserRole).toDouble();
 				e->accept();
 			}
 			else if (idx.column() == 2)
@@ -230,7 +229,7 @@ void VarsTableWidget::mouseMoveEvent(QMouseEvent* e)
 		if (dy > 0)
 			nstep *= -1.0;
 
-		double item_data = start_item.data().toDouble();
+		double item_data = start_item.data(Qt::UserRole).toDouble();
 		double inc_value = item_data + nstep;
 		if (qFuzzyCompare(1 + inc_value, 1 + 0.0))
 			inc_value = 0.0;
@@ -243,7 +242,7 @@ void VarsTableWidget::mouseReleaseEvent(QMouseEvent* e)
 {
 	if ((e->button() == Qt::LeftButton)
 		&& start_item.isValid()
-		&& start_value != start_item.data().toDouble())
+		&& start_value != start_item.data(Qt::UserRole).toDouble())
 	{
 		start_item = QModelIndex();
 		e->accept();
@@ -275,10 +274,13 @@ void VarsTableWidget::commitData(QWidget* editor)
 		if (lineEdit)
 		{
 			bool ok;
-			double current_value(idx.data().toDouble());
-			double editor_value( lineEdit->text().toDouble(&ok) );
+			double current_value(idx.data(Qt::UserRole).toDouble());
+			double editor_value(QLocale().toDouble(lineEdit->text(), &ok));
 			if (ok && current_value != editor_value)
+			{
 				setModelData(idx, editor_value);
+				emit undoStateSignal();
+			}
 		}
 	}
 }
@@ -288,7 +290,7 @@ void VarsTableWidget::setModelData(QModelIndex& idx, double value)
 {
 	QModelIndex vidx(idx.sibling(idx.row(), 1));
 	QModelIndex ridx(idx.sibling(idx.row(), 2));
-	model()->setData(vidx, QLocale().toString(value, 'f', vars_precision));
+	model()->setData(vidx, value);
 	model()->setData(ridx,
 		value == 0.0 ? VarsTableModel::CLEAR : VarsTableModel::RESET);
 
@@ -388,14 +390,14 @@ VarsTableModel::VarsTableModel(QObject* parent) : QAbstractItemModel(parent),
 	foreach (QString variation, Util::variation_names())
 	{
 		itemData.clear();
-		itemData << variation << "0.0" << " ";
+		itemData << variation << QVariant(0.0) << " ";
 		VarsTableItem* item = new VarsTableItem(itemData, rootItem);
 		rootItem->appendChild(item);
 		if (variablesMap.contains(variation))
 			foreach (QString variable, *(variablesMap.value(variation)))
 			{
 				itemData.clear();
-				itemData << variable << "0.0" << " ";
+				itemData << variable << QVariant(0.0) << " ";
 				VarsTableItem* variableItem = new VarsTableItem(itemData, item);
 				item->appendChild(variableItem);
 			}
@@ -450,6 +452,8 @@ QVariant VarsTableModel::data(const QModelIndex& index, int role) const
 				int pos( name.lastIndexOf(QChar('_')) + 1 );
 				return name.mid(pos);
 			}
+			else if (index.column() == 1)
+				return QLocale().toString(item->data(1).toDouble(), 'f', decimals);
 			else
 				return item->data(index.column());
 		}
@@ -461,15 +465,14 @@ QVariant VarsTableModel::data(const QModelIndex& index, int role) const
 		case Qt::BackgroundRole:
 		{
 			VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
-			if (index.column() == 1 && QLocale().toDouble(item->data(1).toString()) != 0.0)
+			if (index.column() == 1 && item->data(1).toDouble() != 0.0)
 				return QApplication::palette().alternateBase();
-			else
-				return QApplication::palette().base();
+			break;
 		}
 		case Qt::FontRole:
 		{
 			VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
-			if (index.column() == 1 && QLocale().toDouble(item->data(1).toString()) != 0.0)
+			if (index.column() == 1 && item->data(1).toDouble() != 0.0)
 			{
 				QFont f = QApplication::font();
 				f.setBold(true);
@@ -483,6 +486,7 @@ QVariant VarsTableModel::data(const QModelIndex& index, int role) const
 				return Qt::AlignHCenter;
 			break;
 		}
+
 	}
 	return QVariant();
 }
@@ -591,8 +595,7 @@ VarsTableItem* VarsTableModel::getItem(const QModelIndex& index) const
 
 void VarsTableModel::updateVarsTableItem(VarsTableItem* item, double value)
 {
-	QLocale l;
-	item->setData(1, l.toString(value, 'f', decimals));
+	item->setData(1, value);
 	item->setData(2, value == 0.0 ? CLEAR : RESET);
 	int children = item->childCount();
 	if (children > 0)
@@ -600,7 +603,7 @@ void VarsTableModel::updateVarsTableItem(VarsTableItem* item, double value)
 		{
 			VarsTableItem* child = item->child(n);
 			double value = Util::get_xform_variable(xform, child->data(0).toString());
-			child->setData(1, l.toString(value, 'f', decimals));
+			child->setData(1, value);
 			child->setData(2, value == 0.0 ? CLEAR : RESET);
 		}
 }

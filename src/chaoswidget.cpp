@@ -33,7 +33,7 @@ ChaosWidget::ChaosWidget(GenomeVector* g, QWidget* parent)
 	m_chaosTable->setModel(model);
 	m_chaosTable->restoreSettings();
 	m_chaosTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	connect(m_chaosTable, SIGNAL(valueUpdated(int)), this, SLOT(chaosEditedSlot(int)));
+	connect(m_chaosTable, SIGNAL(valueUpdated()), this, SIGNAL(dataChanged()));
 	connect(m_chaosTable, SIGNAL(undoStateSignal()), this, SIGNAL(undoStateSignal()));
 	connect(m_chaosTable, SIGNAL(precisionChanged()), this, SLOT(updateFormData()));
 }
@@ -52,7 +52,6 @@ void ChaosWidget::updateFormData()
 		m_chaosTable->setEnabled(false);
 	else
 	{
-		QLocale l;
 		int precision = m_chaosTable->precision();
 		int xform_idx = selectedTriangle->index();
 		int rows = genome->num_xforms;
@@ -63,21 +62,15 @@ void ChaosWidget::updateFormData()
 		model->setRowCount(rows);
 		for (int n = 0; n < rows ; n++)
 		{
+			// Store the Display/Edit Role and a reference to the
+			// xform.chaos[n] value in the model.
+			double* valueP = &genome->chaos[xform_idx][n];
 			QModelIndex idx = model->index(n, 0);
-			double value = genome->chaos[xform_idx][n];
-			model->setData(idx, l.toString(value, 'f', precision));
+			model->setData(idx, QLocale().toString(*valueP, 'f', precision));
+			model->setData(idx, QVariant::fromValue((void*)valueP), Qt::UserRole);
 		}
 		m_chaosTable->setEnabled(true);
 	}
-}
-
-void ChaosWidget::chaosEditedSlot(int row)
-{
-	int xform_idx = selectedTriangle->index();
-	QVariant data = model->data(model->index(row, 0));
-	flam3_genome* genome = genomes->selectedGenome();
-	genome->chaos[xform_idx][row] = data.toDouble();
-	emit dataChanged();
 }
 
 
@@ -137,6 +130,14 @@ void ChaosTableView::restoreSettings()
 	.arg(objectName()), vars_precision).toInt();
 }
 
+void ChaosTableView::resetChaosValue(QModelIndex& idx)
+{
+	*(double*)model()->data(idx, Qt::UserRole).value<void*>() = 1.0;
+	model()->setData(idx, QLocale().toString(1.0, 'f', vars_precision));
+	emit valueUpdated();
+	emit undoStateSignal();
+}
+
 void ChaosTableView::keyPressEvent(QKeyEvent* e)
 {
 	switch (e->key())
@@ -152,24 +153,80 @@ void ChaosTableView::keyPressEvent(QKeyEvent* e)
 			break;
 
 		case Qt::Key_Return:
-			emit valueUpdated(0);
 			break;
 
 		case Qt::Key_Plus:
-			if (e->modifiers() & Qt::ControlModifier)
-			{
-				setPrecision(precision() + 1);
-				QSettings().setValue(QString("chaostableview/%1/precision").arg(objectName()), precision());
-			}
-			break;
-
 		case Qt::Key_Minus:
 			if (e->modifiers() & Qt::ControlModifier)
 			{
-				setPrecision(precision() - 1);
+				setPrecision(precision() + (e->key() == Qt::Key_Plus ? 1 : -1));
 				QSettings().setValue(QString("chaostableview/%1/precision").arg(objectName()), precision());
+				break;
 			}
-			break;
+			// fall through
+		case Qt::Key_Comma:
+		case Qt::Key_Period:
+		case Qt::Key_0:
+		case Qt::Key_1:
+		case Qt::Key_2:
+		case Qt::Key_3:
+		case Qt::Key_4:
+		case Qt::Key_5:
+		case Qt::Key_6:
+		case Qt::Key_7:
+		case Qt::Key_8:
+		case Qt::Key_9:
+		case Qt::Key_Space:
+			{
+				QModelIndex idx(currentIndex());
+				QModelIndex vidx(idx.sibling(idx.row(), 0));
+				setCurrentIndex(vidx);
+				if (edit(vidx, QAbstractItemView::AllEditTriggers, e))
+				{   // Display variation or variable text editor
+					QLineEdit* editor(qobject_cast<QLineEdit*>(indexWidget(vidx)));
+					if (e->key() != Qt::Key_Space)
+					{   // Clear the editor value and add typed numeral character
+						editor->setText(e->text());
+					}
+				}
+				break;
+			}
+
+		case Qt::Key_Delete:
+		case Qt::Key_Backspace:
+			{
+				QModelIndex idx(currentIndex());
+				resetChaosValue(idx);
+				break;
+			}
+
+		case Qt::Key_Up:
+		case Qt::Key_Down:
+			if (e->modifiers() & (Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier ))
+			{
+				double nstep = step;
+				if (e->modifiers() & Qt::ShiftModifier)
+					nstep *= 0.10;
+				else if (e->modifiers() & Qt::ControlModifier)
+					nstep *= 10.0;
+
+				if (e->key() == Qt::Key_Down)
+					nstep *= -1.0;
+
+				QModelIndex idx(currentIndex());
+				QModelIndex vidx(idx.sibling(idx.row(), 0));
+				double* item_ptr = (double*)vidx.data(Qt::UserRole).value<void*>();
+				double inc_value = *item_ptr + nstep;
+				if (qFuzzyCompare(1 + inc_value, 1 + 0.0))
+					inc_value = 0.0;
+				*item_ptr = inc_value;
+				model()->setData(vidx,
+					QLocale().toString(inc_value, 'f', vars_precision));
+				e->accept();
+				emit valueUpdated();
+				break;
+			}
+			// fall through
 
 		default:
 			QTableView::keyPressEvent(e);
@@ -187,7 +244,7 @@ void ChaosTableView::mousePressEvent(QMouseEvent* e)
 			{
 				start_item = idx;
 				last_pos = e->localPos();
-				start_value = start_item.data().toDouble();
+				start_value = *(double*)start_item.data(Qt::UserRole).value<void*>();
 				e->accept();
 			}
 			else
@@ -199,8 +256,7 @@ void ChaosTableView::mousePressEvent(QMouseEvent* e)
 			QModelIndex idx( indexAt(e->pos()) );
 			if (idx.column() == 0)
 			{
-				model()->setData(idx, QLocale().toString(1.0, 'f', vars_precision));
-				emit valueUpdated(idx.row());
+				resetChaosValue(idx);
 			}
 			break;
 		}
@@ -214,7 +270,6 @@ void ChaosTableView::mouseMoveEvent(QMouseEvent* e)
 {
 	if ((e->buttons() & Qt::LeftButton) && start_item.isValid())
 	{
-		double item_data = start_item.data().toDouble();
 		double nstep = step;
 		if (e->modifiers() & Qt::ShiftModifier)
 			nstep *= 0.10;
@@ -227,10 +282,13 @@ void ChaosTableView::mouseMoveEvent(QMouseEvent* e)
 		if (dy > 0)
 			nstep *= -1.0;
 
-		double inc_value = qMax(0.0, item_data + nstep);
-		model()->setData(start_item, QLocale().toString(inc_value, 'f', vars_precision));
+		double* item_ptr = (double*)start_item.data(Qt::UserRole).value<void*>();
+		double inc_value = qMax(0.0, *item_ptr + nstep);
+		*item_ptr = inc_value;
+		model()->setData(start_item,
+			QLocale().toString(inc_value, 'f', vars_precision));
 
-		emit valueUpdated(start_item.row());
+		emit valueUpdated();
 
 		e->accept();
 	}
@@ -240,7 +298,7 @@ void ChaosTableView::mouseReleaseEvent(QMouseEvent* e)
 {
 	if ((e->button() == Qt::LeftButton)
 		&& start_item.isValid()
-		&& start_value != start_item.data().toDouble())
+		&& start_value != start_item.data(Qt::UserRole).toDouble())
 	{
 		start_item = QModelIndex();
 		e->accept();
@@ -266,11 +324,16 @@ void ChaosTableView::commitData(QWidget* editor)
 {
 	QModelIndex idx(currentIndex());
 	bool ok;
-	double current_value(idx.data().toDouble());
-	double editor_value(qMax(0.0, qobject_cast<QLineEdit*>(editor)->text().toDouble(&ok)));
+	double* item_ptr((double*)idx.data(Qt::UserRole).value<void*>());
+	double current_value(*item_ptr);
+	double editor_value(qMax(0.0,
+		QLocale().toDouble(qobject_cast<QLineEdit*>(editor)->text(), &ok)));
 	if (ok && current_value != editor_value)
 	{
-		model()->setData(idx, QLocale().toString(editor_value, 'f', vars_precision));
-		emit valueUpdated(idx.row());
+		*item_ptr = editor_value;
+		model()->setData(idx,
+			QLocale().toString(editor_value, 'f', vars_precision));
+		emit valueUpdated();
+		emit undoStateSignal();
 	}
 }
