@@ -458,21 +458,30 @@ QVariant VarsTableModel::data(const QModelIndex& index, int role) const
 			VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
 			return item->data(index.column());
 		}
-		case Qt::ForegroundRole:
-		{
-			VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
-			if (index.column() == 1 && QLocale().toDouble(item->data(1).toString()) != 0.0)
-				return QApplication::palette().highlightedText();
-			else
-				return QApplication::palette().text();
-		}
 		case Qt::BackgroundRole:
 		{
 			VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
 			if (index.column() == 1 && QLocale().toDouble(item->data(1).toString()) != 0.0)
-				return QApplication::palette().highlight();
+				return QApplication::palette().alternateBase();
 			else
 				return QApplication::palette().base();
+		}
+		case Qt::FontRole:
+		{
+			VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
+			if (index.column() == 1 && QLocale().toDouble(item->data(1).toString()) != 0.0)
+			{
+				QFont f = QApplication::font();
+				f.setBold(true);
+				return f;
+			}
+			break;
+		}
+		case Qt::TextAlignmentRole:
+		{
+			if (index.column() == 2)
+				return Qt::AlignHCenter;
+			break;
 		}
 	}
 	return QVariant();
