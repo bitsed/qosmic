@@ -26,9 +26,10 @@
 
 class VarsTableItem
 {
-	QList<VarsTableItem*> childItems;
-	QList<QVariant> itemData;
 	VarsTableItem *parentItem;
+	QList<VarsTableItem*> childItems;
+	QList<QVariant> itemData;  // { "Label", double*, "x" label }
+	QString varName;  // unaltered variation or variable name
 
 	public:
 		VarsTableItem(const QList<QVariant>&, VarsTableItem* =0);
@@ -37,8 +38,8 @@ class VarsTableItem
 		VarsTableItem* parent();
 		int childCount() const;
 		int columnCount() const;
-		QVariant data(int) const;
-		bool setData(int, const QVariant&);
+		QVariant data(int, int =0) const;
+		bool setData(int, const QVariant&, int =0);
 		int row() const;
 		void appendChild(VarsTableItem*);
 };
@@ -51,10 +52,13 @@ class VarsTableModel : public QAbstractItemModel
 	flam3_xform* xform;
 	int decimals;
 	QMap<QString, VarsTableItem*> variationItems;
+	QList<QVariant> headerItems;
 
 	public:
 		static const QString RESET;
 		static const QString CLEAR;
+		static const double  ZEROD;
+		static const QVariant ZEROV;
 
 		VarsTableModel(QObject* parent=0);
 		~VarsTableModel();
@@ -73,7 +77,7 @@ class VarsTableModel : public QAbstractItemModel
 		void setModelData(flam3_xform*);
 
 	private:
-		void updateVarsTableItem(VarsTableItem*, double);
+		void updateVarsTableItem(VarsTableItem*, double*);
 };
 
 

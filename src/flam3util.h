@@ -34,6 +34,7 @@ namespace Util
 	QColor get_xform_color(flam3_genome*, flam3_xform*);
 	void set_xform_variable(flam3_xform*, QString, double);
 	double get_xform_variable(flam3_xform*, QString);
+	double* get_xform_variable_ref(flam3_xform*, QString);
 	QStringList& get_variable_names();
 	int variation_number(const char*);
 	int variation_number(const QString&);

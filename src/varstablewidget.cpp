@@ -24,10 +24,6 @@
 #include "logger.h"
 
 
-const QString VarsTableModel::RESET = QString("x");
-const QString VarsTableModel::CLEAR = QString(" ");
-
-
 VarsTableWidget::VarsTableWidget(QWidget* parent)
 	: QTreeView(parent)
 {
@@ -105,35 +101,47 @@ void VarsTableWidget::keyPressEvent(QKeyEvent* e)
 			break;
 
 		case Qt::Key_Plus:
-			if (e->modifiers() & Qt::ControlModifier)
-			{
-				setPrecision(precision() + 1);
-				QSettings().setValue(QString("varstablewidget/%1/precision").arg(objectName()), precision());
-			}
-			break;
-
 		case Qt::Key_Minus:
 			if (e->modifiers() & Qt::ControlModifier)
 			{
-				setPrecision(precision() - 1);
+				setPrecision(precision() + (e->key() == Qt::Key_Plus ? 1 : -1));
 				QSettings().setValue(QString("varstablewidget/%1/precision").arg(objectName()), precision());
+				break;
 			}
-			break;
+			// fall through
+		case Qt::Key_Comma:
+		case Qt::Key_Period:
+		case Qt::Key_0:
+		case Qt::Key_1:
+		case Qt::Key_2:
+		case Qt::Key_3:
+		case Qt::Key_4:
+		case Qt::Key_5:
+		case Qt::Key_6:
+		case Qt::Key_7:
+		case Qt::Key_8:
+		case Qt::Key_9:
+		case Qt::Key_Space:
+			{
+				QModelIndex idx(currentIndex());
+				QModelIndex vidx(idx.sibling(idx.row(), 1));
+				setCurrentIndex(vidx);
+				if (edit(vidx, QAbstractItemView::AllEditTriggers, e))
+				{   // Display variation or variable text editor
+					QLineEdit* editor(qobject_cast<QLineEdit*>(indexWidget(vidx)));
+					if (e->key() != Qt::Key_Space)
+					{   // Clear the editor value and add typed numeral character
+						editor->setText(e->text());
+					}
+				}
+				break;
+			}
 
 		case Qt::Key_Delete:
 		case Qt::Key_Backspace:
 			{
 				QModelIndex idx(currentIndex());
 				clearVariationValue(idx);
-				break;
-			}
-
-		case Qt::Key_Space:
-			{
-				QModelIndex idx(currentIndex());
-				QModelIndex vidx(idx.sibling(idx.row(), 1));
-				setCurrentIndex(vidx);
-				edit(vidx);
 				break;
 			}
 
@@ -169,6 +177,7 @@ void VarsTableWidget::keyPressEvent(QKeyEvent* e)
 				e->accept();
 				break;
 			}
+			// fall through
 
 		default:
 			QTreeView::keyPressEvent(e);
@@ -289,10 +298,7 @@ void VarsTableWidget::commitData(QWidget* editor)
 void VarsTableWidget::setModelData(QModelIndex& idx, double value)
 {
 	QModelIndex vidx(idx.sibling(idx.row(), 1));
-	QModelIndex ridx(idx.sibling(idx.row(), 2));
 	model()->setData(vidx, value);
-	model()->setData(ridx,
-		value == 0.0 ? VarsTableModel::CLEAR : VarsTableModel::RESET);
 
 	if (idx.parent().isValid())
 		emit valueUpdated(idx.parent().row());
@@ -303,9 +309,27 @@ void VarsTableWidget::setModelData(QModelIndex& idx, double value)
 //------------------------------------------------------------------------------
 
 VarsTableItem::VarsTableItem(const QList<QVariant>& data, VarsTableItem* parent)
+	: parentItem(parent), itemData(data)
 {
-	parentItem = parent;
-	itemData = data;
+	if (parentItem)
+	{   // Store the variation or variable's unaltered name in varName.
+		// All varName values have format "variation_name"
+		//  or "variation_name_variable_name"
+		// Variable names start with a variation's name + '_'.
+		QString parentName(parentItem->varName + '_');
+		QString myName(itemData.at(0).toString());
+		varName = myName;  // UserRole value
+		if (myName.startsWith(parentName))
+		{   // Store the variable's DisaplayRole label.
+			// Remove the variation name, and replace underscore
+			itemData[0].setValue(
+				myName.mid(parentName.size()).replace('_', ' '));
+		}
+		else
+		{   // Store the variation's label
+			itemData[0].setValue(myName.replace('_', ' '));
+		}
+	}
 }
 
 VarsTableItem::~VarsTableItem()
@@ -341,14 +365,28 @@ int VarsTableItem::columnCount() const
 	return itemData.count();
 }
 
-QVariant VarsTableItem::data(int column) const
+QVariant VarsTableItem::data(int column, int role) const
 {
+	if (role == Qt::UserRole)
+	{
+		if (column == 0)
+			return varName;
+	}
+	else if (column == 1)
+	{
+		return *(double*)(itemData.at(1).value<void*>());
+	}
 	return itemData.value(column);
 }
 
-bool VarsTableItem::setData(int column, const QVariant& value)
+bool VarsTableItem::setData(int column, const QVariant& value, int role)
 {
-	if (column < itemData.size())
+	if (column == 1 && role != Qt::UserRole)
+	{
+		*(double*)(itemData.at(1).value<void*>()) = value.toDouble();
+		return true;
+	}
+	else if (column < itemData.size())
 	{
 		itemData.replace(column, value);
 		return true;
@@ -364,44 +402,62 @@ VarsTableItem* VarsTableItem::parent()
 
 // -----------------------------------------------------------------------------
 
+// DisplayRole labels stored in a VarsTableItem column 2
+const QString VarsTableModel::RESET = QString("x");
+const QString VarsTableModel::CLEAR = QString(" ");
+
+// Default UserRole value stored in a VarsTableItem column 1
+const double   VarsTableModel::ZEROD = 0.0;
+const QVariant VarsTableModel::ZEROV =
+	QVariant::fromValue((void*)&VarsTableModel::ZEROD);
+
+
 VarsTableModel::VarsTableModel(QObject* parent) : QAbstractItemModel(parent),
 	decimals(2)
 {
+	headerItems << tr("Variation") << tr("Value") << " ";
+
 	QList<QVariant> itemData;
-	itemData << tr("Variation") << tr("Value") << " ";
+	itemData << "" << ZEROV << "";
 	rootItem = new VarsTableItem(itemData);
 
 	// variables map setup
 	QMap<QString, QStringList*> variablesMap;
-	foreach (QString variable, Util::get_variable_names())
-	{
-		int pos( variable.lastIndexOf(QChar('_')) );
-		QString variation( variable.left(pos) );
+	QStringList& varList = Util::get_variable_names();
+	QStringList::iterator variable;
+	for ( variable = varList.begin() ; variable != varList.end() ; ++variable )
+	{   // Create a map of variations that have adjustable variables
+		// Entries in varList have format "variation_name.variable_name"
+		QString variation( variable->left(variable->indexOf('.')) );
 		logFine(QString("VarsTableModel::VarsTableModel : adding %1 variables map %2")
-			.arg(variation).arg(variable));
+			.arg(variation).arg(*variable));
 		if (!variablesMap.contains(variation))
-		{
-			QStringList* list = new QStringList();
-			variablesMap.insert(variation, list);
+		{   // Create a list of variables for a variation
+			variablesMap.insert(variation, new QStringList());
 		}
-		variablesMap.value(variation)->append( variable );
+		// Append variable name "variation_name_variable_name" to the map
+		variablesMap.value(variation)->append( variable->replace('.', '_') );
 	}
 
 	foreach (QString variation, Util::variation_names())
-	{
+	{   // Contruct the table of variations and their possible variables
+		// A varItem includes is a row entry in a table with three columns
+		// [0] QString label, [1] double* ref, [2] reset 'x' label
 		itemData.clear();
-		itemData << variation << QVariant(0.0) << " ";
-		VarsTableItem* item = new VarsTableItem(itemData, rootItem);
-		rootItem->appendChild(item);
+		itemData << variation << ZEROV << " ";  // null root item
+		VarsTableItem* varItem = new VarsTableItem(itemData, rootItem);
+		rootItem->appendChild(varItem);
 		if (variablesMap.contains(variation))
+		{   // This variation has variables
 			foreach (QString variable, *(variablesMap.value(variation)))
-			{
+			{   // Variable items are children of variation items
 				itemData.clear();
-				itemData << variable << QVariant(0.0) << " ";
-				VarsTableItem* variableItem = new VarsTableItem(itemData, item);
-				item->appendChild(variableItem);
+				itemData << variable << ZEROV << " ";
+				VarsTableItem* variableItem = new VarsTableItem(itemData, varItem);
+				varItem->appendChild(variableItem);
 			}
-		variationItems.insert(variation, item);
+		}
+		variationItems.insert(variation, varItem);
 	}
 
 	qDeleteAll(variablesMap);
@@ -445,14 +501,7 @@ QVariant VarsTableModel::data(const QModelIndex& index, int role) const
 		case Qt::EditRole:
 		{
 			VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
-			if (item->parent() != rootItem && index.column() == 0)
-			{
-				// return only the unique part of a variation's variable name
-				QString name( item->data(0).toString() );
-				int pos( name.lastIndexOf(QChar('_')) + 1 );
-				return name.mid(pos);
-			}
-			else if (index.column() == 1)
+			if (index.column() == 1)
 				return QLocale().toString(item->data(1).toDouble(), 'f', decimals);
 			else
 				return item->data(index.column());
@@ -465,14 +514,14 @@ QVariant VarsTableModel::data(const QModelIndex& index, int role) const
 		case Qt::BackgroundRole:
 		{
 			VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
-			if (index.column() == 1 && item->data(1).toDouble() != 0.0)
+			if (item->data(1).toDouble() != 0.0)
 				return QApplication::palette().alternateBase();
 			break;
 		}
 		case Qt::FontRole:
 		{
 			VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
-			if (index.column() == 1 && item->data(1).toDouble() != 0.0)
+			if (item->data(1).toDouble() != 0.0)
 			{
 				QFont f = QApplication::font();
 				f.setBold(true);
@@ -486,7 +535,6 @@ QVariant VarsTableModel::data(const QModelIndex& index, int role) const
 				return Qt::AlignHCenter;
 			break;
 		}
-
 	}
 	return QVariant();
 }
@@ -499,23 +547,18 @@ bool VarsTableModel::setData(const QModelIndex& index, const QVariant& value, in
 	if (role != Qt::EditRole)
 		return false;
 
-	logFine(QString("VarsTableModel::setData : (%1,%2) %3").arg(index.row()).arg(index.column()).arg(value.toString()));
-	if (index.column() > 0)
+	logFine(QString("VarsTableModel::setData : (%1,%2) %3")
+		.arg(index.row()).arg(index.column()).arg(value.toString()));
+
+	if (index.column() == 1)
 	{
 		VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
-		if (item->setData(index.column(), value))
+		if (item->setData(1, value))
 		{
-			if (index.column() == 1)
-			{
-				if (item->parent() == rootItem)
-					xform->var[index.row()] = value.toDouble();
-				else
-					Util::set_xform_variable(xform, item->data(0).toString(), value.toDouble());
-			}
-
-			emit dataChanged(index, index);
-			return true;
+			item->setData(2, value.toDouble() == 0.0 ?  CLEAR : RESET);
+			emit dataChanged(index.siblingAtColumn(0), index.siblingAtColumn(2));
 		}
+		return true;
 	}
 
 	return false;
@@ -557,7 +600,7 @@ QModelIndex VarsTableModel::parent(const QModelIndex& index) const
 Qt::ItemFlags VarsTableModel::flags(const QModelIndex& index) const
 {
 	if (!index.isValid())
-		return 0;
+		return Qt::NoItemFlags;
 
 	if (index.column() == 1)
 		return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
@@ -570,7 +613,7 @@ QVariant VarsTableModel::headerData(int section, Qt::Orientation orientation, in
 	if (role == Qt::DisplayRole)
 	{
 		if (orientation == Qt::Horizontal)
-			return rootItem->data(section);
+			return headerItems[section];
 		else
 			return rootItem->child(section)->data(0);
 	}
@@ -593,19 +636,23 @@ VarsTableItem* VarsTableModel::getItem(const QModelIndex& index) const
 	return static_cast<VarsTableItem*>(index.internalPointer());
 }
 
-void VarsTableModel::updateVarsTableItem(VarsTableItem* item, double value)
+void VarsTableModel::updateVarsTableItem(VarsTableItem* item, double* var_ptr)
 {
-	item->setData(1, value);
-	item->setData(2, value == 0.0 ? CLEAR : RESET);
+	item->setData(1, QVariant::fromValue((void*)var_ptr), Qt::UserRole);
+	item->setData(2, *var_ptr == 0.0 ? CLEAR : RESET);
 	int children = item->childCount();
 	if (children > 0)
+	{
 		for (int n = 0 ; n < children ; n++)
 		{
 			VarsTableItem* child = item->child(n);
-			double value = Util::get_xform_variable(xform, child->data(0).toString());
-			child->setData(1, value);
-			child->setData(2, value == 0.0 ? CLEAR : RESET);
+			double* variable_ptr
+				= Util::get_xform_variable_ref(xform,
+					child->data(0, Qt::UserRole).toString());
+			child->setData(1, QVariant::fromValue((void*)variable_ptr), Qt::UserRole);
+			child->setData(2, *variable_ptr == 0.0 ? CLEAR : RESET);
 		}
+	}
 }
 
 void VarsTableModel::setModelData(flam3_xform* xf)
@@ -615,10 +662,10 @@ void VarsTableModel::setModelData(flam3_xform* xf)
 
 	for (int n = 0 ; n < flam3_nvariations ; n++)
 	{
-		double value = var[n];
+		double* var_ptr = &var[n];
 		QString name(flam3_variation_names[n]);
 		VarsTableItem* item = variationItems.value( name );
-		updateVarsTableItem(item, value);
+		updateVarsTableItem(item, var_ptr);
 	}
 	emit dataChanged(index(0,0), index(flam3_nvariations - 1, 1));
 }

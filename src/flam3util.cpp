@@ -90,8 +90,9 @@ namespace Util
 	struct xform_variable_accessor
 	{
 		xform_variable_accessor() {}
-		virtual double get_var(flam3_xform*)=0;
-		virtual void set_var(flam3_xform*, double)=0;
+		virtual double  get_var(flam3_xform*)=0;
+		virtual double* get_ref(flam3_xform*)=0;
+		virtual void    set_var(flam3_xform*, double)=0;
 	};
 
 	static QHash<QString, xform_variable_accessor*> xform_variable_accessors;
@@ -100,8 +101,9 @@ namespace Util
 	struct xform_variable_accessor_##name : public xform_variable_accessor \
 	{\
 		xform_variable_accessor_##name() {} \
-		double get_var(flam3_xform* xform) { return xform->name; } \
-		void set_var(flam3_xform* xform, double value) { xform->name = value; } \
+		double  get_var(flam3_xform* xform) { return xform->name; } \
+		double* get_ref(flam3_xform* xform) { return &xform->name; } \
+		void    set_var(flam3_xform* xform, double value) { xform->name = value; } \
 	};
 
 	create_xform_variable_accessor(blob_low)
@@ -121,46 +123,13 @@ namespace Util
 	create_xform_variable_accessor(perspective_angle)
 	create_xform_variable_accessor(perspective_dist)
 
-	create_xform_variable_accessor(julian_power)
-	create_xform_variable_accessor(julian_dist)
-
-	create_xform_variable_accessor(juliascope_power)
-	create_xform_variable_accessor(juliascope_dist)
-
 	create_xform_variable_accessor(radial_blur_angle)
-
-	create_xform_variable_accessor(pie_slices)
-	create_xform_variable_accessor(pie_rotation)
-	create_xform_variable_accessor(pie_thickness)
-
-	create_xform_variable_accessor(ngon_sides)
-	create_xform_variable_accessor(ngon_power)
-	create_xform_variable_accessor(ngon_circle)
-	create_xform_variable_accessor(ngon_corners)
-
-	create_xform_variable_accessor(curl_c1)
-	create_xform_variable_accessor(curl_c2)
-
-	create_xform_variable_accessor(rectangles_x)
-	create_xform_variable_accessor(rectangles_y)
-
-	create_xform_variable_accessor(amw_amp)
 
 	create_xform_variable_accessor(disc2_rot)
 	create_xform_variable_accessor(disc2_twist)
 
-	create_xform_variable_accessor(super_shape_rnd)
-	create_xform_variable_accessor(super_shape_m)
-	create_xform_variable_accessor(super_shape_n1)
-	create_xform_variable_accessor(super_shape_n2)
-	create_xform_variable_accessor(super_shape_n3)
-	create_xform_variable_accessor(super_shape_holes)
-
 	create_xform_variable_accessor(flower_petals)
 	create_xform_variable_accessor(flower_holes)
-
-	create_xform_variable_accessor(conic_eccentricity)
-	create_xform_variable_accessor(conic_holes)
 
 	create_xform_variable_accessor(parabola_height)
 	create_xform_variable_accessor(parabola_width)
@@ -220,15 +189,15 @@ namespace Util
 	create_xform_variable_accessor(wedge_count)
 	create_xform_variable_accessor(wedge_swirl)
 
-	create_xform_variable_accessor(wedge_julia_angle)
-	create_xform_variable_accessor(wedge_julia_count)
-	create_xform_variable_accessor(wedge_julia_power)
-	create_xform_variable_accessor(wedge_julia_dist)
-
 	create_xform_variable_accessor(wedge_sph_angle)
 	create_xform_variable_accessor(wedge_sph_count)
 	create_xform_variable_accessor(wedge_sph_hole)
 	create_xform_variable_accessor(wedge_sph_swirl)
+
+	create_xform_variable_accessor(wedge_julia_angle)
+	create_xform_variable_accessor(wedge_julia_count)
+	create_xform_variable_accessor(wedge_julia_power)
+	create_xform_variable_accessor(wedge_julia_dist)
 
 	create_xform_variable_accessor(whorl_inside)
 	create_xform_variable_accessor(whorl_outside)
@@ -244,6 +213,39 @@ namespace Util
 	create_xform_variable_accessor(auger_scale)
 
 	create_xform_variable_accessor(flux_spread)
+
+	create_xform_variable_accessor(julian_power)
+	create_xform_variable_accessor(julian_dist)
+
+	create_xform_variable_accessor(juliascope_power)
+	create_xform_variable_accessor(juliascope_dist)
+
+	create_xform_variable_accessor(pie_slices)
+	create_xform_variable_accessor(pie_rotation)
+	create_xform_variable_accessor(pie_thickness)
+
+	create_xform_variable_accessor(ngon_sides)
+	create_xform_variable_accessor(ngon_power)
+	create_xform_variable_accessor(ngon_circle)
+	create_xform_variable_accessor(ngon_corners)
+
+	create_xform_variable_accessor(curl_c1)
+	create_xform_variable_accessor(curl_c2)
+
+	create_xform_variable_accessor(rectangles_x)
+	create_xform_variable_accessor(rectangles_y)
+
+	create_xform_variable_accessor(amw_amp)
+
+	create_xform_variable_accessor(super_shape_rnd)
+	create_xform_variable_accessor(super_shape_m)
+	create_xform_variable_accessor(super_shape_n1)
+	create_xform_variable_accessor(super_shape_n2)
+	create_xform_variable_accessor(super_shape_n3)
+	create_xform_variable_accessor(super_shape_holes)
+
+	create_xform_variable_accessor(conic_eccentricity)
+	create_xform_variable_accessor(conic_holes)
 
 	create_xform_variable_accessor(mobius_re_a)
 	create_xform_variable_accessor(mobius_im_a)
@@ -277,46 +279,13 @@ namespace Util
 		add_xform_variable_accessor(perspective_angle);
 		add_xform_variable_accessor(perspective_dist);
 
-		add_xform_variable_accessor(julian_power);
-		add_xform_variable_accessor(julian_dist);
-
-		add_xform_variable_accessor(juliascope_power);
-		add_xform_variable_accessor(juliascope_dist);
-
 		add_xform_variable_accessor(radial_blur_angle);
-
-		add_xform_variable_accessor(pie_slices);
-		add_xform_variable_accessor(pie_rotation);
-		add_xform_variable_accessor(pie_thickness);
-
-		add_xform_variable_accessor(ngon_sides);
-		add_xform_variable_accessor(ngon_power);
-		add_xform_variable_accessor(ngon_circle);
-		add_xform_variable_accessor(ngon_corners);
-
-		add_xform_variable_accessor(curl_c1);
-		add_xform_variable_accessor(curl_c2);
-
-		add_xform_variable_accessor(rectangles_x);
-		add_xform_variable_accessor(rectangles_y);
-
-		add_xform_variable_accessor(amw_amp);
 
 		add_xform_variable_accessor(disc2_rot);
 		add_xform_variable_accessor(disc2_twist);
 
-		add_xform_variable_accessor(super_shape_rnd);
-		add_xform_variable_accessor(super_shape_m);
-		add_xform_variable_accessor(super_shape_n1);
-		add_xform_variable_accessor(super_shape_n2);
-		add_xform_variable_accessor(super_shape_n3);
-		add_xform_variable_accessor(super_shape_holes);
-
 		add_xform_variable_accessor(flower_petals);
 		add_xform_variable_accessor(flower_holes);
-
-		add_xform_variable_accessor(conic_eccentricity);
-		add_xform_variable_accessor(conic_holes);
 
 		add_xform_variable_accessor(parabola_height);
 		add_xform_variable_accessor(parabola_width);
@@ -376,15 +345,15 @@ namespace Util
 		add_xform_variable_accessor(wedge_count);
 		add_xform_variable_accessor(wedge_swirl);
 
-		add_xform_variable_accessor(wedge_julia_angle);
-		add_xform_variable_accessor(wedge_julia_count);
-		add_xform_variable_accessor(wedge_julia_power);
-		add_xform_variable_accessor(wedge_julia_dist);
-
 		add_xform_variable_accessor(wedge_sph_angle);
 		add_xform_variable_accessor(wedge_sph_count);
 		add_xform_variable_accessor(wedge_sph_hole);
 		add_xform_variable_accessor(wedge_sph_swirl);
+
+		add_xform_variable_accessor(wedge_julia_power);
+		add_xform_variable_accessor(wedge_julia_dist);
+		add_xform_variable_accessor(wedge_julia_count);
+		add_xform_variable_accessor(wedge_julia_angle);
 
 		add_xform_variable_accessor(whorl_inside);
 		add_xform_variable_accessor(whorl_outside);
@@ -401,6 +370,39 @@ namespace Util
 
 		add_xform_variable_accessor(flux_spread);
 
+		add_xform_variable_accessor(julian_power);
+		add_xform_variable_accessor(julian_dist);
+
+		add_xform_variable_accessor(juliascope_power);
+		add_xform_variable_accessor(juliascope_dist);
+
+		add_xform_variable_accessor(pie_slices);
+		add_xform_variable_accessor(pie_rotation);
+		add_xform_variable_accessor(pie_thickness);
+
+		add_xform_variable_accessor(ngon_sides);
+		add_xform_variable_accessor(ngon_power);
+		add_xform_variable_accessor(ngon_circle);
+		add_xform_variable_accessor(ngon_corners);
+
+		add_xform_variable_accessor(curl_c1);
+		add_xform_variable_accessor(curl_c2);
+
+		add_xform_variable_accessor(rectangles_x);
+		add_xform_variable_accessor(rectangles_y);
+
+		add_xform_variable_accessor(amw_amp);
+
+		add_xform_variable_accessor(super_shape_rnd);
+		add_xform_variable_accessor(super_shape_m);
+		add_xform_variable_accessor(super_shape_n1);
+		add_xform_variable_accessor(super_shape_n2);
+		add_xform_variable_accessor(super_shape_n3);
+		add_xform_variable_accessor(super_shape_holes);
+
+		add_xform_variable_accessor(conic_eccentricity);
+		add_xform_variable_accessor(conic_holes);
+
 		add_xform_variable_accessor(mobius_re_a);
 		add_xform_variable_accessor(mobius_im_a);
 		add_xform_variable_accessor(mobius_re_b);
@@ -411,171 +413,189 @@ namespace Util
 		add_xform_variable_accessor(mobius_im_d);
 	}
 
+	double* get_xform_variable_ref ( flam3_xform* xform, QString name )
+	{
+		xform_variable_accessor* accessor = xform_variable_accessors.value(name);
+		if (accessor)
+			return accessor->get_ref(xform);
+		else
+			logError(QString("Util::get_xform_variable_ref : Unknown variable '%1'").arg(name));
+		return NULL;
+	}
+
 	double get_xform_variable ( flam3_xform* xform, QString name )
 	{
-		QString lookup(name.replace(QChar(' '),QString("_")).toLower());
-		xform_variable_accessor* accessor = xform_variable_accessors.value(lookup);
+		xform_variable_accessor* accessor = xform_variable_accessors.value(name);
 		if (accessor)
 			return accessor->get_var(xform);
 		else
-			logError(QString("Util::get_xform_variable : Unknown variable '%1'").arg(lookup));
-
+			logError(QString("Util::get_xform_variable : Unknown variable '%1'").arg(name));
 		return 0.;
 	}
 
 
 	void set_xform_variable ( flam3_xform* xform, QString name, double value )
 	{
-		QString lookup(name.replace(QChar(' '),QString("_")).toLower());
-		xform_variable_accessor* accessor = xform_variable_accessors.value(lookup);
+		xform_variable_accessor* accessor = xform_variable_accessors.value(name);
 		if (accessor)
 			accessor->set_var(xform, value);
 		else
-			logError(QString("Util::set_xform_variable : Unknown variable '%1'").arg(lookup));
+			logError(QString("Util::set_xform_variable : Unknown variable '%1'").arg(name));
 	}
 
 	QStringList& get_variable_names()
 	{
 		static QStringList var_names = (QStringList()
-		<< "blob_low"
-		<< "blob_high"
-		<< "blob_waves"
+		<< "blob.low"
+		<< "blob.high"
+		<< "blob.waves"
 
-		<< "pdj_a"
-		<< "pdj_b"
-		<< "pdj_c"
-		<< "pdj_d"
+		<< "pdj.a"
+		<< "pdj.b"
+		<< "pdj.c"
+		<< "pdj.d"
 
-		<< "fan2_x"
-		<< "fan2_y"
+		<< "fan2.x"
+		<< "fan2.y"
 
-		<< "rings2_val"
+		<< "rings2.val"
 
-		<< "perspective_angle"
-		<< "perspective_dist"
+		<< "perspective.angle"
+		<< "perspective.dist"
 
-		<< "julian_power"
-		<< "julian_dist"
+		<< "radial.blur_angle"
 
-		<< "juliascope_power"
-		<< "juliascope_dist"
+		<< "disc2.rot"
+		<< "disc2.twist"
 
-		<< "radial_blur_angle"
+		<< "flower.petals"
+		<< "flower.holes"
 
-		<< "pie_slices"
-		<< "pie_rotation"
-		<< "pie_thickness"
+		<< "parabola.height"
+		<< "parabola.width"
 
-		<< "ngon_sides"
-		<< "ngon_power"
-		<< "ngon_circle"
-		<< "ngon_corners"
+		<< "bent2.x"
+		<< "bent2.y"
 
-		<< "curl_c1"
-		<< "curl_c2"
+		<< "bipolar.shift"
 
-		<< "rectangles_x"
-		<< "rectangles_y"
+		<< "cell.size"
 
-		<< "amw_amp"
+		<< "cpow.r"
+		<< "cpow.i"
+		<< "cpow.power"
 
-		<< "disc2_rot"
-		<< "disc2_twist"
+		<< "curve.xamp"
+		<< "curve.yamp"
+		<< "curve.xlength"
+		<< "curve.ylength"
 
-		<< "super_shape_rnd"
-		<< "super_shape_m"
-		<< "super_shape_n1"
-		<< "super_shape_n2"
-		<< "super_shape_n3"
-		<< "super_shape_holes"
+		<< "escher.beta"
 
-		<< "flower_petals"
-		<< "flower_holes"
+		<< "lazysusan.space"
+		<< "lazysusan.twist"
+		<< "lazysusan.spin"
+		<< "lazysusan.x"
+		<< "lazysusan.y"
+
+		<< "modulus.x"
+		<< "modulus.y"
+
+		<< "oscope.separation"
+		<< "oscope.frequency"
+		<< "oscope.amplitude"
+		<< "oscope.damping"
+
+		<< "popcorn2.c"
+		<< "popcorn2.x"
+		<< "popcorn2.y"
+
+		<< "separation.x"
+		<< "separation.xinside"
+		<< "separation.y"
+		<< "separation.yinside"
+
+		<< "split.xsize"
+		<< "split.ysize"
+
+		<< "splits.x"
+		<< "splits.y"
+
+		<< "stripes.space"
+		<< "stripes.warp"
+
+		<< "wedge.angle"
+		<< "wedge.hole"
+		<< "wedge.count"
+		<< "wedge.swirl"
+
+		<< "wedge_sph.angle"
+		<< "wedge_sph.count"
+		<< "wedge_sph.hole"
+		<< "wedge_sph.swirl"
+
+		<< "wedge_julia.power"
+		<< "wedge_julia.dist"
+		<< "wedge_julia.count"
+		<< "wedge_julia.angle"
+
+		<< "whorl.inside"
+		<< "whorl.outside"
+
+		<< "waves2.scalex"
+		<< "waves2.scaley"
+		<< "waves2.freqx"
+		<< "waves2.freqy"
+
+		<< "auger.freq"
+		<< "auger.weight"
+		<< "auger.sym"
+		<< "auger.scale"
+
+		<< "flux.spread"
+
+		<< "julian.power"
+		<< "julian.dist"
+
+		<< "juliascope.power"
+		<< "juliascope.dist"
+
+		<< "pie.slices"
+		<< "pie.rotation"
+		<< "pie.thickness"
+
+		<< "ngon.sides"
+		<< "ngon.power"
+		<< "ngon.circle"
+		<< "ngon.corners"
+
+		<< "curl.c1"
+		<< "curl.c2"
+
+		<< "rectangles.x"
+		<< "rectangles.y"
+
+		<< "amw.amp"
+
+		<< "super_shape.rnd"
+		<< "super_shape.m"
+		<< "super_shape.n1"
+		<< "super_shape.n2"
+		<< "super_shape.n3"
+		<< "super_shape.holes"
 
 		<< "conic_eccentricity"
 		<< "conic_holes"
 
-		<< "parabola_height"
-		<< "parabola_width"
-
-		<< "bent2_x"
-		<< "bent2_y"
-
-		<< "bipolar_shift"
-
-		<< "cell_size"
-
-		<< "cpow_r"
-		<< "cpow_i"
-		<< "cpow_power"
-
-		<< "curve_xamp"
-		<< "curve_yamp"
-		<< "curve_xlength"
-		<< "curve_ylength"
-
-		<< "escher_beta"
-
-		<< "lazysusan_spin"
-		<< "lazysusan_space"
-		<< "lazysusan_twist"
-		<< "lazysusan_x"
-		<< "lazysusan_y"
-
-		<< "modulus_x"
-		<< "modulus_y"
-
-		<< "oscope_separation"
-		<< "oscope_frequency"
-		<< "oscope_amplitude"
-		<< "oscope_damping"
-
-		<< "popcorn2_x" << "popcorn2_y" << "popcorn2_c"
-
-		<< "separation_x" << "separation_xinside"
-		<< "separation_y" << "separation_yinside"
-
-		<< "split_xsize"
-		<< "split_ysize"
-
-		<< "splits_x" << "splits_y"
-
-		<< "stripes_space"
-		<< "stripes_warp"
-
-		<< "wedge_angle" << "wedge_hole"
-		<< "wedge_count" << "wedge_swirl"
-
-
-		<< "wedge_julia_angle"
-		<< "wedge_julia_count"
-		<< "wedge_julia_power"
-		<< "wedge_julia_dist"
-
-
-		<< "wedge_sph_angle" << "wedge_sph_count"
-		<< "wedge_sph_hole" << "wedge_sph_swirl"
-
-
-		<< "whorl_inside" << "whorl_outside"
-
-
-		<< "waves2_freqx" << "waves2_scalex"
-		<< "waves2_freqy" << "waves2_scaley"
-
-
-		<< "auger_sym" << "auger_weight"
-		<< "auger_freq" << "auger_scale"
-
-		<< "flux_spread"
-
-		<< "mobius_Re a" << "mobius_Im a"
-		<< "mobius_Re b" << "mobius_Im b"
-		<< "mobius_Re c" << "mobius_Im c"
-		<< "mobius_Re d" << "mobius_Im d"
-
+		<< "mobius.re_a"
+		<< "mobius.im_a"
+		<< "mobius.re_b"
+		<< "mobius.im_b"
+		<< "mobius.re_c"
+		<< "mobius.im_c"
+		<< "mobius.re_d"
+		<< "mobius.im_d"
 		);
-
 		return var_names;
 	}
 
