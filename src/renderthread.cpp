@@ -526,9 +526,9 @@ void RenderStatus::createMessage()
 	if (State == Busy)
 	{
 		QString t_format;
-		if (EstRemain.hour() > 1)
+		if (EstRemain.hour() > 0)
 			t_format = tr("hh:mm:ss");
-		else if (EstRemain.minute() > 1)
+		else if (EstRemain.minute() > 0)
 			t_format = tr("mm:ss");
 		else
 			t_format = tr("s.z");
@@ -543,9 +543,9 @@ void RenderStatus::createMessage()
 	else
 	{
 		QString t_format;
-		if (Runtime.hour() > 1)
-			t_format = tr("hh:mm:ss.z");
-		else if (Runtime.minute() > 1)
+		if (Runtime.hour() > 0)
+			t_format = tr("hh:mm:ss");
+		else if (Runtime.minute() > 0)
 			t_format = tr("mm:ss");
 		else
 		{
