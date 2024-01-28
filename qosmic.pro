@@ -34,23 +34,25 @@ CONFIG += install_icons install_desktop install_scripts
 
 ################################################################################
 ## Add linked libs and paths for headers and palettes here using pkg-config.
-## Comment out the next line and ## set these values below if your system
+## Comment out the next line and set these values below if your system
 ## doesn't use pkg-config.
 CONFIG += link_pkgconfig
 
 link_pkgconfig {
 	PKG_CONFIG = $$pkgConfigExecutable()
 	message("Config using pkg-config version "$$system($$PKG_CONFIG --version))
-	PKGCONFIG = flam3 lua5.2
+	## Load pkg-config paths and libs definitions for
+	## flam3 and lua5.1, lua5.2, lua5.3, or lua5.4
+	PKGCONFIG = flam3 lua5.4
 }
 else {
 	message("Config not using pkg-config")
 	## Adjust these variables to set paths and libs without using pkg-config.
 	## Point to the flam3-3.1.1 source directory
 	FLAM3_SRC_DIR = $$system(readlink -e ../flam3-3.1.1)
-	INCLUDEPATH += $$FLAM3_SRC_DIR /usr/include/libxml2 /usr/include/lua5.2/
+	INCLUDEPATH += $$FLAM3_SRC_DIR /usr/include/libxml2 /usr/include/lua5.4/
 	LIBS += -L$$FLAM3_SRC_DIR/.libs
-	LIBS += -L/usr/lib/libxml2 -lflam3 -lm -ljpeg -lxml2 -llua5.2 -lstdc++
+	LIBS += -L/usr/lib/libxml2 -lflam3 -lm -ljpeg -lxml2 -llua5.4 -lstdc++
 }
 
 

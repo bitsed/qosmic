@@ -19,6 +19,19 @@ extern "C"
 #include <QCoreApplication>
 #define tr(msg) QCoreApplication::translate("Lua::Lunar", msg).toLatin1().constData()
 
+
+#if LUA_VERSION_NUM < 502
+ // Use macros recognized by Lua 5.1 (or earlier)
+ #define lua_tointegerx(L, n, b)   ({ *(b)=1; lua_tointeger((L), (n)); })
+
+#elif LUA_VERSION_NUM > 502
+ // Use lauxlib macros recognized by Lua 5.3 or later
+ #define  luaL_checkint(L, n)     ((int)luaL_checkinteger((L), (n)))
+ #define luaL_checklong(L, n)    ((long)luaL_checkinteger((L), (n)))
+
+#endif
+
+
 namespace Lua
 {
 template <typename T> class Lunar

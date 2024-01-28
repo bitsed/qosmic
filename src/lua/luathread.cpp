@@ -156,9 +156,9 @@ int LuaThread::lua_print(lua_State* L)
 			if (s == NULL) {
 				luaL_Buffer b;
 				luaL_buffinit(L, &b);
-				luaL_addstring(&b, LUA_QL("tostring"));
+				luaL_addstring(&b, "'tostring'");
 				luaL_addstring(&b, tr(" must return a string to ").toLatin1().constData());
-				luaL_addstring(&b, LUA_QL("print"));
+				luaL_addstring(&b, "'print'");
 				luaL_pushresult(&b);
 				return lua_error(L);
 			}
