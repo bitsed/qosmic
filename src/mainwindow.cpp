@@ -599,6 +599,7 @@ bool MainWindow::saveAs()
 	dialog.setIconProvider(&p);
 	dialog.setAcceptMode(QFileDialog::AcceptSave);
 	dialog.setDefaultSuffix("flam3");
+	dialog.setOption(QFileDialog::DontConfirmOverwrite, false);
 	dialog.selectFile(curFile);
 	if (dialog.exec())
 	{
