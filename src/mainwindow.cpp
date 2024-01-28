@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007-2016 by David Bitseff                              *
+ *   Copyright (C) 2007-2024 by David Bitseff                              *
  *   bitsed@gmail.com                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -782,7 +782,7 @@ void MainWindow::about()
 {
 	QMessageBox::about(this, tr("About Qosmic"),
 	tr("<p><b>Qosmic version %1</b></p>"
-	"<p>Copyright (C) 2007-2016 by David Bitseff<br>"
+	"<p>Copyright (C) 2007-2024 by David Bitseff<br>"
 	"<p>Use and redistribute under the terms of the<br>"
 	"<a href=\"http://www.gnu.org/licenses/gpl.html\">"
 	"GNU General Public License Version 3</a></p>"
