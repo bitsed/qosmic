@@ -88,7 +88,7 @@ void ChaosWidget::triangleSelectedSlot(Triangle* t)
 void ChaosWidget::wheelEvent(QWheelEvent* e)
 {
 	QAbstractSlider::SliderAction a = QAbstractSlider::SliderSingleStepSub;
-	if (e->delta() < 0)
+	if (e->angleDelta().y() < 0)
 	{
 		if (e->modifiers() & Qt::ControlModifier)
 			a = QAbstractSlider::SliderPageStepAdd;
@@ -251,7 +251,7 @@ void ChaosTableView::mousePressEvent(QMouseEvent* e)
 				start_item = QModelIndex();
 			break;
 		}
-		case Qt::MidButton:
+		case Qt::MiddleButton:
 		{
 			QModelIndex idx( indexAt(e->pos()) );
 			if (idx.column() == 0)

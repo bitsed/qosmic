@@ -109,7 +109,7 @@ void DoubleValueEditor::wheelEvent(QWheelEvent* e)
 	else if (e->modifiers() & Qt::ControlModifier)
 		setSingleStep(step *= 10.0);
 
-	if (e->delta() > 0)
+	if (e->angleDelta().y() > 0)
 		stepUp();
 	else
 		stepDown();

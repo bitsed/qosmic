@@ -186,7 +186,7 @@ void MainPreviewWidget::wheelEvent(QWheelEvent* e)
 		int n = 10;
 		if (QApplication::keyboardModifiers() & Qt::ControlModifier) n = 100;
 		else if (QApplication::keyboardModifiers() & Qt::ShiftModifier) n = 1;
-		if (e->delta() < 0) n *= -1;
+		if (e->angleDelta().y() < 0) n = -n;
 		genome->selectedGenome()->pixels_per_unit += n;
 		wheel_moved = true;
 		emit previewMoved();

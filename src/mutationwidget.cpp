@@ -165,14 +165,14 @@ void MutationWidget::rotateAMutationsUp()
 	QList<MutationPreviewWidget*>::iterator i = labels.begin() + 1;
 	QList<MutationPreviewWidget*>::iterator e = labels.begin() + 8;
 	flam3_copy(&tmp_genome, (*i)->genome());
-	QPixmap tmp_pixmap(*((*i)->pixmap()));
+	QPixmap tmp_pixmap((*i)->pixmap());
 	QString tmp_tip((*i)->toolTip());
 	QColor tmp_color((*i)->frameColor());
 	while (++i != e)
 	{
 		QList<MutationPreviewWidget*>::iterator p = i - 1;
 		flam3_copy((*p)->genome(), (*i)->genome());
-		(*p)->setPixmap(*((*i)->pixmap()));
+		(*p)->setPixmap((*i)->pixmap());
 		(*p)->setToolTip((*i)->toolTip());
 		(*p)->setFrameColor((*i)->frameColor());
 		(*p)->update();
@@ -195,14 +195,14 @@ void MutationWidget::rotateAMutationsDown()
 	QList<MutationPreviewWidget*>::iterator i = labels.begin() + 7;
 	QList<MutationPreviewWidget*>::iterator e = labels.begin() + 0;
 	flam3_copy(&tmp_genome, (*i)->genome());
-	QPixmap tmp_pixmap(*((*i)->pixmap()));
+	QPixmap tmp_pixmap((*i)->pixmap());
 	QString tmp_tip((*i)->toolTip());
 	QColor tmp_color((*i)->frameColor());
 	while (--i != e)
 	{
 		QList<MutationPreviewWidget*>::iterator p = i + 1;
 		flam3_copy((*p)->genome(), (*i)->genome());
-		(*p)->setPixmap(*((*i)->pixmap()));
+		(*p)->setPixmap((*i)->pixmap());
 		(*p)->setToolTip((*i)->toolTip());
 		(*p)->setFrameColor((*i)->frameColor());
 		(*p)->update();
@@ -224,14 +224,14 @@ void MutationWidget::rotateBMutationsUp()
 	QList<MutationPreviewWidget*>::iterator i = labels.begin() + 9;
 	QList<MutationPreviewWidget*>::iterator e = labels.begin() + 16;
 	flam3_copy(&tmp_genome, (*i)->genome());
-	QPixmap tmp_pixmap(*((*i)->pixmap()));
+	QPixmap tmp_pixmap((*i)->pixmap());
 	QString tmp_tip((*i)->toolTip());
 	QColor tmp_color((*i)->frameColor());
 	while (++i != e)
 	{
 		QList<MutationPreviewWidget*>::iterator p = i - 1;
 		flam3_copy((*p)->genome(), (*i)->genome());
-		(*p)->setPixmap(*((*i)->pixmap()));
+		(*p)->setPixmap((*i)->pixmap());
 		(*p)->setToolTip((*i)->toolTip());
 		(*p)->setFrameColor((*i)->frameColor());
 		(*p)->update();
@@ -253,14 +253,14 @@ void MutationWidget::rotateBMutationsDown()
 	QList<MutationPreviewWidget*>::iterator i = labels.begin() + 15;
 	QList<MutationPreviewWidget*>::iterator e = labels.begin() + 8;
 	flam3_copy(&tmp_genome, (*i)->genome());
-	QPixmap tmp_pixmap(*((*i)->pixmap()));
+	QPixmap tmp_pixmap((*i)->pixmap());
 	QString tmp_tip((*i)->toolTip());
 	QColor tmp_color((*i)->frameColor());
 	while (--i != e)
 	{
 		QList<MutationPreviewWidget*>::iterator p = i + 1;
 		flam3_copy((*p)->genome(), (*i)->genome());
-		(*p)->setPixmap(*((*i)->pixmap()));
+		(*p)->setPixmap((*i)->pixmap());
 		(*p)->setToolTip((*i)->toolTip());
 		(*p)->setFrameColor((*i)->frameColor());
 		(*p)->update();
@@ -353,7 +353,7 @@ void MutationWidget::mutationASelectedAction(MutationPreviewWidget* ptr)
 		{
 			if (idx > 0)
 			{
-				mutations.swap(idx, 0);
+				mutations.swapItemsAt(idx, 0);
 				labels[0]->setGenome(ptr->genome());
 			}
 			cancelRequests();
@@ -377,7 +377,7 @@ void MutationWidget::mutationBSelectedAction(MutationPreviewWidget* ptr)
 		{
 			if (idx >= 0)
 			{
-				mutations.swap(idx, 8);
+				mutations.swapItemsAt(idx, 8);
 				labels[8]->setGenome(ptr->genome());
 			}
 			cancelRequests();
@@ -580,7 +580,7 @@ void MutationPreviewWidget::mouseMoveEvent(QMouseEvent* e)
 	QMimeData* mimeData = new QMimeData;
 	mimeData->setData("application/x-mutationpreviewwidget", QByteArray());
 	drag->setMimeData(mimeData);
-	drag->setPixmap(*pixmap());
+	drag->setPixmap(pixmap());
 	drag->exec(Qt::CopyAction | Qt::MoveAction);
 }
 
@@ -659,10 +659,10 @@ MutationPreviewWidget::Edge MutationPreviewWidget::frameEdge() const
 void MutationPreviewWidget::paintEvent(QPaintEvent* /*event*/)
 {
 	QPainter p(this);
-	const QPixmap* pix = pixmap();
-	if (pix)
+	const QPixmap pix = pixmap();
+	if (!pix.isNull())
 	{
-		p.drawPixmap(0, 0, *pix);
+		p.drawPixmap(0, 0, pix);
 
 		if (frame_edge == LEFT)
 		{

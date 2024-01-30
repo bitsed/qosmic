@@ -280,7 +280,7 @@ int LuaEditor::lineWidgetWidth()
 		++digits;
 	}
 
-	return 12 + fm.width(QLatin1Char('9')) * digits;
+	return 12 + fm.horizontalAdvance(QLatin1Char('9')) * digits;
 }
 
 

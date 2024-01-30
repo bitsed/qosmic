@@ -70,7 +70,7 @@ void DirectoryListView::mousePressEvent(QMouseEvent* event)
 			}
 		}
 	}
-	else if (event->button() == Qt::MidButton)
+	else if (event->button() == Qt::MiddleButton)
 	{
 		// toggle showing hidden files in the model
 		QFileSystemModel* fsm = qobject_cast<QFileSystemModel*>(model());
@@ -107,7 +107,7 @@ void DirectoryListView::wheelEvent(QWheelEvent* e)
 {
 	if (e->modifiers() & Qt::ControlModifier)
 	{
-		int dx( 8 * ( e->delta() > 0 ? 1 : -1 ) );
+		int dx( 8 * ( e->angleDelta().y() > 0 ? 1 : -1 ) );
 		QSize s(iconSize() + QSize(dx, dx));
 		if (s.width() >= 8 && s.width() <= 128)
 			setIconSize(s);

@@ -144,35 +144,36 @@ void PaletteEditor::saveGradientAction()
 	}
 
 	QTextStream os(&data);
-	os << "# COLOR_MODEL = RGB" << endl
-		<< scientific << qSetRealNumberPrecision(6) << qSetFieldWidth(4);
+	os << "# COLOR_MODEL = RGB" << Qt::endl
+		<< Qt::scientific << qSetRealNumberPrecision(6) << qSetFieldWidth(4);
 	p_stops = m_gradientStops->getStops();
-	qStableSort(p_stops.begin(), p_stops.end(), GradientStop::lessThanGradientStopComparison);
+	std::stable_sort(p_stops.begin(), p_stops.end(),
+		GradientStop::lessThanGradientStopComparison);
 	GradientStops::const_iterator i = p_stops.constBegin();
-	os << left << (*i).first
-		<< right
+	os << Qt::left << (*i).first
+		<< Qt::right
 		<< (*i).second.red()
 		<< (*i).second.green()
 		<< (*i).second.blue() << ' ';
 	++i;
 	for ( ; i != p_stops.constEnd(); ++i)
 	{
-		os << left << (*i).first
-		<< right
+		os << Qt::left << (*i).first
+		<< Qt::right
 		<< (*i).second.red()
 		<< (*i).second.green()
-		<< (*i).second.blue() << endl;
+		<< (*i).second.blue() << Qt::endl;
 
 		if (i + 1 != p_stops.constEnd())
-			os << left << (*i).first
-			<< right
+			os << Qt::left << (*i).first
+			<< Qt::right
 			<< (*i).second.red()
 			<< (*i).second.green()
 			<< (*i).second.blue() << ' ';
 	}
-	os << "B   0   0   0" << endl
-		<< "F 255 255 255" << endl
-		<< "N 255   0   0" << endl;
+	os << "B   0   0   0" << Qt::endl
+		<< "F 255 255 255" << Qt::endl
+		<< "N 255   0   0" << Qt::endl;
 
 	data.close();
 	if (data.error() != QFile::NoError)
@@ -193,7 +194,8 @@ void PaletteEditor::stopsChangedAction()
 	QImage palette_image(s, QImage::Format_RGB32);
 	QPainter painter(&palette_image);
 	GradientStops stops(m_gradientStops->getStops());
-	qStableSort(stops.begin(), stops.end(), GradientStop::lessThanGradientStopComparison);
+	std::stable_sort(stops.begin(), stops.end(),
+		GradientStop::lessThanGradientStopComparison);
 
 	// now apply the ends and update the palette
 	GradientStops ends( m_gradientEnds->getStops() );

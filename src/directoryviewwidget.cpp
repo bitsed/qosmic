@@ -207,7 +207,7 @@ void DirectoryViewWidget::setCurrentPath(QString p)
 					list.append(info.canonicalFilePath());
 			}
 
-			qSort(list.begin(), list.end(), qGreater<QString>());
+			std::sort(list.begin(), list.end(), std::greater<QString>());
 			list.push_front(path);
 			m_dirComboBox->blockSignals(true);
 			comboListModel->setStringList(list);

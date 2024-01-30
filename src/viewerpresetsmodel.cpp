@@ -120,7 +120,7 @@ void ViewerPresetsModel::moveUpSlot(int row)
 {
 	if (row <= 0 || row >= names.size())
 		return;
-	names.swap(row - 1, row);
+	names.swapItemsAt(row - 1, row);
 	savePresets();
 	emit dataChanged(index(0), index(names.size() - 1));
 }
@@ -129,7 +129,7 @@ void ViewerPresetsModel::moveDownSlot(int row)
 {
 	if (row < 0 || row >= names.size() - 1)
 		return;
-	names.swap(row, row + 1);
+	names.swapItemsAt(row, row + 1);
 	savePresets();
 	emit dataChanged(index(0), index(names.size() - 1));
 }

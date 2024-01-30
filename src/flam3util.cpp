@@ -74,7 +74,7 @@ namespace Util
 			<< "\nzoom: " << g.zoom;
 		for (int n = 0 ; n < g.num_xforms ; n++)
 			os << "\nxform " << n << " density: " << g.xform[n].density;
-		os << endl;
+		os << Qt::endl;
 		return os;
 	}
 

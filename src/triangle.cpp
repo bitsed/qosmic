@@ -426,7 +426,7 @@ void Triangle::adjustSceneRect()
 			QLineF dc(d, c);
 			QLineF eb(e, b);
 			QPointF k;
-			QLineF::IntersectType t = dc.intersect(eb, &k);
+			QLineF::IntersectType t = dc.intersects(eb, &k);
 			if (t != QLineF::BoundedIntersection)
 				logWarn(QString("Triangle::adjustSceneRect : IntersectType %1").arg(t));
 			logFine(QString("Triangle::adjustSceneRect : k = (%1, %2)").arg(k.x()).arg(k.y()));

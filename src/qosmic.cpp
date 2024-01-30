@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 			.arg(QString(getenv("flam3_verbose")).toInt())
 			.arg(QString(getenv("flam3_nthreads")).toInt() > 0 ?
 				QString(getenv("flam3_nthreads")).toInt() : flam3_count_nthreads())
-			<< endl;
+			<< Qt::endl;
 		return 0;
 	}
 
@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
 		if (!mw->loadFile(fname))
 		{
 			cerr << QString(QCoreApplication::translate("CoreApp",
-				"Couldn't load file %1")).arg(fname) << endl;
+				"Couldn't load file %1")).arg(fname) << Qt::endl;
 			return 1;
 		}
 	}

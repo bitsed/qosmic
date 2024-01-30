@@ -57,7 +57,7 @@
         <verstretch>2</verstretch>
        </sizepolicy>
       </property>
-      <property name="tabStopWidth">
+      <property name="tabStopDistance">
        <number>20</number>
       </property>
      </widget>

@@ -139,7 +139,7 @@ void VariationsWidget::triangleSelectedSlot(Triangle* t)
 void VariationsWidget::wheelEvent(QWheelEvent* e)
 {
 	QAbstractSlider::SliderAction a = QAbstractSlider::SliderSingleStepSub;
-	if (e->delta() < 0)
+	if (e->angleDelta().y() < 0)
 	{
 		if (e->modifiers() & Qt::ControlModifier)
 			a = QAbstractSlider::SliderPageStepAdd;

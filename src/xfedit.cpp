@@ -262,7 +262,7 @@ void FigureEditor::cutTriangleAction()
 			}
 			idxs << trianglesList.indexOf(t, 0);
 		}
-		qSort(idxs);
+		std::sort(idxs.begin(), idxs.end());
 		QListIterator<int> i(idxs);
 		i.toBack();
 		while (i.hasPrevious())
@@ -360,6 +360,7 @@ Triangle* FigureEditor::getCurrentOrSelected()
 				t = dynamic_cast<NodeItem*>(item)->triangle();
 				if (t->type() != PostTriangle::Type)
 					break;
+				// fall through
 			default:
 				t = selectedTriangle;
 		}
@@ -408,7 +409,7 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 		execPopupMenu(e->screenPos());
 		moving_start = QPointF(0.0, 0.0);
 	}
-	else if (e->button() == Qt::MidButton)
+	else if (e->button() == Qt::MiddleButton)
 	{
 		moving = 0;
 	}
@@ -456,6 +457,7 @@ void FigureEditor::mousePressEvent(QGraphicsSceneMouseEvent* e)
 			{
 				case Triangle::Type:
 					selectTriangle(dynamic_cast<Triangle*>(item));
+				// fall through
 
 				case PostTriangle::Type:
 				{
@@ -809,7 +811,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 		selectionItem->setPolygon(QPolygonF(QRectF(moving_start,scenePos)));
 		update();
 	}
-	else if (e->buttons() & Qt::MidButton)
+	else if (e->buttons() & Qt::MiddleButton)
 	{
 		// middle mouse button + shift sets the coordinate mark
 		if (coordinateMark->isVisible() && e->modifiers() & Qt::ShiftModifier)
@@ -884,6 +886,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 		{
 			case NodeItem::Type:
 				item = dynamic_cast<NodeItem*>(item)->triangle();
+				// fall through
 
 			case Triangle::Type:
 				if (item->type() != PostTriangle::Type)
@@ -905,6 +908,7 @@ void FigureEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e)
 					}
 					break;
 				}
+				// fall through
 			case PostTriangle::Type:
 			{
 				Triangle* t = selectedTriangle;

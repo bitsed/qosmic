@@ -20,6 +20,7 @@
 
 #include <QImage>
 #include <QTime>
+#include <QElapsedTimer>
 #include <QStatusBar>
 #include <QThread>
 #include <QMutex>
@@ -170,7 +171,7 @@ class RenderThread : public QThread, public StatusProvider
 		static double _est_remain;
 		static double _percent_finished;
 		static stat_struct _stats;
-		static QTime ptimer;
+		static QElapsedTimer ptimer;
 		static int _progress_callback(void*, double, int, double);
 		static RenderThread* singleInstance;
 
@@ -192,7 +193,7 @@ class RenderThread : public QThread, public StatusProvider
 		void init_status_cb();
 		int channels;
 		int alpha_trans;
-		int millis;
+		qint64 millis;
 		ImageFormat img_format;
 		QString rtype;
 

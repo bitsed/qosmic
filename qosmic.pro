@@ -76,9 +76,9 @@ VERSION = 1.6.0
 
 ################################################################################
 ## Check for correct package versions
-system(test $$QT_MAJOR_VERSION -lt 5 -o $$QT_MINOR_VERSION -lt 5) {
+system(test $$QT_MAJOR_VERSION -lt 5 -o $$QT_MINOR_VERSION -lt 15) {
 	error("Using Qt $$[QT_VERSION]. " \
-	"Qosmic $$VERSION requires at least version 5.5 of Qt to build.")
+	"Qosmic $$VERSION requires at least version version 5.15 of Qt to build.")
 }
 
 link_pkgconfig {
@@ -90,6 +90,8 @@ link_pkgconfig {
 ################################################################################
 DEFINES += VERSION='\'"$$VERSION"\''
 DEFINES += SCRIPTSDIR='\'"$$SCRIPTSDIR"\''
+## Disable Qt functions deprecated before Qt 5.15
+DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x051500
 CONFIG += qt thread
 QT += widgets
 RESOURCES = qosmic.qrc

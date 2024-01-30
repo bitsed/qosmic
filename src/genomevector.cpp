@@ -474,10 +474,10 @@ bool GenomeVector::setData(flam3_genome* genomes, int ncps)
 Qt::ItemFlags GenomeVector::flags(const QModelIndex& idx) const
 {
 	if (!idx.isValid())
-		return 0;
+		return Qt::NoItemFlags;
 
 	if (idx.row() > size() || idx.row() < 0)
-		return 0;
+		return Qt::NoItemFlags;
 
 	return Qt::ItemIsSelectable | Qt::ItemIsEnabled |
 		Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEditable ;

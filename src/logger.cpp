@@ -53,7 +53,7 @@ void Logger::info(QString& msg)
   QMutexLocker locker(&m_mutex);
   if(m_level >= INFO)
 	*m_stream << QString("info [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	  arg((long) QThread::currentThreadId()) << msg << Qt::endl;
 }
 
 void Logger::warn(QString& msg)
@@ -61,7 +61,7 @@ void Logger::warn(QString& msg)
   QMutexLocker locker(&m_mutex);
   if(m_level >= WARN)
 	*m_stream << QString("warn [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	  arg((long) QThread::currentThreadId()) << msg << Qt::endl;
 }
 
 void Logger::error(QString& msg)
@@ -69,7 +69,7 @@ void Logger::error(QString& msg)
   QMutexLocker locker(&m_mutex);
   if(m_level >= ERROR)
 	*m_stream << QString("error [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	  arg((long) QThread::currentThreadId()) << msg << Qt::endl;
 }
 
 void Logger::critical(QString& msg)
@@ -77,7 +77,7 @@ void Logger::critical(QString& msg)
   QMutexLocker locker(&m_mutex);
   if(m_level >= CRITICAL)
 	*m_stream << QString("critical [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	  arg((long) QThread::currentThreadId()) << msg << Qt::endl;
 }
 
 void Logger::fine(QString& msg)
@@ -85,7 +85,7 @@ void Logger::fine(QString& msg)
   QMutexLocker locker(&m_mutex);
   if(m_level >= FINE)
 	*m_stream << QString("fine [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	  arg((long) QThread::currentThreadId()) << msg << Qt::endl;
 }
 
 void Logger::finer(QString& msg)
@@ -93,7 +93,7 @@ void Logger::finer(QString& msg)
   QMutexLocker locker(&m_mutex);
   if(m_level >= FINER)
 	*m_stream << QString("finer [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	  arg((long) QThread::currentThreadId()) << msg << Qt::endl;
 }
 
 void Logger::finest(QString& msg)
@@ -101,7 +101,7 @@ void Logger::finest(QString& msg)
   QMutexLocker locker(&m_mutex);
   if(m_level >= FINEST)
 	*m_stream << QString("finest [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	  arg((long) QThread::currentThreadId()) << msg << Qt::endl;
 }
 
 void Logger::info(const QString& msg)
@@ -109,7 +109,7 @@ void Logger::info(const QString& msg)
   QMutexLocker locker(&m_mutex);
   if(m_level >= INFO)
 	*m_stream << QString("info [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	  arg((long) QThread::currentThreadId()) << msg << Qt::endl;
 }
 
 void Logger::warn(const QString& msg)
@@ -117,7 +117,7 @@ void Logger::warn(const QString& msg)
   QMutexLocker locker(&m_mutex);
   if(m_level >= WARN)
 	*m_stream << QString("warn [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	  arg((long) QThread::currentThreadId()) << msg << Qt::endl;
 }
 
 void Logger::error(const QString& msg)
@@ -125,7 +125,7 @@ void Logger::error(const QString& msg)
   QMutexLocker locker(&m_mutex);
   if(m_level >= ERROR)
 	*m_stream << QString("error [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	  arg((long) QThread::currentThreadId()) << msg << Qt::endl;
 }
 
 void Logger::critical(const QString& msg)
@@ -133,7 +133,7 @@ void Logger::critical(const QString& msg)
   QMutexLocker locker(&m_mutex);
   if(m_level >= CRITICAL)
 	*m_stream << QString("critical [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	  arg((long) QThread::currentThreadId()) << msg << Qt::endl;
 }
 
 void Logger::fine(const QString& msg)
@@ -141,7 +141,7 @@ void Logger::fine(const QString& msg)
   QMutexLocker locker(&m_mutex);
   if(m_level >= FINE)
 	*m_stream << QString("fine [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	  arg((long) QThread::currentThreadId()) << msg << Qt::endl;
 }
 
 void Logger::finer(const QString& msg)
@@ -149,7 +149,7 @@ void Logger::finer(const QString& msg)
   QMutexLocker locker(&m_mutex);
   if(m_level >= FINER)
 	*m_stream << QString("finer [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	  arg((long) QThread::currentThreadId()) << msg << Qt::endl;
 }
 
 void Logger::finest(const QString& msg)
@@ -157,7 +157,7 @@ void Logger::finest(const QString& msg)
   QMutexLocker locker(&m_mutex);
   if(m_level >= FINEST)
 	*m_stream << QString("finest [%1]: ").
-	  arg((long) QThread::currentThreadId()) << msg << endl;
+	  arg((long) QThread::currentThreadId()) << msg << Qt::endl;
 }
 
 
@@ -169,8 +169,8 @@ void Logger::info(const char* msg, ...)
 		va_list ap;
 		va_start(ap, msg);
 		*m_stream << QString("info [%1]: ").arg((long)QThread::currentThreadId())
-				  << QString().vsprintf(msg, ap)
-				  << endl;
+				  << QString().vasprintf(msg, ap)
+				  << Qt::endl;
 		va_end(ap);
 	}
 }
@@ -183,8 +183,8 @@ void Logger::warn(const char* msg, ...)
 		va_list ap;
 		va_start(ap, msg);
 		*m_stream << QString("warn [%1]: ").arg((long)QThread::currentThreadId())
-				  << QString().vsprintf(msg, ap)
-				  << endl;
+				  << QString().vasprintf(msg, ap)
+				  << Qt::endl;
 		va_end(ap);
 	}
 }
@@ -197,8 +197,8 @@ void Logger::error(const char* msg, ...)
 		va_list ap;
 		va_start(ap, msg);
 		*m_stream << QString("error [%1]: ").arg((long)QThread::currentThreadId())
-				  << QString().vsprintf(msg, ap)
-				  << endl;
+				  << QString().vasprintf(msg, ap)
+				  << Qt::endl;
 		va_end(ap);
 	}
 }
@@ -211,8 +211,8 @@ void Logger::critical(const char* msg, ...)
 		va_list ap;
 		va_start(ap, msg);
 		*m_stream << QString("critical [%1]: ").arg((long)QThread::currentThreadId())
-				  << QString().vsprintf(msg, ap)
-				  << endl;
+				  << QString().vasprintf(msg, ap)
+				  << Qt::endl;
 		va_end(ap);
 	}
 }
@@ -225,8 +225,8 @@ void Logger::fine(const char* msg, ...)
 		va_list ap;
 		va_start(ap, msg);
 		*m_stream << QString("fine [%1]: ").arg((long)QThread::currentThreadId())
-				  << QString().vsprintf(msg, ap)
-				  << endl;
+				  << QString().vasprintf(msg, ap)
+				  << Qt::endl;
 		va_end(ap);
 	}
 }
@@ -239,8 +239,8 @@ void Logger::finer(const char* msg, ...)
 		va_list ap;
 		va_start(ap, msg);
 		*m_stream << QString("finer [%1]: ").arg((long)QThread::currentThreadId())
-				  << QString().vsprintf(msg, ap)
-				  << endl;
+				  << QString().vasprintf(msg, ap)
+				  << Qt::endl;
 		va_end(ap);
 	}
 }
@@ -253,8 +253,8 @@ void Logger::finest(const char* msg, ...)
 		va_list ap;
 		va_start(ap, msg);
 		*m_stream << QString("finest [%1]: ").arg((long)QThread::currentThreadId())
-				  << QString().vsprintf(msg, ap)
-				  << endl;
+				  << QString().vasprintf(msg, ap)
+				  << Qt::endl;
 		va_end(ap);
 	}
 }

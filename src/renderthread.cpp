@@ -32,7 +32,7 @@ stat_struct RenderThread::_stats;
 RenderThread* RenderThread::singleInstance = 0;
 
 
-QTime RenderThread::ptimer;
+QElapsedTimer RenderThread::ptimer;
 /**
  * this callback is needed to control the rendering function.  it also
  * helps calculate the estimated time remaining.
@@ -42,7 +42,7 @@ int RenderThread::_progress_callback(
 {
 	if (est != 0.0)
 	{
-		double elapsed = ptimer.elapsed() ;
+		qint64 elapsed = ptimer.elapsed() ;
 		_est_remain = est * 1000.0;
 		_percent_finished = elapsed / (_est_remain + elapsed) * 100.0;
 	}
@@ -195,6 +195,7 @@ void RenderThread::run()
 		{
 			case RenderRequest::File:
 				rtype = QFileInfo(job->name()).fileName();
+				// fall through
 
 			case RenderRequest::Image:
 			case RenderRequest::Preview:
