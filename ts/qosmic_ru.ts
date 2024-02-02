@@ -2415,13 +2415,13 @@ time: %2</source>
     <message>
         <location filename="../src/renderthread.cpp" line="530"/>
         <source>hh:mm:ss</source>
-        <translation>ч:мин:сек</translation>
+        <translation>hh:mm:ss</translation>
     </message>
     <message>
         <location filename="../src/renderthread.cpp" line="532"/>
         <location filename="../src/renderthread.cpp" line="549"/>
         <source>mm:ss</source>
-        <translation>мин:сек</translation>
+        <translation>mm:ss</translation>
     </message>
     <message>
         <location filename="../src/renderthread.cpp" line="534"/>
@@ -2442,7 +2442,7 @@ time: %2</source>
     <message>
         <location filename="../src/renderthread.cpp" line="547"/>
         <source>hh:mm:ss.z</source>
-        <translation>ч:мин:сек.мс</translation>
+        <translation>hh:mm:ss.z</translation>
     </message>
     <message>
         <location filename="../src/renderthread.cpp" line="554"/>
