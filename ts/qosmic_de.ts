@@ -1933,10 +1933,6 @@ time: %2</source>
         <source>s.z</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>hh:mm:ss.z</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ScriptEditConfigDialog</name>
