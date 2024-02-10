@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -29,7 +29,7 @@
       <enum>QFrame::Sunken</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
+      <item row="0" column="0" alignment="Qt::AlignRight">
        <widget class="QFrame" name="frame">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
@@ -175,7 +175,7 @@
       <item row="1" column="0">
        <widget class="GenomeVectorListView" name="m_genomesListView">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>

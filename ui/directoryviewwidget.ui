@@ -6,71 +6,146 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>272</width>
-    <height>464</height>
+    <width>252</width>
+    <height>278</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout">
-   <item row="0" column="2">
-    <widget class="QToolButton" name="m_upButton">
-     <property name="text">
-      <string>...</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../qosmic.qrc">
-       <normaloff>:/icons/silk/bullet_arrow_up.xpm</normaloff>:/icons/silk/bullet_arrow_up.xpm</iconset>
-     </property>
-    </widget>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="rightMargin">
+        <number>16</number>
+       </property>
+       <item>
+        <widget class="QToolButton" name="m_backButton">
+         <property name="text">
+          <string>...</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../qosmic.qrc">
+           <normaloff>:/icons/silk/bullet_arrow_left.xpm</normaloff>:/icons/silk/bullet_arrow_left.xpm</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="m_forwardButton">
+         <property name="text">
+          <string>...</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../qosmic.qrc">
+           <normaloff>:/icons/silk/bullet_arrow_right.xpm</normaloff>:/icons/silk/bullet_arrow_right.xpm</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="m_upButton">
+         <property name="text">
+          <string>...</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../qosmic.qrc">
+           <normaloff>:/icons/silk/bullet_arrow_up.xpm</normaloff>:/icons/silk/bullet_arrow_up.xpm</iconset>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QToolButton" name="m_openButton">
+         <property name="text">
+          <string>...</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../qosmic.qrc">
+           <normaloff>:/icons/silk/folder.xpm</normaloff>:/icons/silk/folder.xpm</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>18</width>
+           <height>18</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="m_zoomInButton">
+         <property name="text">
+          <string>+</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../qosmic.qrc">
+           <normaloff>:/icons/silk/magnifier_zoom_in.xpm</normaloff>:/icons/silk/magnifier_zoom_in.xpm</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="m_zoomOutButton">
+         <property name="text">
+          <string>-</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../qosmic.qrc">
+           <normaloff>:/icons/silk/magnifier_zoom_out.xpm</normaloff>:/icons/silk/magnifier_zoom_out.xpm</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="m_configButton">
+         <property name="text">
+          <string>...</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../qosmic.qrc">
+           <normaloff>:/icons/silk/bullet_wrench.xpm</normaloff>:/icons/silk/bullet_wrench.xpm</iconset>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
    </item>
-   <item row="0" column="1">
-    <widget class="QToolButton" name="m_forwardButton">
-     <property name="text">
-      <string>...</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../qosmic.qrc">
-       <normaloff>:/icons/silk/bullet_arrow_right.xpm</normaloff>:/icons/silk/bullet_arrow_right.xpm</iconset>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QToolButton" name="m_backButton">
-     <property name="text">
-      <string>...</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../qosmic.qrc">
-       <normaloff>:/icons/silk/bullet_arrow_left.xpm</normaloff>:/icons/silk/bullet_arrow_left.xpm</iconset>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="9">
-    <widget class="DirectoryListView" name="m_dirListView">
-     <property name="acceptDrops">
+   <item>
+    <widget class="QComboBox" name="m_dirComboBox">
+     <property name="editable">
       <bool>true</bool>
      </property>
-     <property name="dragEnabled">
-      <bool>true</bool>
-     </property>
-     <property name="dragDropMode">
-      <enum>QAbstractItemView::DragDrop</enum>
-     </property>
-     <property name="defaultDropAction">
-      <enum>Qt::CopyAction</enum>
-     </property>
-     <property name="layoutMode">
-      <enum>QListView::Batched</enum>
-     </property>
     </widget>
    </item>
-   <item row="2" column="0" colspan="9">
+   <item>
     <widget class="QTreeView" name="m_treeView">
      <property name="acceptDrops">
       <bool>true</bool>
      </property>
+     <property name="sizeAdjustPolicy">
+      <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
+     </property>
      <property name="dragEnabled">
       <bool>true</bool>
      </property>
@@ -80,10 +155,10 @@
      <property name="defaultDropAction">
       <enum>Qt::CopyAction</enum>
      </property>
-     <property name="rootIsDecorated">
-      <bool>false</bool>
+     <property name="indentation">
+      <number>2</number>
      </property>
-     <property name="itemsExpandable">
+     <property name="rootIsDecorated">
       <bool>false</bool>
      </property>
      <property name="sortingEnabled">
@@ -92,62 +167,39 @@
      <property name="expandsOnDoubleClick">
       <bool>false</bool>
      </property>
+     <attribute name="headerMinimumSectionSize">
+      <number>1</number>
+     </attribute>
+     <attribute name="headerDefaultSectionSize">
+      <number>1</number>
+     </attribute>
     </widget>
    </item>
-   <item row="0" column="8">
-    <widget class="QToolButton" name="m_configButton">
-     <property name="text">
-      <string>...</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../qosmic.qrc">
-       <normaloff>:/icons/silk/bullet_wrench.xpm</normaloff>:/icons/silk/bullet_wrench.xpm</iconset>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="9">
-    <widget class="QComboBox" name="m_dirComboBox">
-     <property name="editable">
+   <item>
+    <widget class="DirectoryListView" name="m_dirListView">
+     <property name="acceptDrops">
       <bool>true</bool>
      </property>
-    </widget>
-   </item>
-   <item row="0" column="7">
-    <widget class="QToolButton" name="m_zoomInButton">
-     <property name="text">
-      <string>+</string>
+     <property name="sizeAdjustPolicy">
+      <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
      </property>
-     <property name="icon">
-      <iconset resource="../qosmic.qrc">
-       <normaloff>:/icons/silk/magnifier_zoom_in.xpm</normaloff>:/icons/silk/magnifier_zoom_in.xpm</iconset>
+     <property name="dragEnabled">
+      <bool>true</bool>
      </property>
-    </widget>
-   </item>
-   <item row="0" column="6">
-    <widget class="QToolButton" name="m_zoomOutButton">
-     <property name="text">
-      <string>-</string>
+     <property name="dragDropMode">
+      <enum>QAbstractItemView::NoDragDrop</enum>
      </property>
-     <property name="icon">
-      <iconset resource="../qosmic.qrc">
-       <normaloff>:/icons/silk/magnifier_zoom_out.xpm</normaloff>:/icons/silk/magnifier_zoom_out.xpm</iconset>
+     <property name="defaultDropAction">
+      <enum>Qt::CopyAction</enum>
      </property>
-    </widget>
-   </item>
-   <item row="0" column="5">
-    <widget class="QToolButton" name="m_openButton">
-     <property name="text">
-      <string>...</string>
+     <property name="resizeMode">
+      <enum>QListView::Adjust</enum>
      </property>
-     <property name="icon">
-      <iconset resource="../qosmic.qrc">
-       <normaloff>:/icons/silk/folder.xpm</normaloff>:/icons/silk/folder.xpm</iconset>
+     <property name="layoutMode">
+      <enum>QListView::Batched</enum>
      </property>
-     <property name="iconSize">
-      <size>
-       <width>18</width>
-       <height>18</height>
-      </size>
+     <property name="viewMode">
+      <enum>QListView::ListMode</enum>
      </property>
     </widget>
    </item>
