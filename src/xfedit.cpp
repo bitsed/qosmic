@@ -1455,6 +1455,11 @@ void FigureEditor::reset()
 	if (has_selection)
 		enableSelection(false);
 
+	// Hide the graphicsGuide and unlink it from a parent
+	// that might be removed.
+	graphicsGuide->setVisible(false);
+	graphicsGuide->setParentItem(NULL);
+
 	// make sure there are as many triangles as xforms
 	int num_triangles = trianglesList.size();
 	int dn = genome_ptr->num_xforms - num_triangles;
@@ -1468,8 +1473,7 @@ void FigureEditor::reset()
 		}
 	else if (dn < 0)
 	{
-		// Temporarily re-parent the graphicsGuide in case its parent triangle is deleted
-		trianglesList.first()->setGraphicsGuide(graphicsGuide);
+		// Remove excess Triangles from the scene
 		for (int n = 0 ; n > dn ; n--)
 		{
 			Triangle* t = trianglesList.takeLast();
@@ -1505,12 +1509,15 @@ void FigureEditor::reset()
 	selectionItem->setPen(QPen(b, 0, Qt::DashLine));
 
 	selectedTriangle = 0;
-	editing_post = hasPost; // there's a side-effect here that selectTriangle
-							// will recreate the postTriangle with this set
+	editing_post = hasPost; // Tell selectTriangle to re-link the
+							// postTriangle if hasPost is true
 	if (selected_idx < trianglesList.size())
 		selectTriangle(trianglesList.at(selected_idx));
 	else
 		selectTriangle(trianglesList.last());
+	// The graphicGuide has been linked to the selected triangle.
+	// Display it if previously visible.
+	graphicsGuide->setVisible(guide_visible);
 
 	// recenter the scene on the current center point in the view
 	QRect vrect(QPoint(0,0), view->maximumViewportSize());

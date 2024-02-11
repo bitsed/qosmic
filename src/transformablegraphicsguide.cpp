@@ -115,7 +115,8 @@ void TransformableGraphicsGuide::setParentItem(QGraphicsItem* parent)
 		dynamic_cast<TransformableGraphicsItem*>(cparent)->setGraphicsGuide(0);
 
 	QGraphicsItem::setParentItem(parent);
-	parent->setAcceptHoverEvents(true);
+	if (parent)
+		parent->setAcceptHoverEvents(true);
 	update();
 }
 
@@ -133,12 +134,13 @@ void TransformableGraphicsGuide::update()
 
 		if (scaleMode)
 		{
+			QGraphicsPolygonItem* item;
 			QPointF cen;
 			QPolygonF poly;
 
 			if (editor->hasSelection())
 			{
-				QGraphicsPolygonItem* item = editor->selection();
+				item = editor->selection();
 				if (item == 0)
 					return;
 				cen  = mapFromScene(editor->selectionTransformPos());
@@ -146,7 +148,9 @@ void TransformableGraphicsGuide::update()
 			}
 			else
 			{
-				QGraphicsPolygonItem* item = dynamic_cast<QGraphicsPolygonItem*>(parentItem());
+				item = dynamic_cast<QGraphicsPolygonItem*>(parentItem());
+				if (item == 0)
+					return;
 				cen  = editor->triangleTransformPos();
 				poly = item->polygon();
 			}
@@ -158,7 +162,7 @@ void TransformableGraphicsGuide::update()
 
 			r.moveCenter(cen);
 			outerRect = r;
-			QRectF l = parentItem()->mapRectFromScene(QRectF(QPointF(0.0, 0.0), QSizeF(10, 10)));
+			QRectF l = item->mapRectFromScene(QRectF(QPointF(0.0, 0.0), QSizeF(10, 10)));
 			QPen pen(editor->guideColor(), 0);
 
 			l.moveBottomLeft(r.topRight());
@@ -182,6 +186,7 @@ void TransformableGraphicsGuide::update()
 			QGraphicsPolygonItem* item;
 			QPointF cen;
 			QPolygonF poly;
+
 			if (editor->hasSelection())
 			{
 				item = editor->selection();
@@ -193,6 +198,8 @@ void TransformableGraphicsGuide::update()
 			else
 			{
 				item = dynamic_cast<QGraphicsPolygonItem*>(parentItem());
+				if (item == 0)
+					return;
 				poly = item->polygon();
 				cen = editor->triangleTransformPos();
 			}
@@ -209,11 +216,13 @@ void TransformableGraphicsGuide::update()
 		}
 		else if (mode == FigureEditor::Flip)
 		{
+			QGraphicsPolygonItem* item;
 			QPolygonF poly;
 			QPointF  cen;
+
 			if (editor->hasSelection())
 			{
-				QGraphicsPolygonItem* item = editor->selection();
+				item = editor->selection();
 				if (item == 0)
 					return;
 				cen  = mapFromScene(editor->selectionTransformPos());
@@ -221,7 +230,9 @@ void TransformableGraphicsGuide::update()
 			}
 			else
 			{
-				QGraphicsPolygonItem* item = dynamic_cast<QGraphicsPolygonItem*>(parentItem());
+				item = dynamic_cast<QGraphicsPolygonItem*>(parentItem());
+				if (item == 0)
+					return;
 				cen  = editor->triangleTransformPos();
 				poly = item->polygon();
 			}
