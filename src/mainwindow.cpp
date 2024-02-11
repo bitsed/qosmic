@@ -1449,7 +1449,8 @@ void MainWindow::randomizeGenomeAction()
 	flam3_genome* g = genomes.selectedGenome();
 	s = *g; // no need to copy xforms
 	flam3_random(g, &ivar, 1, 0, 0);
-	// restore the camera/image settings which flam3_random resets
+	// restore the camera/image settings clobbered by flam3_random
+	g->time                   = s.time;
 	g->width                  = s.width;
 	g->height                 = s.height;
 	g->estimator              = s.estimator;
