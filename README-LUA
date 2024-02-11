@@ -84,6 +84,8 @@ Genome([ref])       -- Create a new Genome instance.  An existing Genome
 
 index()             -- Returns the offset for this genome in the genomes list.
 
+flame_name([name])  -- Returns a 64 character string containing the genome name.
+
 center([x,y])       -- The coordinates of the center of the genome.
 
 rot_center([x,y])   -- Rotate around this position

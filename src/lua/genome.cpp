@@ -28,6 +28,7 @@ const char Genome::className[] = "Genome";
 
 Lunar<Genome>::RegType Genome::methods[] =
 {
+	{ "flame_name", &Genome::flame_name },
 	{ "width",  &Genome::width },
 	{ "height", &Genome::height },
 	{ "index",  &Genome::index },
@@ -193,6 +194,19 @@ intAcc(spatial_oversample);
 intAcc(nbatches);
 intAcc(ntemporal_samples);
 
+
+int Genome::flame_name(lua_State* L)
+{
+	get_genome_ptr(L);
+	if (lua_gettop(L) > 0)
+	{
+		luaL_checktype(L, 1, LUA_TSTRING);
+		const char* s = lua_tostring(L, 1);
+		strncpy(genome_ptr->flame_name, s, flam3_name_len);
+	}
+	lua_pushstring(L, genome_ptr->flame_name);
+	return 1;
+}
 
 int Genome::index(lua_State* L)
 {

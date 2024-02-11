@@ -41,6 +41,7 @@ class Genome : public LuaType
 	public:
 	Genome(lua_State*);
 	~Genome();
+	int flame_name(lua_State*);
 	int index(lua_State*);
 	int index() const;
 	int center(lua_State*);
