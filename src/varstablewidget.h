@@ -53,6 +53,7 @@ class VarsTableModel : public QAbstractItemModel
 	int decimals;
 	QMap<QString, VarsTableItem*> variationItems;
 	QList<QVariant> headerItems;
+	QString longestLabel;  // table header section size hint
 
 	public:
 		static const QString RESET;

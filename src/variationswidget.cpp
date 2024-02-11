@@ -31,9 +31,11 @@ VariationsWidget::VariationsWidget(GenomeVector* gen, QWidget* parent)
 	m_variationsTable->setModel(model);
 	m_variationsTable->restoreSettings();
 	m_variationsTable->header()->setStretchLastSection(false);
-	m_variationsTable->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+	m_variationsTable->header()->setSectionResizeMode(0, QHeaderView::Interactive);
 	m_variationsTable->header()->setSectionResizeMode(1, QHeaderView::Stretch);
 	m_variationsTable->header()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+	m_variationsTable->header()->setDefaultSectionSize(
+		model->headerData(0, Qt::Horizontal, Qt::SizeHintRole).toSize().width());
 	m_variationValueEditor->restoreSettings();
 	lastVariation = "";
 

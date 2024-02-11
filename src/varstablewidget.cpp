@@ -418,7 +418,7 @@ VarsTableModel::VarsTableModel(QObject* parent) : QAbstractItemModel(parent),
 	headerItems << tr("Variation") << tr("Value") << " ";
 
 	QList<QVariant> itemData;
-	itemData << "" << ZEROV << "";
+	itemData << "" << ZEROV << "";  // null root item
 	rootItem = new VarsTableItem(itemData);
 
 	// variables map setup
@@ -444,7 +444,7 @@ VarsTableModel::VarsTableModel(QObject* parent) : QAbstractItemModel(parent),
 		// A varItem includes is a row entry in a table with three columns
 		// [0] QString label, [1] double* ref, [2] reset 'x' label
 		itemData.clear();
-		itemData << variation << ZEROV << " ";  // null root item
+		itemData << variation << ZEROV << " ";
 		VarsTableItem* varItem = new VarsTableItem(itemData, rootItem);
 		rootItem->appendChild(varItem);
 		if (variablesMap.contains(variation))
@@ -458,7 +458,13 @@ VarsTableModel::VarsTableModel(QObject* parent) : QAbstractItemModel(parent),
 			}
 		}
 		variationItems.insert(variation, varItem);
+
+		if (variation.size() > longestLabel.size())
+		{   // find the longest variation label for Qt:SizeHintRole
+			longestLabel = variation;
+		}
 	}
+	longestLabel.append("_PAD");  // pad the size hint
 
 	qDeleteAll(variablesMap);
 }
@@ -617,6 +623,15 @@ QVariant VarsTableModel::headerData(int section, Qt::Orientation orientation, in
 		else
 			return rootItem->child(section)->data(0);
 	}
+
+	if (role == Qt::SizeHintRole && orientation == Qt::Horizontal && section == 0)
+	{
+		QFont f = QApplication::font();
+		f.setBold(true);
+		QFontMetrics fm(f);
+		return fm.size(Qt::TextSingleLine, longestLabel);
+	}
+
 	return QVariant();
 }
 
