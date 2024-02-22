@@ -68,6 +68,8 @@ class SelectGenomeConfigDialog : public QDialog, private Ui::SelectGenomeConfigD
 		void setPreset(const QString &s);
 		QString preset() const;
 		void setAutoSave(const GenomeVector::AutoSave);
+		void setTimeStep(const double);
+		double timeStep() const;
 		GenomeVector::AutoSave autoSave() const;
 };
 

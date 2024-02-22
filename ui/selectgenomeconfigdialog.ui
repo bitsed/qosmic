@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>183</width>
-    <height>118</height>
+    <width>196</width>
+    <height>162</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,6 +27,58 @@
      </property>
      <property name="text">
       <string>icon size</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QComboBox" name="qualityComboBox"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="toolTip">
+      <string>autosave genomes</string>
+     </property>
+     <property name="text">
+      <string>autosave</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QComboBox" name="asComboBox">
+     <item>
+      <property name="text">
+       <string>never</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>on exit</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>always</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label">
+     <property name="toolTip">
+      <string>preview quality</string>
+     </property>
+     <property name="text">
+      <string>quality</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
@@ -66,61 +118,43 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label">
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_3">
      <property name="toolTip">
-      <string>preview quality</string>
+      <string>time step added to a new genome</string>
      </property>
      <property name="text">
-      <string>quality</string>
+      <string>time step</string>
      </property>
     </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QComboBox" name="qualityComboBox"/>
    </item>
    <item row="3" column="1">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+    <widget class="DoubleValueEditor" name="timeStepEdit">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Ok</set>
+     <property name="decimals">
+      <number>0</number>
      </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="toolTip">
-      <string>autosave genomes</string>
+     <property name="singleStep">
+      <double>100.000000000000000</double>
      </property>
-     <property name="text">
-      <string>autosave</string>
+     <property name="value">
+      <double>100.000000000000000</double>
      </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QComboBox" name="asComboBox">
-     <item>
-      <property name="text">
-       <string>never</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>on exit</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>always</string>
-      </property>
-     </item>
     </widget>
    </item>
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>DoubleValueEditor</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>doublevalueeditor.h</header>
+  </customwidget>
   <customwidget>
    <class>IntValueEditor</class>
    <extends>QSpinBox</extends>

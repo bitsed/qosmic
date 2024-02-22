@@ -111,7 +111,7 @@ void GenomeVectorListView::dropEvent(QDropEvent* event)
 			else
 			{
 				// add a new genome to the list
-				double time = genomes->last().time + 1.0;
+				double time = genomes->last().time + genomes->timeStep();
 				flam3_genome tmp = flam3_genome();
 				flam3_copy(&tmp, mutation);
 				tmp.time = time;

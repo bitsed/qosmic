@@ -19,6 +19,7 @@
 #include <QPainter>
 #include <QSettings>
 #include <QFile>
+#include <cfloat>
 
 #include "qosmic.h"
 #include "selectgenomewidget.h"
@@ -72,7 +73,7 @@ void SelectGenomeWidget::reset()
 		{
 			flam3_genome* g = genomes->data() + i;
 			if ( g->time <= ltime ) // "normalize" the flam3_genome.time attributes.
-				g->time = ltime + 1.0;
+				g->time = ltime + genomes->timeStep();
 			ltime = g->time;
 		}
 		m_genomesListView->selectionModel()->setCurrentIndex(genomes->selectedIndex(), QItemSelectionModel::ClearAndSelect);
@@ -86,7 +87,7 @@ void SelectGenomeWidget::addButtonPressedSlot()
 	if (genomes->appendRow())
 	{
 		lastIdx += 1;
-		(genomes->data() + lastIdx)->time = ltime + 1.0;
+		(genomes->data() + lastIdx)->time = ltime + genomes->timeStep();
 		Flam3FileStream::autoSave(genomes);
 		m_genomesListView->scrollTo(genomes->selectedIndex());
 	}
@@ -114,13 +115,16 @@ void SelectGenomeWidget::configButtonPressedSlot()
 	QSize l_size(genomes->previewSize());
 	QString l_preset(genomes->previewPreset());
 	GenomeVector::AutoSave l_save(genomes->autoSave());
+	double l_timestep(genomes->timeStep());
 	d.setPreviewSize(l_size);
 	d.setPreset(l_preset);
 	d.setAutoSave(l_save);
+	d.setTimeStep(l_timestep);
 	d.move(QCursor::pos());
 	d.exec();
 	QSize s = d.previewSize();
 	QString p = d.preset();
+	double ts = d.timeStep();
 	GenomeVector::AutoSave a = d.autoSave();
 	if (a != l_save)
 	{
@@ -133,6 +137,10 @@ void SelectGenomeWidget::configButtonPressedSlot()
 				tr("Couldn't remove %1: %2")
 				.arg(asFile.fileName()).arg(asFile.errorString()));
 		}
+	}
+	if (ts != l_timestep)
+	{
+		genomes->setTimeStep(ts);
 	}
 	bool render = false;
 	if (s != l_size)
@@ -176,6 +184,7 @@ SelectGenomeConfigDialog::SelectGenomeConfigDialog(QWidget* parent) : QDialog(pa
 {
 	setupUi(this);
 	qualityComboBox->setModel(ViewerPresetsModel::getInstance());
+	timeStepEdit->setMaximum(DBL_MAX);
 }
 
 void SelectGenomeConfigDialog::setPreviewSize(const QSize& size)
@@ -207,6 +216,16 @@ GenomeVector::AutoSave SelectGenomeConfigDialog::autoSave() const
 void SelectGenomeConfigDialog::setAutoSave(const GenomeVector::AutoSave s)
 {
 	asComboBox->setCurrentIndex(s);
+}
+
+void SelectGenomeConfigDialog::setTimeStep(const double dt)
+{
+	timeStepEdit->updateValue(dt);
+}
+
+double SelectGenomeConfigDialog::timeStep() const
+{
+	return timeStepEdit->value();
 }
 
 void SelectGenomeWidget::showEvent(QShowEvent* e)

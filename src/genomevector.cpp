@@ -30,6 +30,7 @@ GenomeVector::GenomeVector()
 	preview_size   = s.value("previewsize", QSize(72, 56)).toSize();
 	preview_preset = s.value("previewpreset", ViewerPresetsModel::getInstance()->presetNames().first()).toString();
 	auto_save = (AutoSave)s.value("autosave", SaveOnExit).toInt();
+	time_step = s.value("timestep", 100.0).toDouble();
 	request_name = tr("selector");
 	enable_previews = true;
 	use_previews = 0;
@@ -609,6 +610,17 @@ void GenomeVector::setPreviewSize(const QSize& size)
 QSize GenomeVector::previewSize() const
 {
 	return preview_size;
+}
+
+void GenomeVector::setTimeStep(const double ts)
+{
+	time_step = ts;
+	QSettings().setValue("genomevector/timestep", ts);
+}
+
+double GenomeVector::timeStep() const
+{
+	return time_step;
 }
 
 void GenomeVector::setPreviewPreset(const QString& s)

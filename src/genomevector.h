@@ -46,6 +46,7 @@ class GenomeVector : public QAbstractListModel, public QVector<flam3_genome>
 		QPixmap clock_preview;
 		AutoSave auto_save;
 		QString request_name;
+		double time_step;
 
 	public:
 		GenomeVector();
@@ -69,6 +70,8 @@ class GenomeVector : public QAbstractListModel, public QVector<flam3_genome>
 		int size() const;
 		AutoSave autoSave() const;
 		void setAutoSave(AutoSave);
+		double timeStep() const;
+		void setTimeStep(const double);
 
 		// the QAbstractListModel interface
 		bool appendRow();
