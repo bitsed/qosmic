@@ -517,13 +517,6 @@ QVariant VarsTableModel::data(const QModelIndex& index, int role) const
 			VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
 			return item->data(index.column());
 		}
-		case Qt::BackgroundRole:
-		{
-			VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
-			if (item->data(1).toDouble() != 0.0)
-				return QApplication::palette().alternateBase();
-			break;
-		}
 		case Qt::FontRole:
 		{
 			VarsTableItem* item = static_cast<VarsTableItem*>(index.internalPointer());
