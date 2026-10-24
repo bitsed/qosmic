@@ -42,8 +42,11 @@ link_pkgconfig {
 	PKG_CONFIG = $$pkgConfigExecutable()
 	message("Config using pkg-config version "$$system($$PKG_CONFIG --version))
 	## Load pkg-config paths and libs definitions for
-	## flam3 and lua5.1, lua5.2, lua5.3, or lua5.4
+	## flam3 and Lua
 	PKGCONFIG = flam3 lua5.4
+	!packagesExist(lua5.4):packagesExist(lua5.5) {
+		PKGCONFIG = flam3 lua5.5
+	}
 }
 else {
 	message("Config not using pkg-config")
